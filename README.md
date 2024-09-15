@@ -14,4 +14,5 @@ You should be able to rotate the camera, long press to open menu, and tap to cli
   
 Currently the AWT side of things is pretty heavy in-game, this can likely be improved substantially.  
 OSRS can render at 50fps using the same native-awt lib  
+  
 Please create an issue ONLY if your phone does not have one already, and ONLY for rendering issues.  

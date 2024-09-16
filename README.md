@@ -15,6 +15,8 @@ You can now build the 'app' module
 
 # Info
 You should be able to use the Account plugin to configure Auto User/Pass, and that will let you login when hitting existing user.  
+(properties are stored in sandboxed app data, no other apps can access this data unless your device is rooted.)  
+  
 You should be able to rotate the camera, long press to open menu, and tap to click.  
   
 Currently the AWT side of things is pretty heavy in-game, this can likely be improved substantially.  

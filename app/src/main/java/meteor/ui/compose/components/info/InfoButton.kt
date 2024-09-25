@@ -47,7 +47,7 @@ class InfoButton : SidebarButton(icon = LineAwesomeIcons.InfoCircleSolid, bottom
                 Image(
                     painterResource(R.drawable.badge),
                     null,
-                    modifier = Modifier.size(150.dp).align(Alignment.CenterHorizontally)
+                    modifier = Modifier.size(100.dp).align(Alignment.CenterHorizontally)
                 )
             }
             Spacer(Modifier.height(2.dp))

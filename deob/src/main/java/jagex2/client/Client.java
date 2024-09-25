@@ -728,7 +728,7 @@ public class Client extends GameShell {
 	private Pix8[] imageRunes;
 
 	@OriginalMember(owner = "client!client", name = "vf", descriptor = "Z")
-	private boolean ingame = false;
+	public boolean ingame = false;
 
 	@OriginalMember(owner = "client!client", name = "wf", descriptor = "Z")
 	private boolean flamesThread = false;
@@ -2362,8 +2362,8 @@ public class Client extends GameShell {
 		jitter = Draw3D.cycle;
 		Model.checkHover = true;
 		Model.pickedCount = 0;
-		Model.mouseX = super.mouseX - 8;
-		Model.mouseZ = super.mouseY - 11;
+		Model.mouseX = mouseX - 8;
+		Model.mouseZ = mouseY - 11;
 		Draw2D.clear();
 		this.scene.draw(this.cameraX, this.cameraY, this.cameraZ, level, this.cameraYaw, this.cameraPitch, loopCycle);
 		this.scene.clearTemporaryLocs();
@@ -2371,7 +2371,7 @@ public class Client extends GameShell {
 		this.drawTileHint();
 		this.updateTextures(jitter);
 		this.draw3DEntityElements();
-		this.areaViewport.draw(super.graphics, 8, 11);
+		this.areaViewport.draw(graphics, 8, 11);
 		this.cameraX = cameraX;
 		this.cameraY = cameraY;
 		this.cameraZ = cameraZ;

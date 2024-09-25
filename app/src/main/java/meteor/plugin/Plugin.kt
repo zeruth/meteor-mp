@@ -29,7 +29,7 @@ open class Plugin(val name: String, var enabledByDefault: Boolean = false, var h
     }
 
     fun start() {
-        val enable = ConfigManager.get<Boolean>("plugin.$name.enabled", enabledByDefault)
+        val enable = cantDisable || ConfigManager.get<Boolean>("plugin.$name.enabled", enabledByDefault)
         if (!enable && !hidden)
             return
         onStart()

@@ -5,7 +5,7 @@ import meteor.plugin.Plugin
 import meteor.ui.compose.components.GamePanel
 import meteor.ui.config.AspectMode
 
-class StretchedModePlugin : Plugin("Stretched Mode") {
+class StretchedModePlugin : Plugin("Stretched Mode", cantDisable = true) {
     override fun onStart() {
         client.aspectMode = AspectMode.FILL
         GamePanel.aspectMode.value = client.aspectMode

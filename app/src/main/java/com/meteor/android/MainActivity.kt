@@ -31,6 +31,7 @@ import com.meteor.android.MainActivity.Companion.fps
 import com.meteor.android.MainActivity.Companion.image
 import com.meteor.android.MainActivity.Companion.pluginsLoaded
 import com.meteor.android.MainActivity.Companion.recentDraws
+import com.meteor.android.MainActivity.Companion.viewportImage
 import com.meteor.android.ui.theme.MeteorAndroidTheme
 import ext.kotlin.MutableStateExt.toggle
 import jagex2.client.Client
@@ -38,8 +39,13 @@ import jagex2.graphics.Draw2D
 import meteor.Logger
 import meteor.Main
 import meteor.Main.forceRecomposition
+import meteor.audio.SoundPlayer
 import meteor.events.ClientInstance
 import meteor.events.DrawFinished
+import meteor.events.PlaySong
+import meteor.events.PlaySound
+import meteor.events.StopMusic
+import meteor.events.ViewportDraw
 import meteor.plugin.PluginManager
 import meteor.ui.compose.components.Window
 import meteor.ui.compose.components.Window.ViewBox
@@ -51,6 +57,7 @@ import java.io.File
 
 class MainActivity : ComponentActivity() {
     companion object {
+       //lateinit var synth: InterAppMidiSynthesizer
         var started = false
         var pluginsLoaded = false
         val displayText = mutableStateOf("Hello Android!")
@@ -59,6 +66,9 @@ class MainActivity : ComponentActivity() {
         var fps = mutableIntStateOf(0)
         var recentDraws = ArrayList<Long>()
         var image = mutableStateOf<ImageBitmap?>(null)
+        var viewportImage = mutableStateOf<ImageBitmap?>(null)
+        //var midiSystem : InterAppMidiSystem? = null
+
         private lateinit var midiManager: MidiManager
         private var midiDevice: MidiDevice? = null
     }
@@ -66,14 +76,26 @@ class MainActivity : ComponentActivity() {
         Client.hooks = Hooks()
         KEVENT.subscribe<DrawFinished> {
             receivedDraw = true
-            updateGameImage()
+            updateGameImage(true)
+        }
+        KEVENT.subscribe<ViewportDraw> {
+            receivedDraw = true
+            val viewport = Main.client.areaViewport.image as BufferedImage
+            viewportImage.value = Bitmap.createBitmap(getPixelArray(viewport), viewport.width, viewport.height, Bitmap.Config.RGB_565).asImageBitmap()
+            updateGameImage(false)
         }
         KEVENT.subscribe<ClientInstance> {
             Main.client = (Client.client as Any) as net.runelite.api.Client
         }
+        KEVENT.subscribe<PlaySound> {
+            println("play sound")
+            SoundPlayer(it.data.sound, 0).play()
+        }
+/*        KEVENT.subscribe<PlaySong> { MidiPlayer.playSong(false, baseContext) }
+        KEVENT.subscribe<StopMusic> { MidiPlayer.stop() }*/
         Thread {
             while (!receivedDraw) {
-                updateGameImage()
+                updateGameImage(false)
             }
         }.start()
     }
@@ -117,6 +139,7 @@ class MainActivity : ComponentActivity() {
         // Load SoundFont (replace with your SoundFont file path)
         val soundFontPath = "path/to/your/soundfont.sf2"
         fluidSynth.loadSoundFont(soundFontPath)*/
+        //midiSystem = InterAppMidiSystem(baseContext)
         hideSystemUI()
         if (!started)  {
             Client.cacheDir = File(dataDir, "cache/")
@@ -133,23 +156,28 @@ class MainActivity : ComponentActivity() {
     }
 }
 
-fun updateGameImage() {
+fun updateGameImage(finalDraw: Boolean) {
     try {
         if (!pluginsLoaded) {
             PluginManager.startPlugins()
             pluginsLoaded = true
         }
-        recentDraws += System.currentTimeMillis()
+
         image.value = Bitmap.createBitmap(getPixelArray(Client.frame), Client.frame.width, Client.frame.height, Bitmap.Config.RGB_565).asImageBitmap()
+
         forceRecomposition.toggle()
-        val expiredTimes = ArrayList<Long>()
-        for (renderTime in recentDraws) {
-            if (renderTime < (System.currentTimeMillis() - 1000))
-                expiredTimes += renderTime
+        if (finalDraw) {
+            recentDraws += System.currentTimeMillis()
+            val expiredTimes = ArrayList<Long>()
+            for (renderTime in recentDraws) {
+                if (renderTime < (System.currentTimeMillis() - 1000))
+                    expiredTimes += renderTime
+            }
+            for (expiredTime in expiredTimes)
+                recentDraws.remove(expiredTime)
+            fps.intValue = recentDraws.size
         }
-        for (expiredTime in expiredTimes)
-            recentDraws.remove(expiredTime)
-        fps.intValue = recentDraws.size
+
     } catch (_: Exception) {}
 }
 

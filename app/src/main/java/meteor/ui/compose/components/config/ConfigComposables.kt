@@ -26,9 +26,12 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import meteor.Main
 import meteor.config.Config
 import meteor.config.ConfigItem
+import meteor.events.client.ConfigChanged
 import meteor.plugin.PluginManager
+import meteor.plugin.filtering.Quality
 import meteor.plugin.meteor.MeteorPlugin
 import meteor.plugin.meteor.UIColor
 import meteor.ui.compose.Colors
@@ -45,7 +48,12 @@ object ConfigComposables {
                         is Boolean -> ConfigNode { BooleanConfigNode(item as ConfigItem<Boolean>).invoke(this) }
                         is String -> ConfigNode(height = 60) { StringConfigNode(item as ConfigItem<String>).invoke(this) }
                         is Int -> ConfigNode(height = 60) { IntConfigNode(item as ConfigItem<Int>).invoke(this) }
-                        is Enum<*> -> ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<*>>).invoke(this) }
+                        is Enum<*> -> {
+                            if (item.defaultValue is UIColor)
+                                ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<UIColor>>).invoke(this) }
+                            else if (item.defaultValue is Quality)
+                                ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<Quality>>).invoke(this) }
+                        }
                     }
                     Spacer(Modifier.height(2.dp))
                 }
@@ -117,15 +125,18 @@ object ConfigComposables {
         )
     }
 
-    fun<T : Enum<*>> EnumConfigNode(config: ConfigItem<T>): @Composable RowScope.() -> Unit = @Composable {
+    inline fun <reified T : Enum<T>> getEnumEntries(): Array<T> {
+        return enumValues<T>()
+    }
+
+    inline fun<reified T : Enum<T>> EnumConfigNode(config: ConfigItem<out Enum<T>>): @Composable RowScope.() -> Unit = @Composable {
         val state = textStateMap[config.key]
         val value = config.defaultValue.name
         if (state == null) {
             textStateMap[config.key] = value
         }
         var expanded by remember { mutableStateOf(false) }
-        var selectedOption by remember { mutableStateOf(config.get<UIColor>()) }
-
+        var selectedOption by remember { mutableStateOf(config.get<T>()) }
         Spacer(Modifier.width(5.dp))
         Text(
             text = config.name,
@@ -142,14 +153,18 @@ object ConfigComposables {
                 modifier = Modifier
                     .background(Colors.surfaceDark.value)
             ) {
-                UIColor.entries.forEach { option ->
+                getEnumEntries<T>().forEach { option ->
                     DropdownMenuItem(onClick = {
                         expanded = false
                         selectedOption = option
-                        Colors.secondary.value = selectedOption.color
-                        PluginManager.plugins.filterIsInstance<MeteorPlugin>().first().config.uiColor.set(selectedOption)
+                        config.set(selectedOption)
                     }, modifier = Modifier.background(Colors.surfaceDark.value), text = {
-                        Text(text = option.name, color = option.color)
+                        if (T::class == UIColor::class) {
+                            Text(text = option.name, color = (option as UIColor).color)
+                        }
+                        else {
+                            Text(text = option.name, color = Colors.secondary.value)
+                        }
                     })
                 }
             }

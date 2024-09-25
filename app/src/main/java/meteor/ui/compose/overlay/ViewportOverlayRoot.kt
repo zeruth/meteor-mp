@@ -22,6 +22,8 @@ import ext.compose.DrawScopeExt.dpToPx
 import meteor.Main
 import meteor.Main.forceRecomposition
 import meteor.ui.compose.components.GamePanel
+import meteor.ui.compose.components.GamePanel.sX
+import meteor.ui.compose.components.GamePanel.sY
 import meteor.ui.compose.overlay.Overlay.Companion.debugOverlays
 import meteor.ui.config.AspectMode
 import net.runelite.api.Component
@@ -45,6 +47,8 @@ object ViewportOverlayRoot {
 
     @Composable
     fun render() {
+        if (Main.client.areaViewport == null)
+            return
         forceRecomposition.value
         updateScale()
 
@@ -57,21 +61,20 @@ object ViewportOverlayRoot {
                 yScale = xScale
         }
 
-        val offsetX = (VIEWPORT_OFFSETS.x * xScale!!).dp
-        val offsetY = (VIEWPORT_OFFSETS.y * yScale!!).dp
+        val offsetX = (VIEWPORT_OFFSETS.x * sX).dp
+        val offsetY = (VIEWPORT_OFFSETS.y * sY).dp
 
-        width.value = (VIEWPORT_DIMENSIONS.width * xScale).dp
-        height.value = (VIEWPORT_DIMENSIONS.height * yScale).dp
+        width.value = (Main.client.areaViewport.image.getWidth(null) * sX).dp
+        height.value = (Main.client.areaViewport.image.getHeight(null) * sY).dp
 
         if (width.value == 0.0.dp || height.value == 0.0.dp) {
             return
         }
 
         var mod = Modifier
-/*            .absoluteOffset(x = offsetX, y = offsetY)
+            .absoluteOffset(x = offsetX, y = offsetY)
             .size(DpSize(width.value, height.value))
-            .clipToBounds()*/
-            .fillMaxSize()
+            .clipToBounds()
             .background(Color.Transparent)
         if (/*Main.client.isLoggedIn() && */debugOverlays.value)
             mod = mod.background(Color.Red.copy(alpha = .2f))
@@ -161,7 +164,7 @@ object ViewportOverlayRoot {
 
 
     fun updateScale() {
-        xScale = GamePanel.scaleX
-        yScale = GamePanel.scaleY
+        xScale = GamePanel.sX
+        yScale = GamePanel.sY
     }
 }

@@ -8,6 +8,8 @@ import java.awt.*;
 import java.awt.image.*;
 import java.util.Hashtable;
 
+import jagex2.client.Client;
+
 // name taken from rsc
 @OriginalClass("client!qb")
 public class PixMap implements ImageProducer, ImageObserver {
@@ -40,7 +42,7 @@ public class PixMap implements ImageProducer, ImageObserver {
 		this.colorModel = new DirectColorModel(32, 0xff0000, 0xff00, 0xff);
 		WritableRaster raster = Raster.createWritableRaster(colorModel.createCompatibleSampleModel(width, height), buffer, (Point)null);
 		this.image = new BufferedImage(colorModel, raster, false, new Hashtable<>());
-		setPixels();
+		//setPixels();
 		bind();
 	}
 
@@ -50,9 +52,10 @@ public class PixMap implements ImageProducer, ImageObserver {
 	}
 
 	@OriginalMember(owner = "client!qb", name = "a", descriptor = "(ILjava/awt/Graphics;II)V")
-	public void draw(@OriginalArg(1) Graphics g, @OriginalArg(2) int width, @OriginalArg(0) int height) {
-		this.setPixels();
-		g.drawImage(this.image, width, height, null);
+	public void draw(@OriginalArg(1) Graphics g, @OriginalArg(2) int x, @OriginalArg(0) int y) {
+		//this.setPixels();
+/*		if (!Client.client.ingame)*/
+		g.drawImage(this.image, x, y, this);
 	}
 
 	@OriginalMember(owner = "client!qb", name = "addConsumer", descriptor = "(Ljava/awt/image/ImageConsumer;)V")

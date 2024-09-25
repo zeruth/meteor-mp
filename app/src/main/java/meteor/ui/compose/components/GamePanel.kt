@@ -4,23 +4,27 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
+import androidx.compose.ui.unit.dp
 import com.meteor.android.MainActivity.Companion.image
+import com.meteor.android.MainActivity.Companion.viewportImage
+import jagex2.client.Client
 import jagex2.client.GameShell
 import meteor.Constants
 import meteor.Main
@@ -37,8 +41,8 @@ object GamePanel {
     var pendingMove : android.graphics.Point? = null
     var pendingTap : android.graphics.Point? = null
     var pendingHold : android.graphics.Point? = null
-    var scaleX = 0f
-    var scaleY = 0f
+    var sX = 0f
+    var sY = 0f
     var stretchedWidth = mutableFloatStateOf(0f)
     var stretchedHeight = mutableFloatStateOf(0f)
     var xPadding = mutableFloatStateOf(0f)
@@ -47,6 +51,9 @@ object GamePanel {
     var halfYPadding = mutableFloatStateOf(0f)
     var fitScaleFactor = mutableFloatStateOf(0f)
     var containerSize = mutableStateOf(IntSize(Constants.RS_DIMENSIONS.width, Constants.RS_DIMENSIONS.height))
+    val dragging = mutableStateOf(false)
+    val filter = mutableStateOf(FilterQuality.Medium)
+    var density = 1f
     init {
         KEVENT.subscribe<DrawFinished> {
             pendingMove?.let {
@@ -68,44 +75,44 @@ object GamePanel {
             }
         }
     }
+    var touchScaleX = 0f
+    var touchScaleY = 0f
     @Composable
     fun Game() {
         var clickCoordinates by remember { mutableStateOf<Offset?>(null) }
-
+        // Get the screen density
+        density = LocalDensity.current.density
+        val xPad = ((containerSize.value.width.toFloat() / density) - (Constants.RS_DIMENSIONS.width * sX)) / 2
+        val yPad = ((containerSize.value.height.toFloat() / density) - (Constants.RS_DIMENSIONS.height * sY)) / 2
+        val viewportXOffset = (8 * sX) + xPad
+        val viewportYOffset = (11 * sY) + yPad
         image.value?.let {
-            Image(it, "", filterQuality = FilterQuality.None, contentScale = if (aspectMode.value == AspectMode.FIT) ContentScale.Fit else ContentScale.FillBounds, modifier =
+            Image(it, "", filterQuality = filter.value, contentScale = if (aspectMode.value == AspectMode.FIT) ContentScale.Fit else ContentScale.FillBounds, modifier =
             Modifier
                 .fillMaxSize()
                 .onGloballyPositioned { layoutCoordinates ->
                     containerSize.value = layoutCoordinates.size
-                    updateScale(containerSize.value)
+                    updateScale(containerSize.value, density)
                 }
                 .pointerInput(Unit) {
-                    detectDragGestures { change, dragAmount ->
-                        val cameraYawChange = change.positionChange().x
-                        Main.client.cameraYaw -= cameraYawChange.toInt()
-                        Main.client.cameraYaw = Main.client.cameraYaw and 0x7FF
-
-                        val cameraPitchChange = change.positionChange().y
-                        Main.client.cameraPitch += cameraPitchChange.toInt()
-                        if (Main.client.cameraPitch < 128) {
-                            Main.client.cameraPitch = 128
+                    detectDragGestures(                    onDragStart = {
+                        dragging.value = true
+                    },
+                        onDragEnd = {
+                            dragging.value = false
+                        },
+                        onDragCancel = {
+                            dragging.value = false
+                        }) { _, _ -> }
                         }
-                        if (Main.client.cameraPitch > 383) {
-                            Main.client.cameraPitch = 383
-                        }
-                    }
-                }
                 .pointerInput(Unit) {
                     detectTapGestures(onTap =  { offset ->
-                        val imageSize =
-                            IntSize(Constants.RS_DIMENSIONS.width, Constants.RS_DIMENSIONS.height)
-                        scaleX = containerSize.value.width.toFloat() / imageSize.width
-                        scaleY = containerSize.value.height.toFloat() / imageSize.height
+                        touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                        touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
 
                         val fitScaleFactor = when (aspectMode.value) {
-                            AspectMode.FIT -> minOf(scaleX, scaleY)
-                            AspectMode.FILL -> maxOf(scaleX, scaleY)
+                            AspectMode.FIT -> minOf(touchScaleX, touchScaleY)
+                            AspectMode.FILL -> maxOf(touchScaleX, touchScaleY)
                         }
 
                         if (aspectMode.value == AspectMode.FIT) {
@@ -126,13 +133,17 @@ object GamePanel {
                                         }
                                 }
                         } else {
-                            val modX = offset.x / scaleX
-                            val modY = offset.y / scaleY
+                            val modX = offset.x / touchScaleX
+                            val modY = offset.y / touchScaleY
                             pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
                             pendingTap = android.graphics.Point(modX.toInt(), modY.toInt())
                         }
                     }, onLongPress = {
                             offset ->
+                        touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                        touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
+                        if (dragging.value)
+                            return@detectTapGestures
                         if (aspectMode.value == AspectMode.FIT) {
                             if (offset.x > halfXPadding.floatValue)
                                 if (offset.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
@@ -151,34 +162,124 @@ object GamePanel {
                                         }
                                 }
                         } else {
-                            val modX = offset.x / scaleX
-                            val modY = offset.y / scaleY
+                            val modX = offset.x / touchScaleX
+                            val modY = offset.y / touchScaleY
                             pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
                             pendingHold = android.graphics.Point(modX.toInt(), modY.toInt())
                         }
                     })
                 })
         }
+
+
+        if (Main.client.isLoggedIn && Main.client.areaViewport != null)
+            viewportImage.value?.let {
+                var viewportMod = Modifier.offset(x = viewportXOffset.dp, y = viewportYOffset.dp).size((Main.client.areaViewport.image.getWidth(null) * sX).dp, (Main.client.areaViewport.image.getHeight(null) * sY).dp)
+                Image(it, "", filterQuality = filter.value, contentScale = ContentScale.FillBounds, modifier = viewportMod.pointerInput(Unit) {
+                    detectDragGestures { change, dragAmount ->
+                        val cameraYawChange = change.positionChange().x
+                        Main.client.cameraYaw -= cameraYawChange.toInt()
+                        Main.client.cameraYaw = Main.client.cameraYaw and 0x7FF
+
+                        val cameraPitchChange = change.positionChange().y
+                        Main.client.cameraPitch += cameraPitchChange.toInt()
+                        if (Main.client.cameraPitch < 128) {
+                            Main.client.cameraPitch = 128
+                        }
+                        if (Main.client.cameraPitch > 383) {
+                            Main.client.cameraPitch = 383
+                        }
+                    }
+                }.pointerInput(Unit) {
+                    detectTapGestures(onTap =  { offset ->
+                        touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                        touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
+
+                        val fitScaleFactor = when (aspectMode.value) {
+                            AspectMode.FIT -> minOf(touchScaleX, touchScaleY)
+                            AspectMode.FILL -> maxOf(touchScaleX, touchScaleY)
+                        }
+
+                        if (aspectMode.value == AspectMode.FIT) {
+                            if (offset.x > halfXPadding.floatValue)
+                                if (offset.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
+                                    var modX =
+                                        if (halfXPadding.floatValue > 0) (offset.x - halfXPadding.floatValue) else offset.x
+                                    modX /= fitScaleFactor
+                                    if (offset.y > halfYPadding.floatValue)
+                                        if (offset.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
+                                            var modY =
+                                                if (halfYPadding.floatValue > 0) (offset.y - halfYPadding.floatValue) else offset.y
+                                            modY /= fitScaleFactor
+                                            pendingMove =
+                                                android.graphics.Point(modX.toInt(), modY.toInt())
+                                            pendingTap =
+                                                android.graphics.Point(modX.toInt(), modY.toInt())
+                                        }
+                                }
+                        } else {
+                            val modX = offset.x / touchScaleX + 8
+                            val modY = offset.y / touchScaleY + 11
+                            pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
+                            pendingTap = android.graphics.Point(modX.toInt(), modY.toInt())
+                        }
+                    }, onLongPress = {
+                            offset ->
+                        touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                        touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
+                        if (dragging.value)
+                            return@detectTapGestures
+                        if (aspectMode.value == AspectMode.FIT) {
+                            if (offset.x > halfXPadding.floatValue)
+                                if (offset.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
+                                    var modX =
+                                        if (halfXPadding.floatValue > 0) (offset.x - halfXPadding.floatValue) else offset.x
+                                    modX /= fitScaleFactor.floatValue
+                                    if (offset.y > halfYPadding.floatValue)
+                                        if (offset.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
+                                            var modY =
+                                                if (halfYPadding.floatValue > 0) (offset.y - halfYPadding.floatValue) else offset.y
+                                            modY /= fitScaleFactor.floatValue
+                                            pendingMove =
+                                                android.graphics.Point(modX.toInt(), modY.toInt())
+                                            pendingHold =
+                                                android.graphics.Point(modX.toInt(), modY.toInt())
+                                        }
+                                }
+                        } else {
+                            val modX = offset.x / touchScaleX
+                            val modY = offset.y / touchScaleY
+                            pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
+                            pendingHold = android.graphics.Point(modX.toInt(), modY.toInt())
+                        }
+                    })
+                })
+            }
         GameOverlayRoot.render()
     }
 
-    fun updateScale(containerSize: IntSize) {
+    fun updateScale(containerSize: IntSize, density: Float) {
         val imageSize =
-            IntSize(Constants.RS_DIMENSIONS.width, Constants.RS_DIMENSIONS.height)
-        scaleX = containerSize.width.toFloat() / imageSize.width
-        scaleY = containerSize.height.toFloat() / imageSize.height
+            IntSize(Client.frame.width, Client.frame.height)
+        // Convert image size from pixels to dp
+        val imageWidthDp = imageSize.width
+        val imageHeightDp = imageSize.height
+
+        // Convert container size from pixels to dp
+        val containerWidthDp = containerSize.width / density
+        val containerHeightDp = containerSize.height / density
+
+        // Calculate scale
+        sX = containerWidthDp / imageWidthDp
+        sY = containerHeightDp / imageHeightDp
 
         fitScaleFactor.value = when (aspectMode.value) {
-            AspectMode.FIT -> minOf(scaleX, scaleY)
-            AspectMode.FILL -> maxOf(scaleX, scaleY)
+            AspectMode.FIT -> minOf(sX, sY)
+            AspectMode.FILL -> maxOf(sX, sY)
         }
 
         if (aspectMode.value == AspectMode.FIT) {
-            if (scaleX > scaleY)
-                scaleY = scaleX
-            if (scaleY > scaleX)
-                scaleX = scaleY
-            println("scaleX: ${scaleX} scaleY: ${scaleY} factor: ${fitScaleFactor}")
+            println("scaleX: ${sX} scaleY: ${sY} factor: ${fitScaleFactor}")
 
             stretchedWidth.floatValue = Constants.RS_DIMENSIONS.width * fitScaleFactor.floatValue
             xPadding.floatValue = containerSize.width - stretchedWidth.floatValue

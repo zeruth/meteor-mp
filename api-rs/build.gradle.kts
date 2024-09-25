@@ -34,6 +34,7 @@ android {
 
 dependencies {
     implementation(project(":api"))
+    implementation(project(":native-awt"))
     implementation("nulled:annotations:1.0")
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.appcompat)

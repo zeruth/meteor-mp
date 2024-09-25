@@ -7,9 +7,14 @@ import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSComponent;
 
+import java.io.ByteArrayInputStream;
+
 import meteor.events.ClientInstance;
 import meteor.events.DrawFinished;
+import meteor.events.PlaySong;
+import meteor.events.PlaySound;
 import meteor.events.SkillUpdate;
+import meteor.events.StopMusic;
 import meteor.ui.config.AspectMode;
 import meteor.ui.config.CPUFilter;
 
@@ -164,5 +169,42 @@ abstract class Client implements RSClient {
         }
 
         lastPacketTypeServer = nextPacketType;
+    }
+
+    @Inject
+    public ByteArrayInputStream lastSound;
+
+    @Inject
+    @MethodHook(value = "saveWave", end = true)
+    void saveWave$tail(byte[] data, int pos) {
+        ByteArrayInputStream soundStream = new ByteArrayInputStream(data, 0, pos);
+        lastSound = soundStream;
+        getCallbacks().post(new PlaySound(lastSound));
+    }
+
+    @Inject
+    @MethodHook(value = "replayWave")
+    void replayWave$head() {
+        lastSound.reset();
+        getCallbacks().post(new PlaySound(lastSound));
+    }
+
+    @Shadow("midi")
+    public static String midi;
+
+    @Inject
+    @FieldHook("midi")
+    public static void onMidiChanged(int idx) {
+        if (!midi.equals("stop") && !midi.equals("voladjust")) {
+            client.getCallbacks().post(new PlaySong(midi));
+        } else if (midi.equals("stop")) {
+            client.getCallbacks().post(StopMusic.INSTANCE);
+        }
+    }
+
+    @Inject
+    @Override
+    public String getMidi() {
+        return midi;
     }
 }

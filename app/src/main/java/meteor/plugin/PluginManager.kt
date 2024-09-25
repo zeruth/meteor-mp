@@ -7,6 +7,7 @@ import meteor.plugin.infobars.InfoBarsPlugin
 import meteor.plugin.loginscreen.LoginScreenPlugin
 import meteor.plugin.meteor.MeteorPlugin
 import meteor.plugin.server.ServerPlugin
+import meteor.plugin.filtering.FilteringPlugin
 import meteor.plugin.stretchedmode.StretchedModePlugin
 
 object PluginManager {
@@ -14,13 +15,14 @@ object PluginManager {
     val logger = Logger("PluginManager")
 
     init {
-        plugins.add(InfoBarsPlugin())
         plugins.add(AccountPlugin())
-        plugins.add(StretchedModePlugin())
         plugins.add(DebugPlugin())
+        plugins.add(FilteringPlugin())
+        plugins.add(InfoBarsPlugin())
         plugins.add(LoginScreenPlugin())
-        plugins.add(ServerPlugin())
         plugins.add(MeteorPlugin())
+        plugins.add(ServerPlugin())
+        plugins.add(StretchedModePlugin())
     }
 
     fun startPlugins() {

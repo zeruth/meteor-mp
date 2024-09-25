@@ -64,4 +64,6 @@ public interface Client extends GameShell{
     int[] getExperience();
     int[] getLevelExperience();
     int getEnergy();
+    PixMap getAreaViewport();
+    String getMidi();
 }

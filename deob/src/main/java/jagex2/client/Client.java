@@ -1130,7 +1130,7 @@ public class Client extends GameShell {
 	private int[][] bfsDirection = new int[104][104];
 
 	@OriginalMember(owner = "client!client", name = "ki", descriptor = "Ljava/lang/String;")
-	private String currentMidi;
+	public static String currentMidi;
 
 	@OriginalMember(owner = "client!client", name = "li", descriptor = "[Lclient!hb;")
 	private Pix24[] imageCrosses = new Pix24[8];

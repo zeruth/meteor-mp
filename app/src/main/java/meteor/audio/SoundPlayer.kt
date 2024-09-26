@@ -21,7 +21,7 @@ class SoundPlayer(private val audioData: ByteArrayInputStream, private val delay
 
         audioTrack = AudioTrack(
             AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_MEDIA)
+                .setUsage(AudioAttributes.USAGE_GAME)
                 .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
                 .build(),
             AudioFormat.Builder()

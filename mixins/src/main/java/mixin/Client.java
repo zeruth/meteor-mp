@@ -192,11 +192,16 @@ abstract class Client implements RSClient {
     @Shadow("midi")
     public static String midi;
 
+    @Shadow("currentMidi")
+    public static String currentMidi;
+
     @Inject
     @FieldHook("midi")
     public static void onMidiChanged(int idx) {
         if (!midi.equals("stop") && !midi.equals("voladjust")) {
-            client.getCallbacks().post(new PlaySong(midi));
+            if (currentMidi == null)
+                currentMidi = "scape_main";
+            client.getCallbacks().post(new PlaySong(currentMidi));
         } else if (midi.equals("stop")) {
             client.getCallbacks().post(StopMusic.INSTANCE);
         }

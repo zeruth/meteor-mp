@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.meteor.android"
-        minSdk = 26
+        minSdk = 30
         targetSdk = 34
         versionCode = 1
         versionName = "1.0"
@@ -71,12 +71,14 @@ tasks.withType<InjectTask> {
 val acraVersion = "5.11.4"
 
 dependencies {
+
     implementation("nulled:logger:1.2")
     implementation("nulled:eventbus:1.1")
     implementation(files("./lib/injected-client.jar"))
     implementation(project(":api"))
     implementation(project(":api-rs"))
     implementation(project(":native-awt"))
+    implementation("com.google.android.exoplayer:exoplayer:2.19.1")
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation(platform("com.google.firebase:firebase-bom:33.3.0"))

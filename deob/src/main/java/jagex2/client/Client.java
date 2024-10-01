@@ -11033,6 +11033,7 @@ public class Client extends GameShell {
 					BZip2.read(src, length, this.in.data, remaining, this.in.pos);
 					this.saveMidi(src, length, 0);
 					this.nextMusicDelay = delay;
+					alertJingle(src);
 				}
 				this.packetType = -1;
 				return true;
@@ -11573,6 +11574,9 @@ public class Client extends GameShell {
 			this.logout();
 		}
 		return true;
+	}
+
+	public void alertJingle(byte[] data) {
 	}
 
 	@OriginalMember(owner = "client!client", name = "s", descriptor = "(B)V")

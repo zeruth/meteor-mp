@@ -1,60 +1,41 @@
 package meteor.audio
 
-import android.media.AudioAttributes
-import android.media.AudioFormat
+import android.content.Context
 import android.media.AudioTrack
-import java.io.ByteArrayInputStream
+import com.google.android.exoplayer2.ExoPlayer
+import com.google.android.exoplayer2.MediaItem
+import com.google.android.exoplayer2.Player
+import java.io.File
+import java.io.FileOutputStream
 
-class SoundPlayer(private val audioData: ByteArrayInputStream, private val delay: Int, private val sampleRate: Int = 22050) {
-    private var audioTrack: AudioTrack? = null
-    private var audioBuffer: ByteArray? = null
-
-    fun loadAudioData() {
-        audioBuffer = ByteArray(audioData.available()).also {
-            audioData.read(it)
-        }
-
-        val channelConfig = AudioFormat.CHANNEL_OUT_MONO
-        val audioFormat = AudioFormat.ENCODING_PCM_8BIT
-
-        val bufferSize = AudioTrack.getMinBufferSize(sampleRate, channelConfig, audioFormat)
-
-        audioTrack = AudioTrack(
-            AudioAttributes.Builder()
-                .setUsage(AudioAttributes.USAGE_GAME)
-                .setContentType(AudioAttributes.CONTENT_TYPE_MUSIC)
-                .build(),
-            AudioFormat.Builder()
-                .setSampleRate(sampleRate)
-                .setChannelMask(channelConfig)
-                .setEncoding(audioFormat)
-                .build(),
-            bufferSize,
-            AudioTrack.MODE_STREAM,
-            0
-        )
-    }
+class SoundPlayer(private val audioData: ByteArray, private val delay: Int, private val context: Context) {
+    var tmpID = -1
 
     fun play() {
-        Thread {
-            loadAudioData()
+        tmpID++
+        val tempWav = File.createTempFile("sound$tmpID", "wav")
+        tempWav.deleteOnExit()
+        val fos = FileOutputStream(tempWav)
+        fos.write(audioData)
+        fos.close()
 
-            audioTrack?.play()
+        val mediaItem = MediaItem.fromUri(tempWav.toURI().toString())
 
-            if (delay > 0) {
-                try {
-                    Thread.sleep(delay.toLong())
-                } catch (e: InterruptedException) {
-                    e.printStackTrace()
+        startExoPlayer(mediaItem)
+    }
+
+    fun startExoPlayer(media: MediaItem) {
+        val player = ExoPlayer.Builder(context).build()
+
+        player.setMediaItem(media)
+        player.prepare()
+        player.play()
+        player.addListener(object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    player.release()
                 }
             }
-
-            audioBuffer?.let { buffer ->
-                audioTrack?.write(buffer, 0, buffer.size)
-            }
-
-            audioTrack?.stop()
-            audioTrack?.release()
-        }.start()
+        })
     }
 }

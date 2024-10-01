@@ -8,9 +8,11 @@ import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSComponent;
 
 import java.io.ByteArrayInputStream;
+import java.util.zip.CRC32;
 
 import meteor.events.ClientInstance;
 import meteor.events.DrawFinished;
+import meteor.events.PlayJingle;
 import meteor.events.PlaySong;
 import meteor.events.PlaySound;
 import meteor.events.SkillUpdate;
@@ -172,20 +174,18 @@ abstract class Client implements RSClient {
     }
 
     @Inject
-    public ByteArrayInputStream lastSound;
+    public byte[] lastSound;
 
     @Inject
     @MethodHook(value = "saveWave", end = true)
     void saveWave$tail(byte[] data, int pos) {
-        ByteArrayInputStream soundStream = new ByteArrayInputStream(data, 0, pos);
-        lastSound = soundStream;
-        getCallbacks().post(new PlaySound(lastSound));
+        lastSound = data;
+        getCallbacks().post(new PlaySound(data));
     }
 
     @Inject
     @MethodHook(value = "replayWave")
     void replayWave$head() {
-        lastSound.reset();
         getCallbacks().post(new PlaySound(lastSound));
     }
 
@@ -211,5 +211,24 @@ abstract class Client implements RSClient {
     @Override
     public String getMidi() {
         return midi;
+    }
+
+    @Inject
+    @MethodHook(value = "alertJingle")
+    void alertJingle$tail(byte[] data) {
+        long crc = calculateCRC(data);
+        PlayJingle event = new PlayJingle(crc);
+        client.getCallbacks().post(event);
+        if (!event.getConsumed())
+            System.out.println("Jingle CRC: " + crc);
+    }
+
+    @Inject
+    public static long calculateCRC(byte[] data) {
+        CRC32 crc = new CRC32();
+        crc.update(data);
+        long crcValue = crc.getValue();
+
+        return crc.getValue();
     }
 }

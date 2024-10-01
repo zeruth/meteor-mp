@@ -19,7 +19,7 @@ You should be able to use the Account plugin to configure Auto User/Pass, and th
   
 You should be able to rotate the camera, long press to open menu, and tap to click.  
   
-Currently the AWT side of things is pretty heavy in-game, this can likely be improved substantially.  
-OSRS can render at 50fps using the same native-awt lib  
+Currently the game renders at 50fps in the Android Emulator and on my personal S24 Ultra.  
+Performance has not been tested on other devices.  
   
 Please create an issue ONLY if your phone does not have one already, and ONLY for rendering issues.  

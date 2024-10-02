@@ -4,8 +4,10 @@
 **This branch connects to 2004scape.org by default**
 ---
 Galaxy S24 Ultra  
-![image](https://github.com/user-attachments/assets/af862eff-61e6-4123-a645-20011111a4b8)
-![image](https://github.com/user-attachments/assets/98623e88-e750-429d-b8c6-14936295ce7f)
+![image](https://github.com/user-attachments/assets/af862eff-61e6-4123-a645-20011111a4b8)  
+
+Video  
+[![Video](https://img.youtube.com/vi/cCQErZ1HsmU/0.jpg)](https://www.youtube.com/watch?v=cCQErZ1HsmU)
 
 # Building  
 

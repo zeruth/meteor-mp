@@ -74,7 +74,9 @@ import java.io.File
 
 class MainActivity : ComponentActivity() {
     companion object {
-       //lateinit var synth: InterAppMidiSynthesizer
+        var muteLoginMusic = false
+
+        //lateinit var synth: InterAppMidiSynthesizer
         var started = false
         var pluginsLoaded = false
         val displayText = mutableStateOf("Hello Android!")
@@ -112,6 +114,10 @@ class MainActivity : ComponentActivity() {
         }
         KEVENT.subscribe<PlaySong> {
             mainHandler.post {
+                if (it.data.song == "scape_main") {
+                    if (muteLoginMusic)
+                        return@post
+                }
                 SongPlayer(it.data.song, applicationContext)
             }
         }

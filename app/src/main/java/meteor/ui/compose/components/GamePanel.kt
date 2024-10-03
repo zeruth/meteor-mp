@@ -243,8 +243,7 @@ object GamePanel {
                             val moveLocation = createScaledPoint(change.position.x, change.position.y)
                             GameShell.mouseMoved(moveLocation.x, moveLocation.y)
                         }
-
-                        
+                    }
                 }) {
                     var viewportMod = Modifier.fillMaxSize()
                     Image(it, "", filterQuality = filter.value, contentScale = ContentScale.FillBounds, modifier = viewportMod.pointerInteropFilter { pointerInputChange ->

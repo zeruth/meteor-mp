@@ -10,4 +10,5 @@ object Main {
     var composeTime = mutableLongStateOf(0L)
     var swingTime = mutableLongStateOf(0L)
     val version = "1.0.2"
+    val interfaceOpen = mutableStateOf(false)
 }

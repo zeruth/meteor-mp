@@ -7,11 +7,11 @@ import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSComponent;
 
-import java.io.ByteArrayInputStream;
 import java.util.zip.CRC32;
 
 import meteor.events.ClientInstance;
 import meteor.events.DrawFinished;
+import meteor.events.InterfaceChanged;
 import meteor.events.PlayJingle;
 import meteor.events.PlaySong;
 import meteor.events.PlaySound;
@@ -230,5 +230,26 @@ abstract class Client implements RSClient {
         long crcValue = crc.getValue();
 
         return crc.getValue();
+    }
+
+    @Inject
+    public int lastViewportInterfaceID = -1;
+
+    @Inject
+    @FieldHook("viewportInterfaceId")
+    public void onViewportInterfaceIDChanged(int idx) {
+        if (lastViewportInterfaceID != getViewportInterfaceID()) {
+            System.out.println("Viewport interface changed: " + getViewportInterfaceID());
+            lastViewportInterfaceID = getViewportInterfaceID();
+            if (client != null)
+                if (client.getCallbacks() != null)
+                    client.getCallbacks().post(new InterfaceChanged(lastViewportInterfaceID));
+        }
+    }
+
+    @Inject
+    @Override
+    public boolean isBankVisible() {
+        return lastViewportInterfaceID == 5292;
     }
 }

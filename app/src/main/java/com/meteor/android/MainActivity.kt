@@ -51,6 +51,7 @@ import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -79,10 +80,12 @@ import jagex2.graphics.Draw2D
 import kotlinx.coroutines.GlobalScope
 import meteor.Logger
 import meteor.Main
+import meteor.Main.client
 import meteor.Main.forceRecomposition
 import meteor.audio.SoundPlayer
 import meteor.events.ClientInstance
 import meteor.events.DrawFinished
+import meteor.events.InterfaceChanged
 import meteor.events.PlayJingle
 import meteor.events.PlaySong
 import meteor.events.PlaySound
@@ -196,6 +199,9 @@ class MainActivity : ComponentActivity() {
             showTextInput.value = true
             showSoftKeyboard()
         }
+        KEVENT.subscribe<InterfaceChanged> {
+            Main.interfaceOpen.value = it.data.interfaceID != -1
+        }
         Thread {
             while (!receivedDraw) {
                 updateGameImage(false)
@@ -218,7 +224,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         hideSystemUI()
-        findViewById<View>(android.R.id.content).setOnHoverListener(hoverListener())
+        //findViewById<View>(android.R.id.content).setOnHoverListener(hoverListener())
         if (!started)  {
             Client.cacheDir = File(dataDir, "cache/")
             Client.main(emptyArray())
@@ -227,6 +233,7 @@ class MainActivity : ComponentActivity() {
         Logger.logFile = File(dataDir, "log.txt")
         enableEdgeToEdge()
         setContent {
+            //LocalView.current.setOnHoverListener(hoverListener())
             keyboardController = LocalSoftwareKeyboardController.current!!
             focusRequester = remember { FocusRequester() }
             Box(modifier = Modifier.fillMaxSize().focusRequester(focusRequester)) {

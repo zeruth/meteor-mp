@@ -3,7 +3,9 @@ package com.meteor.android
 import JinglePlayer
 import SongPlayer
 import android.content.Context
+import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
+import android.graphics.Color.BLACK
 import android.media.midi.MidiDevice
 import android.media.midi.MidiDeviceInfo
 import android.media.midi.MidiManager
@@ -149,6 +151,7 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         hideSystemUI()
         if (!started)  {
             Client.cacheDir = File(dataDir, "cache/")

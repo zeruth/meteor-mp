@@ -1,12 +1,22 @@
 package meteor.ui.compose.overlay
 
+import android.view.View
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.draw.scale
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.ClipOp
@@ -14,11 +24,22 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.graphics.drawscope.DrawScope
 import androidx.compose.ui.graphics.drawscope.clipPath
+import androidx.compose.ui.input.key.onKeyEvent
+import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.text.rememberTextMeasurer
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
+import androidx.core.view.ViewCompat
+import androidx.core.view.WindowInsetsCompat
+import com.meteor.android.MainActivity
+import com.meteor.android.MainActivity.Companion.currentText
+import com.meteor.android.MainActivity.Companion.focusRequester
+import com.meteor.android.MainActivity.Companion.keyboardController
+import com.meteor.android.MainActivity.Companion.showTextInput
 import ext.compose.DrawScopeExt.dpToPx
+import jagex2.client.Client
+import jagex2.client.GameShell
 import meteor.Main
 import meteor.Main.forceRecomposition
 import meteor.ui.compose.components.GamePanel
@@ -44,45 +65,96 @@ object ViewportOverlayRoot {
     val canvasRenderTime = mutableStateOf(-1L)
     val viewportOverlays = ArrayList<ViewportOverlay>()
     var blockedViewportArea: Rect? = null
+    var lastTextLength = 0
 
     @Composable
     fun render() {
-        if (Main.client.areaViewport == null)
-            return
-        forceRecomposition.value
-        updateScale()
-
-        var xScale = xScale;
-        var yScale = yScale;
-        if (Main.client.aspectMode == AspectMode.FIT) {
-            if (yScale!! > xScale!!)
-                xScale = yScale
-            else
-                yScale = xScale
-        }
-
-        val offsetX = (VIEWPORT_OFFSETS.x * sX).dp
-        val offsetY = (VIEWPORT_OFFSETS.y * sY).dp
-
-        width.value = (Main.client.areaViewport.image.getWidth(null) * sX).dp
-        height.value = (Main.client.areaViewport.image.getHeight(null) * sY).dp
-
-        if (width.value == 0.0.dp || height.value == 0.0.dp) {
-            return
-        }
-
         var mod = Modifier
-            .absoluteOffset(x = offsetX, y = offsetY)
-            .size(DpSize(width.value, height.value))
+            .absoluteOffset(x = 0.dp, y = 0.dp)
+            .size(DpSize(1.dp, 1.dp))
             .clipToBounds()
             .background(Color.Transparent)
-        if (/*Main.client.isLoggedIn() && */debugOverlays.value)
-            mod = mod.background(Color.Red.copy(alpha = .2f))
+
+        if (Main.client.areaViewport != null) {
+            forceRecomposition.value
+            updateScale()
+
+            var xScale = xScale;
+            var yScale = yScale;
+            if (Main.client.aspectMode == AspectMode.FIT) {
+                if (yScale!! > xScale!!)
+                    xScale = yScale
+                else
+                    yScale = xScale
+            }
+
+            val offsetX = (VIEWPORT_OFFSETS.x * sX).dp
+            val offsetY = (VIEWPORT_OFFSETS.y * sY).dp
+
+            width.value = (Main.client.areaViewport.image.getWidth(null) * sX).dp
+            height.value = (Main.client.areaViewport.image.getHeight(null) * sY).dp
+
+            if (width.value == 0.0.dp || height.value == 0.0.dp) {
+                return
+            }
+
+            mod = Modifier
+                .absoluteOffset(x = offsetX, y = offsetY)
+                .size(DpSize(width.value, height.value))
+                .clipToBounds()
+                .background(Color.Transparent)
+            if (/*Main.client.isLoggedIn() && */debugOverlays.value)
+                mod = mod.background(Color.Red.copy(alpha = .2f))
+        }
+
         Box(mod) {
             forceRecomposition.value
             DrawPolygons(mod)
             for (overlay in viewportOverlays) {
                 overlay.render().invoke(this)
+            }
+            var mod = Modifier
+                .onFocusChanged {
+                    if (it.isFocused) {
+                        keyboardController?.show() // Show keyboard when focused
+                    }
+                }.onKeyEvent { keyEvent ->
+                    MainActivity.handleKeyEvent(keyEvent.nativeKeyEvent)
+                }.fillMaxWidth()
+            if (Client.client != null)
+                if (!Main.client.isLoggedIn)
+                    mod = mod.offset(x = 0.dp, y = (-1000).dp)
+            if (showTextInput.value) {
+                val view = LocalView.current
+                val insets = ViewCompat.getRootWindowInsets(view)
+                if (insets?.isVisible(WindowInsetsCompat.Type.ime()) == false) {
+                    focusRequester.requestFocus()
+                    keyboardController.show()
+                }
+
+                TextField(
+                    value = currentText.value, // manage state here
+                    onValueChange = {
+                        currentText.value = it
+                        if (it.isNotEmpty()) {
+                            if (it.length < lastTextLength) {
+                                GameShell.keyPressed(8)
+                                GameShell.keyReleased(8)
+                            } else {
+                                val lastChar = it.last()
+                                println(it.last() + ":" + lastChar.code)
+                                GameShell.keyPressed(lastChar.code)
+                                GameShell.keyReleased(lastChar.code)
+                            }
+                        }
+                        lastTextLength = it.length
+                    },
+                    keyboardOptions = KeyboardOptions(
+                        autoCorrect = false, // Disable autocorrect
+                    ),
+                    modifier = mod,
+                    placeholder = { Text("Press enter to close.") }
+                )
             }
         }
     }

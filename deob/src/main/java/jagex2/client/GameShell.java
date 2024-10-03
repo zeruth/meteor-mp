@@ -80,16 +80,16 @@ public class GameShell implements Runnable {
 	protected static int mouseClickY;
 
 	@OriginalMember(owner = "client!a", name = "z", descriptor = "[I")
-	protected final int[] actionKey = new int[128];
+	protected static int[] actionKey = new int[128];
 
 	@OriginalMember(owner = "client!a", name = "A", descriptor = "[I")
-	private final int[] keyQueue = new int[128];
+	private static int[] keyQueue = new int[128];
 
 	@OriginalMember(owner = "client!a", name = "B", descriptor = "I")
 	private int keyQueueReadPos;
 
 	@OriginalMember(owner = "client!a", name = "C", descriptor = "I")
-	private int keyQueueWritePos;
+	private static int keyQueueWritePos;
 
 	private boolean hasFocus = true;
 
@@ -352,16 +352,15 @@ public class GameShell implements Runnable {
 			InputTracking.mouseMoved(x, y);
 		}
 	}
-/*
 
 
 
 	@OriginalMember(owner = "client!a", name = "keyPressed", descriptor = "(Ljava/awt/event/KeyEvent;)V")
-	public final void keyPressed(@OriginalArg(0) KeyEvent e) {
-		this.idleCycles = 0;
+	public static void keyPressed(@OriginalArg(0) int c) {
+		idleCycles = 0;
 
-		@Pc(7) int code = e.getKeyCode();
-		@Pc(10) int ch = e.getKeyChar();
+		@Pc(7) int code = c;
+		@Pc(10) int ch = c;
 
 		if (ch < 30) {
 			ch = 0;
@@ -400,8 +399,8 @@ public class GameShell implements Runnable {
 			// ENTER
 			ch = 10;
 		} else if (code >= 112 && code <= 123) {
-			ch = code + 1008 - 112;
-		} else if (code == 36) {
+			//ch = code + 1008 - 112;
+		} /*else if (code == 36) {
 			ch = 1000;
 		} else if (code == 35) {
 			ch = 1001;
@@ -409,15 +408,15 @@ public class GameShell implements Runnable {
 			ch = 1002;
 		} else if (code == 34) {
 			ch = 1003;
-		}
+		}*/
 
 		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 1;
+			actionKey[ch] = 1;
 		}
 
 		if (ch > 4) {
-			this.keyQueue[this.keyQueueWritePos] = ch;
-			this.keyQueueWritePos = this.keyQueueWritePos + 1 & 0x7F;
+			keyQueue[keyQueueWritePos] = ch;
+			keyQueueWritePos = keyQueueWritePos + 1 & 0x7F;
 		}
 
 		if (InputTracking.enabled) {
@@ -426,11 +425,11 @@ public class GameShell implements Runnable {
 	}
 
 	@OriginalMember(owner = "client!a", name = "keyReleased", descriptor = "(Ljava/awt/event/KeyEvent;)V")
-	public final void keyReleased(@OriginalArg(0) KeyEvent e) {
-		this.idleCycles = 0;
+	public static void keyReleased(@OriginalArg(0) int c) {
+		idleCycles = 0;
 
-		@Pc(5) int code = e.getKeyCode();
-		@Pc(8) int ch = e.getKeyChar();
+		@Pc(5) int code = c;
+		@Pc(8) int ch = c;
 
 		if (ch < 30) {
 			ch = 0;
@@ -469,8 +468,8 @@ public class GameShell implements Runnable {
 			// ENTER
 			ch = 10;
 		} else if (code >= 112 && code <= 123) {
-			ch = code + 1008 - 112;
-		} else if (code == 36) {
+			//ch = code + 1008 - 112;
+		} /*else if (code == 36) {
 			ch = 1000;
 		} else if (code == 35) {
 			ch = 1001;
@@ -478,10 +477,10 @@ public class GameShell implements Runnable {
 			ch = 1002;
 		} else if (code == 34) {
 			ch = 1003;
-		}
+		}*/
 
 		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 0;
+			actionKey[ch] = 0;
 		}
 
 		if (InputTracking.enabled) {
@@ -490,11 +489,11 @@ public class GameShell implements Runnable {
 	}
 
 	@OriginalMember(owner = "client!a", name = "keyTyped", descriptor = "(Ljava/awt/event/KeyEvent;)V")
-	public final void keyTyped(@OriginalArg(0) KeyEvent e) {
+	public static void keyTyped(@OriginalArg(0) int c) {
 	}
 
 	@OriginalMember(owner = "client!a", name = "focusGained", descriptor = "(Ljava/awt/event/FocusEvent;)V")
-	public final void focusGained(@OriginalArg(0) FocusEvent e) {
+	public final void focusGained(@OriginalArg(0) int c) {
 		this.hasFocus = true; // mapview applet
 		this.refresh = true;
 		this.refresh();
@@ -505,13 +504,12 @@ public class GameShell implements Runnable {
 	}
 
 	@OriginalMember(owner = "client!a", name = "focusLost", descriptor = "(Ljava/awt/event/FocusEvent;)V")
-	public final void focusLost(@OriginalArg(0) FocusEvent e) {
+	public final void focusLost(@OriginalArg(0) int c) {
 		this.hasFocus = false; // mapview applet
 		if (InputTracking.enabled) {
 			InputTracking.focusLost();
 		}
 	}
-*/
 
 	@OriginalMember(owner = "client!a", name = "a", descriptor = "(Z)I")
 	protected final int pollKey() {

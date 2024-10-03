@@ -16,12 +16,13 @@ import meteor.ui.compose.Colors.secondary
 import meteor.ui.compose.Colors.surfaceDark
 import meteor.ui.compose.components.Window.panelOpen
 import meteor.ui.compose.components.Window.sidebarWidth
+import meteor.ui.compose.components.buttons.KeyboardButton
 import meteor.ui.compose.components.info.InfoButton
 import meteor.ui.compose.components.panel.PanelComposables.secondaryContent
 import meteor.ui.compose.components.plugins.PluginsButton
 
 object SidebarComposables {
-    val sidebarButtons = arrayListOf(PluginsButton(), InfoButton())
+    val sidebarButtons = arrayListOf(PluginsButton(), KeyboardButton(), InfoButton())
     val padding = mutableStateOf(5.dp)
     val buttonSize = mutableStateOf(sidebarWidth.value - padding.value)
     var lastButtonClicked = mutableStateOf<SidebarButton?>(null)

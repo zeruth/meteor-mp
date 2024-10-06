@@ -136,16 +136,14 @@ object ViewportOverlayRoot {
                     value = currentText.value, // manage state here
                     onValueChange = {
                         currentText.value = it
-                        if (it.isNotEmpty()) {
-                            if (it.length < lastTextLength) {
-                                GameShell.keyPressed(8)
-                                GameShell.keyReleased(8)
-                            } else {
-                                val lastChar = it.last()
-                                println(it.last() + ":" + lastChar.code)
-                                GameShell.keyPressed(lastChar.code)
-                                GameShell.keyReleased(lastChar.code)
-                            }
+                        if (it.length < lastTextLength) {
+                            GameShell.keyPressed(8)
+                            GameShell.keyReleased(8)
+                        } else {
+                            val lastChar = it.last()
+                            println(it.last() + ":" + lastChar.code)
+                            GameShell.keyPressed(lastChar.code)
+                            GameShell.keyReleased(lastChar.code)
                         }
                         lastTextLength = it.length
                     },

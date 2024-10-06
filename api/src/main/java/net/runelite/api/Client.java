@@ -1,5 +1,4 @@
 package net.runelite.api;
-import net.runelite.mapping.Import;
 
 import meteor.ui.config.AspectMode;
 import meteor.ui.config.CPUFilter;
@@ -34,7 +33,7 @@ public interface Client extends GameShell{
     int getMenuY();
     int getMenuWidth();
     int getMenuHeight();
-    boolean getMenuVisible();
+    boolean isMenuVisible();
 
 
     float getStretchedWidth();

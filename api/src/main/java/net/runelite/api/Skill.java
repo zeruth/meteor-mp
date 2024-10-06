@@ -12,16 +12,17 @@ public enum Skill {
     MAGIC(6, R.drawable.magic),
     COOKING(7, R.drawable.cooking),
     WOODCUTTING(8, R.drawable.woodcutting),
-
+    FLETCHING(9, R.drawable.fletching),
     FISHING(10, R.drawable.fishing),
     FIREMAKING(11, R.drawable.firemaking),
-
+    CRAFTING(12, R.drawable.crafting),
     SMITHING(13, R.drawable.smithing),
     MINING(14, R.drawable.mining),
-
-
+    HERBLAW(15, R.drawable.herblore),
+    AGILITY(16, R.drawable.agility),
     THIEVING(17, R.drawable.thieving),
-    AGILITY(999, R.drawable.agility);
+    RUNECRAFT(20, R.drawable.runecrafting);
+
 
 
     public int id;

@@ -2,6 +2,7 @@ package meteor.ui.compose.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -31,12 +32,12 @@ import jagex2.client.Client
 import jagex2.client.GameShell
 import meteor.Constants
 import meteor.Main
-import meteor.Main.forceRecomposition
 import meteor.events.DrawFinished
 import meteor.ui.compose.overlay.GameOverlayRoot
 import meteor.ui.config.AspectMode
 import org.rationalityfrontline.kevent.KEVENT
 import java.awt.Point
+import java.lang.Math.abs
 
 /**
  * This panel will contain the game view & compose overlays eventually
@@ -117,17 +118,73 @@ object GamePanel {
                         updateScale(containerSize.value, density)
                     }
                     .pointerInput(Unit) {
-                        detectDragGestures(onDragStart = {
-                            val downLocation = createScaledPoint(it.x, it.y)
-                            GameShell.mouseMoved(downLocation.x, downLocation.y)
-                            GameShell.mousePressed(downLocation.x, downLocation.y, 1)
-                        },
+                        var downLocation: Point? = null
+                        var moveLocation: Point? = null
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                                touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
+                                if (dragging.value)
+                                    return@detectDragGesturesAfterLongPress
+                                if (aspectMode.value == AspectMode.FIT) {
+                                    if (it.x > halfXPadding.floatValue)
+                                        if (it.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
+                                            var modX =
+                                                if (halfXPadding.floatValue > 0) (it.x - halfXPadding.floatValue) else it.x
+                                            modX /= fitScaleFactor.floatValue
+                                            if (it.y > halfYPadding.floatValue)
+                                                if (it.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
+                                                    var modY =
+                                                        if (halfYPadding.floatValue > 0) (it.y - halfYPadding.floatValue) else it.y
+                                                    modY /= fitScaleFactor.floatValue
+                                                    pendingMove =
+                                                        android.graphics.Point(modX.toInt(), modY.toInt())
+                                                    pendingHold =
+                                                        android.graphics.Point(modX.toInt(), modY.toInt())
+                                                }
+                                        }
+                                } else {
+                                    val modX = it.x / touchScaleX
+                                    val modY = it.y / touchScaleY
+                                    downLocation = Point(modX.toInt(), modY.toInt())
+                                    pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
+                                    pendingHold = android.graphics.Point(modX.toInt(), modY.toInt())
+                                }
+                            },
+                            onDrag = { change, _ ->
+                                moveLocation = createScaledPoint(change.position.x, change.position.y)
+                                println("x:${moveLocation!!.x}-y:${moveLocation!!.y}")
+                                GameShell.mouseMoved(moveLocation!!.x, moveLocation!!.y)
+                            },
+                            onDragEnd = {
+                                val absY = kotlin.math.abs(moveLocation!!.y - downLocation!!.y)
+                                if (Main.client.isMenuVisible && absY > 15) {
+                                    GameShell.mousePressed(moveLocation!!.x, moveLocation!!.y, 1)
+                                    GameShell.mouseReleased(1)
+                                }
+                            },
+                            onDragCancel = {
+                                val absY = kotlin.math.abs(moveLocation!!.y - downLocation!!.y)
+                                if (Main.client.isMenuVisible && absY > 15) {
+                                    GameShell.mousePressed(moveLocation!!.x, moveLocation!!.y, 1)
+                                    GameShell.mouseReleased(1)
+                                }
+                            }
+                        )
+                    }
+                    .pointerInput(Unit) {
+                        detectDragGestures(
+                            onDragStart = {
+                                val downLocation = createScaledPoint(it.x, it.y)
+                                GameShell.mouseMoved(downLocation.x, downLocation.y)
+                                GameShell.mousePressed(downLocation.x, downLocation.y, 1)
+                            },
                             onDragEnd = {
                                 GameShell.mouseReleased(1)
                             },
                             onDragCancel = {
                                 GameShell.mouseReleased(1)
-                            }) { change, _ ->
+                            }) {change, _ ->
                             val moveLocation = createScaledPoint(change.position.x, change.position.y)
                             GameShell.mouseMoved(moveLocation.x, moveLocation.y)
                         }
@@ -164,35 +221,6 @@ object GamePanel {
                                 pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
                                 pendingTap = android.graphics.Point(modX.toInt(), modY.toInt())
                             }
-                        }, onLongPress = {
-                                offset ->
-                            touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
-                            touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
-                            if (dragging.value)
-                                return@detectTapGestures
-                            if (aspectMode.value == AspectMode.FIT) {
-                                if (offset.x > halfXPadding.floatValue)
-                                    if (offset.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
-                                        var modX =
-                                            if (halfXPadding.floatValue > 0) (offset.x - halfXPadding.floatValue) else offset.x
-                                        modX /= fitScaleFactor.floatValue
-                                        if (offset.y > halfYPadding.floatValue)
-                                            if (offset.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
-                                                var modY =
-                                                    if (halfYPadding.floatValue > 0) (offset.y - halfYPadding.floatValue) else offset.y
-                                                modY /= fitScaleFactor.floatValue
-                                                pendingMove =
-                                                    android.graphics.Point(modX.toInt(), modY.toInt())
-                                                pendingHold =
-                                                    android.graphics.Point(modX.toInt(), modY.toInt())
-                                            }
-                                    }
-                            } else {
-                                val modX = offset.x / touchScaleX
-                                val modY = offset.y / touchScaleY
-                                pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
-                                pendingHold = android.graphics.Point(modX.toInt(), modY.toInt())
-                            }
                         })
                     })
             }
@@ -200,17 +228,72 @@ object GamePanel {
 
         if (Main.client.isLoggedIn && Main.client.areaViewport != null)
             viewportImage.value?.let {
-                Box(modifier = Modifier.offset(x = viewportXOffset.dp, y = viewportYOffset.dp).size((Main.client.areaViewport.image.getWidth(null) * sX).dp, (Main.client.areaViewport.image.getHeight(null) * sY).dp).fillMaxSize().pointerInput(Unit) {
-                    detectDragGestures(onDragStart = {
+                Box(modifier = Modifier.offset(x = viewportXOffset.dp, y = viewportYOffset.dp).size((Main.client.areaViewport.image.getWidth(null) * sX).dp, (Main.client.areaViewport.image.getHeight(null) * sY).dp).fillMaxSize()
+                    .pointerInput(Unit) {
+                        detectDragGestures(onDragStart = {
                             dragging.value = true
-                    },
-                        onDragEnd = {
-                            dragging.value = false
                         },
-                        onDragCancel = {
-                            dragging.value = false
-                        }) { _, _ -> }
-                }.pointerInput(Unit) {
+                            onDragEnd = {
+                                dragging.value = false
+                            },
+                            onDragCancel = {
+                                dragging.value = false
+                            }) { _, _ -> }
+                    }.pointerInput(Unit) {
+                        var downLocation: Point? = null
+                        var moveLocation: Point? = null
+                        detectDragGesturesAfterLongPress(
+                            onDragStart = {
+                                touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
+                                touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
+                                if (dragging.value)
+                                    return@detectDragGesturesAfterLongPress
+                                if (aspectMode.value == AspectMode.FIT) {
+                                    if (it.x > halfXPadding.floatValue)
+                                        if (it.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
+                                            var modX =
+                                                if (halfXPadding.floatValue > 0) (it.x - halfXPadding.floatValue) else it.x
+                                            modX /= fitScaleFactor.floatValue
+                                            if (it.y > halfYPadding.floatValue)
+                                                if (it.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
+                                                    var modY =
+                                                        if (halfYPadding.floatValue > 0) (it.y - halfYPadding.floatValue) else it.y
+                                                    modY /= fitScaleFactor.floatValue
+                                                    pendingMove =
+                                                        android.graphics.Point(modX.toInt(), modY.toInt())
+                                                    pendingHold =
+                                                        android.graphics.Point(modX.toInt(), modY.toInt())
+                                                }
+                                        }
+                                } else {
+                                    val modX = it.x / touchScaleX
+                                    val modY = it.y / touchScaleY
+                                    pendingMove = android.graphics.Point(modX.toInt() + 8, modY.toInt() + 11)
+                                    pendingHold = android.graphics.Point(modX.toInt() + 8, modY.toInt() + 11)
+                                    downLocation = Point(modX.toInt() + 8, modY.toInt() + 11)
+                                }
+                            },
+                            onDrag = { change, _ ->1
+                                moveLocation = createScaledPoint(change.position.x, change.position.y)
+                                println("x:${moveLocation!!.x}-y:${moveLocation!!.y}")
+                                GameShell.mouseMoved(moveLocation!!.x + 8, moveLocation!!.y + 11)
+                            },
+                            onDragEnd = {
+                                val absY = kotlin.math.abs(moveLocation!!.y + 8 - downLocation!!.y + 11)
+                                if (Main.client.isMenuVisible && absY > 15) {
+                                    GameShell.mousePressed(moveLocation!!.x + 8, moveLocation!!.y + 11, 1)
+                                    GameShell.mouseReleased(1)
+                                }
+                            },
+                            onDragCancel = {
+                                val absY = kotlin.math.abs(moveLocation!!.y + 8 - downLocation!!.y + 8)
+                                if (Main.client.isMenuVisible && absY > 15) {
+                                    GameShell.mousePressed(moveLocation!!.x + 8, moveLocation!!.y + 11, 1)
+                                    GameShell.mouseReleased(1)
+                                }
+                            }
+                        )
+                    }.pointerInput(Unit) {
                     detectDragGestures(onDragStart = {
                         if (Main.interfaceOpen.value) {
                             val downLocation = createScaledPoint(it.x, it.y)
@@ -284,35 +367,6 @@ object GamePanel {
                                 val modY = offset.y / touchScaleY + 11
                                 pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
                                 pendingTap = android.graphics.Point(modX.toInt(), modY.toInt())
-                            }
-                        }, onLongPress = {
-                                offset ->
-                            touchScaleX = containerSize.value.width.toFloat() / Constants.RS_DIMENSIONS.width
-                            touchScaleY = containerSize.value.height.toFloat() / Constants.RS_DIMENSIONS.height
-                            if (dragging.value)
-                                return@detectTapGestures
-                            if (aspectMode.value == AspectMode.FIT) {
-                                if (offset.x > halfXPadding.floatValue)
-                                    if (offset.x < (halfXPadding.floatValue + stretchedWidth.floatValue)) {
-                                        var modX =
-                                            if (halfXPadding.floatValue > 0) (offset.x - halfXPadding.floatValue) else offset.x
-                                        modX /= fitScaleFactor.floatValue
-                                        if (offset.y > halfYPadding.floatValue)
-                                            if (offset.y < (halfYPadding.floatValue + stretchedHeight.floatValue)) {
-                                                var modY =
-                                                    if (halfYPadding.floatValue > 0) (offset.y - halfYPadding.floatValue) else offset.y
-                                                modY /= fitScaleFactor.floatValue
-                                                pendingMove =
-                                                    android.graphics.Point(modX.toInt(), modY.toInt())
-                                                pendingHold =
-                                                    android.graphics.Point(modX.toInt(), modY.toInt())
-                                            }
-                                    }
-                            } else {
-                                val modX = offset.x / touchScaleX
-                                val modY = offset.y / touchScaleY
-                                pendingMove = android.graphics.Point(modX.toInt(), modY.toInt())
-                                pendingHold = android.graphics.Point(modX.toInt(), modY.toInt())
                             }
                         })
                     })

@@ -18,7 +18,7 @@ public interface RSClient extends Client, RSGameShell {
     int getViewportInterfaceID();
 
     @Import("menuVisible")
-    boolean getMenuVisible();
+    boolean isMenuVisible();
 
     @Import("members")
     void setMembers(boolean isMembers);

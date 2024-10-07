@@ -1,6 +1,6 @@
 ### Meteor - Android  
 ---
-**ALPHA - Device Testing**  
+**BETA**  
 **This branch connects to 2004scape.org by default**
 ---
 Galaxy S24 Ultra  
@@ -8,6 +8,10 @@ Galaxy S24 Ultra
 
 Video  
 [![Video](https://img.youtube.com/vi/cCQErZ1HsmU/0.jpg)](https://www.youtube.com/watch?v=cCQErZ1HsmU)
+
+# Requirements  
+
+Android 11 R device
 
 # Building  
 
@@ -19,7 +23,9 @@ You can now build the 'app' module
 You should be able to use the Account plugin to configure Auto User/Pass, and that will let you login when hitting existing user.  
 (properties are stored in sandboxed app data, no other apps can access this data unless your device is rooted.)  
   
-You should be able to rotate the camera, long press to open menu, and tap to click.  
+You should be able to rotate the camera, long press to open menu, tap to click, organize inventory / bank, and use sliders
+
+You should be able to open the keyboard at any time via the keyboard button on the toolbar and close it by pressing enter  
   
 Currently the game renders at 50fps in the Android Emulator and on my personal S24 Ultra.  
 Performance has not been tested on other devices.  

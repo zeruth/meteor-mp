@@ -66,4 +66,5 @@ public interface Client extends GameShell{
     PixMap getAreaViewport();
     String getMidi();
     boolean isBankVisible();
+    int getMenuArea();
 }

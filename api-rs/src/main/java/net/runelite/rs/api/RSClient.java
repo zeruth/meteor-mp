@@ -82,4 +82,7 @@ public interface RSClient extends Client, RSGameShell {
 
     @Import("areaViewport")
     RSPixMap getAreaViewport();
+
+    @Import("menuArea")
+    int getMenuArea();
 }

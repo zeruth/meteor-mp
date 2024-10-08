@@ -39,23 +39,21 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
     var skillUpdates = Collections.synchronizedMap(HashMap<Skill, Long>())
     var textColumnWidth = 28.dp
 
-/*    var skillIcons = HashMap<Skill, Image>()
-
-    init {
-        for (skill in Skill.values()) {
-            skillIcons[skill] = ImageUtil.resizeCanvas(ImageUtil.resizeImage(SkillIconManager.getSkillImage(skill, true), IMAGE_SIZE, IMAGE_SIZE), ICON_DIMENSIONS.width, ICON_DIMENSIONS.height)
-            skillXPBars[skill] = getSkilXOBar(skill)
-        }
-    }*/
     override fun render(): @Composable BoxScope.() -> Unit = {
         if (client.isLoggedIn) {
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
 
-            Box(modifier = Modifier.scale(.5f).offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }.clip(RoundedCornerShape(4.dp)).background(meteor.ui.compose.Colors.surface.value).align(Alignment.TopCenter).draggableComponent { change, dragAmount ->
-                offsetX += dragAmount.x
-                offsetY += dragAmount.y
-            }) {
+            Box(modifier = Modifier
+                .scale(.5f)
+                .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+                .clip(RoundedCornerShape(4.dp))
+                .background(meteor.ui.compose.Colors.surface.value)
+                .align(Alignment.TopCenter)
+                .draggableComponent { change, dragAmount ->
+                    offsetX += dragAmount.x
+                    offsetY += dragAmount.y
+                }) {
                 Column {
                     forceRecomposition.value
                     val pendingRemovals = ArrayList<Skill>()
@@ -94,78 +92,142 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
 
-        Box(modifier = Modifier.width(width.value.dp).height(height.value.dp).clip(RoundedCornerShape(4.dp)).background(meteor.ui.compose.Colors.surfaceDark.value)) {
+        Box(modifier = Modifier
+            .width(width.value.dp)
+            .height(height.value.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(meteor.ui.compose.Colors.surfaceDark.value)) {
             Row {
                 Image(painterResource(skill.smallIconResource()), "${skill.name}-icon", modifier = Modifier.size(height.value.dp))
-                Column(modifier = Modifier.size(textColumnWidth)) {
+                Column(modifier = Modifier
+                    .size(textColumnWidth)
+                    .padding(top = 2.dp)) {
                     Text("${client.levels[skill.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().height((height.value.dp / 4) * 3).clip(RoundedCornerShape(4.dp)).align(Alignment.CenterVertically),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((height.value.dp / 4) * 3)
+                        .clip(RoundedCornerShape(4.dp))
+                        .align(Alignment.CenterVertically),
                     trackColor = meteor.ui.compose.Colors.surfaceDarker.value,
-                    progress = getLevelProgress(skill),
+                    progress = {
+                        return@LinearProgressIndicator getLevelProgress(skill)
+                    },
                     color = meteor.ui.compose.Colors.secondary.value
-                )
+                ) {
+
+                }
             }
         }
+    }
+
+    fun getHealthRatio() : Float {
+        return client.boostedLevels[Skill.HITPOINTS.id].toFloat() / client.levels[Skill.HITPOINTS.id].toFloat()
     }
 
     fun renderHitpointsBox(): @Composable BoxScope.() -> Unit = {
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
 
-        Box(modifier = Modifier.width(width.value.dp).height(height.value.dp).clip(RoundedCornerShape(4.dp)).background(meteor.ui.compose.Colors.surfaceDarkColor)) {
+        Box(modifier = Modifier
+            .width(width.value.dp)
+            .height(height.value.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(meteor.ui.compose.Colors.surfaceDarkColor)) {
             Row {
                 Image(painterResource(Skill.HITPOINTS.smallIconResource()), "hitpoints-icon", modifier = Modifier.size(height.value.dp))
-                Column(modifier = Modifier.size(textColumnWidth)) {
+                Column(modifier = Modifier
+                    .size(textColumnWidth)
+                    .padding(top = 2.dp)) {
                     Text("${client.boostedLevels[Skill.HITPOINTS.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().height((height.value.dp / 4) * 3).clip(RoundedCornerShape(4.dp)).align(Alignment.CenterVertically),
+                    progress = {
+                        return@LinearProgressIndicator getHealthRatio()
+                               },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((height.value.dp / 4) * 3)
+                        .clip(RoundedCornerShape(4.dp))
+                        .align(Alignment.CenterVertically),
+                    color = Color.Red,
                     trackColor = meteor.ui.compose.Colors.surfaceDarkerColor,
-                    progress = client.boostedLevels[Skill.HITPOINTS.id].toFloat() / client.levels[Skill.HITPOINTS.id].toFloat(),
-                    color = Color.Red
-                )
+                ) {
+
+                }
             }
         }
+    }
+
+    fun getPrayerRatio() : Float {
+        return client.boostedLevels[Skill.PRAYER.id].toFloat() / client.levels[Skill.PRAYER.id].toFloat()
     }
 
     fun renderPrayerBox(): @Composable BoxScope.() -> Unit = {
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
 
-        Box(modifier = Modifier.width(width.value.dp).height(height.value.dp).clip(RoundedCornerShape(4.dp)).background(meteor.ui.compose.Colors.surfaceDarkColor)) {
+        Box(modifier = Modifier
+            .width(width.value.dp)
+            .height(height.value.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(meteor.ui.compose.Colors.surfaceDarkColor)) {
             Row {
                 Image(painterResource(Skill.PRAYER.smallIconResource()), "prayer-icon", modifier = Modifier.size(height.value.dp))
-                Column(modifier = Modifier.size(textColumnWidth)) {
+                Column(modifier = Modifier
+                    .size(textColumnWidth)
+                    .padding(top = 2.dp)) {
                     Text("${client.boostedLevels[Skill.PRAYER.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().height((height.value.dp / 4) * 3).clip(RoundedCornerShape(4.dp)).align(Alignment.CenterVertically),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((height.value.dp / 4) * 3)
+                        .clip(RoundedCornerShape(4.dp))
+                        .align(Alignment.CenterVertically),
                     trackColor = meteor.ui.compose.Colors.surfaceDarkerColor,
-                    progress = client.boostedLevels[Skill.PRAYER.id].toFloat() / client.levels[Skill.PRAYER.id].toFloat(),
+                    progress = { return@LinearProgressIndicator getPrayerRatio() },
                     color = Color.Cyan
-                )
+                ) {
+
+                }
             }
         }
+    }
+
+    fun getEnergyRatio() : Float {
+        return client.energy / 100f
     }
 
     fun renderEnergyBox(): @Composable BoxScope.() -> Unit = {
         var offsetX by remember { mutableStateOf(0f) }
         var offsetY by remember { mutableStateOf(0f) }
 
-        Box(modifier = Modifier.width(width.value.dp).height(height.value.dp).clip(RoundedCornerShape(4.dp)).background(meteor.ui.compose.Colors.surfaceDarkColor)) {
+        Box(modifier = Modifier
+            .width(width.value.dp)
+            .height(height.value.dp)
+            .clip(RoundedCornerShape(4.dp))
+            .background(meteor.ui.compose.Colors.surfaceDarkColor)) {
             Row {
                 Image(painterResource(Skill.AGILITY.iconResource), "agility-icon", modifier = Modifier.size(height.value.dp))
-                Column(modifier = Modifier.size(textColumnWidth)) {
+                Column(modifier = Modifier
+                    .size(textColumnWidth)
+                    .padding(top = 2.dp)) {
                     Text("${client.energy}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
-                    modifier = Modifier.fillMaxWidth().height((height.value.dp / 4) * 3).clip(RoundedCornerShape(4.dp)).align(Alignment.CenterVertically),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height((height.value.dp / 4) * 3)
+                        .clip(RoundedCornerShape(4.dp))
+                        .align(Alignment.CenterVertically),
                     trackColor = meteor.ui.compose.Colors.surfaceDarkerColor,
-                    progress = client.energy / 100f,
+                    progress = { return@LinearProgressIndicator getEnergyRatio() },
                     color = Color.Yellow
-                )
+                ) {
+
+                }
             }
         }
     }

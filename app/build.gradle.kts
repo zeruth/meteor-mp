@@ -3,9 +3,10 @@ import nulled.InjectTask
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
+    alias(libs.plugins.compose.compiler)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
-    id("nulled.injector") version "1.4"
+    id("nulled.injector") version "1.5"
 }
 
 android {

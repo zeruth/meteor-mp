@@ -1,6 +1,6 @@
 package meteor.plugin.infobars
 
-import meteor.events.Logout
+import meteor.events.LoggedInChanged
 import meteor.events.SkillUpdate
 import meteor.events.client.ConfigChanged
 import meteor.plugin.Plugin
@@ -18,8 +18,9 @@ class InfoBarsPlugin : Plugin("Info Bars", true) {
         InfoBarsOverlay.width.value = if (config.longerBars.get<Boolean>()) 120 else 75
     }
 
-    override fun onLogout(it: Logout) {
-        lastExperience = IntArray(50)
+    override fun onLoggedInChanged(it: LoggedInChanged) {
+        if (!it.loggedIn)
+            lastExperience = IntArray(50)
     }
 
     override fun onSkillUpdate(it: SkillUpdate) {

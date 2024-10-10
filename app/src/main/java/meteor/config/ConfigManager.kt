@@ -12,13 +12,20 @@ object ConfigManager {
     val configFile = File(Client.cacheDir, "properties")
     var properties = Properties()
     val configItems = ArrayList<ConfigItem<*>>()
+    var loaded = false
 
     init {
-        if (configFile.exists()) {
-            val startTime = System.currentTimeMillis()
-            properties = gson.fromJson(configFile.reader(), Properties::class.java)
-            logger.info("Loaded ${properties.properties.size} config properties (${System.currentTimeMillis() - startTime}ms)")
+        try {
+            if (configFile.exists()) {
+                val startTime = System.currentTimeMillis()
+                properties = gson.fromJson(configFile.reader(), Properties::class.java)
+                logger.info("Loaded ${properties.properties.size} config properties (${System.currentTimeMillis() - startTime}ms)")
+            }
+        } catch (e: Exception) {
+            e.printStackTrace()
+            throw RuntimeException("Error loading config")
         }
+        loaded = true
     }
 
     fun <T> getItem(key: String) : ConfigItem<T>? {
@@ -73,7 +80,9 @@ object ConfigManager {
     fun <T> set(key: String, value: T) {
         if (updateValue(key, value)) {
             KEVENT.post(ConfigChanged(getItem<T>(key)))
-            save()
+            //prevent saving properties before being loaded
+            if (loaded)
+                save()
         }
     }
 

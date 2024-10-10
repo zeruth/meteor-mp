@@ -9,6 +9,6 @@ object Main {
     lateinit var client: Client
     var composeTime = mutableLongStateOf(0L)
     var swingTime = mutableLongStateOf(0L)
-    val version = "1.0.3"
+    val version = "1.0.4-b4"
     val interfaceOpen = mutableStateOf(false)
 }

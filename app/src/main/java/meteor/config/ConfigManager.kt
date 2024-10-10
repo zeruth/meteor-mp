@@ -10,9 +10,8 @@ import java.io.File
 object ConfigManager {
     val logger = Logger("ConfigManager")
     val configFile = File(Client.cacheDir, "properties")
-    var properties = Properties()
+    var properties: Properties
     val configItems = ArrayList<ConfigItem<*>>()
-    var loaded = false
 
     init {
         try {
@@ -20,12 +19,12 @@ object ConfigManager {
                 val startTime = System.currentTimeMillis()
                 properties = gson.fromJson(configFile.reader(), Properties::class.java)
                 logger.info("Loaded ${properties.properties.size} config properties (${System.currentTimeMillis() - startTime}ms)")
-            }
+            } else
+                properties = Properties()
         } catch (e: Exception) {
             e.printStackTrace()
-            throw RuntimeException("Error loading config")
+            throw RuntimeException("Error initializing config")
         }
-        loaded = true
     }
 
     fun <T> getItem(key: String) : ConfigItem<T>? {
@@ -80,9 +79,7 @@ object ConfigManager {
     fun <T> set(key: String, value: T) {
         if (updateValue(key, value)) {
             KEVENT.post(ConfigChanged(getItem<T>(key)))
-            //prevent saving properties before being loaded
-            if (loaded)
-                save()
+            save()
         }
     }
 

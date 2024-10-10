@@ -96,8 +96,8 @@ class MainActivity : ComponentActivity() {
         private val mainHandler = Handler(Looper.getMainLooper())
         lateinit var keyboardController: SoftwareKeyboardController
         lateinit var focusRequester: FocusRequester
-        var musicVolume = VolumeSetting.OFF
-        var soundVolume = VolumeSetting.OFF
+        var musicVolume = VolumeSetting.FOUR
+        var soundVolume = VolumeSetting.FOUR
         var songPlayer: SongPlayer? = null
         var jinglePlayer: JinglePlayer? = null
 
@@ -160,9 +160,10 @@ class MainActivity : ComponentActivity() {
         }
         KEVENT.subscribe<PlaySong> {
             mainHandler.post {
+                var prevSong = lastSong
                 lastSong = it.data.song
                 if (it.data.song == "scape_main") {
-                    if (muteLoginMusic || (client.isLoggedIn && client.onlyPlayJingles())) {
+                    if (muteLoginMusic || (client.isLoggedIn && client.onlyPlayJingles()) || prevSong == "scape_main") {
                         return@post
                     }
                 }

@@ -35,8 +35,11 @@ import kotlin.collections.HashMap
  * TODO: Very unoptimized atm.
  */
 class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
+    companion object {
+        var width = mutableStateOf(75)
+    }
     var height = mutableStateOf(10)
-    var width = mutableStateOf(75)
+
     var skillUpdates = Collections.synchronizedMap(HashMap<Skill, Long>())
     var textColumnWidth = 14.dp
 
@@ -45,46 +48,46 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
             if (client.viewportInterfaceID == -1 || (client.viewportInterfaceID != -1 && !plugin.config.hideWhenInterfaceOpen.get<Boolean>()))
-            Box(modifier = Modifier
-                .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
-                .clip(RoundedCornerShape(4.dp))
-                .background(meteor.ui.compose.Colors.surface.value)
-                .align(Alignment.TopEnd)
-                .draggableComponent { change, dragAmount ->
-                    offsetX += dragAmount.x
-                    offsetY += dragAmount.y
-                }) {
-                Column {
-                    forceRecomposition.value
-                    val pendingRemovals = ArrayList<Skill>()
-                    synchronized(skillUpdates) {
-                        for (skill in skillUpdates.keys) {
-                            val lastUpdate = skillUpdates[skill]!!
-                            val duration = System.currentTimeMillis() - lastUpdate
-                            if (duration > (plugin.config.skillTimeout.get<Int>() * (60 * 1000))) {
-                                println("Dropping skill update for " + skill.name)
-                                pendingRemovals.add(skill)
-                            }
-                        }
-                        for (skill in pendingRemovals) {
-                            skillUpdates.remove(skill)
-                        }
-
-                        renderHitpointsBox().invoke(this@Box)
-                        renderPrayerBox().invoke(this@Box)
-                        renderEnergyBox().invoke(this@Box)
-
-                        if (skillUpdates.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(2.5.dp))
-                            Divider(thickness = .5.dp, color = Color.Black, modifier = Modifier.width(width.value.dp))
-                            Spacer(modifier = Modifier.height(2.5.dp))
+                Box(modifier = Modifier
+                    .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
+                    .clip(RoundedCornerShape(4.dp))
+                    .background(meteor.ui.compose.Colors.surface.value)
+                    .align(Alignment.TopEnd)
+                    .draggableComponent { change, dragAmount ->
+                        offsetX += dragAmount.x
+                        offsetY += dragAmount.y
+                    }) {
+                    Column {
+                        forceRecomposition.value
+                        val pendingRemovals = ArrayList<Skill>()
+                        synchronized(skillUpdates) {
                             for (skill in skillUpdates.keys) {
-                                renderSkillBox(skill).invoke(this@Box)
+                                val lastUpdate = skillUpdates[skill]!!
+                                val duration = System.currentTimeMillis() - lastUpdate
+                                if (duration > (plugin.config.skillTimeout.get<Int>() * (60 * 1000))) {
+                                    println("Dropping skill update for " + skill.name)
+                                    pendingRemovals.add(skill)
+                                }
+                            }
+                            for (skill in pendingRemovals) {
+                                skillUpdates.remove(skill)
+                            }
+
+                            renderHitpointsBox().invoke(this@Box)
+                            renderPrayerBox().invoke(this@Box)
+                            renderEnergyBox().invoke(this@Box)
+
+                            if (skillUpdates.isNotEmpty()) {
+                                Spacer(modifier = Modifier.height(2.5.dp))
+                                Divider(thickness = .5.dp, color = Color.Black, modifier = Modifier.width(width.value.dp))
+                                Spacer(modifier = Modifier.height(2.5.dp))
+                                for (skill in skillUpdates.keys) {
+                                    renderSkillBox(skill).invoke(this@Box)
+                                }
                             }
                         }
                     }
                 }
-            }
         }
     }
 
@@ -104,9 +107,13 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                     .padding(top = 1.dp)) {
                     Text("${client.levels[skill.id]}", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
+                val progressBarModifier = if (plugin.config.longerBars.get<Boolean>())
+                    Modifier
+                        .width(width.value.dp - (textColumnWidth * 3) - height.value.dp)
+                else
+                    Modifier.fillMaxWidth()
                 LinearProgressIndicator(
-                    modifier = Modifier
-                        .fillMaxWidth()
+                    modifier = progressBarModifier
                         .height((height.value.dp / 4) * 3)
                         .clip(RoundedCornerShape(4.dp))
                         .align(Alignment.CenterVertically),
@@ -117,6 +124,13 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                     color = meteor.ui.compose.Colors.secondary.value
                 ) {
 
+                }
+                if (plugin.config.longerBars.get<Boolean>()) {
+                    Column(modifier = Modifier
+                        .size(textColumnWidth * 2)
+                        .padding(top = 1.dp)) {
+                        Text("${(String.format("%.2f", getLevelProgress(skill) * 100))}%", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    }
                 }
             }
         }
@@ -145,7 +159,7 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                 LinearProgressIndicator(
                     progress = {
                         return@LinearProgressIndicator getHealthRatio()
-                               },
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height((height.value.dp / 4) * 3)

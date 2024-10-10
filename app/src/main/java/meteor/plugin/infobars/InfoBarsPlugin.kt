@@ -2,6 +2,7 @@ package meteor.plugin.infobars
 
 import meteor.events.Logout
 import meteor.events.SkillUpdate
+import meteor.events.client.ConfigChanged
 import meteor.plugin.Plugin
 import net.runelite.api.Skill
 
@@ -14,7 +15,7 @@ class InfoBarsPlugin : Plugin("Info Bars", true) {
     var lastExperience: IntArray = IntArray(50)
 
     override fun onStart() {
-
+        InfoBarsOverlay.width.value = if (config.longerBars.get<Boolean>()) 120 else 75
     }
 
     override fun onLogout(it: Logout) {
@@ -51,6 +52,13 @@ class InfoBarsPlugin : Plugin("Info Bars", true) {
         if (boostedLevels == null) {
             boostedLevels = it.boostedLevels
             ret = true
+        }
+    }
+
+    override fun onConfigChanged(it: ConfigChanged) {
+        if (it.affects(config)) {
+            if (it.item == config.longerBars)
+                InfoBarsOverlay.width.value = if (config.longerBars.get<Boolean>()) 120 else 75
         }
     }
 }

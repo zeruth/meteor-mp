@@ -6,6 +6,8 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
+import androidx.compose.material3.TextFieldColors
+import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
@@ -36,6 +38,7 @@ import jagex2.client.Client
 import jagex2.client.GameShell
 import meteor.Main
 import meteor.Main.forceRecomposition
+import meteor.ui.compose.Colors
 import meteor.ui.compose.components.GamePanel
 import meteor.ui.compose.components.GamePanel.sX
 import meteor.ui.compose.components.GamePanel.sY
@@ -145,6 +148,14 @@ object ViewportOverlayRoot {
                         autoCorrect = false, // Disable autocorrect
                     ),
                     modifier = mod,
+                    colors = TextFieldDefaults.colors(
+                        unfocusedIndicatorColor = Colors.secondary.value,
+                        focusedIndicatorColor = Colors.secondary.value,
+                        unfocusedContainerColor = Colors.surfaceDarker.value,
+                        focusedContainerColor = Colors.surfaceDarker.value,
+                        cursorColor = Colors.secondary.value,
+                        focusedTextColor = Colors.secondary.value,
+                        unfocusedTextColor = Colors.secondary.value),
                     placeholder = { Text("Press enter to close.") }
                 )
             }

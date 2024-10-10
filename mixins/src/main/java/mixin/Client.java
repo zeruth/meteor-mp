@@ -3,12 +3,15 @@ package mixin;
 import net.runelite.api.Callbacks;
 import net.runelite.api.Component;
 import net.runelite.api.PacketTypeServer;
+import net.runelite.api.VolumeSetting;
 import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;
 import net.runelite.rs.api.RSComponent;
 
 import java.util.zip.CRC32;
 
+import meteor.events.ChangeMusicVolume;
+import meteor.events.ChangeSoundVolume;
 import meteor.events.ClientInstance;
 import meteor.events.DrawFinished;
 import meteor.events.InterfaceChanged;
@@ -273,5 +276,35 @@ abstract class Client implements RSClient {
     @FieldHook("ingame")
     public void onLoggedInChanged$tail(int idx) {
         getCallbacks().post(new LoggedInChanged(isLoggedIn()));
+    }
+
+    @Inject
+    @MethodHook(value = "setWaveVolume", end = true)
+    public void setWaveVolume$tail(int val) {
+        client.getCallbacks().post(new ChangeSoundVolume(VolumeSetting.Companion.of(val)));
+    }
+
+    @Inject
+    @MethodHook(value = "setMidiVolume", end = true)
+    public void setMidiVolume$tail(int val) {
+        client.getCallbacks().post(new ChangeMusicVolume(VolumeSetting.Companion.of(val)));
+    }
+
+    @Inject
+    @FieldHook("midiActive")
+    public void onMidiActiveChanged$tail(int idx) {
+        if (client != null)
+            if (client.getCallbacks() != null)
+                if (!client.getMidiActive())
+                    client.getCallbacks().post(new ChangeMusicVolume(VolumeSetting.OFF));
+    }
+
+    @Inject
+    @FieldHook("waveEnabled")
+    public void onWaveEnabledChanged$tail(int idx) {
+        if (client != null)
+            if (client.getCallbacks() != null)
+                if (!client.getWaveEnabled())
+                    client.getCallbacks().post(new ChangeSoundVolume(VolumeSetting.OFF));
     }
 }

@@ -1,22 +1,19 @@
+package meteor.audio
+
+import JinglePlayer
 import android.content.Context
 import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
+import com.meteor.android.MainActivity
 import com.meteor.android.R
+import meteor.Main
+import net.runelite.api.VolumeSetting
 
 class SongPlayer(songName: String, private val context: Context) {
-    companion object {
-        var player: ExoPlayer? = null
-
-        fun release() {
-            player?.release()
-            player = null
-        }
-        var lastSong: String? = null
-    }
+    var player = ExoPlayer.Builder(context).build()
 
     init {
-        lastSong = songName
         if (!JinglePlayer.playing) {
             val resource = when (songName) {
                 "adventure" -> R.raw.adventure
@@ -209,20 +206,21 @@ class SongPlayer(songName: String, private val context: Context) {
         }
     }
 
-    fun playAudioFromRaw(resourceId: Int) {
-        if (player != null) {
-            player?.release()
-            player = null
-        }
+    fun release() {
+        player.release()
+    }
 
+    fun playAudioFromRaw(resourceId: Int) {
+        if (player.isPlaying)
+            player.release()
         player = ExoPlayer.Builder(context).build()
 
         val uri = Uri.parse("rawresource://" + context.packageName + "/" + resourceId)
         val mediaItem = MediaItem.fromUri(uri)
-
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.play()
+        player.volume = if (Main.client.isLoggedIn) MainActivity.musicVolume.volume else VolumeSetting.FOUR.volume
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
     }
 
 

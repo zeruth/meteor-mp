@@ -3,20 +3,17 @@ import android.net.Uri
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.meteor.android.MainActivity
 import com.meteor.android.R
 import meteor.Main
+import meteor.audio.SongPlayer
+import net.runelite.api.VolumeSetting
 
 class JinglePlayer(crc: Long, private val context: Context) {
+    var player = ExoPlayer.Builder(context).build()
     companion object {
         var playing = false
-        var player: ExoPlayer? = null
-
-        fun release() {
-            player?.release()
-            player = null
-        }
     }
-
     init {
         val resource = when (crc) {
             1628002272L -> R.raw.advance_agility
@@ -74,29 +71,32 @@ class JinglePlayer(crc: Long, private val context: Context) {
         playAudioFromRaw(resource)
     }
 
-    fun playAudioFromRaw(resourceId: Int) {
-        if (player != null) {
-            player?.release()
-            player = null
-        }
+    fun release() {
+        player.release()
+    }
 
+    fun playAudioFromRaw(resourceId: Int) {
+        if (player.isPlaying)
+            player.release()
         player = ExoPlayer.Builder(context).build()
 
         val uri = Uri.parse("rawresource://" + context.packageName + "/" + resourceId)
         val mediaItem = MediaItem.fromUri(uri)
 
-        player?.setMediaItem(mediaItem)
-        player?.prepare()
-        player?.play()
+        player.volume = MainActivity.musicVolume.volume
+        player.setMediaItem(mediaItem)
+        player.prepare()
+        player.play()
         playing = true
-        player?.addListener(object : Player.Listener {
+        player.addListener(object : Player.Listener {
             override fun onPlaybackStateChanged(playbackState: Int) {
                 if (playbackState == Player.STATE_ENDED) {
                     playing = false
-                    player?.release()
+                    player.release()
                     if (!Main.client.onlyPlayJingles())
-                        SongPlayer.lastSong?.let {
-                            SongPlayer(it, context)
+                        MainActivity.lastSong?.let {
+                            MainActivity.songPlayer?.release()
+                            MainActivity.songPlayer = SongPlayer(it, context)
                         }
                 }
             }

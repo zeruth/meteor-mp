@@ -1,15 +1,18 @@
 package meteor.audio
 
 import android.content.Context
-import android.media.AudioTrack
 import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
+import com.meteor.android.MainActivity
+import meteor.events.ChangeSoundVolume
+import org.rationalityfrontline.kevent.KEVENT
 import java.io.File
 import java.io.FileOutputStream
 
 class SoundPlayer(private val audioData: ByteArray, private val delay: Int, private val context: Context) {
     var tmpID = -1
+    val player = ExoPlayer.Builder(context).build()
 
     fun play() {
         tmpID++
@@ -25,8 +28,7 @@ class SoundPlayer(private val audioData: ByteArray, private val delay: Int, priv
     }
 
     fun startExoPlayer(media: MediaItem) {
-        val player = ExoPlayer.Builder(context).build()
-
+        player.volume = MainActivity.soundVolume.volume
         player.setMediaItem(media)
         player.prepare()
         player.play()

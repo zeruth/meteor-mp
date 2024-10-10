@@ -85,4 +85,9 @@ public interface RSClient extends Client, RSGameShell {
 
     @Import("menuArea")
     int getMenuArea();
+
+    @Import("midiActive")
+    boolean getMidiActive();
+    @Import("waveEnabled")
+    boolean getWaveEnabled();
 }

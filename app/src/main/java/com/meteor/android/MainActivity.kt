@@ -1,88 +1,55 @@
 package com.meteor.android
 
 import JinglePlayer
-import SongPlayer
-import android.content.Context
+import meteor.audio.SongPlayer
 import android.content.pm.ActivityInfo
 import android.graphics.Bitmap
-import android.graphics.Color.BLACK
 import android.media.midi.MidiDevice
-import android.media.midi.MidiDeviceInfo
 import android.media.midi.MidiManager
-import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
 import android.os.Looper
 import android.text.InputType
-import android.util.Log
 import android.view.KeyEvent
 import android.view.MotionEvent
 import android.view.View
 import android.view.View.OnHoverListener
-import android.view.inputmethod.InputMethodManager
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.onPreviewKeyEvent
 import androidx.compose.ui.platform.LocalSoftwareKeyboardController
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.platform.SoftwareKeyboardController
 import androidx.compose.ui.tooling.preview.Preview
-import androidx.compose.ui.unit.dp
-import com.google.android.exoplayer2.ExoPlayer
-import com.google.android.exoplayer2.MediaItem
-import com.google.android.exoplayer2.SimpleExoPlayer
-import com.google.android.exoplayer2.drm.DrmSessionManagerProvider
-import com.google.android.exoplayer2.source.MediaSource
-import com.google.android.exoplayer2.upstream.ByteArrayDataSource
-import com.google.android.exoplayer2.upstream.DataSource
-import com.google.android.exoplayer2.upstream.LoadErrorHandlingPolicy
-import com.meteor.android.MainActivity.Companion.currentText
 import com.meteor.android.MainActivity.Companion.displayText
 import com.meteor.android.MainActivity.Companion.fps
 import com.meteor.android.MainActivity.Companion.image
-import com.meteor.android.MainActivity.Companion.keyboardController
 import com.meteor.android.MainActivity.Companion.pluginsLoaded
 import com.meteor.android.MainActivity.Companion.recentDraws
-import com.meteor.android.MainActivity.Companion.showTextInput
-import com.meteor.android.MainActivity.Companion.viewportImage
 import com.meteor.android.ui.theme.MeteorAndroidTheme
 import ext.kotlin.MutableStateExt.toggle
 import jagex2.client.Client
 import jagex2.client.GameShell
-import jagex2.graphics.Draw2D
-import kotlinx.coroutines.GlobalScope
 import meteor.Logger
 import meteor.Main
 import meteor.Main.client
 import meteor.Main.forceRecomposition
 import meteor.audio.SoundPlayer
+import meteor.events.ChangeMusicVolume
+import meteor.events.ChangeSoundVolume
 import meteor.events.ClientInstance
 import meteor.events.DrawFinished
 import meteor.events.InterfaceChanged
@@ -95,15 +62,13 @@ import meteor.events.client.KeyboardButtonEvent
 import meteor.plugin.PluginManager
 import meteor.ui.compose.components.GamePanel.touchScaleX
 import meteor.ui.compose.components.GamePanel.touchScaleY
-import meteor.ui.compose.components.Window
 import meteor.ui.compose.components.Window.ViewBox
 import meteor.ui.compose.overlay.ViewportOverlayRoot.lastTextLength
+import net.runelite.api.VolumeSetting
 import org.rationalityfrontline.kevent.KEVENT
-import org.rationalityfrontline.kevent.SubscriberThreadMode
 import java.awt.Point
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
-import java.io.ByteArrayInputStream
 import java.io.File
 
 
@@ -131,6 +96,10 @@ class MainActivity : ComponentActivity() {
         private val mainHandler = Handler(Looper.getMainLooper())
         lateinit var keyboardController: SoftwareKeyboardController
         lateinit var focusRequester: FocusRequester
+        var musicVolume = VolumeSetting.OFF
+        var soundVolume = VolumeSetting.OFF
+        var songPlayer: SongPlayer? = null
+        var jinglePlayer: JinglePlayer? = null
 
         fun handleKeyEvent(event: KeyEvent): Boolean {
             println("received key event")
@@ -156,6 +125,7 @@ class MainActivity : ComponentActivity() {
             return false // Consume the event
         }
     }
+
     init {
         Client.hooks = Hooks()
         KEVENT.subscribe<DrawFinished> {
@@ -169,11 +139,23 @@ class MainActivity : ComponentActivity() {
             updateGameImage(false)
         }
         KEVENT.subscribe<ClientInstance> {
-            Main.client = (Client.client as Any) as net.runelite.api.Client
+            client = (Client.client as Any) as net.runelite.api.Client
         }
         KEVENT.subscribe<PlaySound> {
             mainHandler.post {
                 SoundPlayer(it.data.sound, 0, applicationContext).play()
+            }
+        }
+        KEVENT.subscribe<ChangeMusicVolume> {
+            musicVolume = it.data.volumeSetting
+            mainHandler.post {
+                songPlayer?.player?.volume = it.data.volumeSetting.volume
+                jinglePlayer?.player?.volume = it.data.volumeSetting.volume
+            }
+        }
+        KEVENT.subscribe<ChangeSoundVolume> {
+            mainHandler.post {
+                soundVolume = it.data.volumeSetting
             }
         }
         KEVENT.subscribe<PlaySong> {
@@ -181,28 +163,30 @@ class MainActivity : ComponentActivity() {
                 lastSong = it.data.song
                 if (it.data.song == "scape_main") {
                     if (muteLoginMusic || (client.isLoggedIn && client.onlyPlayJingles())) {
-                        println("logged:${client.isLoggedIn}")
-                        println("jingles:${client.onlyPlayJingles()}")
                         return@post
                     }
                 }
                 if (client.isLoggedIn) {
-                    println("loggedIn")
-                    if (!client.onlyPlayJingles())
-                        SongPlayer(it.data.song, applicationContext)
-                } else
-                    SongPlayer(it.data.song, applicationContext)
+                    if (!client.onlyPlayJingles()) {
+                        songPlayer?.release()
+                        songPlayer = SongPlayer(it.data.song, applicationContext)
+                    }
+                } else {
+                    songPlayer?.release()
+                    songPlayer = SongPlayer(it.data.song, applicationContext)
+                }
             }
         }
         KEVENT.subscribe<StopMusic> {
             mainHandler.post {
-                SongPlayer.release()
+                songPlayer?.release()
             }
         }
         KEVENT.subscribe<PlayJingle> {
             mainHandler.post {
-                SongPlayer.release()
-                JinglePlayer(it.data.crc, applicationContext)
+                songPlayer?.release()
+                jinglePlayer?.release()
+                jinglePlayer = JinglePlayer(it.data.crc, applicationContext)
             }
         }
         KEVENT.subscribe<KeyboardButtonEvent> {
@@ -246,7 +230,9 @@ class MainActivity : ComponentActivity() {
             //LocalView.current.setOnHoverListener(hoverListener())
             keyboardController = LocalSoftwareKeyboardController.current!!
             focusRequester = remember { FocusRequester() }
-            Box(modifier = Modifier.fillMaxSize().focusRequester(focusRequester)) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .focusRequester(focusRequester)) {
                 ViewBox()
             }
         }

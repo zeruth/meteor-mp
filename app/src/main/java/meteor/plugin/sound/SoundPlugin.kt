@@ -1,5 +1,6 @@
 package meteor.plugin.sound
 
+import JinglePlayer
 import com.meteor.android.MainActivity
 import meteor.Main
 import meteor.Main.client
@@ -11,10 +12,10 @@ import meteor.plugin.Plugin
 import meteor.ui.compose.components.GamePanel
 import meteor.ui.config.AspectMode
 
-class SoundPlugin : Plugin("Sound") {
+class SoundPlugin : Plugin("Sound", cantDisable = true) {
     val config = configuration<SoundConfig>()
     override fun onStart() {
-        client.setOnlyPlayJingles(config.onlyPlayJingles.get())
+        client.setOnlyPlayJingles(config.onlyPlayJingles.get<Boolean>())
         updateSong()
     }
 
@@ -36,9 +37,10 @@ class SoundPlugin : Plugin("Sound") {
     }
 
     override fun onConfigChanged(it: ConfigChanged) {
-        if (it.affects(config))
-            client.setOnlyPlayJingles(config.onlyPlayJingles.get())
-        updateSong()
+        if (it.affects(config)) {
+            client.setOnlyPlayJingles(config.onlyPlayJingles.get<Boolean>())
+            updateSong()
+        }
     }
 
     override fun onLoggedInChanged(it: LoggedInChanged) {

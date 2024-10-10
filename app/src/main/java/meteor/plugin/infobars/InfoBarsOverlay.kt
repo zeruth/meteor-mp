@@ -21,6 +21,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import meteor.Main
 import meteor.Main.client
 import meteor.Main.forceRecomposition
 import meteor.ui.compose.overlay.ViewportOverlay
@@ -43,12 +44,12 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
         if (client.isLoggedIn) {
             var offsetX by remember { mutableStateOf(0f) }
             var offsetY by remember { mutableStateOf(0f) }
-
+            if (client.viewportInterfaceID == -1 || (client.viewportInterfaceID != -1 && !plugin.config.hideWhenInterfaceOpen.get<Boolean>()))
             Box(modifier = Modifier
                 .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
                 .clip(RoundedCornerShape(4.dp))
                 .background(meteor.ui.compose.Colors.surface.value)
-                .align(Alignment.TopCenter)
+                .align(Alignment.TopEnd)
                 .draggableComponent { change, dragAmount ->
                     offsetX += dragAmount.x
                     offsetY += dragAmount.y

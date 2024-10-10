@@ -4,6 +4,7 @@ import com.google.android.exoplayer2.ExoPlayer
 import com.google.android.exoplayer2.MediaItem
 import com.google.android.exoplayer2.Player
 import com.meteor.android.R
+import meteor.Main
 
 class JinglePlayer(crc: Long, private val context: Context) {
     companion object {
@@ -93,9 +94,10 @@ class JinglePlayer(crc: Long, private val context: Context) {
                 if (playbackState == Player.STATE_ENDED) {
                     playing = false
                     player?.release()
-                    SongPlayer.lastSong?.let {
-                        SongPlayer(it, context)
-                    }
+                    if (!Main.client.onlyPlayJingles())
+                        SongPlayer.lastSong?.let {
+                            SongPlayer(it, context)
+                        }
                 }
             }
         })

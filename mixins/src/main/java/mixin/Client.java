@@ -12,6 +12,7 @@ import java.util.zip.CRC32;
 import meteor.events.ClientInstance;
 import meteor.events.DrawFinished;
 import meteor.events.InterfaceChanged;
+import meteor.events.LoggedInChanged;
 import meteor.events.PlayJingle;
 import meteor.events.PlaySong;
 import meteor.events.PlaySound;
@@ -251,5 +252,26 @@ abstract class Client implements RSClient {
     @Override
     public boolean isBankVisible() {
         return lastViewportInterfaceID == 5292;
+    }
+
+    @Inject
+    public boolean onlyPlayJingles = false;
+
+    @Inject
+    @Override
+    public boolean onlyPlayJingles() {
+        return onlyPlayJingles;
+    }
+
+    @Inject
+    @Override
+    public void setOnlyPlayJingles(boolean onlyPlayJingles) {
+        this.onlyPlayJingles = onlyPlayJingles;
+    }
+
+    @Inject
+    @FieldHook("ingame")
+    public void onLoggedInChanged$tail(int idx) {
+        getCallbacks().post(new LoggedInChanged(isLoggedIn()));
     }
 }

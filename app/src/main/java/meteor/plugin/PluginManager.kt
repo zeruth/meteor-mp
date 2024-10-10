@@ -8,6 +8,7 @@ import meteor.plugin.loginscreen.LoginScreenPlugin
 import meteor.plugin.meteor.MeteorPlugin
 import meteor.plugin.server.ServerPlugin
 import meteor.plugin.filtering.FilteringPlugin
+import meteor.plugin.sound.SoundPlugin
 import meteor.plugin.stretchedmode.StretchedModePlugin
 
 object PluginManager {
@@ -22,6 +23,7 @@ object PluginManager {
         plugins.add(LoginScreenPlugin())
         plugins.add(MeteorPlugin())
         plugins.add(ServerPlugin())
+        plugins.add(SoundPlugin())
         plugins.add(StretchedModePlugin())
     }
 

@@ -67,4 +67,7 @@ public interface Client extends GameShell{
     String getMidi();
     boolean isBankVisible();
     int getMenuArea();
+
+    boolean onlyPlayJingles();
+    void setOnlyPlayJingles(boolean onlyPlayJingles);
 }

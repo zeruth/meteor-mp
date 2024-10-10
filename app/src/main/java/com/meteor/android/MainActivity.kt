@@ -125,6 +125,7 @@ class MainActivity : ComponentActivity() {
         var showTextInput = mutableStateOf(false)
         //var midiSystem : InterAppMidiSystem? = null
 
+        var lastSong: String? = null
         private lateinit var midiManager: MidiManager
         private var midiDevice: MidiDevice? = null
         private val mainHandler = Handler(Looper.getMainLooper())
@@ -177,11 +178,20 @@ class MainActivity : ComponentActivity() {
         }
         KEVENT.subscribe<PlaySong> {
             mainHandler.post {
+                lastSong = it.data.song
                 if (it.data.song == "scape_main") {
-                    if (muteLoginMusic)
+                    if (muteLoginMusic || (client.isLoggedIn && client.onlyPlayJingles())) {
+                        println("logged:${client.isLoggedIn}")
+                        println("jingles:${client.onlyPlayJingles()}")
                         return@post
+                    }
                 }
-                SongPlayer(it.data.song, applicationContext)
+                if (client.isLoggedIn) {
+                    println("loggedIn")
+                    if (!client.onlyPlayJingles())
+                        SongPlayer(it.data.song, applicationContext)
+                } else
+                    SongPlayer(it.data.song, applicationContext)
             }
         }
         KEVENT.subscribe<StopMusic> {

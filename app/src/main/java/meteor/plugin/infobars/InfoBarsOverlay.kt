@@ -34,10 +34,10 @@ import kotlin.collections.HashMap
  * TODO: Very unoptimized atm.
  */
 class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
-    var height = mutableStateOf(20)
-    var width = mutableStateOf(150)
+    var height = mutableStateOf(10)
+    var width = mutableStateOf(75)
     var skillUpdates = Collections.synchronizedMap(HashMap<Skill, Long>())
-    var textColumnWidth = 28.dp
+    var textColumnWidth = 14.dp
 
     override fun render(): @Composable BoxScope.() -> Unit = {
         if (client.isLoggedIn) {
@@ -45,7 +45,6 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
             var offsetY by remember { mutableStateOf(0f) }
 
             Box(modifier = Modifier
-                .scale(.5f)
                 .offset { IntOffset(offsetX.toInt(), offsetY.toInt()) }
                 .clip(RoundedCornerShape(4.dp))
                 .background(meteor.ui.compose.Colors.surface.value)
@@ -75,9 +74,9 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                         renderEnergyBox().invoke(this@Box)
 
                         if (skillUpdates.isNotEmpty()) {
-                            Spacer(modifier = Modifier.height(5.dp))
-                            Divider(thickness = 1.dp, color = Color.Black, modifier = Modifier.width(width.value.dp))
-                            Spacer(modifier = Modifier.height(5.dp))
+                            Spacer(modifier = Modifier.height(2.5.dp))
+                            Divider(thickness = .5.dp, color = Color.Black, modifier = Modifier.width(width.value.dp))
+                            Spacer(modifier = Modifier.height(2.5.dp))
                             for (skill in skillUpdates.keys) {
                                 renderSkillBox(skill).invoke(this@Box)
                             }
@@ -101,8 +100,8 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                 Image(painterResource(skill.smallIconResource()), "${skill.name}-icon", modifier = Modifier.size(height.value.dp))
                 Column(modifier = Modifier
                     .size(textColumnWidth)
-                    .padding(top = 2.dp)) {
-                    Text("${client.levels[skill.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    .padding(top = 1.dp)) {
+                    Text("${client.levels[skill.id]}", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -139,8 +138,8 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                 Image(painterResource(Skill.HITPOINTS.smallIconResource()), "hitpoints-icon", modifier = Modifier.size(height.value.dp))
                 Column(modifier = Modifier
                     .size(textColumnWidth)
-                    .padding(top = 2.dp)) {
-                    Text("${client.boostedLevels[Skill.HITPOINTS.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    .padding(top = 1.dp)) {
+                    Text("${client.boostedLevels[Skill.HITPOINTS.id]}", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
                     progress = {
@@ -177,8 +176,8 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                 Image(painterResource(Skill.PRAYER.smallIconResource()), "prayer-icon", modifier = Modifier.size(height.value.dp))
                 Column(modifier = Modifier
                     .size(textColumnWidth)
-                    .padding(top = 2.dp)) {
-                    Text("${client.boostedLevels[Skill.PRAYER.id]}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    .padding(top = 1.dp)) {
+                    Text("${client.boostedLevels[Skill.PRAYER.id]}", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
                     modifier = Modifier
@@ -213,8 +212,8 @@ class InfoBarsOverlay(val plugin: InfoBarsPlugin) : ViewportOverlay() {
                 Image(painterResource(Skill.AGILITY.iconResource), "agility-icon", modifier = Modifier.size(height.value.dp))
                 Column(modifier = Modifier
                     .size(textColumnWidth)
-                    .padding(top = 2.dp)) {
-                    Text("${client.energy}", color = Color.White, fontSize = 14.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
+                    .padding(top = 1.dp)) {
+                    Text("${client.energy}", color = Color.White, fontSize = 7.sp, modifier = Modifier.align(Alignment.CenterHorizontally))
                 }
                 LinearProgressIndicator(
                     modifier = Modifier

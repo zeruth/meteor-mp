@@ -8,3 +8,14 @@ plugins {
     id("com.google.gms.google-services") version "4.4.2" apply false
     id("com.google.firebase.crashlytics") version "3.0.2" apply false
 }
+
+allprojects {
+    repositories {
+        mavenLocal()
+        mavenCentral()
+        google()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
+        maven { url = uri("https://raw.githubusercontent.com/MeteorLite/hosting/main/repo/") }
+        maven { url = uri("https://raw.githubusercontent.com/zeruth/repo/main/") }
+    }
+}

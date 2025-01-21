@@ -27,7 +27,7 @@ import compose.icons.lineawesomeicons.Discord
 import meteor.DiscordPresence
 import meteor.DiscordPresence.updatingDiscordState
 import meteor.common.config.ConfigManager
-import meteor.ui.compose.components.sidebar.SidebarButton
+import meteor.ui.components.sidebar.SidebarButton
 
 class DiscordStatusButton : SidebarButton(
     icon = LineAwesomeIcons.Discord,

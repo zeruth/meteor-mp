@@ -5,7 +5,7 @@ import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import meteor.common.config.ConfigManager
 import meteor.ui.GameView
-import meteor.ui.compose.components.sidebar.SidebarButton
+import meteor.ui.components.sidebar.SidebarButton
 
 class FullscreenToggleButton : SidebarButton(
     icon = if (ConfigManager.get("meteor.fullscreen", false)) LineAwesomeIcons.CompressArrowsAltSolid else LineAwesomeIcons.ExpandArrowsAltSolid,

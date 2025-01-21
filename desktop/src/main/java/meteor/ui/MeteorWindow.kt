@@ -16,11 +16,11 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import meteor.Game.gameImage
 import meteor.Game.loadingImage
+import meteor.common.panel.PanelComposables.Panel
 import meteor.common.plugin.PluginManager
 import meteor.common.plugin.meteor.MeteorPlugin
 import meteor.ui.GameView.GameViewContainer
 import meteor.ui.GameView.stretchedMode
-import meteor.ui.components.panel.PanelComposables.Panel
 import meteor.ui.components.sidebar.SidebarComposables
 import java.awt.Dimension
 

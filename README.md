@@ -22,7 +22,7 @@ or you can create a distributable using the included run configuration if you re
 # Info
 The project was entirely re-written using a shared code concept using Compose with no reflection / injection  
 This unified code concept is still very new so a lot of things have regressed (input on android)  
-expect a lot of things moving to the common module and bug fixes where they pop up  
+most things have been moved to common already but there is always room for improvement!  
 
 ```
 Forbidden features (unless otherwise permitted by Lost-City):  

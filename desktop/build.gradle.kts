@@ -31,6 +31,12 @@ kotlin {
     jvmToolchain(21)
 }
 
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(21) // Specify the desired Java version here
+    }
+}
+
 
 compose.desktop {
     application {

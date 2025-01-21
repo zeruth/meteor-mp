@@ -20,5 +20,6 @@ dependencies {
     compileOnly(libs.logger)
     compileOnly(libs.eventbus)
     compileOnly(libs.gson)
+    compileOnly(libs.material3)
     compileOnly(files("../lib/android-35.jar"))
 }

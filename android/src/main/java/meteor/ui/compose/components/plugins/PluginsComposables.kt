@@ -16,13 +16,13 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.CogSolid
 import compose.icons.lineawesomeicons.StarSolid
+import meteor.common.config.ConfigComposables.ConfigPanel
 import meteor.common.config.ConfigManager
 import meteor.common.plugin.Plugin
 import meteor.common.plugin.PluginManager.plugins
 import meteor.common.plugin.PluginManager.runningMap
 import meteor.common.ui.Colors
 import meteor.ui.compose.components.GeneralComposables.SidedNode
-import meteor.ui.compose.components.config.ConfigComposables.ConfigPanel
 import meteor.ui.compose.components.panel.PanelComposables
 import meteor.ui.compose.components.sidebar.buttons.PluginsButton.Companion.favoritesMap
 

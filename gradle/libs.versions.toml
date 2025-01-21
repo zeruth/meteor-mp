@@ -18,6 +18,7 @@ appcompat = "1.7.0"
 lineAwesome = "1.1.1"
 logger = "1.2"
 material = "1.12.0"
+material3 = "1.3.1"
 sfntly = "1.0.1"
 compose-plugin = "1.8.0-alpha01"
 kotlin = "2.1.0"
@@ -50,6 +51,7 @@ kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref =
 line-awesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "lineAwesome" }
 logger = { module = "nulled:logger", version.ref = "logger" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
+material3 = { module = "androidx.compose.material3:material3", version.ref = "material3" }
 sfntly = { module = "com.jaredrummler:sfntly", version.ref = "sfntly" }
 kpresence = {group = "io.github.vyfor", name = "kpresence", version = "0.6.4"}
 

@@ -22,6 +22,7 @@ dependencies {
         implementation(logger)
         implementation(kotlin.reflect)
         implementation(line.awesome)
+        implementation(libs.material3)
         implementation(gson)
         implementation(kpresence)
     }

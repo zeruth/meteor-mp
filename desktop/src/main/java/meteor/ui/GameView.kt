@@ -4,16 +4,16 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.key
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.material.Text
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.awtEventOrNull
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerButton
@@ -23,6 +23,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.unit.dp
+import client.events.DrawFinished
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
@@ -37,6 +38,7 @@ import meteor.ui.MeteorWindow.resetWindowSize
 import meteor.ui.MeteorWindow.windowState
 import meteor.ui.buttons.FullscreenToggleButton
 import meteor.ui.buttons.StretchToggleButton
+import org.rationalityfrontline.kevent.KEVENT
 import java.awt.Dimension
 import meteor.Main.client as clientInstance
 
@@ -47,6 +49,22 @@ object GameView {
 
     val focusRequester = FocusRequester()
     val stretchedMode = mutableStateOf(ConfigManager.get<Boolean>("meteor.stretched", false))
+    var fps = mutableIntStateOf(0)
+    var recentDraws = ArrayList<Long>()
+
+    init {
+        KEVENT.subscribe<DrawFinished> {
+            val expiredTimes = ArrayList<Long>()
+            recentDraws.add(System.currentTimeMillis())
+            for (renderTime in recentDraws) {
+                if (renderTime < (System.currentTimeMillis() - 1000))
+                    expiredTimes += renderTime
+            }
+            for (expiredTime in expiredTimes)
+                recentDraws.remove(expiredTime)
+            fps.intValue = recentDraws.size
+        }
+    }
 
     @Composable
     fun RowScope.GameViewContainer(src: ImageBitmap) {
@@ -86,6 +104,7 @@ object GameView {
 
         Box(mod) {
             GameViewImage(src)
+            Text("FPS: ${fps.intValue}", Modifier.align(Alignment.TopEnd), color = Color.Yellow)
         }
 
         LaunchedEffect(Unit) {

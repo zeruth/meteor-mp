@@ -17,25 +17,25 @@
 package org.apache.harmony.x.imageio.plugins;
 
 public enum ImageType {
-        @SuppressWarnings("nls")
-        JPEG(new String[] { "jpeg", "jpg", "JPEG", "JPG" }, new String[] {
-                        "jpeg", "jpg" }, new String[] { "image/jpeg" }),
-        @SuppressWarnings("nls")
-        BMP(new String[] { "bmp", "BMP" }, new String[] { "bmp" },
-                        new String[] { "image/bmp" }),
-        @SuppressWarnings("nls")
-        GIF(new String[] { "gif", "GIF" }, new String[] { "gif" },
-                        new String[] { "image/gif" }),
-        @SuppressWarnings("nls")
-        PNG(new String[] { "png", "PNG" }, new String[] { "png" },
-                        new String[] { "image/png", "image/x-png" });
+    @SuppressWarnings("nls")
+    JPEG(new String[]{"jpeg", "jpg", "JPEG", "JPG"}, new String[]{
+            "jpeg", "jpg"}, new String[]{"image/jpeg"}),
+    @SuppressWarnings("nls")
+    BMP(new String[]{"bmp", "BMP"}, new String[]{"bmp"},
+            new String[]{"image/bmp"}),
+    @SuppressWarnings("nls")
+    GIF(new String[]{"gif", "GIF"}, new String[]{"gif"},
+            new String[]{"image/gif"}),
+    @SuppressWarnings("nls")
+    PNG(new String[]{"png", "PNG"}, new String[]{"png"},
+            new String[]{"image/png", "image/x-png"});
 
     private final String names[];
     private final String suffixes[];
     private final String mimeTypes[];
 
     ImageType(final String names[], final String suffixes[],
-                    final String mimeTypes[]) {
+              final String mimeTypes[]) {
         this.names = names;
         this.suffixes = suffixes;
         this.mimeTypes = mimeTypes;

@@ -93,33 +93,6 @@ enum IcnsType {
         this.hasMask = hasMask;
     }
 
-    public int getType() {
-        return type;
-    }
-
-    public int getWidth() {
-        return width;
-    }
-
-    public int getHeight() {
-        return height;
-    }
-
-    public int getBitsPerPixel() {
-        return bitsPerPixel;
-    }
-
-    public boolean hasMask() {
-        return hasMask;
-    }
-
-    @Override
-    public String toString() {
-        return getClass().getName() + "[" + "width=" + width + "," + "height="
-                + height + "," + "bpp=" + bitsPerPixel + "," + "hasMask="
-                + hasMask + "]";
-    }
-
     public static IcnsType findAnyType(final int type) {
         for (final IcnsType allImageType : ALL_IMAGE_TYPES) {
             if (allImageType.getType() == type) {
@@ -175,10 +148,10 @@ enum IcnsType {
         if (bytes.length != 4) {
             throw new IllegalArgumentException("Invalid ICNS type");
         }
-        return ((0xff & bytes[0]) << 24) 
-             | ((0xff & bytes[1]) << 16)
-             | ((0xff & bytes[2]) << 8)
-             | (0xff & bytes[3]);
+        return ((0xff & bytes[0]) << 24)
+                | ((0xff & bytes[1]) << 16)
+                | ((0xff & bytes[2]) << 8)
+                | (0xff & bytes[3]);
     }
 
     public static String describeType(final int type) {
@@ -192,5 +165,32 @@ enum IcnsType {
         } catch (final UnsupportedEncodingException unsupportedEncodingException) {
             throw new IllegalArgumentException("Your Java doesn't support US-ASCII", unsupportedEncodingException);
         }
+    }
+
+    public int getType() {
+        return type;
+    }
+
+    public int getWidth() {
+        return width;
+    }
+
+    public int getHeight() {
+        return height;
+    }
+
+    public int getBitsPerPixel() {
+        return bitsPerPixel;
+    }
+
+    public boolean hasMask() {
+        return hasMask;
+    }
+
+    @Override
+    public String toString() {
+        return getClass().getName() + "[" + "width=" + width + "," + "height="
+                + height + "," + "bpp=" + bitsPerPixel + "," + "hasMask="
+                + hasMask + "]";
     }
 }

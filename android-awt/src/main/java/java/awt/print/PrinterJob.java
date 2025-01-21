@@ -17,14 +17,52 @@
 
 package java.awt.print;
 
-import java.awt.AWTError;
-import java.awt.HeadlessException;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
-import org.apache.harmony.awt.internal.nls.Messages;
-
 public abstract class PrinterJob {
+
+    /* public section*/
+    public PrinterJob() {
+        super();
+    }
+
+    /* static section */
+    public static PrinterJob getPrinterJob() {
+
+        SecurityManager securitymanager = System.getSecurityManager();
+        if (securitymanager != null) {
+            securitymanager.checkPrintJobAccess();
+        }
+        /* This code has been developed according to API documentation
+         * for Priviledged Blocks.
+         */
+        return AccessController.doPrivileged(
+                new PrivilegedAction<PrinterJob>() {
+                    public PrinterJob run() {
+                        String s = org.apache.harmony.awt.Utils.getSystemProperty("java.awt.printerjob"); //$NON-NLS-1$
+
+                        if (s == null || s.equals("")) { //$NON-NLS-1$
+                            s = "java.awt.print.PrinterJobImpl"; //$NON-NLS-1$
+                        }
+                        try {
+                            return (PrinterJob) Class.forName(s).newInstance();
+                        } catch (ClassNotFoundException cnfe) {
+                            // awt.5A=Default class for PrinterJob is not found
+                            throw new AWTError(Messages.getString("awt.5A")); //$NON-NLS-1$
+                        } catch (IllegalAccessException iae) {
+                            // awt.5B=No access to default class for PrinterJob
+                            throw new AWTError(Messages.getString("awt.5B")); //$NON-NLS-1$
+                        } catch (InstantiationException ie) {
+                            // awt.5C=Instantiation exception for PrinterJob
+                            throw new AWTError(Messages.getString("awt.5C")); //$NON-NLS-1$
+                        }
+                    }
+                });
+    }
 
     /* abstract section */
     public abstract void cancel();
@@ -38,11 +76,9 @@ public abstract class PrinterJob {
 
     public abstract void print() throws PrinterException;
 
-    public abstract void setJobName(String jobName);
+    public abstract int getCopies();
 
     public abstract void setCopies(int copies);
-
-    public abstract int getCopies();
 
     public abstract boolean printDialog() throws HeadlessException;
 
@@ -52,6 +88,8 @@ public abstract class PrinterJob {
 
     public abstract String getJobName();
 
+    public abstract void setJobName(String jobName);
+
     public abstract PageFormat pageDialog(PageFormat page)
             throws HeadlessException;
 
@@ -59,48 +97,8 @@ public abstract class PrinterJob {
 
     public abstract PageFormat validatePage(PageFormat page);
 
-    /* static section */
-    public static PrinterJob getPrinterJob(){
-
-        SecurityManager securitymanager = System.getSecurityManager();
-        if(securitymanager != null) {
-            securitymanager.checkPrintJobAccess();
-        }
-        /* This code has been developed according to API documentation
-         * for Priviledged Blocks. 
-         */
-        return AccessController.doPrivileged(
-                new PrivilegedAction<PrinterJob>() {
-            public PrinterJob run() {
-                String s = org.apache.harmony.awt.Utils.getSystemProperty("java.awt.printerjob"); //$NON-NLS-1$
-
-                if (s == null || s.equals("")){ //$NON-NLS-1$
-                    s = "java.awt.print.PrinterJobImpl"; //$NON-NLS-1$
-                }
-                try {
-                    return (PrinterJob) Class.forName(s).newInstance();
-                } catch (ClassNotFoundException cnfe) {
-                    // awt.5A=Default class for PrinterJob is not found
-                    throw new AWTError(Messages.getString("awt.5A")); //$NON-NLS-1$
-                } catch (IllegalAccessException iae) {
-                    // awt.5B=No access to default class for PrinterJob
-                    throw new AWTError(Messages.getString("awt.5B")); //$NON-NLS-1$
-                } catch (InstantiationException ie) {
-                    // awt.5C=Instantiation exception for PrinterJob
-                    throw new AWTError(Messages.getString("awt.5C")); //$NON-NLS-1$
-                }
-            }
-        });
-    }
-
-
-    /* public section*/
-    public PrinterJob() {
-        super();
-     }
-
-     public PageFormat defaultPage(){
+    public PageFormat defaultPage() {
         return defaultPage(new PageFormat());
-     }
+    }
 
 }

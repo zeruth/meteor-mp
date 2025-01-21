@@ -20,18 +20,18 @@
 package javax.imageio.spi;
 
 
-import java.awt.image.RenderedImage;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriter;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 
 
 public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
 
-    public static final Class[] STANDARD_OUTPUT_TYPE = new Class[] {ImageInputStream.class};
+    public static final Class[] STANDARD_OUTPUT_TYPE = new Class[]{ImageInputStream.class};
 
     protected Class[] outputTypes;
     protected String[] readerSpiNames;
@@ -41,19 +41,19 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
     }
 
     public ImageWriterSpi(String vendorName, String version, String[] names,
-                             String[] suffixes, String[] MIMETypes,
-                             String pluginClassName,
-                             Class[] outputTypes, String[] readerSpiNames,
-                             boolean supportsStandardStreamMetadataFormat,
-                             String nativeStreamMetadataFormatName,
-                             String nativeStreamMetadataFormatClassName,
-                             String[] extraStreamMetadataFormatNames,
-                             String[] extraStreamMetadataFormatClassNames,
-                             boolean supportsStandardImageMetadataFormat,
-                             String nativeImageMetadataFormatName,
-                             String nativeImageMetadataFormatClassName,
-                             String[] extraImageMetadataFormatNames,
-                             String[] extraImageMetadataFormatClassNames) {
+                          String[] suffixes, String[] MIMETypes,
+                          String pluginClassName,
+                          Class[] outputTypes, String[] readerSpiNames,
+                          boolean supportsStandardStreamMetadataFormat,
+                          String nativeStreamMetadataFormatName,
+                          String nativeStreamMetadataFormatClassName,
+                          String[] extraStreamMetadataFormatNames,
+                          String[] extraStreamMetadataFormatClassNames,
+                          boolean supportsStandardImageMetadataFormat,
+                          String nativeImageMetadataFormatName,
+                          String nativeImageMetadataFormatClassName,
+                          String[] extraImageMetadataFormatNames,
+                          String[] extraImageMetadataFormatClassNames) {
         super(vendorName, version, names, suffixes, MIMETypes, pluginClassName,
                 supportsStandardStreamMetadataFormat, nativeStreamMetadataFormatName,
                 nativeStreamMetadataFormatClassName, extraStreamMetadataFormatNames,
@@ -93,7 +93,7 @@ public abstract class ImageWriterSpi extends ImageReaderWriterSpi {
         if (writer == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.96"));
         }
-        
+
         return writer.getClass().getName().equals(pluginClassName);
     }
 

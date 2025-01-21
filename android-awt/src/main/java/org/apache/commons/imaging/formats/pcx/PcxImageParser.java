@@ -16,42 +16,23 @@
  */
 package org.apache.commons.imaging.formats.pcx;
 
-import java.awt.Dimension;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.Properties;
+import java.util.*;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_STRICT;
-import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
-import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.skipBytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 import static org.apache.commons.imaging.common.ByteConversions.toUInt16;
 
 public class PcxImageParser extends ImageParser {
@@ -68,7 +49,7 @@ public class PcxImageParser extends ImageParser {
     // images properly.
 
     private static final String DEFAULT_EXTENSION = ".pcx";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".pcx", ".pcc", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".pcx", ".pcc",};
 
     public PcxImageParser() {
         super.setByteOrder(ByteOrder.LITTLE_ENDIAN);
@@ -91,7 +72,7 @@ public class PcxImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.PCX, //
+        return new ImageFormat[]{ImageFormats.PCX, //
         };
     }
 
@@ -147,97 +128,6 @@ public class PcxImageParser extends ImageParser {
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
-    }
-
-    static class PcxHeader {
-
-        public static final int ENCODING_UNCOMPRESSED = 0;
-        public static final int ENCODING_RLE = 1;
-        public static final int PALETTE_INFO_COLOR = 1;
-        public static final int PALETTE_INFO_GRAYSCALE = 2;
-        public final int manufacturer; // Always 10 = ZSoft .pcx
-        public final int version; // 0 = PC Paintbrush 2.5
-                                  // 2 = PC Paintbrush 2.8 with palette
-                                  // 3 = PC Paintbrush 2.8 w/o palette
-                                  // 4 = PC Paintbrush for Windows
-                                  // 5 = PC Paintbrush >= 3.0
-        public final int encoding; // 0 = very old uncompressed format, 1 = .pcx
-                                   // run length encoding
-        public final int bitsPerPixel; // Bits ***PER PLANE*** for each pixel
-        public final int xMin; // window
-        public final int yMin;
-        public final int xMax;
-        public final int yMax;
-        public final int hDpi; // horizontal dpi
-        public final int vDpi; // vertical dpi
-        public final int[] colormap; // palette for <= 16 colors
-        public final int reserved; // Always 0
-        public final int nPlanes; // Number of color planes
-        public final int bytesPerLine; // Number of bytes per scanline plane,
-                                       // must be an even number.
-        public final int paletteInfo; // 1 = Color/BW, 2 = Grayscale, ignored in
-                                      // Paintbrush IV/IV+
-        public final int hScreenSize; // horizontal screen size, in pixels.
-                                      // PaintBrush >= IV only.
-        public final int vScreenSize; // vertical screen size, in pixels.
-                                      // PaintBrush >= IV only.
-
-        public PcxHeader(final int manufacturer, final int version,
-                final int encoding, final int bitsPerPixel, final int xMin,
-                final int yMin, final int xMax, final int yMax, final int hDpi,
-                final int vDpi, final int[] colormap, final int reserved,
-                final int nPlanes, final int bytesPerLine,
-                final int paletteInfo, final int hScreenSize,
-                final int vScreenSize) {
-            this.manufacturer = manufacturer;
-            this.version = version;
-            this.encoding = encoding;
-            this.bitsPerPixel = bitsPerPixel;
-            this.xMin = xMin;
-            this.yMin = yMin;
-            this.xMax = xMax;
-            this.yMax = yMax;
-            this.hDpi = hDpi;
-            this.vDpi = vDpi;
-            this.colormap = colormap;
-            this.reserved = reserved;
-            this.nPlanes = nPlanes;
-            this.bytesPerLine = bytesPerLine;
-            this.paletteInfo = paletteInfo;
-            this.hScreenSize = hScreenSize;
-            this.vScreenSize = vScreenSize;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("PcxHeader");
-            pw.println("Manufacturer: " + manufacturer);
-            pw.println("Version: " + version);
-            pw.println("Encoding: " + encoding);
-            pw.println("BitsPerPixel: " + bitsPerPixel);
-            pw.println("xMin: " + xMin);
-            pw.println("yMin: " + yMin);
-            pw.println("xMax: " + xMax);
-            pw.println("yMax: " + yMax);
-            pw.println("hDpi: " + hDpi);
-            pw.println("vDpi: " + vDpi);
-            pw.print("ColorMap: ");
-            for (int i = 0; i < colormap.length; i++) {
-                if (i > 0) {
-                    pw.print(",");
-                }
-                pw.print("(" + (0xff & (colormap[i] >> 16)) + ","
-                        + (0xff & (colormap[i] >> 8)) + ","
-                        + (0xff & colormap[i]) + ")");
-            }
-            pw.println();
-            pw.println("Reserved: " + reserved);
-            pw.println("nPlanes: " + nPlanes);
-            pw.println("BytesPerLine: " + bytesPerLine);
-            pw.println("PaletteInfo: " + paletteInfo);
-            pw.println("hScreenSize: " + hScreenSize);
-            pw.println("vScreenSize: " + vScreenSize);
-            pw.println();
-        }
     }
 
     private PcxHeader readPcxHeader(final ByteSource byteSource)
@@ -308,7 +198,7 @@ public class PcxImageParser extends ImageParser {
     }
 
     private void readScanLine(final PcxHeader pcxHeader, final InputStream is,
-            final byte[] samples) throws IOException, ImageReadException {
+                              final byte[] samples) throws IOException, ImageReadException {
         if (pcxHeader.encoding == PcxHeader.ENCODING_UNCOMPRESSED) {
             int r;
             for (int bytesRead = 0; bytesRead < samples.length; bytesRead += r) {
@@ -320,7 +210,7 @@ public class PcxImageParser extends ImageParser {
             }
         } else {
             if (pcxHeader.encoding == PcxHeader.ENCODING_RLE) {
-                for (int bytesRead = 0; bytesRead < samples.length;) {
+                for (int bytesRead = 0; bytesRead < samples.length; ) {
                     final byte b = readByte("Pixel", is, "Error reading image data");
                     int count;
                     byte sample;
@@ -376,7 +266,7 @@ public class PcxImageParser extends ImageParser {
     }
 
     private BufferedImage readImage(final PcxHeader pcxHeader, final InputStream is,
-            final ByteSource byteSource) throws ImageReadException, IOException {
+                                    final ByteSource byteSource) throws ImageReadException, IOException {
         final int xSize = pcxHeader.xMax - pcxHeader.xMin + 1;
         if (xSize < 0) {
             throw new ImageReadException("Image width is negative");
@@ -401,7 +291,7 @@ public class PcxImageParser extends ImageParser {
             final DataBufferByte dataBuffer = new DataBufferByte(image, image.length);
             int[] palette;
             if (pcxHeader.bitsPerPixel == 1) {
-                palette = new int[] { 0x000000, 0xffffff };
+                palette = new int[]{0x000000, 0xffffff};
             } else if (pcxHeader.bitsPerPixel == 8) {
                 // Normally the palette is read 769 bytes from the end of the
                 // file.
@@ -423,7 +313,7 @@ public class PcxImageParser extends ImageParser {
             WritableRaster raster;
             if (pcxHeader.bitsPerPixel == 8) {
                 raster = Raster.createInterleavedRaster(dataBuffer,
-                        xSize, ySize, bytesPerImageRow, 1, new int[] { 0 },
+                        xSize, ySize, bytesPerImageRow, 1, new int[]{0},
                         null);
             } else {
                 raster = Raster.createPackedRaster(dataBuffer, xSize,
@@ -473,8 +363,8 @@ public class PcxImageParser extends ImageParser {
             final DataBufferByte dataBuffer = new DataBufferByte(image,
                     image[0].length);
             final WritableRaster raster = Raster.createBandedRaster(
-                    dataBuffer, xSize, ySize, xSize, new int[] { 0, 1, 2 },
-                    new int[] { 0, 0, 0 }, null);
+                    dataBuffer, xSize, ySize, xSize, new int[]{0, 1, 2},
+                    new int[]{0, 0, 0}, null);
             final ColorModel colorModel = new ComponentColorModel(
                     ColorSpace.getInstance(ColorSpace.CS_sRGB), false, false,
                     Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
@@ -500,7 +390,7 @@ public class PcxImageParser extends ImageParser {
             final DataBufferByte dataBuffer = new DataBufferByte(image, image.length);
             final WritableRaster raster = Raster.createInterleavedRaster(
                     dataBuffer, xSize, ySize, rowLength, 3,
-                    new int[] { 2, 1, 0 }, null);
+                    new int[]{2, 1, 0}, null);
             final ColorModel colorModel = new ComponentColorModel(
                     ColorSpace.getInstance(ColorSpace.CS_sRGB), false, false,
                     Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
@@ -516,7 +406,7 @@ public class PcxImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            Map<String, Object> params) throws ImageReadException, IOException {
+                                                Map<String, Object> params) throws ImageReadException, IOException {
         params = (params == null) ? new HashMap<String, Object>() : new HashMap<String, Object>(params);
         boolean isStrict = false;
         final Object strictness = params.get(PARAM_KEY_STRICT);
@@ -546,16 +436,105 @@ public class PcxImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    static class PcxHeader {
+
+        public static final int ENCODING_UNCOMPRESSED = 0;
+        public static final int ENCODING_RLE = 1;
+        public static final int PALETTE_INFO_COLOR = 1;
+        public static final int PALETTE_INFO_GRAYSCALE = 2;
+        public final int manufacturer; // Always 10 = ZSoft .pcx
+        public final int version; // 0 = PC Paintbrush 2.5
+        // 2 = PC Paintbrush 2.8 with palette
+        // 3 = PC Paintbrush 2.8 w/o palette
+        // 4 = PC Paintbrush for Windows
+        // 5 = PC Paintbrush >= 3.0
+        public final int encoding; // 0 = very old uncompressed format, 1 = .pcx
+        // run length encoding
+        public final int bitsPerPixel; // Bits ***PER PLANE*** for each pixel
+        public final int xMin; // window
+        public final int yMin;
+        public final int xMax;
+        public final int yMax;
+        public final int hDpi; // horizontal dpi
+        public final int vDpi; // vertical dpi
+        public final int[] colormap; // palette for <= 16 colors
+        public final int reserved; // Always 0
+        public final int nPlanes; // Number of color planes
+        public final int bytesPerLine; // Number of bytes per scanline plane,
+        // must be an even number.
+        public final int paletteInfo; // 1 = Color/BW, 2 = Grayscale, ignored in
+        // Paintbrush IV/IV+
+        public final int hScreenSize; // horizontal screen size, in pixels.
+        // PaintBrush >= IV only.
+        public final int vScreenSize; // vertical screen size, in pixels.
+        // PaintBrush >= IV only.
+
+        public PcxHeader(final int manufacturer, final int version,
+                         final int encoding, final int bitsPerPixel, final int xMin,
+                         final int yMin, final int xMax, final int yMax, final int hDpi,
+                         final int vDpi, final int[] colormap, final int reserved,
+                         final int nPlanes, final int bytesPerLine,
+                         final int paletteInfo, final int hScreenSize,
+                         final int vScreenSize) {
+            this.manufacturer = manufacturer;
+            this.version = version;
+            this.encoding = encoding;
+            this.bitsPerPixel = bitsPerPixel;
+            this.xMin = xMin;
+            this.yMin = yMin;
+            this.xMax = xMax;
+            this.yMax = yMax;
+            this.hDpi = hDpi;
+            this.vDpi = vDpi;
+            this.colormap = colormap;
+            this.reserved = reserved;
+            this.nPlanes = nPlanes;
+            this.bytesPerLine = bytesPerLine;
+            this.paletteInfo = paletteInfo;
+            this.hScreenSize = hScreenSize;
+            this.vScreenSize = vScreenSize;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("PcxHeader");
+            pw.println("Manufacturer: " + manufacturer);
+            pw.println("Version: " + version);
+            pw.println("Encoding: " + encoding);
+            pw.println("BitsPerPixel: " + bitsPerPixel);
+            pw.println("xMin: " + xMin);
+            pw.println("yMin: " + yMin);
+            pw.println("xMax: " + xMax);
+            pw.println("yMax: " + yMax);
+            pw.println("hDpi: " + hDpi);
+            pw.println("vDpi: " + vDpi);
+            pw.print("ColorMap: ");
+            for (int i = 0; i < colormap.length; i++) {
+                if (i > 0) {
+                    pw.print(",");
+                }
+                pw.print("(" + (0xff & (colormap[i] >> 16)) + ","
+                        + (0xff & (colormap[i] >> 8)) + ","
+                        + (0xff & colormap[i]) + ")");
+            }
+            pw.println();
+            pw.println("Reserved: " + reserved);
+            pw.println("nPlanes: " + nPlanes);
+            pw.println("BytesPerLine: " + bytesPerLine);
+            pw.println("PaletteInfo: " + paletteInfo);
+            pw.println("hScreenSize: " + hScreenSize);
+            pw.println("vScreenSize: " + vScreenSize);
+            pw.println();
+        }
     }
 }

@@ -26,57 +26,35 @@ import java.io.IOException;
 import java.io.Serializable;
 
 
-
 public final class NumericShaper implements Serializable {
+    public static final int EUROPEAN = 1;
+    public static final int ARABIC = 2;
+    public static final int EASTERN_ARABIC = 4;
+    public static final int DEVANAGARI = 8;
+    public static final int BENGALI = 16;
+    public static final int GURMUKHI = 32;
+    public static final int GUJARATI = 64;
+    public static final int ORIYA = 128;
+    public static final int TAMIL = 256;
+    public static final int TELUGU = 512;
+    public static final int KANNADA = 1024;
+    public static final int MALAYALAM = 2048;
+    public static final int THAI = 4096;
+    public static final int LAO = 8192;
+    public static final int TIBETAN = 16384;
+    public static final int MYANMAR = 32768;
+    public static final int ETHIOPIC = 65536;
+    public static final int KHMER = 131072;
+    public static final int MONGOLIAN = 262144;
+    public static final int ALL_RANGES = 524287;
     private static final long serialVersionUID = -8022764705923730308L;
 
-    public static final int EUROPEAN = 1;
-
-    public static final int ARABIC = 2;
-
-    public static final int EASTERN_ARABIC = 4;
-
-    public static final int DEVANAGARI = 8;
-
-    public static final int BENGALI = 16;
-
-    public static final int GURMUKHI = 32;
-
-    public static final int GUJARATI = 64;
-
-    public static final int ORIYA = 128;
-
-    public static final int TAMIL = 256;
-
-    public static final int TELUGU = 512;
-
-    public static final int KANNADA = 1024;
-
-    public static final int MALAYALAM = 2048;
-
-    public static final int THAI = 4096;
-
-    public static final int LAO = 8192;
-
-    public static final int TIBETAN = 16384;
-
-    public static final int MYANMAR = 32768;
-
-    public static final int ETHIOPIC = 65536;
-
-    public static final int KHMER = 131072;
-
-    public static final int MONGOLIAN = 262144;
-
-    public static final int ALL_RANGES = 524287;
-
     /* Further one can find the set of script indices.
-     * Index is the power you need the 2 to raise to to get corresponding 
+     * Index is the power you need the 2 to raise to to get corresponding
      * range constant value. Also script ranges, context names and digits low
      * ranges are indexed with these indices.
      */
-
-    // Index of the EUROPEAN range 
+    // Index of the EUROPEAN range
     private static final int INDEX_EUROPEAN = 0;
 
     // Index of the ARABIC range 
@@ -135,100 +113,7 @@ public final class NumericShaper implements Serializable {
 
     // Maximum index that range can't exceed
     private static final int MAX_INDEX = 19;
-
-    /*
-     * Scripts ranges array. Array represents ranges as pairs of
-     * lowest and highest range bounds.
-     * Data is taken from the UnicodeData.txt file from  
-     * http://www.unicode.org/Public/UNIDATA/ 
-     */
-    private final int[] scriptsRanges = {
-            0x0000, 0x024F,     // EUROPEAN (basic latin + latin-1 + extended)
-            0x0600, 0x06FF,     // ARABIC
-            0x0600, 0x06FF,     // EASTERN_ARABIC (XXX: diff with ARABIC ? )
-            0x0900, 0x097F,     // DEVANAGARI
-            0x0980, 0x09FF,     // BENGALI
-            0x0A00, 0x0A7F,     // GURMUKHI
-            0x0A80, 0x0AFF,     // GUJARATI
-            0x0B00, 0x0B7F,     // ORIYA
-            0x0B80, 0x0BFF,     // TAMIL
-            0x0C00, 0x0C7F,     // TELUGU
-            0x0C80, 0x0CFF,     // KANNADA
-            0x0D00, 0x0D7F,     // MALAYALAM
-            0x0E00, 0x0E7F,     // THAI
-            0x0E80, 0x0EFF,     // LAO
-            0x0F00, 0x0FFF,     // TIBETAN
-            0x1000, 0x109F,     // MYANMAR
-            0x1200, 0x137F,     // ETHIOPIC
-            0x1780, 0x17FF,     // KHMER
-            0x1800, 0x18AF      // MONGOLIAN
-    };
-
-    /*
-     * Digit low ranges values decreased by 0x0030. Each low range 
-     * value decreased by 0x0030 for easy obtaing unicode value of the 
-     * context dependent digit. European digits starts from 0x0030 hence
-     * context dependent unicode digit value equals to 
-     *      digitsLowRanges[script index] + european digit char unicode value.
-     * !! the only exception is ETHIOPIC script where there is no '0' digit 
-     * Data is taken from the UnicodeData.txt file from  
-     * http://www.unicode.org/Public/UNIDATA/ 
-     */
-    private final int[] digitsLowRanges = {
-            0x0000,             // EUROPEAN
-            0x0630,             // ARABIC
-            0x0630,             // EASTERN_ARABIC
-            0x0936,             // DEVANAGARI
-            0x09B6,             // BENGALI
-            0x0A36,             // GURMUKHI
-            0x0AB6,             // GUJARATI
-            0x0B36,             // ORIYA
-            0x0BB6,             // TAMIL
-            0x0C36,             // TELUGU
-            0x0CB6,             // KANNADA
-            0x0D36,             // MALAYALAM
-            0x0E20,             // THAI
-            0x0EA0,             // LAO
-            0x0EF0,             // TIBETAN
-            0x1010,             // MYANMAR
-            0x1338,             // ETHIOPIC - (low range-1) no ETHIOPIC '0' DIGIT!
-            0x17B0,             // KHMER
-            0x17E0              // MONGOLIAN
-    };
-
-    // Set of context names used in toString method
-    private final String[] contexts = {
-            "EUROPEAN", //$NON-NLS-1$
-            "ARABIC", //$NON-NLS-1$
-            "EASTERN_ARABIC", //$NON-NLS-1$
-            "DEVANAGARI", //$NON-NLS-1$
-            "BENGALI", //$NON-NLS-1$
-            "GURMUKHI", //$NON-NLS-1$
-            "GUJARATI", //$NON-NLS-1$
-            "ORIYA", //$NON-NLS-1$
-            "TAMIL", //$NON-NLS-1$
-            "TELUGU", //$NON-NLS-1$
-            "KANNADA", //$NON-NLS-1$
-            "MALAYALAM", //$NON-NLS-1$
-            "THAI", //$NON-NLS-1$
-            "LAO", //$NON-NLS-1$
-            "TIBETAN", //$NON-NLS-1$
-            "MYANMAR", //$NON-NLS-1$
-            "ETHIOPIC", //$NON-NLS-1$
-            "KHMER", //$NON-NLS-1$
-            "MONGOLIAN" //$NON-NLS-1$
-    };
-
-    /*
-     * Strong characters flags array is to determine if the 
-     * unicode bidirectional category of the character is strong, 
-     * according to Unicode specification. If the bit with index equals to 
-     * character's unicode value is 1 - the character is strong. 
-     * This array was generated using UnicodeData.txt file from  
-     * http://www.unicode.org/Public/UNIDATA/ 
-     */
-
-    private static final int[] STRONG_TEXT_FLAGS = { 0, 0, 134217726, 134217726,
+    private static final int[] STRONG_TEXT_FLAGS = {0, 0, 134217726, 134217726,
             0, 69207040, -8388609, -8388609, -1, -1, -1, -1, -1, -1, -1, -1,
             -1, -1, -65533, -1, -1, -100663297, 196611, 16415, 0, 0, 0,
             67108864, -10432, -5, -32769, -4194305, -1, -1, -1, -1, -1017, -1,
@@ -347,10 +232,98 @@ public final class NumericShaper implements Serializable {
             134217726, 134217726, -64, -1, 2147483647, 486341884, 0
 
     };
+    /*
+     * Scripts ranges array. Array represents ranges as pairs of
+     * lowest and highest range bounds.
+     * Data is taken from the UnicodeData.txt file from
+     * http://www.unicode.org/Public/UNIDATA/
+     */
+    private final int[] scriptsRanges = {
+            0x0000, 0x024F,     // EUROPEAN (basic latin + latin-1 + extended)
+            0x0600, 0x06FF,     // ARABIC
+            0x0600, 0x06FF,     // EASTERN_ARABIC (XXX: diff with ARABIC ? )
+            0x0900, 0x097F,     // DEVANAGARI
+            0x0980, 0x09FF,     // BENGALI
+            0x0A00, 0x0A7F,     // GURMUKHI
+            0x0A80, 0x0AFF,     // GUJARATI
+            0x0B00, 0x0B7F,     // ORIYA
+            0x0B80, 0x0BFF,     // TAMIL
+            0x0C00, 0x0C7F,     // TELUGU
+            0x0C80, 0x0CFF,     // KANNADA
+            0x0D00, 0x0D7F,     // MALAYALAM
+            0x0E00, 0x0E7F,     // THAI
+            0x0E80, 0x0EFF,     // LAO
+            0x0F00, 0x0FFF,     // TIBETAN
+            0x1000, 0x109F,     // MYANMAR
+            0x1200, 0x137F,     // ETHIOPIC
+            0x1780, 0x17FF,     // KHMER
+            0x1800, 0x18AF      // MONGOLIAN
+    };
+    /*
+     * Digit low ranges values decreased by 0x0030. Each low range
+     * value decreased by 0x0030 for easy obtaing unicode value of the
+     * context dependent digit. European digits starts from 0x0030 hence
+     * context dependent unicode digit value equals to
+     *      digitsLowRanges[script index] + european digit char unicode value.
+     * !! the only exception is ETHIOPIC script where there is no '0' digit
+     * Data is taken from the UnicodeData.txt file from
+     * http://www.unicode.org/Public/UNIDATA/
+     */
+    private final int[] digitsLowRanges = {
+            0x0000,             // EUROPEAN
+            0x0630,             // ARABIC
+            0x0630,             // EASTERN_ARABIC
+            0x0936,             // DEVANAGARI
+            0x09B6,             // BENGALI
+            0x0A36,             // GURMUKHI
+            0x0AB6,             // GUJARATI
+            0x0B36,             // ORIYA
+            0x0BB6,             // TAMIL
+            0x0C36,             // TELUGU
+            0x0CB6,             // KANNADA
+            0x0D36,             // MALAYALAM
+            0x0E20,             // THAI
+            0x0EA0,             // LAO
+            0x0EF0,             // TIBETAN
+            0x1010,             // MYANMAR
+            0x1338,             // ETHIOPIC - (low range-1) no ETHIOPIC '0' DIGIT!
+            0x17B0,             // KHMER
+            0x17E0              // MONGOLIAN
+    };
 
+    /*
+     * Strong characters flags array is to determine if the
+     * unicode bidirectional category of the character is strong,
+     * according to Unicode specification. If the bit with index equals to
+     * character's unicode value is 1 - the character is strong.
+     * This array was generated using UnicodeData.txt file from
+     * http://www.unicode.org/Public/UNIDATA/
+     */
+    // Set of context names used in toString method
+    private final String[] contexts = {
+            "EUROPEAN", //$NON-NLS-1$
+            "ARABIC", //$NON-NLS-1$
+            "EASTERN_ARABIC", //$NON-NLS-1$
+            "DEVANAGARI", //$NON-NLS-1$
+            "BENGALI", //$NON-NLS-1$
+            "GURMUKHI", //$NON-NLS-1$
+            "GUJARATI", //$NON-NLS-1$
+            "ORIYA", //$NON-NLS-1$
+            "TAMIL", //$NON-NLS-1$
+            "TELUGU", //$NON-NLS-1$
+            "KANNADA", //$NON-NLS-1$
+            "MALAYALAM", //$NON-NLS-1$
+            "THAI", //$NON-NLS-1$
+            "LAO", //$NON-NLS-1$
+            "TIBETAN", //$NON-NLS-1$
+            "MYANMAR", //$NON-NLS-1$
+            "ETHIOPIC", //$NON-NLS-1$
+            "KHMER", //$NON-NLS-1$
+            "MONGOLIAN" //$NON-NLS-1$
+    };
     // index of context range (Serialization support)
     private int key;
-    
+
     // flag, true if shaping contextual (Serialization support)
     private int mask;
 
@@ -368,37 +341,54 @@ public final class NumericShaper implements Serializable {
 
     /**
      * Creates NumericShaper with specified parameters.
-     * 
-     * @param ranges specified ranges to be shaped
+     *
+     * @param ranges         specified ranges to be shaped
      * @param defaultContext default context range
-     * @param isContextual specifies if the instance is contextual
-     */ 
-    private NumericShaper(int ranges, int defaultContext, boolean isContextual){
+     * @param isContextual   specifies if the instance is contextual
+     */
+    private NumericShaper(int ranges, int defaultContext, boolean isContextual) {
         this.fRanges = ranges;
         this.fDefaultContextIndex = getIndexFromRange(defaultContext);
         this.fContextual = isContextual;
 
-        if (!fContextual){
+        if (!fContextual) {
             fSingleRangeIndex = getIndexFromRange(ranges);
         }
     }
-    
+
+    public static NumericShaper getContextualShaper(int ranges,
+                                                    int defaultContext) {
+        ranges &= ALL_RANGES;
+        defaultContext &= ALL_RANGES;
+        return new NumericShaper(ranges, defaultContext, true);
+    }
+
+    public static NumericShaper getContextualShaper(int ranges) {
+        ranges &= ALL_RANGES;
+        return new NumericShaper(ranges, EUROPEAN, true);
+    }
+
+    public static NumericShaper getShaper(int singleRange) {
+        singleRange &= ALL_RANGES;
+        return new NumericShaper(singleRange, EUROPEAN, false);
+    }
+
     /**
      * Returns script index of the specified context range.
-     * 
-     * @param range specified range 
+     *
+     * @param range specified range
      * @return one of the script indices according to the specified range.
      */
-    private int getIndexFromRange(int range){
-        if (range == 0){
+    private int getIndexFromRange(int range) {
+        if (range == 0) {
             // awt.199=Illegal range argument value: {0}
             throw new IllegalArgumentException(Messages.getString("awt.199", //$NON-NLS-1$
                     range));
         }
 
         int index = 0;
-        while (index < MAX_INDEX){
-            if (range == (1 << index)){
+        while (index < MAX_INDEX) {
+            if (range == (1 << index)) {
                 return index;
             }
             index++;
@@ -412,12 +402,12 @@ public final class NumericShaper implements Serializable {
 
     /**
      * Returns range corresponding to the specified script index.
-     * 
-     * @param index specified script index 
+     *
+     * @param index specified script index
      * @return one of the range constants according to the specified script index.
      */
-    private int getRangeFromIndex(int index){
-        if (index < 0 || index >= MAX_INDEX){
+    private int getRangeFromIndex(int index) {
+        if (index < 0 || index >= MAX_INDEX) {
             // awt.199=Illegal range argument value: {0}
             throw new IllegalArgumentException(Messages.getString("awt.199", //$NON-NLS-1$
                     index));
@@ -425,7 +415,6 @@ public final class NumericShaper implements Serializable {
 
         return 1 << index;
     }
-
 
     @Override
     public int hashCode() {
@@ -450,11 +439,11 @@ public final class NumericShaper implements Serializable {
         }
 
         try {
-            NumericShaper ns = (NumericShaper)obj;
+            NumericShaper ns = (NumericShaper) obj;
             return (fRanges == ns.fRanges &&
                     fDefaultContextIndex == ns.fDefaultContextIndex &&
                     fContextual == ns.fContextual);
-        } catch (ClassCastException e){
+        } catch (ClassCastException e) {
         }
 
         return false;
@@ -463,19 +452,19 @@ public final class NumericShaper implements Serializable {
     @Override
     public String toString() {
         /* !! There is no description in the documentation what this method must
-         * return. Thus format of toString method is based on 1.5 release 
+         * return. Thus format of toString method is based on 1.5 release
          * behavior and can be obtained using next test sample:
-         * 
-         * // Simple shapers toString format  
+         *
+         * // Simple shapers toString format
          * System.out.println(NumericShaper.getShaper(NumericShaper.EASTERN_ARABIC));
-         * 
+         *
          * // Context shapers with default context toString format
          * System.out.println(NumericShaper.getContextualShaper(
          *      NumericShaper.ARABIC | NumericShaper.TAMIL));
-         * 
-         * // Context shapers with context 
+         *
+         * // Context shapers with context
          * System.out.println(NumericShaper.getContextualShaper(
-         *      NumericShaper.ARABIC | NumericShaper.TAMIL, 
+         *      NumericShaper.ARABIC | NumericShaper.TAMIL,
          *      NumericShaper.EASTERN_ARABIC));
          */
         StringBuilder sb = new StringBuilder(super.toString());
@@ -483,7 +472,7 @@ public final class NumericShaper implements Serializable {
         sb.append("[contextual:"); //$NON-NLS-1$
         sb.append(fContextual);
 
-        if (fContextual){
+        if (fContextual) {
             sb.append(", context:"); //$NON-NLS-1$
             sb.append(contexts[fDefaultContextIndex]);
         }
@@ -492,9 +481,9 @@ public final class NumericShaper implements Serializable {
         if (fContextual) {
             int index = 0;
             boolean isFirst = true;
-            while (index < MAX_INDEX){
-                if ((fRanges & (1 << index)) != 0){
-                    if (isFirst){
+            while (index < MAX_INDEX) {
+                if ((fRanges & (1 << index)) != 0) {
+                    if (isFirst) {
                         isFirst = false;
                     } else {
                         sb.append(", "); //$NON-NLS-1$
@@ -511,25 +500,8 @@ public final class NumericShaper implements Serializable {
         return sb.toString();
     }
 
-    public static NumericShaper getContextualShaper(int ranges, 
-            int defaultContext) {
-        ranges &= ALL_RANGES;
-        defaultContext &= ALL_RANGES;
-        return new NumericShaper(ranges, defaultContext, true);
-    }
-
-    public static NumericShaper getContextualShaper(int ranges) {
-        ranges &= ALL_RANGES;
-        return new NumericShaper(ranges, EUROPEAN, true);
-    }
-
     public int getRanges() {
         return fRanges;
-    }
-
-    public static NumericShaper getShaper(int singleRange) {
-        singleRange &= ALL_RANGES;
-        return new NumericShaper(singleRange, EUROPEAN, false);
     }
 
     public boolean isContextual() {
@@ -537,7 +509,7 @@ public final class NumericShaper implements Serializable {
     }
 
     public void shape(char[] text, int start, int count, int context) {
-        if (isContextual()){
+        if (isContextual()) {
             contextualShape(text, start, count, getIndexFromRange(context));
         } else {
             nonContextualShape(text, start, count);
@@ -545,7 +517,7 @@ public final class NumericShaper implements Serializable {
     }
 
     public void shape(char[] text, int start, int count) {
-        if (isContextual()){
+        if (isContextual()) {
             contextualShape(text, start, count, fDefaultContextIndex);
         } else {
             nonContextualShape(text, start, count);
@@ -553,38 +525,38 @@ public final class NumericShaper implements Serializable {
     }
 
     /**
-     * Converts count of digits of the given array of characters from the start 
+     * Converts count of digits of the given array of characters from the start
      * index using specified context. This method is applied for the contextual
-     * shaping, if the shaper instance is not contextual use nonContextualShape 
+     * shaping, if the shaper instance is not contextual use nonContextualShape
      * method.
-     * 
-     * @param text an array of chars 
-     * @param start index of the first character to convert
-     * @param count a number of characters to convert
+     *
+     * @param text         an array of chars
+     * @param start        index of the first character to convert
+     * @param count        a number of characters to convert
      * @param contextIndex index of the script index to use in shaper
      */
-    private void contextualShape(char[] text, int start, int count, 
-            int contextIndex){
-        char maxDigit = (char)0x0039;
-        char minDigit = (char)0x0030;
+    private void contextualShape(char[] text, int start, int count,
+                                 int contextIndex) {
+        char maxDigit = (char) 0x0039;
+        char minDigit = (char) 0x0030;
 
         int currIndex;
-        if (((1 << contextIndex) & fRanges) == 0 ){
+        if (((1 << contextIndex) & fRanges) == 0) {
             currIndex = INDEX_EUROPEAN;
         } else {
             currIndex = contextIndex;
         }
 
-        for (int ind = start; ind < start + count; ind++){
-            if (minDigit <= text[ind] && text[ind] <= maxDigit){
-                if (currIndex != INDEX_ETHIOPIC || text[ind] != '0'){
-                    text[ind] = (char)(digitsLowRanges[currIndex] + text[ind]);
+        for (int ind = start; ind < start + count; ind++) {
+            if (minDigit <= text[ind] && text[ind] <= maxDigit) {
+                if (currIndex != INDEX_ETHIOPIC || text[ind] != '0') {
+                    text[ind] = (char) (digitsLowRanges[currIndex] + text[ind]);
                 }
             } else {
-                if(isCharStrong(text[ind])){
+                if (isCharStrong(text[ind])) {
                     int index = getCharIndex(text[ind]);
-                    if (currIndex != index){
-                        if (((1 << index) & fRanges) != 0){
+                    if (currIndex != index) {
+                        if (((1 << index) & fRanges) != 0) {
                             currIndex = index;
                         } else {
                             currIndex = INDEX_EUROPEAN;
@@ -597,19 +569,19 @@ public final class NumericShaper implements Serializable {
     }
 
     /**
-     * Converts count of digits of the given array of characters from the start 
+     * Converts count of digits of the given array of characters from the start
      * index. Method is applied for non-contextual shaper.
-     * 
-     * @param text an array of chars 
+     *
+     * @param text  an array of chars
      * @param start index of the first character to convert
      * @param count a number of characters to convert
      */
-    private void nonContextualShape(char[] text, int start, int count){
-        char maxDigit = (char)0x0039;
-        char minDigit = (char)((fRanges == ETHIOPIC) ? 0x0031 : 0x0030);
-        for (int ind = start; ind < start + count; ind++){
-            if (minDigit <= text[ind] && text[ind] <= maxDigit){
-                    text[ind] = (char)(digitsLowRanges[fSingleRangeIndex] + text[ind]);
+    private void nonContextualShape(char[] text, int start, int count) {
+        char maxDigit = (char) 0x0039;
+        char minDigit = (char) ((fRanges == ETHIOPIC) ? 0x0031 : 0x0030);
+        for (int ind = start; ind < start + count; ind++) {
+            if (minDigit <= text[ind] && text[ind] <= maxDigit) {
+                text[ind] = (char) (digitsLowRanges[fSingleRangeIndex] + text[ind]);
             }
         }
 
@@ -617,15 +589,15 @@ public final class NumericShaper implements Serializable {
 
     /**
      * Returns the index of the script of the specified char.
-     * 
+     *
      * @param ch specified unicode character
      * @return script index corresponding to the given char
-     */ 
-    private int getCharIndex(char ch){
+     */
+    private int getCharIndex(char ch) {
         int index = INDEX_EUROPEAN;
-        for (int i=0; i < MAX_INDEX; i++){
+        for (int i = 0; i < MAX_INDEX; i++) {
             int j = i * 2;
-            if (scriptsRanges[j] <= ch && ch <= scriptsRanges[j+1]){
+            if (scriptsRanges[j] <= ch && ch <= scriptsRanges[j + 1]) {
                 return i;
             }
         }
@@ -634,25 +606,25 @@ public final class NumericShaper implements Serializable {
     }
 
     /**
-     * Returns true if the bidirectional category of the character 
+     * Returns true if the bidirectional category of the character
      * is strong.
-     * 
+     *
      * @param chr specified unicode character
      * @return true, if the character is strong, false otherwise
-     */ 
+     */
     private boolean isCharStrong(int chr) {
         return (STRONG_TEXT_FLAGS[chr >> 5] & (1 << (chr % 32))) != 0;
     }
 
     /**
      * Updates all private serialized fields for object to be correctly serialized
-     * according to the serialized form of this class mentioned in the 
+     * according to the serialized form of this class mentioned in the
      * documentation.
      */
-     private void updateRangesFields(){
+    private void updateRangesFields() {
         fRanges = (mask & ~(1 << 31));
-        fContextual = ((mask &(1 << 31)) != 0);
-        if (fContextual){
+        fContextual = ((mask & (1 << 31)) != 0);
+        if (fContextual) {
             fRanges = (mask & ~(1 << 31));
             fDefaultContextIndex = key;
         } else {
@@ -663,27 +635,27 @@ public final class NumericShaper implements Serializable {
 
     /**
      * Updates private fields for object after deserialization
-     * according to the serialized form of this class mentioned in the 
+     * according to the serialized form of this class mentioned in the
      * documentation.
      */
-    private void updateKeyMaskFields(){
+    private void updateKeyMaskFields() {
         mask = fRanges;
-        if (fContextual){
+        if (fContextual) {
             mask |= (1 << 31);
             key = fDefaultContextIndex;
-        } else{
+        } else {
             key = fSingleRangeIndex;
         }
     }
-    
+
     private void writeObject(java.io.ObjectOutputStream out)
-                                throws IOException{
+            throws IOException {
         updateKeyMaskFields();
         out.defaultWriteObject();
     }
 
     private void readObject(java.io.ObjectInputStream in)
-                                throws IOException, ClassNotFoundException{
+            throws IOException, ClassNotFoundException {
         in.defaultReadObject();
         updateRangesFields();
     }

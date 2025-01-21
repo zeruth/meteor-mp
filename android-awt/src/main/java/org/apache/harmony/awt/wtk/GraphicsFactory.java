@@ -19,23 +19,24 @@
  */
 package org.apache.harmony.awt.wtk;
 
-import java.awt.Font;
-import java.awt.peer.FontPeer;
 import org.apache.harmony.awt.gl.font.FontManager;
 
+import java.awt.*;
+import java.awt.peer.FontPeer;
 import java.io.IOException;
 
 
-
 /**
- * GraphicsFactory interface defines methods for Graphics2D 
+ * GraphicsFactory interface defines methods for Graphics2D
  * and font stuff instances factories.
  */
 public interface GraphicsFactory {
-    
-    
+
+
     // Font methods
     FontManager getFontManager();
+
     FontPeer getFontPeer(Font font);
+
     Font embedFont(String fontFilePath) throws IOException;
 }

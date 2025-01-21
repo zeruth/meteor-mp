@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.fieldtypes;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
+
+import java.nio.ByteOrder;
 
 public class FieldTypeByte extends FieldType {
     public FieldTypeByte(final int type, final String name) {
@@ -38,7 +38,7 @@ public class FieldTypeByte extends FieldType {
     @Override
     public byte[] writeData(final Object o, final ByteOrder byteOrder) throws ImageWriteException {
         if (o instanceof Byte) {
-            return new byte[] { ((Byte) o).byteValue(), };
+            return new byte[]{((Byte) o).byteValue(),};
         } else if (o instanceof byte[]) {
             return (byte[]) o;
         } else {

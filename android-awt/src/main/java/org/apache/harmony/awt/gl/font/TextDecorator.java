@@ -20,17 +20,11 @@
 
 package org.apache.harmony.awt.gl.font;
 
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Graphics2D;
-import java.awt.Paint;
-import java.awt.Shape;
-import java.awt.Stroke;
+import java.awt.*;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Area;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-
 import java.text.AttributedCharacterIterator.Attribute;
 import java.util.Map;
 
@@ -41,120 +35,17 @@ import java.util.Map;
  */
 public class TextDecorator {
     private static final TextDecorator inst = new TextDecorator();
-    private TextDecorator() {}
+
+    private TextDecorator() {
+    }
+
     static TextDecorator getInstance() {
         return inst;
     }
 
     /**
-     * This class encapsulates a set of decoration attributes for a single text run.
-     */
-    static class Decoration {
-        private static final BasicStroke UNDERLINE_LOW_ONE_PIXEL_STROKE =
-                new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10);
-
-        private static final BasicStroke UNDERLINE_LOW_TWO_PIXEL_STROKE =
-                new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10);
-
-        private static final BasicStroke UNDERLINE_LOW_DOTTED_STROKE =
-                new BasicStroke(
-                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
-                        new float[] { 1, 1 }, 0
-                );
-
-        private static final BasicStroke UNDERLINE_LOW_DOTTED_STROKE2 =
-                new BasicStroke(
-                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
-                        new float[] { 1, 1 }, 1
-                );
-
-        private static final BasicStroke UNDERLINE_LOW_DASHED_STROKE =
-                new BasicStroke(
-                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
-                        new float[] { 4, 4 }, 0
-                );
-
-        boolean ulOn = false; // Have standard underline?
-        BasicStroke ulStroke;
-
-        BasicStroke imUlStroke;  // Stroke for INPUT_METHOD_UNDERLINE
-        BasicStroke imUlStroke2; // Specially for UNDERLINE_LOW_GRAY
-
-        boolean strikeThrough;
-        BasicStroke strikeThroughStroke;
-
-        boolean haveStrokes = false; // Strokes already created?
-
-        boolean swapBfFg;
-        Paint bg; // background color
-        Paint fg; // foreground color
-
-        Paint graphicsPaint; // Slot for saving current paint
-
-        Decoration(
-                Integer imUl,
-                boolean swap,
-                boolean sth,
-                Paint bg, Paint fg,
-                boolean ulOn) {
-
-            if (imUl != null) {
-                // Determine which stroke to use
-                if (imUl == TextAttribute.UNDERLINE_LOW_ONE_PIXEL) {
-                    this.imUlStroke = Decoration.UNDERLINE_LOW_ONE_PIXEL_STROKE;
-                } else if (imUl == TextAttribute.UNDERLINE_LOW_TWO_PIXEL) {
-                    this.imUlStroke = Decoration.UNDERLINE_LOW_TWO_PIXEL_STROKE;
-                } else if (imUl == TextAttribute.UNDERLINE_LOW_DOTTED) {
-                    this.imUlStroke = Decoration.UNDERLINE_LOW_DOTTED_STROKE;
-                } else if (imUl == TextAttribute.UNDERLINE_LOW_GRAY) {
-                    this.imUlStroke = Decoration.UNDERLINE_LOW_DOTTED_STROKE;
-                    this.imUlStroke2 = Decoration.UNDERLINE_LOW_DOTTED_STROKE2;
-                } else if (imUl == TextAttribute.UNDERLINE_LOW_DASHED) {
-                    this.imUlStroke = Decoration.UNDERLINE_LOW_DASHED_STROKE;
-                }
-            }
-
-            this.ulOn = ulOn; // Has underline
-            this.swapBfFg = swap;
-            this.strikeThrough = sth;
-            this.bg = bg;
-            this.fg = fg;
-        }
-
-        /**
-         * Creates strokes of proper width according to the info
-         * stored in the BasicMetrics
-         * @param metrics - basic metrics
-         */
-        private void getStrokes(BasicMetrics metrics) {
-            if (!haveStrokes) {
-                if (strikeThrough) {
-                    strikeThroughStroke =
-                            new BasicStroke(
-                                    metrics.strikethroughThickness,
-                                    BasicStroke.CAP_BUTT,
-                                    BasicStroke.JOIN_MITER,
-                                    10
-                            );
-                }
-
-                if (ulOn) {
-                    ulStroke =
-                            new BasicStroke(
-                                    metrics.underlineThickness,
-                                    BasicStroke.CAP_BUTT,
-                                    BasicStroke.JOIN_MITER,
-                                    10
-                            );
-                }
-
-                haveStrokes = true;
-            }
-        }
-    }
-
-    /**
      * Creates Decoration object from the set of text attributes
+     *
      * @param attributes - text attributes
      * @return Decoration object
      */
@@ -184,11 +75,11 @@ public class TextDecorator {
 
         if (
                 !hasStandardUnderline &&
-                imUnderline == null &&
-                fg == null &&
-                bg == null &&
-                !swapBgFg &&
-                !strikeThrough
+                        imUnderline == null &&
+                        fg == null &&
+                        bg == null &&
+                        !swapBgFg &&
+                        !strikeThrough
         ) {
             return null;
         }
@@ -197,13 +88,13 @@ public class TextDecorator {
 
     /**
      * Fills the background before drawing if needed.
-     * 
-     * @param trs - text segment
-     * @param g2d - graphics to draw to
+     *
+     * @param trs     - text segment
+     * @param g2d     - graphics to draw to
      * @param xOffset - offset in X direction to the upper left corner of the
-     *        layout from the origin of the graphics
+     *                layout from the origin of the graphics
      * @param yOffset - offset in Y direction to the upper left corner of the
-     *        layout from the origin of the graphics
+     *                layout from the origin of the graphics
      */
     static void prepareGraphics(
             TextRunSegment trs, Graphics2D g2d,
@@ -257,7 +148,8 @@ public class TextDecorator {
 
     /**
      * Restores the original state of the graphics if needed
-     * @param d - decoration
+     *
+     * @param d   - decoration
      * @param g2d - graphics
      */
     static void restoreGraphics(Decoration d, Graphics2D g2d) {
@@ -270,12 +162,13 @@ public class TextDecorator {
 
     /**
      * Renders the text decorations
-     * @param trs - text run segment
-     * @param g2d - graphics to render to
+     *
+     * @param trs     - text run segment
+     * @param g2d     - graphics to render to
      * @param xOffset - offset in X direction to the upper left corner
-     * of the layout from the origin of the graphics
+     *                of the layout from the origin of the graphics
      * @param yOffset - offset in Y direction to the upper left corner
-     * of the layout from the origin of the graphics
+     *                of the layout from the origin of the graphics
      */
     static void drawTextDecorations(
             TextRunSegment trs, Graphics2D g2d,
@@ -323,9 +216,10 @@ public class TextDecorator {
     /**
      * Extends the visual bounds of the text run segment to
      * include text decorations.
-     * @param trs - text segment
+     *
+     * @param trs           - text segment
      * @param segmentBounds - bounds of the undecorated text
-     * @param d - decoration
+     * @param d             - decoration
      * @return extended bounds
      */
     static Rectangle2D extendVisualBounds(
@@ -360,7 +254,7 @@ public class TextDecorator {
                 maxy = Math.max(
                         maxy,
                         trs.metrics.underlineOffset +
-                        d.ulStroke.getLineWidth()
+                                d.ulStroke.getLineWidth()
                 );
             }
 
@@ -368,21 +262,22 @@ public class TextDecorator {
                 maxy = Math.max(
                         maxy,
                         trs.metrics.underlineOffset +
-                        d.imUlStroke.getLineWidth() +
-                        (d.imUlStroke2 == null ? 0 : d.imUlStroke2.getLineWidth())
+                                d.imUlStroke.getLineWidth() +
+                                (d.imUlStroke2 == null ? 0 : d.imUlStroke2.getLineWidth())
                 );
             }
         }
 
-        return new Rectangle2D.Double(minx, miny, maxx-minx, maxy-miny);
+        return new Rectangle2D.Double(minx, miny, maxx - minx, maxy - miny);
     }
 
     /**
      * Extends the outline of the text run segment to
      * include text decorations.
-     * @param trs - text segment
+     *
+     * @param trs            - text segment
      * @param segmentOutline - outline of the undecorated text
-     * @param d - decoration
+     * @param d              - decoration
      * @return extended outline
      */
     static Shape extendOutline(
@@ -430,5 +325,113 @@ public class TextDecorator {
         }
 
         return res;
+    }
+
+    /**
+     * This class encapsulates a set of decoration attributes for a single text run.
+     */
+    static class Decoration {
+        private static final BasicStroke UNDERLINE_LOW_ONE_PIXEL_STROKE =
+                new BasicStroke(1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10);
+
+        private static final BasicStroke UNDERLINE_LOW_TWO_PIXEL_STROKE =
+                new BasicStroke(2, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10);
+
+        private static final BasicStroke UNDERLINE_LOW_DOTTED_STROKE =
+                new BasicStroke(
+                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
+                        new float[]{1, 1}, 0
+                );
+
+        private static final BasicStroke UNDERLINE_LOW_DOTTED_STROKE2 =
+                new BasicStroke(
+                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
+                        new float[]{1, 1}, 1
+                );
+
+        private static final BasicStroke UNDERLINE_LOW_DASHED_STROKE =
+                new BasicStroke(
+                        1, BasicStroke.CAP_BUTT, BasicStroke.JOIN_MITER, 10,
+                        new float[]{4, 4}, 0
+                );
+
+        boolean ulOn = false; // Have standard underline?
+        BasicStroke ulStroke;
+
+        BasicStroke imUlStroke;  // Stroke for INPUT_METHOD_UNDERLINE
+        BasicStroke imUlStroke2; // Specially for UNDERLINE_LOW_GRAY
+
+        boolean strikeThrough;
+        BasicStroke strikeThroughStroke;
+
+        boolean haveStrokes = false; // Strokes already created?
+
+        boolean swapBfFg;
+        Paint bg; // background color
+        Paint fg; // foreground color
+
+        Paint graphicsPaint; // Slot for saving current paint
+
+        Decoration(
+                Integer imUl,
+                boolean swap,
+                boolean sth,
+                Paint bg, Paint fg,
+                boolean ulOn) {
+
+            if (imUl != null) {
+                // Determine which stroke to use
+                if (imUl == TextAttribute.UNDERLINE_LOW_ONE_PIXEL) {
+                    this.imUlStroke = Decoration.UNDERLINE_LOW_ONE_PIXEL_STROKE;
+                } else if (imUl == TextAttribute.UNDERLINE_LOW_TWO_PIXEL) {
+                    this.imUlStroke = Decoration.UNDERLINE_LOW_TWO_PIXEL_STROKE;
+                } else if (imUl == TextAttribute.UNDERLINE_LOW_DOTTED) {
+                    this.imUlStroke = Decoration.UNDERLINE_LOW_DOTTED_STROKE;
+                } else if (imUl == TextAttribute.UNDERLINE_LOW_GRAY) {
+                    this.imUlStroke = Decoration.UNDERLINE_LOW_DOTTED_STROKE;
+                    this.imUlStroke2 = Decoration.UNDERLINE_LOW_DOTTED_STROKE2;
+                } else if (imUl == TextAttribute.UNDERLINE_LOW_DASHED) {
+                    this.imUlStroke = Decoration.UNDERLINE_LOW_DASHED_STROKE;
+                }
+            }
+
+            this.ulOn = ulOn; // Has underline
+            this.swapBfFg = swap;
+            this.strikeThrough = sth;
+            this.bg = bg;
+            this.fg = fg;
+        }
+
+        /**
+         * Creates strokes of proper width according to the info
+         * stored in the BasicMetrics
+         *
+         * @param metrics - basic metrics
+         */
+        private void getStrokes(BasicMetrics metrics) {
+            if (!haveStrokes) {
+                if (strikeThrough) {
+                    strikeThroughStroke =
+                            new BasicStroke(
+                                    metrics.strikethroughThickness,
+                                    BasicStroke.CAP_BUTT,
+                                    BasicStroke.JOIN_MITER,
+                                    10
+                            );
+                }
+
+                if (ulOn) {
+                    ulStroke =
+                            new BasicStroke(
+                                    metrics.underlineThickness,
+                                    BasicStroke.CAP_BUTT,
+                                    BasicStroke.JOIN_MITER,
+                                    10
+                            );
+                }
+
+                haveStrokes = true;
+            }
+        }
     }
 }

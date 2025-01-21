@@ -21,10 +21,7 @@ package org.apache.harmony.x.imageio.plugins.jpeg;
 
 public class JPEGConsts {
 
-    private JPEGConsts() {}
-
     public static final int SOI = 0xD8;
-
     //-- IJG (Independed JPEG Group) color spaces
     public static final int JCS_UNKNOW = 0;
     public static final int JCS_GRAYSCALE = 1;
@@ -36,8 +33,9 @@ public class JPEGConsts {
     public static final int JCS_YCbCrA = 7;
     public static final int JCS_YCCA = 10;
     public static final int JCS_YCCK = 11;
-
+    public static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
     public static int[][] BAND_OFFSETS = {{}, {0}, {0, 1}, {0, 1, 2}, {0, 1, 2, 3}};
 
-    public static final float DEFAULT_JPEG_COMPRESSION_QUALITY = 0.75f;
+    private JPEGConsts() {
+    }
 }

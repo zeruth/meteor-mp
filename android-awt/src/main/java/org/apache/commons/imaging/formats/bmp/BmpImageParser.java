@@ -16,16 +16,7 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.FormatCompliance;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.PixelDensity;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.ImageBuilder;
@@ -34,30 +25,22 @@ import org.apache.commons.imaging.palette.PaletteFactory;
 import org.apache.commons.imaging.palette.SimplePalette;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.imaging.ImagingConstants.BUFFERED_IMAGE_FACTORY;
-import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_FORMAT;
-import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_PIXEL_DENSITY;
-import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_VERBOSE;
-import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
-import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
+import static org.apache.commons.imaging.ImagingConstants.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
 public class BmpImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".bmp";
-    private static final String[] ACCEPTED_EXTENSIONS = { DEFAULT_EXTENSION, };
-    private static final byte[] BMP_HEADER_SIGNATURE = { 0x42, 0x4d, };
+    private static final String[] ACCEPTED_EXTENSIONS = {DEFAULT_EXTENSION,};
+    private static final byte[] BMP_HEADER_SIGNATURE = {0x42, 0x4d,};
     private static final int BI_RGB = 0;
     private static final int BI_RLE4 = 2;
     private static final int BI_RLE8 = 1;
@@ -86,12 +69,12 @@ public class BmpImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.BMP, //
+        return new ImageFormat[]{ImageFormats.BMP, //
         };
     }
 
     private BmpHeaderInfo readBmpHeaderInfo(final InputStream is,
-            final FormatCompliance formatCompliance, final boolean verbose)
+                                            final FormatCompliance formatCompliance, final boolean verbose)
             throws ImageReadException, IOException {
         final byte identifier1 = readByte("Identifier1", is, "Not a Valid BMP File");
         final byte identifier2 = readByte("Identifier2", is, "Not a Valid BMP File");
@@ -256,42 +239,42 @@ public class BmpImageParser extends ImageParser {
 
             if (a == 0) {
                 switch (b) {
-                case 0: // EOL
-                    break;
-                case 1: // EOF
-                    // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    // );
-                    done = true;
-                    break;
-                case 2: {
-                    // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    // );
-                    final int c = 0xff & readByte("RLE c", is, "BMP: Bad RLE");
-                    baos.write(c);
-                    final int d = 0xff & readByte("RLE d", is, "BMP: Bad RLE");
-                    baos.write(d);
+                    case 0: // EOL
+                        break;
+                    case 1: // EOF
+                        // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        // );
+                        done = true;
+                        break;
+                    case 2: {
+                        // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        // );
+                        final int c = 0xff & readByte("RLE c", is, "BMP: Bad RLE");
+                        baos.write(c);
+                        final int d = 0xff & readByte("RLE d", is, "BMP: Bad RLE");
+                        baos.write(d);
 
-                }
+                    }
                     break;
-                default: {
-                    int size = b / rleSamplesPerByte;
-                    if ((b % rleSamplesPerByte) > 0) {
-                        size++;
-                    }
-                    if ((size % 2) != 0) {
-                        size++;
-                    }
+                    default: {
+                        int size = b / rleSamplesPerByte;
+                        if ((b % rleSamplesPerByte) > 0) {
+                            size++;
+                        }
+                        if ((size % 2) != 0) {
+                            size++;
+                        }
 
-                    // System.out.println("b: " + b);
-                    // System.out.println("size: " + size);
-                    // System.out.println("RLESamplesPerByte: " +
-                    // RLESamplesPerByte);
-                    // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
-                    // );
-                    final byte[] bytes = readBytes("bytes", is, size,
-                            "RLE: Absolute Mode");
-                    baos.write(bytes);
-                }
+                        // System.out.println("b: " + b);
+                        // System.out.println("size: " + size);
+                        // System.out.println("RLESamplesPerByte: " +
+                        // RLESamplesPerByte);
+                        // System.out.println("xXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX"
+                        // );
+                        final byte[] bytes = readBytes("bytes", is, size,
+                                "RLE: Absolute Mode");
+                        baos.write(bytes);
+                    }
                     break;
                 }
             }
@@ -301,7 +284,7 @@ public class BmpImageParser extends ImageParser {
     }
 
     private ImageContents readImageContents(final InputStream is,
-            final FormatCompliance formatCompliance, final boolean verbose)
+                                            final FormatCompliance formatCompliance, final boolean verbose)
             throws ImageReadException, IOException {
         final BmpHeaderInfo bhi = readBmpHeaderInfo(is, formatCompliance, verbose);
 
@@ -326,61 +309,61 @@ public class BmpImageParser extends ImageParser {
         boolean rle = false;
 
         switch (bhi.compression) {
-        case BI_RGB:
-            if (verbose) {
-                System.out.println("Compression: BI_RGB");
-            }
-            if (bhi.bitsPerPixel <= 8) {
-                paletteLength = 4 * colorTableSize;
-            } else {
-                paletteLength = 0;
-            }
-            // BytesPerPaletteEntry = 0;
-            // System.out.println("Compression: BI_RGBx2: " + bhi.BitsPerPixel);
-            // System.out.println("Compression: BI_RGBx2: " + (bhi.BitsPerPixel
-            // <= 16));
-            break;
+            case BI_RGB:
+                if (verbose) {
+                    System.out.println("Compression: BI_RGB");
+                }
+                if (bhi.bitsPerPixel <= 8) {
+                    paletteLength = 4 * colorTableSize;
+                } else {
+                    paletteLength = 0;
+                }
+                // BytesPerPaletteEntry = 0;
+                // System.out.println("Compression: BI_RGBx2: " + bhi.BitsPerPixel);
+                // System.out.println("Compression: BI_RGBx2: " + (bhi.BitsPerPixel
+                // <= 16));
+                break;
 
-        case BI_RLE4:
-            if (verbose) {
-                System.out.println("Compression: BI_RLE4");
-            }
-            paletteLength = 4 * colorTableSize;
-            rleSamplesPerByte = 2;
-            // ExtraBitsPerPixel = 4;
-            rle = true;
-            // // BytesPerPixel = 2;
-            // // BytesPerPaletteEntry = 0;
-            break;
-        //
-        case BI_RLE8:
-            if (verbose) {
-                System.out.println("Compression: BI_RLE8");
-            }
-            paletteLength = 4 * colorTableSize;
-            rleSamplesPerByte = 1;
-            // ExtraBitsPerPixel = 8;
-            rle = true;
-            // BytesPerPixel = 2;
-            // BytesPerPaletteEntry = 0;
-            break;
-        //
-        case BI_BITFIELDS:
-            if (verbose) {
-                System.out.println("Compression: BI_BITFIELDS");
-            }
-            if (bhi.bitsPerPixel <= 8) {
+            case BI_RLE4:
+                if (verbose) {
+                    System.out.println("Compression: BI_RLE4");
+                }
                 paletteLength = 4 * colorTableSize;
-            } else {
-                paletteLength = 0;
-            }
-            // BytesPerPixel = 2;
-            // BytesPerPaletteEntry = 4;
-            break;
+                rleSamplesPerByte = 2;
+                // ExtraBitsPerPixel = 4;
+                rle = true;
+                // // BytesPerPixel = 2;
+                // // BytesPerPaletteEntry = 0;
+                break;
+            //
+            case BI_RLE8:
+                if (verbose) {
+                    System.out.println("Compression: BI_RLE8");
+                }
+                paletteLength = 4 * colorTableSize;
+                rleSamplesPerByte = 1;
+                // ExtraBitsPerPixel = 8;
+                rle = true;
+                // BytesPerPixel = 2;
+                // BytesPerPaletteEntry = 0;
+                break;
+            //
+            case BI_BITFIELDS:
+                if (verbose) {
+                    System.out.println("Compression: BI_BITFIELDS");
+                }
+                if (bhi.bitsPerPixel <= 8) {
+                    paletteLength = 4 * colorTableSize;
+                } else {
+                    paletteLength = 0;
+                }
+                // BytesPerPixel = 2;
+                // BytesPerPaletteEntry = 4;
+                break;
 
-        default:
-            throw new ImageReadException("BMP: Unknown Compression: "
-                    + bhi.compression);
+            default:
+                throw new ImageReadException("BMP: Unknown Compression: "
+                        + bhi.compression);
         }
 
         byte[] colorTable = null;
@@ -419,7 +402,7 @@ public class BmpImageParser extends ImageParser {
         final int headerSize = BITMAP_FILE_HEADER_SIZE
                 + bhi.bitmapHeaderSize
                 + (bhi.bitmapHeaderSize == 40
-                        && bhi.compression == BI_BITFIELDS ? 3 * 4 : 0);
+                && bhi.compression == BI_BITFIELDS ? 3 * 4 : 0);
         final int expectedDataOffset = headerSize + paletteLength;
 
         if (verbose) {
@@ -457,26 +440,26 @@ public class BmpImageParser extends ImageParser {
         PixelParser pixelParser;
 
         switch (bhi.compression) {
-        case BI_RLE4:
-        case BI_RLE8:
-            pixelParser = new PixelParserRle(bhi, colorTable, imageData);
-            break;
-        case BI_RGB:
-            pixelParser = new PixelParserRgb(bhi, colorTable, imageData);
-            break;
-        case BI_BITFIELDS:
-            pixelParser = new PixelParserBitFields(bhi, colorTable, imageData);
-            break;
-        default:
-            throw new ImageReadException("BMP: Unknown Compression: "
-                    + bhi.compression);
+            case BI_RLE4:
+            case BI_RLE8:
+                pixelParser = new PixelParserRle(bhi, colorTable, imageData);
+                break;
+            case BI_RGB:
+                pixelParser = new PixelParserRgb(bhi, colorTable, imageData);
+                break;
+            case BI_BITFIELDS:
+                pixelParser = new PixelParserBitFields(bhi, colorTable, imageData);
+                break;
+            default:
+                throw new ImageReadException("BMP: Unknown Compression: "
+                        + bhi.compression);
         }
 
         return new ImageContents(bhi, colorTable, imageData, pixelParser);
     }
 
     private BmpHeaderInfo readBmpHeaderInfo(final ByteSource byteSource,
-            final boolean verbose) throws ImageReadException, IOException {
+                                            final boolean verbose) throws ImageReadException, IOException {
         InputStream is = null;
         boolean canThrow = false;
         try {
@@ -503,7 +486,7 @@ public class BmpImageParser extends ImageParser {
         // make copy of params; we'll clear keys as we consume them.
         params = (params == null) ? new HashMap<String, Object>() : new HashMap<String, Object>(params);
 
-        final boolean verbose =  Boolean.TRUE.equals(params.get(PARAM_KEY_VERBOSE));
+        final boolean verbose = Boolean.TRUE.equals(params.get(PARAM_KEY_VERBOSE));
 
         if (params.containsKey(PARAM_KEY_VERBOSE)) {
             params.remove(PARAM_KEY_VERBOSE);
@@ -559,7 +542,7 @@ public class BmpImageParser extends ImageParser {
         // make copy of params; we'll clear keys as we consume them.
         params = (params == null) ? new HashMap<String, Object>() : new HashMap<String, Object>(params);
 
-        final boolean verbose =  Boolean.TRUE.equals(params.get(PARAM_KEY_VERBOSE));
+        final boolean verbose = Boolean.TRUE.equals(params.get(PARAM_KEY_VERBOSE));
 
         if (params.containsKey(PARAM_KEY_VERBOSE)) {
             params.remove(PARAM_KEY_VERBOSE);
@@ -810,11 +793,9 @@ public class BmpImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override

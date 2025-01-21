@@ -18,8 +18,9 @@
 package org.apache.harmony.x.imageio.plugins.png;
 
 
-import javax.imageio.spi.ImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.AwtImageReader;
+
+import javax.imageio.spi.ImageReaderSpi;
 
 public class PNGImageReader extends AwtImageReader {
 

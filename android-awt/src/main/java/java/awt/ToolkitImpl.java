@@ -18,8 +18,7 @@
 package java.awt;
 
 
-
-class ToolkitImpl  {
+class ToolkitImpl {
 //    static final Hashtable<Serializable, Image> imageCache = new Hashtable<Serializable, Image>();
 //
 //    static final FontMetrics cacheFM[] =  new FontMetrics[10];

@@ -21,15 +21,13 @@
 package java.awt.image;
 
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public class AffineTransformOp implements BufferedImageOp, RasterOp {
@@ -59,7 +57,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
                 // Determine from rendering quality
                 if (hint == RenderingHints.VALUE_RENDER_QUALITY) {
                     this.iType = TYPE_BILINEAR;
-                // For speed use nearest neighbor
+                    // For speed use nearest neighbor
                 }
             }
         }
@@ -128,15 +126,15 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
         int height = src.getHeight();
 
         float[] corners = {
-            0, 0,
-            width, 0,
-            width, height,
-            0, height
+                0, 0,
+                width, 0,
+                width, height,
+                0, height
         };
 
         at.transform(corners, 0, corners, 0, 4);
 
-        Rectangle2D.Float bounds = new Rectangle2D.Float(corners[0], corners[1], 0 , 0);
+        Rectangle2D.Float bounds = new Rectangle2D.Float(corners[0], corners[1], 0, 0);
         bounds.add(corners[2], corners[3]);
         bounds.add(corners[4], corners[5]);
         bounds.add(corners[6], corners[7]);
@@ -160,7 +158,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
 
         if (destCM != null) {
             return new BufferedImage(destCM,
-                    destCM.createCompatibleWritableRaster((int)dstWidth, (int)dstHeight),
+                    destCM.createCompatibleWritableRaster((int) dstWidth, (int) dstHeight),
                     destCM.isAlphaPremultiplied(),
                     null
             );
@@ -170,18 +168,18 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
 
         // Interpolation other than NN doesn't make any sense for index color
         if (iType != TYPE_NEAREST_NEIGHBOR && cm instanceof IndexColorModel) {
-            return new BufferedImage((int)dstWidth, (int)dstHeight, BufferedImage.TYPE_INT_ARGB);
+            return new BufferedImage((int) dstWidth, (int) dstHeight, BufferedImage.TYPE_INT_ARGB);
         }
 
         // OK, we can get source color model
         return new BufferedImage(cm,
-                src.getRaster().createCompatibleWritableRaster((int)dstWidth, (int)dstHeight),
+                src.getRaster().createCompatibleWritableRaster((int) dstWidth, (int) dstHeight),
                 cm.isAlphaPremultiplied(),
                 null
         );
     }
 
-    public WritableRaster createCompatibleDestRaster (Raster src) {
+    public WritableRaster createCompatibleDestRaster(Raster src) {
         // Here approach is other then in createCompatibleDestImage -
         // destination should include only
         // transformed image, but not (0,0) in source coordinate system
@@ -189,7 +187,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
         Rectangle2D newBounds = getBounds2D(src);
         return src.createCompatibleWritableRaster(
                 (int) newBounds.getX(), (int) newBounds.getY(),
-                (int) newBounds.getWidth(), (int)newBounds.getHeight()
+                (int) newBounds.getWidth(), (int) newBounds.getHeight()
         );
     }
 
@@ -205,9 +203,9 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
 
         if (
                 srcCM instanceof IndexColorModel &&
-                (iType != TYPE_NEAREST_NEIGHBOR || srcCM.getPixelSize() % 8 != 0)
+                        (iType != TYPE_NEAREST_NEIGHBOR || srcCM.getPixelSize() % 8 != 0)
         ) {
-            src = ((IndexColorModel)srcCM).convertToIntDiscrete(src.getRaster(), true);
+            src = ((IndexColorModel) srcCM).convertToIntDiscrete(src.getRaster(), true);
             srcCM = src.getColorModel();
         }
 
@@ -217,12 +215,12 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
             if (!srcCM.equals(dst.getColorModel())) {
                 // Treat BufferedImage.TYPE_INT_RGB and BufferedImage.TYPE_INT_ARGB as same
                 if (
-                   !(
-                     (src.getType() == BufferedImage.TYPE_INT_RGB ||
-                      src.getType() == BufferedImage.TYPE_INT_ARGB) &&
-                     (dst.getType() == BufferedImage.TYPE_INT_RGB ||
-                      dst.getType() == BufferedImage.TYPE_INT_ARGB)
-                    )
+                        !(
+                                (src.getType() == BufferedImage.TYPE_INT_RGB ||
+                                        src.getType() == BufferedImage.TYPE_INT_ARGB) &&
+                                        (dst.getType() == BufferedImage.TYPE_INT_RGB ||
+                                                dst.getType() == BufferedImage.TYPE_INT_ARGB)
+                        )
                 ) {
                     finalDst = dst;
                     dst = createCompatibleDestImage(src, srcCM);
@@ -233,9 +231,9 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
         // Skip alpha channel for TYPE_INT_RGB images
         if (slowFilter(src.getRaster(), dst.getRaster()) != 0) {
             // awt.21F=Unable to transform source
-            throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-        // TODO - uncomment
-        //if (ippFilter(src.getRaster(), dst.getRaster(), src.getType()) != 0)
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+            // TODO - uncomment
+            //if (ippFilter(src.getRaster(), dst.getRaster(), src.getType()) != 0)
             //throw new ImagingOpException ("Unable to transform source");
         }
 
@@ -266,9 +264,9 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
         if (slowFilter(src, dst) != 0) {
             // awt.21F=Unable to transform source
             throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
-        // TODO - uncomment
-        //if (ippFilter(src, dst, BufferedImage.TYPE_CUSTOM) != 0)
-        //    throw new ImagingOpException("Unable to transform source");
+            // TODO - uncomment
+            //if (ippFilter(src, dst, BufferedImage.TYPE_CUSTOM) != 0)
+            //    throw new ImagingOpException("Unable to transform source");
         }
 
         return dst;
@@ -285,7 +283,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
 
         AffineTransform inv = null;
         try {
-             inv = at.createInverse();
+            inv = at.createInverse();
         } catch (NoninvertibleTransformException e) {
             return -1;
         }
@@ -303,12 +301,12 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
         int maxX = minX + bounds.width;
         int maxY = minY + bounds.height;
 
-        int hx = (int)(m[0] * 256);
-        int hy = (int)(m[1] * 256);
-        int vx = (int)(m[2] * 256);
-        int vy = (int)(m[3] * 256);
-        int sx = (int)(m[4] * 256) + hx * bounds.x + vx * bounds.y + (srcBounds.x) * 256;
-        int sy = (int)(m[5] * 256) + hy * bounds.x + vy * bounds.y + (srcBounds.y) * 256;
+        int hx = (int) (m[0] * 256);
+        int hy = (int) (m[1] * 256);
+        int vx = (int) (m[2] * 256);
+        int vy = (int) (m[3] * 256);
+        int sx = (int) (m[4] * 256) + hx * bounds.x + vx * bounds.y + (srcBounds.x) * 256;
+        int sy = (int) (m[5] * 256) + hy * bounds.x + vy * bounds.y + (srcBounds.y) * 256;
 
         vx -= hx * bounds.width;
         vy -= hy * bounds.width;
@@ -319,7 +317,7 @@ public class AffineTransformOp implements BufferedImageOp, RasterOp {
                     int px = sx >> 8;
                     int py = sy >> 8;
                     if (px >= minSrcX && py >= minSrcY && px < maxSrcX && py < maxSrcY) {
-                        Object val = src.getDataElements(px , py , null);
+                        Object val = src.getDataElements(px, py, null);
                         dst.setDataElements(x, y, val);
                     }
                     sx += hx;

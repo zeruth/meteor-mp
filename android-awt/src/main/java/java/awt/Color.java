@@ -19,22 +19,18 @@
  */
 package java.awt;
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 import java.awt.color.ColorSpace;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import org.apache.harmony.awt.internal.nls.Messages;
-
+import java.awt.image.*;
 import java.io.Serializable;
 import java.util.Arrays;
 
 
 public class Color implements Paint, Serializable {
-    private static final long serialVersionUID = 118526816881161077L;
+    public static final Color white = new Color(255, 255, 255);
 
     /*
      * The values of the following colors are based on 1.5 release behavior which
@@ -42,86 +38,32 @@ public class Color implements Paint, Serializable {
      *   Color c = Color.white;
      *   System.out.println(c);
      */
-
-    public static final Color white = new Color(255, 255, 255);
-
     public static final Color WHITE = white;
-
     public static final Color lightGray = new Color(192, 192, 192);
-
     public static final Color LIGHT_GRAY = lightGray;
-
     public static final Color gray = new Color(128, 128, 128);
-
     public static final Color GRAY = gray;
-
     public static final Color darkGray = new Color(64, 64, 64);
-
     public static final Color DARK_GRAY = darkGray;
-
     public static final Color black = new Color(0, 0, 0);
-
     public static final Color BLACK = black;
-
     public static final Color red = new Color(255, 0, 0);
-
     public static final Color RED = red;
-
     public static final Color pink = new Color(255, 175, 175);
-
     public static final Color PINK = pink;
-
     public static final Color orange = new Color(255, 200, 0);
-
     public static final Color ORANGE = orange;
-
     public static final Color yellow = new Color(255, 255, 0);
-
     public static final Color YELLOW = yellow;
-
     public static final Color green = new Color(0, 255, 0);
-
     public static final Color GREEN = green;
-
     public static final Color magenta = new Color(255, 0, 255);
-
     public static final Color MAGENTA = magenta;
-
     public static final Color cyan = new Color(0, 255, 255);
-
     public static final Color CYAN = cyan;
-
     public static final Color blue = new Color(0, 0, 255);
-
     public static final Color BLUE = blue;
-
-    /**
-     * integer RGB value
-     */
-    int value;
-
-    /**
-     * Float sRGB value.
-     */
-    private float[] frgbvalue;
-
-    /**
-     * Color in an arbitrary color space
-     * with <code>float</code> components.
-     * If null, other value should be used.
-     */
-    private float fvalue[];
-
-    /**
-     * Float alpha value. If frgbvalue is null, this is not valid data.
-     */
-    private float falpha;
-
-    /**
-     * The color's color space if applicable.
-     */
-    private ColorSpace cs;
-
+    private static final long serialVersionUID = 118526816881161077L;
     /*
      * The value of the SCALE_FACTOR is based on 1.5 release behavior which
      * can be revealed using the following code:
@@ -134,9 +76,29 @@ public class Color implements Paint, Serializable {
      * one scale factor for both.
      */
     private static final double SCALE_FACTOR = 0.7;
-
     private static final int MIN_SCALABLE = 3; // should increase when multiplied by SCALE_FACTOR
-
+    /**
+     * integer RGB value
+     */
+    int value;
+    /**
+     * Float sRGB value.
+     */
+    private float[] frgbvalue;
+    /**
+     * Color in an arbitrary color space
+     * with <code>float</code> components.
+     * If null, other value should be used.
+     */
+    private float fvalue[];
+    /**
+     * Float alpha value. If frgbvalue is null, this is not valid data.
+     */
+    private float falpha;
+    /**
+     * The color's color space if applicable.
+     */
+    private ColorSpace cs;
     transient private PaintContext currentPaintContext;
 
     public Color(ColorSpace cspace, float[] components, float alpha) {
@@ -144,9 +106,9 @@ public class Color implements Paint, Serializable {
         float comp;
         fvalue = new float[nComps];
 
-        for(int i=0 ; i<nComps; i++) {
+        for (int i = 0; i < nComps; i++) {
             comp = components[i];
-            if(comp < 0.0f || comp > 1.0f) {
+            if (comp < 0.0f || comp > 1.0f) {
                 // awt.107=Color parameter outside of expected range: component {0}.
                 throw new IllegalArgumentException(
                         Messages.getString("awt.107", i)); //$NON-NLS-1$
@@ -164,10 +126,10 @@ public class Color implements Paint, Serializable {
 
         frgbvalue = cs.toRGB(fvalue);
 
-        value =  ((int)(frgbvalue[2]*255))    |
-                (((int)(frgbvalue[1]*255)) << 8 )  |
-                (((int)(frgbvalue[0]*255)) << 16 ) |
-                (((int)(falpha*255)) << 24 );
+        value = ((int) (frgbvalue[2] * 255)) |
+                (((int) (frgbvalue[1] * 255)) << 8) |
+                (((int) (frgbvalue[0] * 255)) << 16) |
+                (((int) (falpha * 255)) << 24);
     }
 
     public Color(int rgba, boolean hasAlpha) {
@@ -200,10 +162,10 @@ public class Color implements Paint, Serializable {
     }
 
     public Color(float r, float g, float b, float a) {
-        this((int)(r*255+0.5),
-                (int)(g*255+0.5),
-                (int)(b*255+0.5),
-                (int)(a*255+0.5));
+        this((int) (r * 255 + 0.5),
+                (int) (g * 255 + 0.5),
+                (int) (b * 255 + 0.5),
+                (int) (a * 255 + 0.5));
         falpha = a;
         fvalue = new float[3];
         fvalue[0] = r;
@@ -214,230 +176,6 @@ public class Color implements Paint, Serializable {
 
     public Color(float r, float g, float b) {
         this(r, g, b, 1.0f);
-    }
-
-    public PaintContext createContext(
-            ColorModel cm,
-            Rectangle r,
-            Rectangle2D r2d,
-            AffineTransform xform,
-            RenderingHints rhs
-    ) {
-        if(currentPaintContext != null) {
-            return currentPaintContext;
-        }
-        currentPaintContext = new ColorPaintContext(value);
-        return currentPaintContext;
-    }
-
-    @Override
-    public String toString() {
-        /*
-           The format of the string is based on 1.5 release behavior which
-           can be revealed using the following code:
-
-           Color c = new Color(1, 2, 3);
-           System.out.println(c);
-        */
-        
-        return getClass().getName() +
-                "[r=" + getRed() + //$NON-NLS-1$
-                ",g=" + getGreen() + //$NON-NLS-1$
-                ",b=" + getBlue() + //$NON-NLS-1$
-                "]"; //$NON-NLS-1$
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if(obj instanceof Color) {
-            return ((Color)obj).value == this.value;
-        }
-        return false;
-    }
-
-    public float[] getComponents(ColorSpace colorSpace, float[] components) {
-        int nComps = colorSpace.getNumComponents();
-        if(components == null) {
-            components = new float[nComps+1];
-        }
-
-        getColorComponents(colorSpace, components);
-
-        if(frgbvalue != null) {
-            components[nComps] = falpha;
-        } else {
-            components[nComps] = getAlpha()/255f;
-        }
-
-        return components;
-    }
-
-    public float[] getColorComponents(ColorSpace colorSpace, float[] components) {
-        float[] cieXYZComponents = getColorSpace().toCIEXYZ(getColorComponents(null));
-        float[] csComponents = colorSpace.fromCIEXYZ(cieXYZComponents);
-
-        if(components == null) {
-            return csComponents;
-        }
-
-        for(int i=0; i<csComponents.length; i++) {
-            components[i] = csComponents[i];
-        }
-
-        return components;
-    }
-
-    public ColorSpace getColorSpace() {
-        if (cs == null) {
-            cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
-        }
-
-        return cs;
-    }
-
-    public Color darker() {
-        return new Color(
-                (int)(getRed()*SCALE_FACTOR),
-                (int)(getGreen()*SCALE_FACTOR),
-                (int)(getBlue()*SCALE_FACTOR));
-    }
-
-    public Color brighter() {
-
-        int r = getRed();
-        int b = getBlue();
-        int g = getGreen();
-
-        if(r == 0 && b == 0 && g == 0) {
-            return new Color(MIN_SCALABLE, MIN_SCALABLE, MIN_SCALABLE);
-        }
-
-        if(r < MIN_SCALABLE && r != 0) {
-            r = MIN_SCALABLE;
-        } else {
-            r = (int) (r/SCALE_FACTOR);
-            r = (r > 255) ? 255 : r;
-        }
-
-        if(b < MIN_SCALABLE && b != 0) {
-            b = MIN_SCALABLE;
-        } else {
-            b = (int) (b/SCALE_FACTOR);
-            b = (b > 255) ? 255 : b;
-        }
-
-        if(g < MIN_SCALABLE && g != 0) {
-            g = MIN_SCALABLE;
-        } else {
-            g = (int) (g/SCALE_FACTOR);
-            g = (g > 255) ? 255 : g;
-        }
-
-        return new Color(r, g, b);
-    }
-
-    public float[] getRGBComponents(float[] components) {
-        if(components == null) {
-            components = new float[4];
-        }
-
-        if(frgbvalue != null) {
-            components[3] = falpha;
-        } else {
-            components[3] = getAlpha()/255f;
-        }
-
-        getRGBColorComponents(components);
-
-        return components;
-    }
-
-    public float[] getRGBColorComponents(float[] components) {
-        if(components == null) {
-            components = new float[3];
-        }
-
-        if(frgbvalue != null) {
-            components[2] = frgbvalue[2];
-            components[1] = frgbvalue[1];
-            components[0] = frgbvalue[0];
-        } else {
-            components[2] = getBlue()/255f;
-            components[1] = getGreen()/255f;
-            components[0] = getRed()/255f;
-        }
-
-        return components;
-    }
-
-    public float[] getComponents(float[] components) {
-        if(fvalue == null) {
-            return getRGBComponents(components);
-        }
-
-        int nColorComps = fvalue.length;
-
-        if(components == null) {
-            components = new float[nColorComps+1];
-        }
-
-        getColorComponents(components);
-
-        components[nColorComps] = falpha;
-
-        return components;
-    }
-
-    public float[] getColorComponents(float[] components) {
-        if(fvalue == null) {
-            return getRGBColorComponents(components);
-        }
-
-        if(components == null) {
-            components = new float[fvalue.length];
-        }
-
-        for(int i=0; i<fvalue.length; i++) {
-            components[i] = fvalue[i];
-        }
-
-        return components;
-    }
-
-    @Override
-    public int hashCode() {
-        return value;
-    }
-
-    public int getTransparency() {
-        switch(getAlpha()) {
-            case 0xff:
-                return Transparency.OPAQUE;
-            case 0:
-                return Transparency.BITMASK;
-            default:
-                return Transparency.TRANSLUCENT;
-        }
-    }
-
-    public int getRed() {
-        return (value >> 16) & 0xFF;
-    }
-
-    public int getRGB() {
-        return value;
-    }
-
-    public int getGreen() {
-        return (value >> 8) & 0xFF;
-    }
-
-    public int getBlue() {
-        return value & 0xFF;
-    }
-
-    public int getAlpha() {
-        return (value >> 24) & 0xFF;
     }
 
     public static Color getColor(String nm, Color def) {
@@ -480,7 +218,7 @@ public class Color implements Paint, Serializable {
     }
 
     public static float[] RGBtoHSB(int r, int g, int b, float[] hsbvals) {
-        if(hsbvals == null) {
+        if (hsbvals == null) {
             hsbvals = new float[3];
         }
 
@@ -489,16 +227,16 @@ public class Color implements Paint, Serializable {
 
         float H, S, B;
 
-        B = V/255.f;
+        B = V / 255.f;
 
-        if(V == temp) {
+        if (V == temp) {
             H = S = 0;
         } else {
-            S = (V - temp)/((float)V);
+            S = (V - temp) / ((float) V);
 
-            float Cr = (V - r) / (float)(V - temp);
-            float Cg = (V - g) / (float)(V - temp);
-            float Cb = (V - b) / (float)(V - temp);
+            float Cr = (V - r) / (float) (V - temp);
+            float Cg = (V - g) / (float) (V - temp);
+            float Cb = (V - b) / (float) (V - temp);
 
             if (r == V) {
                 H = Cb - Cg;
@@ -509,7 +247,7 @@ public class Color implements Paint, Serializable {
             }
 
             H /= 6.f;
-            if(H < 0) {
+            if (H < 0) {
                 H++;
             }
         }
@@ -524,29 +262,47 @@ public class Color implements Paint, Serializable {
     public static int HSBtoRGB(float hue, float saturation, float brightness) {
         float fr, fg, fb;
 
-        if(saturation == 0) {
+        if (saturation == 0) {
             fr = fg = fb = brightness;
         } else {
-            float H = (hue - (float)Math.floor(hue)) * 6;
+            float H = (hue - (float) Math.floor(hue)) * 6;
             int I = (int) Math.floor(H);
             float F = H - I;
             float M = brightness * (1 - saturation);
             float N = brightness * (1 - saturation * F);
             float K = brightness * (1 - saturation * (1 - F));
 
-            switch(I) {
+            switch (I) {
                 case 0:
-                    fr = brightness; fg = K; fb = M; break;
+                    fr = brightness;
+                    fg = K;
+                    fb = M;
+                    break;
                 case 1:
-                    fr = N; fg = brightness; fb = M; break;
+                    fr = N;
+                    fg = brightness;
+                    fb = M;
+                    break;
                 case 2:
-                    fr = M; fg = brightness; fb = K; break;
+                    fr = M;
+                    fg = brightness;
+                    fb = K;
+                    break;
                 case 3:
-                    fr = M; fg = N; fb = brightness; break;
+                    fr = M;
+                    fg = N;
+                    fb = brightness;
+                    break;
                 case 4:
-                    fr = K; fg = M; fb = brightness; break;
+                    fr = K;
+                    fg = M;
+                    fb = brightness;
+                    break;
                 case 5:
-                    fr = brightness; fg = M; fb = N; break;
+                    fr = brightness;
+                    fg = M;
+                    fb = N;
+                    break;
                 default:
                     fr = fb = fg = 0; // impossible, to supress compiler error
             }
@@ -559,6 +315,230 @@ public class Color implements Paint, Serializable {
         return (r << 16) | (g << 8) | b | 0xFF000000;
     }
 
+    public PaintContext createContext(
+            ColorModel cm,
+            Rectangle r,
+            Rectangle2D r2d,
+            AffineTransform xform,
+            RenderingHints rhs
+    ) {
+        if (currentPaintContext != null) {
+            return currentPaintContext;
+        }
+        currentPaintContext = new ColorPaintContext(value);
+        return currentPaintContext;
+    }
+
+    @Override
+    public String toString() {
+        /*
+           The format of the string is based on 1.5 release behavior which
+           can be revealed using the following code:
+
+           Color c = new Color(1, 2, 3);
+           System.out.println(c);
+        */
+
+        return getClass().getName() +
+                "[r=" + getRed() + //$NON-NLS-1$
+                ",g=" + getGreen() + //$NON-NLS-1$
+                ",b=" + getBlue() + //$NON-NLS-1$
+                "]"; //$NON-NLS-1$
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Color) {
+            return ((Color) obj).value == this.value;
+        }
+        return false;
+    }
+
+    public float[] getComponents(ColorSpace colorSpace, float[] components) {
+        int nComps = colorSpace.getNumComponents();
+        if (components == null) {
+            components = new float[nComps + 1];
+        }
+
+        getColorComponents(colorSpace, components);
+
+        if (frgbvalue != null) {
+            components[nComps] = falpha;
+        } else {
+            components[nComps] = getAlpha() / 255f;
+        }
+
+        return components;
+    }
+
+    public float[] getColorComponents(ColorSpace colorSpace, float[] components) {
+        float[] cieXYZComponents = getColorSpace().toCIEXYZ(getColorComponents(null));
+        float[] csComponents = colorSpace.fromCIEXYZ(cieXYZComponents);
+
+        if (components == null) {
+            return csComponents;
+        }
+
+        for (int i = 0; i < csComponents.length; i++) {
+            components[i] = csComponents[i];
+        }
+
+        return components;
+    }
+
+    public ColorSpace getColorSpace() {
+        if (cs == null) {
+            cs = ColorSpace.getInstance(ColorSpace.CS_sRGB);
+        }
+
+        return cs;
+    }
+
+    public Color darker() {
+        return new Color(
+                (int) (getRed() * SCALE_FACTOR),
+                (int) (getGreen() * SCALE_FACTOR),
+                (int) (getBlue() * SCALE_FACTOR));
+    }
+
+    public Color brighter() {
+
+        int r = getRed();
+        int b = getBlue();
+        int g = getGreen();
+
+        if (r == 0 && b == 0 && g == 0) {
+            return new Color(MIN_SCALABLE, MIN_SCALABLE, MIN_SCALABLE);
+        }
+
+        if (r < MIN_SCALABLE && r != 0) {
+            r = MIN_SCALABLE;
+        } else {
+            r = (int) (r / SCALE_FACTOR);
+            r = (r > 255) ? 255 : r;
+        }
+
+        if (b < MIN_SCALABLE && b != 0) {
+            b = MIN_SCALABLE;
+        } else {
+            b = (int) (b / SCALE_FACTOR);
+            b = (b > 255) ? 255 : b;
+        }
+
+        if (g < MIN_SCALABLE && g != 0) {
+            g = MIN_SCALABLE;
+        } else {
+            g = (int) (g / SCALE_FACTOR);
+            g = (g > 255) ? 255 : g;
+        }
+
+        return new Color(r, g, b);
+    }
+
+    public float[] getRGBComponents(float[] components) {
+        if (components == null) {
+            components = new float[4];
+        }
+
+        if (frgbvalue != null) {
+            components[3] = falpha;
+        } else {
+            components[3] = getAlpha() / 255f;
+        }
+
+        getRGBColorComponents(components);
+
+        return components;
+    }
+
+    public float[] getRGBColorComponents(float[] components) {
+        if (components == null) {
+            components = new float[3];
+        }
+
+        if (frgbvalue != null) {
+            components[2] = frgbvalue[2];
+            components[1] = frgbvalue[1];
+            components[0] = frgbvalue[0];
+        } else {
+            components[2] = getBlue() / 255f;
+            components[1] = getGreen() / 255f;
+            components[0] = getRed() / 255f;
+        }
+
+        return components;
+    }
+
+    public float[] getComponents(float[] components) {
+        if (fvalue == null) {
+            return getRGBComponents(components);
+        }
+
+        int nColorComps = fvalue.length;
+
+        if (components == null) {
+            components = new float[nColorComps + 1];
+        }
+
+        getColorComponents(components);
+
+        components[nColorComps] = falpha;
+
+        return components;
+    }
+
+    public float[] getColorComponents(float[] components) {
+        if (fvalue == null) {
+            return getRGBColorComponents(components);
+        }
+
+        if (components == null) {
+            components = new float[fvalue.length];
+        }
+
+        for (int i = 0; i < fvalue.length; i++) {
+            components[i] = fvalue[i];
+        }
+
+        return components;
+    }
+
+    @Override
+    public int hashCode() {
+        return value;
+    }
+
+    public int getTransparency() {
+        switch (getAlpha()) {
+            case 0xff:
+                return Transparency.OPAQUE;
+            case 0:
+                return Transparency.BITMASK;
+            default:
+                return Transparency.TRANSLUCENT;
+        }
+    }
+
+    public int getRed() {
+        return (value >> 16) & 0xFF;
+    }
+
+    public int getRGB() {
+        return value;
+    }
+
+    public int getGreen() {
+        return (value >> 8) & 0xFF;
+    }
+
+    public int getBlue() {
+        return value & 0xFF;
+    }
+
+    public int getAlpha() {
+        return (value >> 24) & 0xFF;
+    }
+
     class ColorPaintContext implements PaintContext {
         int rgbValue;
         WritableRaster savedRaster;
@@ -566,7 +546,7 @@ public class Color implements Paint, Serializable {
 
         protected ColorPaintContext(int rgb) {
             rgbValue = rgb;
-            if((rgb & 0xFF000000) == 0xFF000000){
+            if ((rgb & 0xFF000000) == 0xFF000000) {
                 cm = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
             } else {
                 cm = ColorModel.getRGBdefault();

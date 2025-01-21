@@ -20,10 +20,10 @@
 package java.awt;
 
 
-import java.awt.image.ColorModel;
 import org.apache.harmony.awt.gl.ICompositeContext;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.image.ColorModel;
 
 
 public final class AlphaComposite implements Composite {
@@ -79,12 +79,12 @@ public final class AlphaComposite implements Composite {
     private int rule;
     private float alpha;
 
-    private AlphaComposite(int rule, float alpha){
-        if(rule < CLEAR || rule > XOR) {
+    private AlphaComposite(int rule, float alpha) {
+        if (rule < CLEAR || rule > XOR) {
             // awt.11D=Unknown rule
             throw new IllegalArgumentException(Messages.getString("awt.11D")); //$NON-NLS-1$
         }
-        if(alpha < 0.0f || alpha > 1.0f) {
+        if (alpha < 0.0f || alpha > 1.0f) {
             // awt.11E=Wrong alpha value
             throw new IllegalArgumentException(Messages.getString("awt.11E")); //$NON-NLS-1$
         }
@@ -93,21 +93,60 @@ public final class AlphaComposite implements Composite {
         this.alpha = alpha;
     }
 
-    private AlphaComposite(int rule){
+    private AlphaComposite(int rule) {
         this(rule, 1.0f);
     }
 
+    public static AlphaComposite getInstance(int rule, float alpha) {
+        if (alpha == 1.0f) {
+            return getInstance(rule);
+        }
+        return new AlphaComposite(rule, alpha);
+    }
+
+    public static AlphaComposite getInstance(int rule) {
+        switch (rule) {
+            case CLEAR:
+                return Clear;
+            case SRC:
+                return Src;
+            case DST:
+                return Dst;
+            case SRC_OVER:
+                return SrcOver;
+            case DST_OVER:
+                return DstOver;
+            case SRC_IN:
+                return SrcIn;
+            case DST_IN:
+                return DstIn;
+            case SRC_OUT:
+                return SrcOut;
+            case DST_OUT:
+                return DstOut;
+            case SRC_ATOP:
+                return SrcAtop;
+            case DST_ATOP:
+                return DstAtop;
+            case XOR:
+                return Xor;
+            default:
+                // awt.11D=Unknown rule
+                throw new IllegalArgumentException(Messages.getString("awt.11D")); //$NON-NLS-1$
+        }
+    }
+
     public CompositeContext createContext(ColorModel srcColorModel,
-            ColorModel dstColorModel, RenderingHints hints) {
+                                          ColorModel dstColorModel, RenderingHints hints) {
         return new ICompositeContext(this, srcColorModel, dstColorModel);
     }
 
     @Override
     public boolean equals(Object obj) {
-        if(!(obj instanceof AlphaComposite)) {
+        if (!(obj instanceof AlphaComposite)) {
             return false;
         }
-        AlphaComposite other = (AlphaComposite)obj;
+        AlphaComposite other = (AlphaComposite) obj;
         return (this.rule == other.getRule() && this.alpha == other.getAlpha());
     }
 
@@ -127,45 +166,6 @@ public final class AlphaComposite implements Composite {
 
     public float getAlpha() {
         return alpha;
-    }
-
-    public static AlphaComposite getInstance(int rule, float alpha) {
-        if(alpha == 1.0f) {
-            return getInstance(rule);
-        }
-        return new AlphaComposite(rule, alpha);
-    }
-
-    public static AlphaComposite getInstance(int rule) {
-        switch(rule){
-        case CLEAR:
-            return Clear;
-        case SRC:
-            return Src;
-        case DST:
-            return Dst;
-        case SRC_OVER:
-            return SrcOver;
-        case DST_OVER:
-            return DstOver;
-        case SRC_IN:
-            return SrcIn;
-        case DST_IN:
-            return DstIn;
-        case SRC_OUT:
-            return SrcOut;
-        case DST_OUT:
-            return DstOut;
-        case SRC_ATOP:
-            return SrcAtop;
-        case DST_ATOP:
-            return DstAtop;
-        case XOR:
-            return Xor;
-        default:
-            // awt.11D=Unknown rule
-            throw new IllegalArgumentException(Messages.getString("awt.11D")); //$NON-NLS-1$
-        }
     }
 
 }

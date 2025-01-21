@@ -17,16 +17,15 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 14.11.2005
- *
  */
 package org.apache.harmony.awt.gl.render;
 
 
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.geom.AffineTransform;
 import org.apache.harmony.awt.gl.MultiRectArea;
 import org.apache.harmony.awt.gl.Surface;
+
+import java.awt.*;
+import java.awt.geom.AffineTransform;
 
 
 /**
@@ -36,18 +35,18 @@ import org.apache.harmony.awt.gl.Surface;
 public interface Blitter {
 
     public abstract void blit(int srcX, int srcY, Surface srcSurf,
-            int dstX, int dstY, Surface dstSurf, int width, int height,
-            AffineTransform sysxform, AffineTransform xform,
-            Composite comp, Color bgcolor,
-            MultiRectArea clip);
+                              int dstX, int dstY, Surface dstSurf, int width, int height,
+                              AffineTransform sysxform, AffineTransform xform,
+                              Composite comp, Color bgcolor,
+                              MultiRectArea clip);
 
     public abstract void blit(int srcX, int srcY, Surface srcSurf,
-            int dstX, int dstY, Surface dstSurf, int width, int height,
-            AffineTransform sysxform, Composite comp, Color bgcolor,
-            MultiRectArea clip);
+                              int dstX, int dstY, Surface dstSurf, int width, int height,
+                              AffineTransform sysxform, Composite comp, Color bgcolor,
+                              MultiRectArea clip);
 
     public abstract void blit(int srcX, int srcY, Surface srcSurf,
-            int dstX, int dstY, Surface dstSurf, int width, int height,
-            Composite comp, Color bgcolor, MultiRectArea clip);
+                              int dstX, int dstY, Surface dstSurf, int width, int height,
+                              Composite comp, Color bgcolor, MultiRectArea clip);
 
 }

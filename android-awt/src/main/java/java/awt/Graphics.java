@@ -20,7 +20,6 @@
 package java.awt;
 
 import java.awt.image.ImageObserver;
-
 import java.text.AttributedCharacterIterator;
 
 
@@ -59,11 +58,11 @@ public abstract class Graphics {
 
         setColor(colorUp);
         fillRect(x, y, width, 1);
-        fillRect(x, y+1, 1, height);
+        fillRect(x, y + 1, 1, height);
 
         setColor(colorDown);
-        fillRect(x+width, y, 1, height);
-        fillRect(x+1, y+height, width, 1);
+        fillRect(x + width, y, 1, height);
+        fillRect(x + 1, y + height, width, 1);
     }
 
     public void drawBytes(byte[] bytes, int off, int len, int x, int y) {
@@ -79,8 +78,8 @@ public abstract class Graphics {
     }
 
     public void drawRect(int x, int y, int width, int height) {
-        int []xpoints = {x, x, x+width, x+width};
-        int []ypoints = {y, y+height, y+height, y};
+        int[] xpoints = {x, x, x + width, x + width};
+        int[] ypoints = {y, y + height, y + height, y};
 
         drawPolygon(xpoints, ypoints, 4);
     }
@@ -106,15 +105,15 @@ public abstract class Graphics {
 
         width--;
         height--;
-        fillRect(x+1, y+1, width-1, height-1);
+        fillRect(x + 1, y + 1, width - 1, height - 1);
 
         setColor(colorUp);
         fillRect(x, y, width, 1);
-        fillRect(x, y+1, 1, height);
+        fillRect(x, y + 1, 1, height);
 
         setColor(colorDown);
-        fillRect(x+width, y, 1, height);
-        fillRect(x+1, y+height, width, 1);
+        fillRect(x + width, y, 1, height);
+        fillRect(x + 1, y + height, width, 1);
     }
 
     public void fillPolygon(Polygon p) {
@@ -215,21 +214,21 @@ public abstract class Graphics {
 
     public abstract Shape getClip();
 
+    public abstract void setClip(Shape clip);
+
     public abstract Rectangle getClipBounds();
 
     public abstract Color getColor();
 
+    public abstract void setColor(Color c);
+
     public abstract Font getFont();
+
+    public abstract void setFont(Font font);
 
     public abstract FontMetrics getFontMetrics(Font font);
 
     public abstract void setClip(int x, int y, int width, int height);
-
-    public abstract void setClip(Shape clip);
-
-    public abstract void setColor(Color c);
-
-    public abstract void setFont(Font font);
 
     public abstract void setPaintMode();
 

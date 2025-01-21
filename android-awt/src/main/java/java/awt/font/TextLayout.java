@@ -21,18 +21,16 @@
 package java.awt.font;
 
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
 import org.apache.harmony.awt.gl.font.BasicMetrics;
 import org.apache.harmony.awt.gl.font.CaretManager;
 import org.apache.harmony.awt.gl.font.TextMetricsCalculator;
 import org.apache.harmony.awt.gl.font.TextRunBreaker;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.geom.AffineTransform;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedString;
 import java.util.Map;
@@ -40,48 +38,25 @@ import java.util.Map;
 
 public final class TextLayout implements Cloneable {
 
-    public static class CaretPolicy {
-
-        public CaretPolicy() {
-            // Nothing to do
-        }
-
-        public TextHitInfo getStrongCaret(TextHitInfo hit1, TextHitInfo hit2, TextLayout layout) {
-            // Stronger hit is the one with greater level.
-            // If the level is same, leading edge is stronger.
-
-            int level1 = layout.getCharacterLevel(hit1.getCharIndex());
-            int level2 = layout.getCharacterLevel(hit2.getCharIndex());
-
-            if (level1 == level2) {
-                return (hit2.isLeadingEdge() && (!hit1.isLeadingEdge())) ? hit2 : hit1;
-            }
-            return level1 > level2 ? hit1 : hit2;
-        }
-
-    }
-
     public static final CaretPolicy DEFAULT_CARET_POLICY = new CaretPolicy();
-
+    float justificationWidth = -1;
     private TextRunBreaker breaker;
     private boolean metricsValid = false;
     private TextMetricsCalculator tmc;
     private BasicMetrics metrics;
     private CaretManager caretManager;
-    float justificationWidth = -1;
-
     public TextLayout(String string, Font font, FontRenderContext frc) {
-        if (string == null){
+        if (string == null) {
             // awt.01='{0}' parameter is null
             throw new IllegalArgumentException(Messages.getString("awt.01", "string")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        if (font == null){
+
+        if (font == null) {
             // awt.01='{0}' parameter is null
             throw new IllegalArgumentException(Messages.getString("awt.01", "font")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        if (string.length() == 0){
+        if (string.length() == 0) {
             // awt.02='{0}' parameter has zero length
             throw new IllegalArgumentException(Messages.getString("awt.02", "string")); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -95,23 +70,23 @@ public final class TextLayout implements Cloneable {
     public TextLayout(
             String string,
             Map<? extends AttributedCharacterIterator.Attribute, ?> attributes,
-            FontRenderContext frc ) {
-        if (string == null){
+            FontRenderContext frc) {
+        if (string == null) {
             // awt.01='{0}' parameter is null
             throw new IllegalArgumentException(Messages.getString("awt.01", "string")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        if (attributes == null){
+
+        if (attributes == null) {
             // awt.01='{0}' parameter is null
             throw new IllegalArgumentException(Messages.getString("awt.01", "attributes")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        if (string.length() == 0){
+
+        if (string.length() == 0) {
             // awt.02='{0}' parameter has zero length
             throw new IllegalArgumentException(Messages.getString("awt.02", "string")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        
+
+
         AttributedString as = new AttributedString(string);
         as.addAttributes(attributes, 0, string.length());
         this.breaker = new TextRunBreaker(as.getIterator(), frc);
@@ -119,12 +94,12 @@ public final class TextLayout implements Cloneable {
     }
 
     public TextLayout(AttributedCharacterIterator text, FontRenderContext frc) {
-        if (text == null){
+        if (text == null) {
             // awt.03='{0}' iterator parameter is null
             throw new IllegalArgumentException(Messages.getString("awt.03", "text")); //$NON-NLS-1$ //$NON-NLS-2$
         }
-        
-        if (text.getBeginIndex() == text.getEndIndex()){
+
+        if (text.getBeginIndex() == text.getEndIndex()) {
             // awt.04='{0}' iterator parameter has zero length
             throw new IllegalArgumentException(Messages.getString("awt.04", "text")); //$NON-NLS-1$ //$NON-NLS-2$
         }
@@ -173,7 +148,7 @@ public final class TextLayout implements Cloneable {
 
     public void draw(Graphics2D g2d, float x, float y) {
         updateMetrics();
-        breaker.drawSegments(g2d, x ,y);
+        breaker.drawSegments(g2d, x, y);
     }
 
     private void updateMetrics() {
@@ -404,7 +379,7 @@ public final class TextLayout implements Cloneable {
 
         if (lastNonWhitespace < 0) {
             return 0;
-        } else if (lastNonWhitespace == getCharacterCount()-1) {
+        } else if (lastNonWhitespace == getCharacterCount() - 1) {
             return getAdvance();
         } else if (justificationWidth >= 0) { // Layout is justified
             return justificationWidth;
@@ -479,6 +454,27 @@ public final class TextLayout implements Cloneable {
 
     public boolean isVertical() {
         return false;
+    }
+
+    public static class CaretPolicy {
+
+        public CaretPolicy() {
+            // Nothing to do
+        }
+
+        public TextHitInfo getStrongCaret(TextHitInfo hit1, TextHitInfo hit2, TextLayout layout) {
+            // Stronger hit is the one with greater level.
+            // If the level is same, leading edge is stronger.
+
+            int level1 = layout.getCharacterLevel(hit1.getCharIndex());
+            int level2 = layout.getCharacterLevel(hit2.getCharIndex());
+
+            if (level1 == level2) {
+                return (hit2.isLeadingEdge() && (!hit1.isLeadingEdge())) ? hit2 : hit1;
+            }
+            return level1 > level2 ? hit1 : hit2;
+        }
+
     }
 }
 

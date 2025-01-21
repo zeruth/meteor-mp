@@ -47,7 +47,7 @@ class BitInputStreamFlexible extends InputStream {
 
     public final int readBits(int count) throws IOException {
 
-        if (count <= 32)  {
+        if (count <= 32) {
             // catch-all
             int result = 0;
             // int done = 0;

@@ -19,18 +19,18 @@
 package org.apache.harmony.x.imageio.spi;
 
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.FileCacheImageInputStream;
 import javax.imageio.stream.ImageInputStream;
 import javax.imageio.stream.MemoryCacheImageInputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Locale;
 
-public class InputStreamIISSpi  extends ImageInputStreamSpi {
+public class InputStreamIISSpi extends ImageInputStreamSpi {
     private static final String vendor = "Apache";
 
     private static final String ver = "0.1";

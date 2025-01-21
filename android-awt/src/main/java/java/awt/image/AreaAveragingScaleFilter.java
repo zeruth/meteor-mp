@@ -22,7 +22,6 @@ package java.awt.image;
 import java.util.Arrays;
 
 
-
 public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
 
     private static final ColorModel rgbCM = ColorModel.getRGBdefault();
@@ -42,17 +41,17 @@ public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
 
     private int cachedDY;      // Cached number of the destination scanline 
     private int cachedDVRest;  // Cached value of rest src scanlines for sum 
-                               // pixel samples 
-                               // Because data if transfering by whole scanlines
-                               // we are caching only Y coordinate values
-    
+    // pixel samples
+    // Because data if transfering by whole scanlines
+    // we are caching only Y coordinate values
+
     public AreaAveragingScaleFilter(int width, int height) {
         super(width, height);
     }
 
     @Override
     public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off, int scansize) {
-        if(reset) {
+        if (reset) {
             super.setPixels(x, y, w, h, model, pixels, off, scansize);
         } else {
             setFilteredPixels(x, y, w, h, model, pixels, off, scansize);
@@ -61,7 +60,7 @@ public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
 
     @Override
     public void setPixels(int x, int y, int w, int h, ColorModel model, byte[] pixels, int off, int scansize) {
-        if(reset) {
+        if (reset) {
             super.setPixels(x, y, w, h, model, pixels, off, scansize);
         } else {
             setFilteredPixels(x, y, w, h, model, pixels, off, scansize);
@@ -77,35 +76,35 @@ public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
     /**
      * This method implemented Area Averaging Scale filter.
      * The description of algorithm is presented in Java API Specification.
-     *  
-     * Arrays sum_r, sum_g, sum_b, sum_a have length equals width of destination 
-     * image. In each array's element is accumulating pixel's component values, 
-     * proportional to the area which source pixels will occupy in destination 
-     * image. Then that values will divide by Global averaging  
-     * factor (area of the destination image) for receiving  
+     * <p>
+     * Arrays sum_r, sum_g, sum_b, sum_a have length equals width of destination
+     * image. In each array's element is accumulating pixel's component values,
+     * proportional to the area which source pixels will occupy in destination
+     * image. Then that values will divide by Global averaging
+     * factor (area of the destination image) for receiving
      * average values of destination pixels.
-     * 
-     * @param x - Src pixels X coordinate
-     * @param y - Src pixels Y coordinate
-     * @param w - width of the area of Src pixels
-     * @param h - height of the area of Src pixels
-     * @param model - Color Model of Src pixels
-     * @param pixels - array of Src pixels
-     * @param off - offset into the Src pixels array
+     *
+     * @param x        - Src pixels X coordinate
+     * @param y        - Src pixels Y coordinate
+     * @param w        - width of the area of Src pixels
+     * @param h        - height of the area of Src pixels
+     * @param model    - Color Model of Src pixels
+     * @param pixels   - array of Src pixels
+     * @param off      - offset into the Src pixels array
      * @param scansize - length of scanline in the pixels array
      */
-    private void setFilteredPixels(int x, int y, int w, int h, ColorModel model, Object pixels, int off, int scansize){
-        if(!inited){
+    private void setFilteredPixels(int x, int y, int w, int h, ColorModel model, Object pixels, int off, int scansize) {
+        if (!inited) {
             initialize();
         }
 
         int srcX, srcY, dx, dy;
         int svRest, dvRest, shRest, dhRest, vDif, hDif;
 
-        if(y == 0){
+        if (y == 0) {
             dy = 0;
             dvRest = srcHeight;
-        }else{
+        } else {
             dy = cachedDY;
             dvRest = cachedDVRest;
         }
@@ -177,7 +176,7 @@ public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
 
             if (dvRest == 0) {
                 // averaging destination pixel's values
-                for(int i = 0; i < destWidth; i++){
+                for (int i = 0; i < destWidth; i++) {
                     int a = (sum_a[i] / avgFactor) & 0xff;
                     int r = (sum_r[i] / avgFactor) & 0xff;
                     int g = (sum_g[i] / avgFactor) & 0xff;
@@ -205,16 +204,16 @@ public class AreaAveragingScaleFilter extends ReplicateScaleFilter {
     /**
      * Initialization of the auxiliary data
      */
-    private void initialize(){
+    private void initialize() {
 
-        sum_a = new int[destWidth]; 
-        sum_r = new int[destWidth]; 
-        sum_g = new int[destWidth]; 
-        sum_b = new int[destWidth]; 
+        sum_a = new int[destWidth];
+        sum_r = new int[destWidth];
+        sum_g = new int[destWidth];
+        sum_b = new int[destWidth];
 
-        buff = new int[destWidth];  
+        buff = new int[destWidth];
         outpixbuf = buff;
-        avgFactor = srcWidth * srcHeight; 
+        avgFactor = srcWidth * srcHeight;
 
         inited = true;
     }

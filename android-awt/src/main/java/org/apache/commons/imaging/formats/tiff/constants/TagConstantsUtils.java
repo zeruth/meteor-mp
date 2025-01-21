@@ -16,15 +16,18 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.imaging.common.BinaryConstant;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public final class TagConstantsUtils {
     private static final TiffDirectoryType[] TIFF_DIRECTORY_TYPES = TiffDirectoryType
             .values();
+
+    private TagConstantsUtils() {
+    }
 
     public static List<TagInfo> mergeTagLists(final List<?>... tagLists) {
         int count = 0;
@@ -54,13 +57,10 @@ public final class TagConstantsUtils {
     }
 
     public static BinaryConstant createMicrosoftHdPhotoGuidEndingWith(final byte end) {
-        return new BinaryConstant(new byte[] { (byte) 0x24, (byte) 0xC3,
+        return new BinaryConstant(new byte[]{(byte) 0x24, (byte) 0xC3,
                 (byte) 0xDD, (byte) 0x6F, (byte) 0x03, (byte) 0x4E,
                 (byte) 0xFE, (byte) 0x4B, (byte) 0xB1, (byte) 0x85,
                 (byte) 0x3D, (byte) 0x77, (byte) 0x76, (byte) 0x8D,
-                (byte) 0xC9, end });
-    }
-
-    private TagConstantsUtils() {
+                (byte) 0xC9, end});
     }
 }

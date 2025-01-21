@@ -34,13 +34,13 @@ public class ByteArrayDecodingImageSource extends DecodingImageSource {
     int imagelength;
 
     public ByteArrayDecodingImageSource(byte imagedata[], int imageoffset,
-            int imagelength){
+                                        int imagelength) {
         this.imagedata = imagedata;
         this.imageoffset = imageoffset;
         this.imagelength = imagelength;
     }
 
-    public ByteArrayDecodingImageSource(byte imagedata[]){
+    public ByteArrayDecodingImageSource(byte imagedata[]) {
         this(imagedata, 0, imagedata.length);
     }
 

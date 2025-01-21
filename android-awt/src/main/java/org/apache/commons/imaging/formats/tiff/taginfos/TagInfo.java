@@ -17,17 +17,17 @@
 
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public class TagInfo {
     public static final int LENGTH_UNKNOWN = -1;
@@ -39,12 +39,12 @@ public class TagInfo {
     private final boolean isOffset;
 
     public TagInfo(final String name, final int tag, final FieldType dataType, final int length,
-            final TiffDirectoryType exifDirectory) {
+                   final TiffDirectoryType exifDirectory) {
         this(name, tag, Arrays.asList(dataType), length, exifDirectory);
     }
 
     public TagInfo(final String name, final int tag, final FieldType dataType, final int length,
-            final TiffDirectoryType exifDirectory, final boolean isOffset) {
+                   final TiffDirectoryType exifDirectory, final boolean isOffset) {
         this(name, tag, Arrays.asList(dataType), length, exifDirectory,
                 isOffset);
     }
@@ -60,12 +60,12 @@ public class TagInfo {
     }
 
     public TagInfo(final String name, final int tag, final List<FieldType> dataTypes, final int length,
-            final TiffDirectoryType exifDirectory) {
+                   final TiffDirectoryType exifDirectory) {
         this(name, tag, dataTypes, length, exifDirectory, false);
     }
 
     public TagInfo(final String name, final int tag, final List<FieldType> dataTypes, final int length,
-            final TiffDirectoryType exifDirectory, final boolean isOffset) {
+                   final TiffDirectoryType exifDirectory, final boolean isOffset) {
         this.name = name;
         this.tag = tag;
         this.dataTypes = Collections.unmodifiableList(new ArrayList<FieldType>(
@@ -76,7 +76,6 @@ public class TagInfo {
     }
 
     /**
-     * 
      * @param entry the TIFF field whose value to return
      * @return the value of the TIFF field
      * @throws ImageReadException thrown by subclasses

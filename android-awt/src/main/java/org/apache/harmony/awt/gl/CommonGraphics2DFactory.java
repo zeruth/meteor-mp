@@ -19,19 +19,18 @@
  */
 package org.apache.harmony.awt.gl;
 
-import java.awt.Font;
-import java.awt.peer.FontPeer;
 import org.apache.harmony.awt.wtk.GraphicsFactory;
 
+import java.awt.*;
+import java.awt.peer.FontPeer;
 import java.io.IOException;
 
 
 /**
  * Common GraphicsFactory implementation
- *
  */
 public abstract class CommonGraphics2DFactory implements GraphicsFactory {
-    
+
     // static instance of CommonGraphics2DFactory
     public static CommonGraphics2DFactory inst;
 
@@ -39,11 +38,11 @@ public abstract class CommonGraphics2DFactory implements GraphicsFactory {
     public FontPeer getFontPeer(Font font) {
         return getFontManager().getFontPeer(font.getName(), font.getStyle(), font.getSize());
     }
-    
+
     /**
-     * Embeds font from gile with specified path into the system. 
-     * 
-     * @param fontFilePath path to the font file 
+     * Embeds font from gile with specified path into the system.
+     *
+     * @param fontFilePath path to the font file
      * @return Font object that was created from the file.
      */
     public abstract Font embedFont(String fontFilePath) throws IOException;

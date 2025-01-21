@@ -37,12 +37,12 @@ public class BinaryFileParser {
         // as above
     }
 
-    protected void setByteOrder(final ByteOrder byteOrder) {
-        this.byteOrder = byteOrder;
-    }
-
     public ByteOrder getByteOrder() {
         return byteOrder;
+    }
+
+    protected void setByteOrder(final ByteOrder byteOrder) {
+        this.byteOrder = byteOrder;
     }
 
     public boolean getDebug() {

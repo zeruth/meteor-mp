@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,23 +15,13 @@
 
 package org.apache.commons.imaging.formats.wbmp;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.image.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +37,7 @@ import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
 
 public class WbmpImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".wbmp";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".wbmp", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".wbmp",};
 
     @Override
     public String getName() {
@@ -66,7 +56,7 @@ public class WbmpImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.WBMP, //
+        return new ImageFormat[]{ImageFormats.WBMP, //
         };
     }
 
@@ -99,30 +89,6 @@ public class WbmpImageParser extends ImageParser {
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
-    }
-
-    static class WbmpHeader {
-        int typeField;
-        byte fixHeaderField;
-        int width;
-        int height;
-
-        public WbmpHeader(final int typeField, final byte fixHeaderField, final int width,
-                final int height) {
-            this.typeField = typeField;
-            this.fixHeaderField = fixHeaderField;
-            this.width = width;
-            this.height = height;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("WbmpHeader");
-            pw.println("TypeField: " + typeField);
-            pw.println("FixHeaderField: 0x"
-                    + Integer.toHexString(0xff & fixHeaderField));
-            pw.println("Width: " + width);
-            pw.println("Height: " + height);
-        }
     }
 
     private int readMultiByteInteger(final InputStream is) throws ImageReadException,
@@ -208,7 +174,7 @@ public class WbmpImageParser extends ImageParser {
         final DataBufferByte dataBuffer = new DataBufferByte(image, image.length);
         final WritableRaster raster = Raster.createPackedRaster(dataBuffer,
                 wbmpHeader.width, wbmpHeader.height, 1, null);
-        final int[] palette = { 0x000000, 0xffffff };
+        final int[] palette = {0x000000, 0xffffff};
         final IndexColorModel colorModel = new IndexColorModel(1, 2, palette, 0,
                 false, -1, DataBuffer.TYPE_BYTE);
         return new BufferedImage(colorModel, raster,
@@ -217,7 +183,7 @@ public class WbmpImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         InputStream is = null;
         boolean canThrow = false;
         try {
@@ -280,16 +246,38 @@ public class WbmpImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    static class WbmpHeader {
+        int typeField;
+        byte fixHeaderField;
+        int width;
+        int height;
+
+        public WbmpHeader(final int typeField, final byte fixHeaderField, final int width,
+                          final int height) {
+            this.typeField = typeField;
+            this.fixHeaderField = fixHeaderField;
+            this.width = width;
+            this.height = height;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("WbmpHeader");
+            pw.println("TypeField: " + typeField);
+            pw.println("FixHeaderField: 0x"
+                    + Integer.toHexString(0xff & fixHeaderField));
+            pw.println("Width: " + width);
+            pw.println("Height: " + height);
+        }
     }
 }

@@ -18,15 +18,7 @@
 package javax.imageio.metadata;
 
 import org.apache.harmony.x.imageio.internal.nls.Messages;
-import org.w3c.dom.Attr;
-import org.w3c.dom.DOMException;
-import org.w3c.dom.Document;
-import org.w3c.dom.Element;
-import org.w3c.dom.NamedNodeMap;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.w3c.dom.TypeInfo;
-import org.w3c.dom.UserDataHandler;
+import org.w3c.dom.*;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -99,7 +91,7 @@ public class IIOMetadataNode implements Element, NodeList {
                 return null;
             } else {
                 throw new DOMException(DOMException.INUSE_ATTRIBUTE_ERR,
-                                       Messages.getString("imageio.8E"));
+                        Messages.getString("imageio.8E"));
             }
         }
 
@@ -125,10 +117,10 @@ public class IIOMetadataNode implements Element, NodeList {
     public Attr removeAttributeNode(Attr oldAttr) throws DOMException {
         if (!attrs.list.remove(oldAttr)) { // Not found
             throw new DOMException(DOMException.NOT_FOUND_ERR,
-                                   Messages.getString("imageio.8F"));
+                    Messages.getString("imageio.8F"));
         }
 
-        ((IIOMetadataAttr)oldAttr).setOwnerElement(null);
+        ((IIOMetadataAttr) oldAttr).setOwnerElement(null);
 
         return oldAttr;
     }
@@ -141,7 +133,7 @@ public class IIOMetadataNode implements Element, NodeList {
 
         while (pos != null) {
             if (pos.getNodeName().equals(name)) {
-                nodes.add((IIOMetadataNode)pos);
+                nodes.add((IIOMetadataNode) pos);
             }
 
             Node nextNode = pos.getFirstChild();
@@ -202,22 +194,22 @@ public class IIOMetadataNode implements Element, NodeList {
 
     public TypeInfo getSchemaTypeInfo() {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public void setIdAttribute(String name, boolean isId) throws DOMException {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public void setIdAttributeNS(String namespaceURI, String localName, boolean isId) throws DOMException {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public void setIdAttributeNode(Attr idAttr, boolean isId) throws DOMException {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public String getNodeName() {
@@ -440,12 +432,12 @@ public class IIOMetadataNode implements Element, NodeList {
 
     public String getBaseURI() {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public short compareDocumentPosition(Node other) throws DOMException {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public String getTextContent() throws DOMException {
@@ -458,42 +450,42 @@ public class IIOMetadataNode implements Element, NodeList {
 
     public boolean isSameNode(Node other) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public String lookupPrefix(String namespaceURI) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public boolean isDefaultNamespace(String namespaceURI) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public String lookupNamespaceURI(String prefix) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public boolean isEqualNode(Node arg) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public Object getFeature(String feature, String version) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public Object setUserData(String key, Object data, UserDataHandler handler) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public Object getUserData(String key) {
         throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                               Messages.getString("imageio.90"));
+                Messages.getString("imageio.90"));
     }
 
     public Node item(int index) {
@@ -555,7 +547,7 @@ public class IIOMetadataNode implements Element, NodeList {
 
         public boolean isId() {
             throw new DOMException(DOMException.NOT_SUPPORTED_ERR,
-                                   Messages.getString("imageio.90"));
+                    Messages.getString("imageio.90"));
         }
 
         @Override
@@ -584,7 +576,7 @@ public class IIOMetadataNode implements Element, NodeList {
         }
 
         public Node getNamedItem(String name) {
-            for(IIOMetadataNode node:list) {
+            for (IIOMetadataNode node : list) {
                 if (name.equals(node.getNodeName())) {
                     return node;
                 }
@@ -594,12 +586,12 @@ public class IIOMetadataNode implements Element, NodeList {
 
         public Node setNamedItem(Node arg) throws DOMException {
             throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                                   Messages.getString("imageio.91"));
+                    Messages.getString("imageio.91"));
         }
 
         public Node removeNamedItem(String name) throws DOMException {
             throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                                   Messages.getString("imageio.91"));
+                    Messages.getString("imageio.91"));
         }
 
         public Node getNamedItemNS(String namespaceURI, String localName) throws DOMException {
@@ -608,12 +600,12 @@ public class IIOMetadataNode implements Element, NodeList {
 
         public Node setNamedItemNS(Node arg) throws DOMException {
             throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                                   Messages.getString("imageio.91"));
+                    Messages.getString("imageio.91"));
         }
 
         public Node removeNamedItemNS(String namespaceURI, String localName) throws DOMException {
             throw new DOMException(DOMException.NO_MODIFICATION_ALLOWED_ERR,
-                                   Messages.getString("imageio.91"));
+                    Messages.getString("imageio.91"));
         }
     }
 }

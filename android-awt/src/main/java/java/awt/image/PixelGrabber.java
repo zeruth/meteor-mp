@@ -19,14 +19,20 @@
  */
 package java.awt.image;
 
-import java.awt.Image;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
 import java.util.Hashtable;
 
 
 public class PixelGrabber implements ImageConsumer {
 
+    private static final int DATA_TYPE_BYTE = 0;
+    private static final int DATA_TYPE_INT = 1;
+    private static final int DATA_TYPE_UNDEFINED = 2;
+    private static final int ALL_BITS = (ImageObserver.FRAMEBITS |
+            ImageObserver.ALLBITS);
+    private static final int GRABBING_STOP = ALL_BITS | ImageObserver.ERROR;
     int width;
     int height;
     int X;
@@ -34,35 +40,22 @@ public class PixelGrabber implements ImageConsumer {
     int offset;
     int scanline;
     ImageProducer producer;
-
     byte bData[];
     int iData[];
     ColorModel cm;
-
     private int grabberStatus;
     private int dataType;
     private boolean isGrabbing;
     private boolean isRGB;
 
 
-    private static final int DATA_TYPE_BYTE = 0;
-    private static final int DATA_TYPE_INT = 1;
-    private static final int DATA_TYPE_UNDEFINED = 2;
-
-    private static final int ALL_BITS = (ImageObserver.FRAMEBITS |
-            ImageObserver.ALLBITS);
-
-    private static final int GRABBING_STOP = ALL_BITS | ImageObserver.ERROR;
-
-
-
     public PixelGrabber(ImageProducer ip, int x, int y, int w, int h, int[] pix,
-            int off, int scansize) {
+                        int off, int scansize) {
         initialize(ip, x, y, w, h, pix, off, scansize, true);
     }
 
     public PixelGrabber(Image img, int x, int y, int w, int h, int[] pix,
-            int off, int scansize) {
+                        int off, int scansize) {
         initialize(img.getSource(), x, y, w, h, pix, off, scansize, true);
     }
 
@@ -75,25 +68,21 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public synchronized Object getPixels() {
-        switch(dataType){
-        case DATA_TYPE_BYTE:
-            return bData;
-        case DATA_TYPE_INT:
-            return iData;
-        default:
-            return null;
+        switch (dataType) {
+            case DATA_TYPE_BYTE:
+                return bData;
+            case DATA_TYPE_INT:
+                return iData;
+            default:
+                return null;
         }
     }
 
-    public void setColorModel(ColorModel model) {
-        return;
-    }
-
     public void setPixels(int srcX, int srcY, int srcW, int srcH,
-            ColorModel model, byte[] pixels, int srcOff, int srcScan) {
-        if(srcY < Y){
+                          ColorModel model, byte[] pixels, int srcOff, int srcScan) {
+        if (srcY < Y) {
             int delta = Y - srcY;
-            if(delta >= height) {
+            if (delta >= height) {
                 return;
             }
             srcY += delta;
@@ -101,16 +90,16 @@ public class PixelGrabber implements ImageConsumer {
             srcOff += srcScan * delta;
         }
 
-        if(srcY + srcH > Y + height){
+        if (srcY + srcH > Y + height) {
             srcH = Y + height - srcY;
-            if(srcH <= 0) {
+            if (srcH <= 0) {
                 return;
             }
         }
 
-        if(srcX < X){
+        if (srcX < X) {
             int delta = X - srcX;
-            if(delta >= width) {
+            if (delta >= width) {
                 return;
             }
             srcW -= delta;
@@ -118,57 +107,57 @@ public class PixelGrabber implements ImageConsumer {
             srcOff += delta;
         }
 
-        if(srcX + srcW > X + width){
+        if (srcX + srcW > X + width) {
             srcW = X + width - srcX;
-            if(srcW <= 0) {
+            if (srcW <= 0) {
                 return;
             }
         }
-        if(scanline == 0) {
+        if (scanline == 0) {
             scanline = width;
         }
         int realOff = offset + (srcY - Y) * scanline + (srcX - X);
-        switch(dataType){
-        case DATA_TYPE_UNDEFINED:
-            cm = model;
-            if(model != ColorModel.getRGBdefault()){
-                bData = new byte[width * height];
-                isRGB = false;
-                dataType = DATA_TYPE_BYTE;
-            }else{
-                iData = new int[width * height];
-                isRGB = true;
-                dataType = DATA_TYPE_INT;
-            }
-        case DATA_TYPE_BYTE:
-            if(!isRGB && cm == model){
-                for(int y = 0; y < srcH; y++){
-                    System.arraycopy(pixels, srcOff, bData, realOff, srcW);
+        switch (dataType) {
+            case DATA_TYPE_UNDEFINED:
+                cm = model;
+                if (model != ColorModel.getRGBdefault()) {
+                    bData = new byte[width * height];
+                    isRGB = false;
+                    dataType = DATA_TYPE_BYTE;
+                } else {
+                    iData = new int[width * height];
+                    isRGB = true;
+                    dataType = DATA_TYPE_INT;
+                }
+            case DATA_TYPE_BYTE:
+                if (!isRGB && cm == model) {
+                    for (int y = 0; y < srcH; y++) {
+                        System.arraycopy(pixels, srcOff, bData, realOff, srcW);
+                        srcOff += srcScan;
+                        realOff += scanline;
+                    }
+                    break;
+                }
+                forceToRGB();
+            case DATA_TYPE_INT:
+                for (int y = 0; y < srcH; y++) {
+                    for (int x = 0; x < srcW; x++) {
+                        iData[realOff + x] = cm.getRGB(pixels[srcOff + x] & 0xff);
+                    }
                     srcOff += srcScan;
                     realOff += scanline;
                 }
-                break;
-            }
-            forceToRGB();
-        case DATA_TYPE_INT:
-            for(int y = 0; y < srcH; y++){
-                for(int x = 0; x < srcW; x++){
-                    iData[realOff + x] = cm.getRGB(pixels[srcOff + x] & 0xff);                    
-                }
-                srcOff += srcScan;
-                realOff += scanline;
-            }
         }
 
         return;
     }
 
     public void setPixels(int srcX, int srcY, int srcW, int srcH,
-            ColorModel model, int[] pixels, int srcOff, int srcScan) {
+                          ColorModel model, int[] pixels, int srcOff, int srcScan) {
 
-        if(srcY < Y){
+        if (srcY < Y) {
             int delta = Y - srcY;
-            if(delta >= height) {
+            if (delta >= height) {
                 return;
             }
             srcY += delta;
@@ -176,16 +165,16 @@ public class PixelGrabber implements ImageConsumer {
             srcOff += srcScan * delta;
         }
 
-        if(srcY + srcH > Y + height){
+        if (srcY + srcH > Y + height) {
             srcH = Y + height - srcY;
-            if(srcH <= 0) {
+            if (srcH <= 0) {
                 return;
             }
         }
 
-        if(srcX < X){
+        if (srcX < X) {
             int delta = X - srcX;
-            if(delta >= width) {
+            if (delta >= width) {
                 return;
             }
             srcW -= delta;
@@ -193,46 +182,46 @@ public class PixelGrabber implements ImageConsumer {
             srcOff += delta;
         }
 
-        if(srcX + srcW > X + width){
+        if (srcX + srcW > X + width) {
             srcW = X + width - srcX;
-            if(srcW <= 0) {
+            if (srcW <= 0) {
                 return;
             }
         }
-        if(scanline == 0) {
+        if (scanline == 0) {
             scanline = width;
         }
         int realOff = offset + (srcY - Y) * scanline + (srcX - X);
 
         int mask = 0xFF;
 
-        switch(dataType){
-        case DATA_TYPE_UNDEFINED:
-            cm = model;
-            iData = new int[width * height];
-            dataType = DATA_TYPE_INT;
-            isRGB = (cm == ColorModel.getRGBdefault());
+        switch (dataType) {
+            case DATA_TYPE_UNDEFINED:
+                cm = model;
+                iData = new int[width * height];
+                dataType = DATA_TYPE_INT;
+                isRGB = (cm == ColorModel.getRGBdefault());
 
-        case DATA_TYPE_INT:
-            if(cm == model){
-                for(int y = 0; y < srcH; y++){
-                    System.arraycopy(pixels, srcOff, iData, realOff, srcW);
+            case DATA_TYPE_INT:
+                if (cm == model) {
+                    for (int y = 0; y < srcH; y++) {
+                        System.arraycopy(pixels, srcOff, iData, realOff, srcW);
+                        srcOff += srcScan;
+                        realOff += scanline;
+                    }
+                    break;
+                }
+                mask = 0xFFFFFFFF;
+
+            case DATA_TYPE_BYTE:
+                forceToRGB();
+                for (int y = 0; y < srcH; y++) {
+                    for (int x = 0; x < srcW; x++) {
+                        iData[realOff + x] = cm.getRGB(pixels[srcOff + x] & mask);
+                    }
                     srcOff += srcScan;
                     realOff += scanline;
                 }
-                break;
-            }
-            mask = 0xFFFFFFFF;
-
-        case DATA_TYPE_BYTE:
-            forceToRGB();
-            for(int y = 0; y < srcH; y++){
-                for(int x = 0; x < srcW; x++){
-                    iData[realOff+x] = cm.getRGB(pixels[srcOff+x] & mask);
-                }
-                srcOff += srcScan;
-                realOff += scanline;
-            }
         }
     }
 
@@ -240,23 +229,27 @@ public class PixelGrabber implements ImageConsumer {
         return cm;
     }
 
-    public synchronized boolean grabPixels(long ms) 
-    throws InterruptedException {
-        if((grabberStatus & GRABBING_STOP) != 0){
+    public void setColorModel(ColorModel model) {
+        return;
+    }
+
+    public synchronized boolean grabPixels(long ms)
+            throws InterruptedException {
+        if ((grabberStatus & GRABBING_STOP) != 0) {
             return ((grabberStatus & ALL_BITS) != 0);
         }
 
         long start = System.currentTimeMillis();
 
-        if(!isGrabbing){
+        if (!isGrabbing) {
             isGrabbing = true;
             grabberStatus &= ~ImageObserver.ABORT;
             producer.startProduction(this);
         }
-        while((grabberStatus & GRABBING_STOP) == 0){
-            if(ms != 0){
+        while ((grabberStatus & GRABBING_STOP) == 0) {
+            if (ms != 0) {
                 ms = start + ms - System.currentTimeMillis();
-                if(ms <= 0) {
+                if (ms <= 0) {
                     break;
                 }
             }
@@ -267,21 +260,21 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public void setDimensions(int w, int h) {
-        if(width < 0) {
+        if (width < 0) {
             width = w - X;
         }
-        if(height < 0) {
+        if (height < 0) {
             height = h - Y;
         }
 
         grabberStatus |= ImageObserver.WIDTH | ImageObserver.HEIGHT;
 
-        if(width <=0 || height <=0){
+        if (width <= 0 || height <= 0) {
             imageComplete(STATICIMAGEDONE);
             return;
         }
 
-        if(isRGB && dataType == DATA_TYPE_UNDEFINED){
+        if (isRGB && dataType == DATA_TYPE_UNDEFINED) {
             iData = new int[width * height];
             dataType = DATA_TYPE_INT;
             scanline = width;
@@ -293,22 +286,22 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public synchronized void imageComplete(int status) {
-        switch(status){
-        case IMAGEABORTED:
-            grabberStatus |= ImageObserver.ABORT;
-            break;
-        case IMAGEERROR:
-            grabberStatus |= ImageObserver.ERROR | ImageObserver.ABORT;
-            break;
-        case SINGLEFRAMEDONE:
-            grabberStatus |= ImageObserver.FRAMEBITS;
-            break;
-        case STATICIMAGEDONE:
-            grabberStatus |= ImageObserver.ALLBITS;
-            break;
-        default:
-            // awt.26A=Incorrect ImageConsumer completion status
-            throw new IllegalArgumentException(Messages.getString("awt.26A")); //$NON-NLS-1$
+        switch (status) {
+            case IMAGEABORTED:
+                grabberStatus |= ImageObserver.ABORT;
+                break;
+            case IMAGEERROR:
+                grabberStatus |= ImageObserver.ERROR | ImageObserver.ABORT;
+                break;
+            case SINGLEFRAMEDONE:
+                grabberStatus |= ImageObserver.FRAMEBITS;
+                break;
+            case STATICIMAGEDONE:
+                grabberStatus |= ImageObserver.ALLBITS;
+                break;
+            default:
+                // awt.26A=Incorrect ImageConsumer completion status
+                throw new IllegalArgumentException(Messages.getString("awt.26A")); //$NON-NLS-1$
         }
         isGrabbing = false;
         producer.removeConsumer(this);
@@ -320,10 +313,10 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public synchronized void startGrabbing() {
-        if((grabberStatus & GRABBING_STOP) != 0){
+        if ((grabberStatus & GRABBING_STOP) != 0) {
             return;
         }
-        if(!isGrabbing){
+        if (!isGrabbing) {
             isGrabbing = true;
             grabberStatus &= ~ImageObserver.ABORT;
             producer.startProduction(this);
@@ -339,7 +332,7 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public synchronized int getWidth() {
-        if(width < 0) {
+        if (width < 0) {
             return -1;
         }
         return width;
@@ -350,14 +343,14 @@ public class PixelGrabber implements ImageConsumer {
     }
 
     public synchronized int getHeight() {
-        if(height < 0) {
+        if (height < 0) {
             return -1;
         }
         return height;
     }
 
     private void initialize(ImageProducer ip, int x, int y, int w, int h,
-            int pixels[], int off, int scansize, boolean forceRGB){
+                            int pixels[], int off, int scansize, boolean forceRGB) {
 
         producer = ip;
         X = x;
@@ -368,7 +361,7 @@ public class PixelGrabber implements ImageConsumer {
         dataType = (pixels == null) ? DATA_TYPE_UNDEFINED : DATA_TYPE_INT;
         offset = off;
         scanline = scansize;
-        if(forceRGB){
+        if (forceRGB) {
             cm = ColorModel.getRGBdefault();
             isRGB = true;
         }
@@ -377,27 +370,27 @@ public class PixelGrabber implements ImageConsumer {
     /**
      * Force pixels to INT RGB mode
      */
-    private void forceToRGB(){
+    private void forceToRGB() {
         if (isRGB)
             return;
-    
-        switch(dataType){
-        case DATA_TYPE_BYTE:
-            iData = new int[width * height];
-            for(int i = 0; i < iData.length; i++){
-                iData[i] = cm.getRGB(bData[i] & 0xff);
-            }
-            dataType = DATA_TYPE_INT;
-            bData = null;
-            break;
 
-        case DATA_TYPE_INT:
-            int buff[] = new int[width * height];
-            for(int i = 0; i < iData.length; i++){
-                buff[i] = cm.getRGB(iData[i]);
-            }
-            iData = buff;
-            break;
+        switch (dataType) {
+            case DATA_TYPE_BYTE:
+                iData = new int[width * height];
+                for (int i = 0; i < iData.length; i++) {
+                    iData[i] = cm.getRGB(bData[i] & 0xff);
+                }
+                dataType = DATA_TYPE_INT;
+                bData = null;
+                break;
+
+            case DATA_TYPE_INT:
+                int buff[] = new int[width * height];
+                for (int i = 0; i < iData.length; i++) {
+                    buff[i] = cm.getRGB(iData[i]);
+                }
+                iData = buff;
+                break;
         }
         offset = 0;
         scanline = width;

@@ -20,22 +20,20 @@
 package org.apache.harmony.awt.gl.image;
 
 
-import java.awt.Graphics;
-import java.awt.GraphicsConfiguration;
-import java.awt.Rectangle;
-import java.awt.Shape;
-import java.awt.font.GlyphVector;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.WritableRaster;
 import org.apache.harmony.awt.gl.CommonGraphics2D;
 import org.apache.harmony.awt.gl.Surface;
 import org.apache.harmony.awt.gl.render.JavaBlitter;
 
+import java.awt.*;
+import java.awt.font.GlyphVector;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.WritableRaster;
+
 
 /**
  * BufferedImageGraphics2D is implementation of CommonGraphics2D for
- * drawing on buffered images. 
+ * drawing on buffered images.
  */
 public class BufferedImageGraphics2D extends CommonGraphics2D {
     private BufferedImage bi = null;
@@ -73,7 +71,7 @@ public class BufferedImageGraphics2D extends CommonGraphics2D {
     public WritableRaster getWritableRaster() {
         return bi.getRaster();
     }
-    
+
     @Override
     public void drawString(String str, float x, float y) {
         Shape sh = font.createGlyphVector(this.getFontRenderContext(), str).getOutline(x, y);

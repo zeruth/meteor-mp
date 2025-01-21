@@ -19,11 +19,11 @@
  */
 package org.apache.harmony.x.imageio.spi;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.RandomAccessFile;
@@ -40,7 +40,7 @@ public class RAFIISSpi extends ImageInputStreamSpi {
 
     @Override
     public ImageInputStream createInputStreamInstance(Object input, boolean useCache,
-            File cacheDir) throws IOException {
+                                                      File cacheDir) throws IOException {
         if (RandomAccessFile.class.isInstance(input)) {
             return new FileImageInputStream((RandomAccessFile) input);
         }

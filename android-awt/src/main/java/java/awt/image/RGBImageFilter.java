@@ -27,7 +27,8 @@ public abstract class RGBImageFilter extends ImageFilter {
 
     protected boolean canFilterIndexColorModel;
 
-    public RGBImageFilter() {}
+    public RGBImageFilter() {
+    }
 
     public IndexColorModel filterIndexColorModel(IndexColorModel icm) {
         int transferType = icm.getTransferType();
@@ -38,14 +39,14 @@ public abstract class RGBImageFilter extends ImageFilter {
         icm.getRGBs(colorMap);
         int trans = -1;
         boolean hasAlpha = false;
-        for(int i = 0; i < mapSize; i++){
+        for (int i = 0; i < mapSize; i++) {
             filteredColorMap[i] = filterRGB(-1, -1, colorMap[i]);
             int alpha = filteredColorMap[i] >>> 24;
-            if(alpha != 0xff){
-                if(!hasAlpha) {
+            if (alpha != 0xff) {
+                if (!hasAlpha) {
                     hasAlpha = true;
                 }
-                if(alpha == 0 && trans < 0) {
+                if (alpha == 0 && trans < 0) {
                     trans = i;
                 }
             }
@@ -62,29 +63,29 @@ public abstract class RGBImageFilter extends ImageFilter {
 
     @Override
     public void setColorModel(ColorModel model) {
-        if(model instanceof IndexColorModel &&
-                canFilterIndexColorModel){
+        if (model instanceof IndexColorModel &&
+                canFilterIndexColorModel) {
             IndexColorModel icm = (IndexColorModel) model;
             ColorModel filteredModel = filterIndexColorModel(icm);
             substituteColorModel(model, filteredModel);
             consumer.setColorModel(filteredModel);
-        }else{
+        } else {
             consumer.setColorModel(ColorModel.getRGBdefault());
         }
     }
 
     @Override
-    public void setPixels(int x, int y, int w, int h, ColorModel model, 
-            int[] pixels, int off, int scansize) {
-        
-        if(model == null || model == origmodel){
+    public void setPixels(int x, int y, int w, int h, ColorModel model,
+                          int[] pixels, int off, int scansize) {
+
+        if (model == null || model == origmodel) {
             consumer.setPixels(x, y, w, h, newmodel, pixels, off, scansize);
-        }else{
+        } else {
             int rgbPixels[] = new int[w];
-            for(int sy = y, pixelsOff = off; sy < y + h; 
-                sy++, pixelsOff += scansize){
-                
-                for(int sx = x, idx = 0; sx < x + w; sx++, idx++){
+            for (int sy = y, pixelsOff = off; sy < y + h;
+                 sy++, pixelsOff += scansize) {
+
+                for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
                     rgbPixels[idx] = model.getRGB(pixels[pixelsOff + idx]);
                 }
                 filterRGBPixels(x, sy, w, 1, rgbPixels, 0, w);
@@ -93,35 +94,35 @@ public abstract class RGBImageFilter extends ImageFilter {
     }
 
     @Override
-    public void setPixels(int x, int y, int w, int h, ColorModel model, 
-            byte[] pixels, int off, int scansize) {
-        
-        if(model == null || model == origmodel){
+    public void setPixels(int x, int y, int w, int h, ColorModel model,
+                          byte[] pixels, int off, int scansize) {
+
+        if (model == null || model == origmodel) {
             consumer.setPixels(x, y, w, h, newmodel, pixels, off, scansize);
-        }else{
+        } else {
             int rgbPixels[] = new int[w];
-            for(int sy = y, pixelsOff = off; sy < y + h; 
-                sy++, pixelsOff += scansize){
-                
-                for(int sx = x, idx = 0; sx < x + w; sx++, idx++){
-                    rgbPixels[idx] = 
-                        model.getRGB(pixels[pixelsOff + idx] & 0xff);
+            for (int sy = y, pixelsOff = off; sy < y + h;
+                 sy++, pixelsOff += scansize) {
+
+                for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
+                    rgbPixels[idx] =
+                            model.getRGB(pixels[pixelsOff + idx] & 0xff);
                 }
                 filterRGBPixels(x, sy, w, 1, rgbPixels, 0, w);
             }
         }
     }
 
-    public void filterRGBPixels(int x, int y, int w, int h, 
-            int[] pixels, int off, int scansize) {
-        
-        for(int sy = y, lineOff = off; sy < y + h; sy++, lineOff += scansize){
-            for(int sx = x, idx = 0; sx < x + w; sx++, idx++){
-                pixels[lineOff + idx] = 
-                    filterRGB(sx, sy, pixels[lineOff + idx]);
+    public void filterRGBPixels(int x, int y, int w, int h,
+                                int[] pixels, int off, int scansize) {
+
+        for (int sy = y, lineOff = off; sy < y + h; sy++, lineOff += scansize) {
+            for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
+                pixels[lineOff + idx] =
+                        filterRGB(sx, sy, pixels[lineOff + idx]);
             }
         }
-        consumer.setPixels(x, y, w, h, ColorModel.getRGBdefault(), 
+        consumer.setPixels(x, y, w, h, ColorModel.getRGBdefault(),
                 pixels, off, scansize);
     }
 

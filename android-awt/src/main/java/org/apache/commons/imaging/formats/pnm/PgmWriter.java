@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;

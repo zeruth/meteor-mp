@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.common.bytesource;
 
+import org.apache.commons.imaging.common.BinaryFunctions;
+
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.imaging.common.BinaryFunctions;
 
 public abstract class ByteSource {
     protected final String filename;
@@ -48,7 +48,7 @@ public abstract class ByteSource {
     public byte[] getBlock(final int start, final int length) throws IOException {
         return getBlock(0xFFFFffffL & start, length);
     }
-    
+
     public abstract byte[] getBlock(long start, int length) throws IOException;
 
     public abstract byte[] getAll() throws IOException;

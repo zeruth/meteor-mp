@@ -16,15 +16,12 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Jul 12, 2005
  */
 
 package org.apache.harmony.awt.gl.font;
 
-import java.awt.Font;
-import java.awt.GraphicsEnvironment;
-
+import java.awt.*;
 import java.util.List;
 import java.util.Map;
 
@@ -70,15 +67,15 @@ public class FontFinder {
         if (blocks[blockNum][index] == 0) {
             blocks[blockNum][index] = 1;
 
-            for (int i=0; i<fonts.length; i++) {
+            for (int i = 0; i < fonts.length; i++) {
                 if (fonts[i].canDisplay(c)) {
-                    blocks[blockNum][index] = i+1;
+                    blocks[blockNum][index] = i + 1;
                     break;
                 }
             }
         }
 
-        return getDefaultSizeFont(blocks[blockNum][index]-1);
+        return getDefaultSizeFont(blocks[blockNum][index] - 1);
     }
 
     /**
@@ -104,14 +101,14 @@ public class FontFinder {
      * @param fonts - mapping of the font run starts to the fonts
      */
     static void findFonts(char text[], int runStart, int runLimit, List<Integer> runStarts,
-            Map<Integer, Object> fonts) {
+                          Map<Integer, Object> fonts) {
         Font prevFont = null;
         Font currFont;
         for (int i = runStart; i < runLimit; i++) {
             currFont = findFontForChar(text[i]);
             if (currFont != prevFont) {
                 prevFont = currFont;
-                Integer idx = new Integer(i);
+                Integer idx = i;
                 fonts.put(idx, currFont);
                 if (i != runStart) {
                     runStarts.add(idx);

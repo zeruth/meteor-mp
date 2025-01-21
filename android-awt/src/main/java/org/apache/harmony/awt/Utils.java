@@ -25,7 +25,7 @@ public final class Utils {
     public static String getSystemProperty(final String name) {
         return getSystemProperty(name, null);
     }
-    
+
     public static String getSystemProperty(final String name, final String value) {
         return AccessController.doPrivileged(new PrivilegedAction<String>() {
             public String run() {

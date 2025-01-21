@@ -19,12 +19,12 @@
  */
 package java.awt.font;
 
-import java.awt.Font;
+import java.awt.*;
 
 public interface MultipleMaster {
 
     public Font deriveMMFont(float[] glyphWidths, float avgStemWidth,
-            float typicalCapHeight, float typicalXHeight, float italicAngle);
+                             float typicalCapHeight, float typicalXHeight, float italicAngle);
 
     public Font deriveMMFont(float[] axes);
 

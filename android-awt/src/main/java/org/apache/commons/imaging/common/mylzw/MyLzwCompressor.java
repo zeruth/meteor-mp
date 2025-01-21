@@ -23,24 +23,23 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class MyLzwCompressor {
-    private int codeSize;
     private final int initialCodeSize;
-    private int codes = -1;
-
     private final ByteOrder byteOrder;
     private final boolean earlyLimit;
     private final int clearCode;
     private final int eoiCode;
     private final Listener listener;
     private final Map<ByteArray, Integer> map = new HashMap<ByteArray, Integer>();
+    private int codeSize;
+    private int codes = -1;
 
     public MyLzwCompressor(final int initialCodeSize, final ByteOrder byteOrder,
-            final boolean earlyLimit) {
+                           final boolean earlyLimit) {
         this(initialCodeSize, byteOrder, earlyLimit, null);
     }
 
     public MyLzwCompressor(final int initialCodeSize, final ByteOrder byteOrder,
-            final boolean earlyLimit, final Listener listener) {
+                           final boolean earlyLimit, final Listener listener) {
         this.listener = listener;
         this.byteOrder = byteOrder;
         this.earlyLimit = earlyLimit;
@@ -84,56 +83,7 @@ public class MyLzwCompressor {
     }
 
     private ByteArray arrayToKey(final byte b) {
-        return arrayToKey(new byte[] { b, }, 0, 1);
-    }
-
-    private final static class ByteArray {
-        private final byte[] bytes;
-        private final int start;
-        private final int length;
-        private final int hash;
-
-        public ByteArray(final byte[] bytes, final int start, final int length) {
-            this.bytes = bytes;
-            this.start = start;
-            this.length = length;
-
-            int tempHash = length;
-
-            for (int i = 0; i < length; i++) {
-                final int b = 0xff & bytes[i + start];
-                tempHash = tempHash + (tempHash << 8) ^ b ^ i;
-            }
-
-            hash = tempHash;
-        }
-
-        @Override
-        public int hashCode() {
-            return hash;
-        }
-
-        @Override
-        public boolean equals(final Object o) {
-            if (o instanceof ByteArray) {
-                final ByteArray other = (ByteArray) o;
-                if (other.hash != hash) {
-                    return false;
-                }
-                if (other.length != length) {
-                    return false;
-                }
-
-                for (int i = 0; i < length; i++) {
-                    if (other.bytes[i + other.start] != bytes[i + start]) {
-                        return false;
-                    }
-                }
-
-                return true;
-            }
-            return false;
-        }
+        return arrayToKey(new byte[]{b,}, 0, 1);
     }
 
     private ByteArray arrayToKey(final byte[] bytes, final int start, final int length) {
@@ -184,7 +134,7 @@ public class MyLzwCompressor {
     }
 
     private boolean addTableEntry(final MyBitOutputStream bos, final byte[] bytes,
-            final int start, final int length) throws IOException {
+                                  final int start, final int length) throws IOException {
         final ByteArray key = arrayToKey(bytes, start, length);
         return addTableEntry(bos, key);
     }
@@ -214,16 +164,6 @@ public class MyLzwCompressor {
         }
 
         return cleared;
-    }
-
-    public interface Listener {
-        void dataCode(int code);
-
-        void eoiCode(int code);
-
-        void clearCode(int code);
-
-        void init(int clearCode, int eoiCode);
     }
 
     public byte[] compress(final byte[] bytes) throws IOException {
@@ -258,5 +198,64 @@ public class MyLzwCompressor {
         bos.flushCache();
 
         return baos.toByteArray();
+    }
+
+    public interface Listener {
+        void dataCode(int code);
+
+        void eoiCode(int code);
+
+        void clearCode(int code);
+
+        void init(int clearCode, int eoiCode);
+    }
+
+    private final static class ByteArray {
+        private final byte[] bytes;
+        private final int start;
+        private final int length;
+        private final int hash;
+
+        public ByteArray(final byte[] bytes, final int start, final int length) {
+            this.bytes = bytes;
+            this.start = start;
+            this.length = length;
+
+            int tempHash = length;
+
+            for (int i = 0; i < length; i++) {
+                final int b = 0xff & bytes[i + start];
+                tempHash = tempHash + (tempHash << 8) ^ b ^ i;
+            }
+
+            hash = tempHash;
+        }
+
+        @Override
+        public int hashCode() {
+            return hash;
+        }
+
+        @Override
+        public boolean equals(final Object o) {
+            if (o instanceof ByteArray) {
+                final ByteArray other = (ByteArray) o;
+                if (other.hash != hash) {
+                    return false;
+                }
+                if (other.length != length) {
+                    return false;
+                }
+
+                for (int i = 0; i < length; i++) {
+                    if (other.bytes[i + other.start] != bytes[i + start]) {
+                        return false;
+                    }
+                }
+
+                return true;
+            }
+            return false;
+        }
     }
 }

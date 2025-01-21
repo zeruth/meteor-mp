@@ -16,19 +16,14 @@
  */
 package org.apache.commons.imaging.formats.icns;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -47,7 +42,7 @@ import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
 public class IcnsImageParser extends ImageParser {
     static final int ICNS_MAGIC = IcnsType.typeAsInt("icns");
     private static final String DEFAULT_EXTENSION = ".icns";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".icns", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".icns",};
 
     public IcnsImageParser() {
         super.setByteOrder(ByteOrder.BIG_ENDIAN);
@@ -70,7 +65,7 @@ public class IcnsImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.ICNS };
+        return new ImageFormat[]{ImageFormats.ICNS};
     }
 
     @Override
@@ -140,24 +135,6 @@ public class IcnsImageParser extends ImageParser {
         return null;
     }
 
-    private static class IcnsHeader {
-        public final int magic; // Magic literal (4 bytes), always "icns"
-        public final int fileSize; // Length of file (4 bytes), in bytes.
-
-        public IcnsHeader(final int magic, final int fileSize) {
-            this.magic = magic;
-            this.fileSize = fileSize;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("IcnsHeader");
-            pw.println("Magic: 0x" + Integer.toHexString(magic) + " ("
-                    + IcnsType.describeType(magic) + ")");
-            pw.println("FileSize: " + fileSize);
-            pw.println("");
-        }
-    }
-
     private IcnsHeader readIcnsHeader(final InputStream is)
             throws ImageReadException, IOException {
         final int magic = read4Bytes("Magic", is, "Not a Valid ICNS File", getByteOrder());
@@ -170,61 +147,23 @@ public class IcnsImageParser extends ImageParser {
         return new IcnsHeader(magic, fileSize);
     }
 
-    static class IcnsElement {
-        public final int type;
-        public final int elementSize;
-        public final byte[] data;
-
-        public IcnsElement(final int type, final int elementSize, final byte[] data) {
-            this.type = type;
-            this.elementSize = elementSize;
-            this.data = data;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("IcnsElement");
-            final IcnsType icnsType = IcnsType.findAnyType(type);
-            String typeDescription;
-            if (icnsType == null) {
-                typeDescription = "";
-            } else {
-                typeDescription = " " + icnsType.toString();
-            }
-            pw.println("Type: 0x" + Integer.toHexString(type) + " ("
-                    + IcnsType.describeType(type) + ")" + typeDescription);
-            pw.println("ElementSize: " + elementSize);
-            pw.println("");
-        }
-    }
-
     private IcnsElement readIcnsElement(final InputStream is) throws IOException {
         final int type = read4Bytes("Type", is, "Not a Valid ICNS File", getByteOrder()); // Icon type
-                                                                    // (4 bytes)
+        // (4 bytes)
         final int elementSize = read4Bytes("ElementSize", is, "Not a Valid ICNS File", getByteOrder()); // Length
-                                                                                  // of
-                                                                                  // data
-                                                                                  // (4
-                                                                                  // bytes),
-                                                                                  // in
-                                                                                  // bytes,
-                                                                                  // including
-                                                                                  // this
-                                                                                  // header
+        // of
+        // data
+        // (4
+        // bytes),
+        // in
+        // bytes,
+        // including
+        // this
+        // header
         final byte[] data = readBytes("Data", is, elementSize - 8,
                 "Not a Valid ICNS File");
 
         return new IcnsElement(type, elementSize, data);
-    }
-
-    private static class IcnsContents {
-        public final IcnsHeader icnsHeader;
-        public final IcnsElement[] icnsElements;
-
-        public IcnsContents(final IcnsHeader icnsHeader, final IcnsElement[] icnsElements) {
-            super();
-            this.icnsHeader = icnsHeader;
-            this.icnsElements = icnsElements;
-        }
     }
 
     private IcnsContents readImage(final ByteSource byteSource)
@@ -236,7 +175,7 @@ public class IcnsImageParser extends ImageParser {
             final IcnsHeader icnsHeader = readIcnsHeader(is);
 
             final List<IcnsElement> icnsElementList = new ArrayList<IcnsElement>();
-            for (int remainingSize = icnsHeader.fileSize - 8; remainingSize > 0;) {
+            for (int remainingSize = icnsHeader.fileSize - 8; remainingSize > 0; ) {
                 final IcnsElement icnsElement = readIcnsElement(is);
                 icnsElementList.add(icnsElement);
                 remainingSize -= icnsElement.elementSize;
@@ -268,7 +207,7 @@ public class IcnsImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         final IcnsContents icnsContents = readImage(byteSource);
         final List<BufferedImage> result = IcnsDecoder
                 .decodeAllImages(icnsContents.icnsElements);
@@ -349,16 +288,70 @@ public class IcnsImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    private static class IcnsHeader {
+        public final int magic; // Magic literal (4 bytes), always "icns"
+        public final int fileSize; // Length of file (4 bytes), in bytes.
+
+        public IcnsHeader(final int magic, final int fileSize) {
+            this.magic = magic;
+            this.fileSize = fileSize;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("IcnsHeader");
+            pw.println("Magic: 0x" + Integer.toHexString(magic) + " ("
+                    + IcnsType.describeType(magic) + ")");
+            pw.println("FileSize: " + fileSize);
+            pw.println("");
+        }
+    }
+
+    static class IcnsElement {
+        public final int type;
+        public final int elementSize;
+        public final byte[] data;
+
+        public IcnsElement(final int type, final int elementSize, final byte[] data) {
+            this.type = type;
+            this.elementSize = elementSize;
+            this.data = data;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("IcnsElement");
+            final IcnsType icnsType = IcnsType.findAnyType(type);
+            String typeDescription;
+            if (icnsType == null) {
+                typeDescription = "";
+            } else {
+                typeDescription = " " + icnsType.toString();
+            }
+            pw.println("Type: 0x" + Integer.toHexString(type) + " ("
+                    + IcnsType.describeType(type) + ")" + typeDescription);
+            pw.println("ElementSize: " + elementSize);
+            pw.println("");
+        }
+    }
+
+    private static class IcnsContents {
+        public final IcnsHeader icnsHeader;
+        public final IcnsElement[] icnsElements;
+
+        public IcnsContents(final IcnsHeader icnsHeader, final IcnsElement[] icnsElements) {
+            super();
+            this.icnsHeader = icnsHeader;
+            this.icnsElements = icnsElements;
+        }
     }
 }

@@ -28,6 +28,6 @@ import java.awt.image.ColorModel;
  */
 public interface Paint extends Transparency {
     PaintContext createContext(ColorModel cm, Rectangle deviceBounds,
-            Rectangle2D userBounds, AffineTransform xform,
-            RenderingHints hints);
+                               Rectangle2D userBounds, AffineTransform xform,
+                               RenderingHints hints);
 }

@@ -18,9 +18,11 @@
  * @author Oleg V. Khaschansky
  */
 package org.apache.harmony.awt.gl.color;
+
+import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
+
 import java.awt.color.ICC_Profile;
 import java.util.HashMap;
-import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
 
 
 /**
@@ -35,7 +37,7 @@ public class NativeCMM {
     private static HashMap<ICC_Profile, Long> profileHandles = new HashMap<ICC_Profile, Long>();
 
     public static void addHandle(ICC_Profile key, long handle) {
-        profileHandles.put(key, new Long(handle));
+        profileHandles.put(key, handle);
     }
 
     public static void removeHandle(ICC_Profile key) {

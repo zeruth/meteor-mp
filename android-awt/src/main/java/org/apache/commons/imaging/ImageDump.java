@@ -16,12 +16,13 @@
  */
 package org.apache.commons.imaging;
 
+import org.apache.commons.imaging.icc.IccProfileInfo;
+import org.apache.commons.imaging.icc.IccProfileParser;
+
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
 import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.icc.IccProfileInfo;
-import org.apache.commons.imaging.icc.IccProfileParser;
 
 /**
  * Used to store metadata and descriptive information extracted from
@@ -32,23 +33,23 @@ public class ImageDump {
         // System.out.println(prefix + ": " + "type: "
         // + cs.getType() );
         switch (cs.getType()) {
-        case ColorSpace.TYPE_CMYK:
-            return "TYPE_CMYK";
-        case ColorSpace.TYPE_RGB:
-            return "TYPE_RGB";
+            case ColorSpace.TYPE_CMYK:
+                return "TYPE_CMYK";
+            case ColorSpace.TYPE_RGB:
+                return "TYPE_RGB";
 
-        case ColorSpace.CS_sRGB:
-            return "CS_sRGB";
-        case ColorSpace.CS_GRAY:
-            return "CS_GRAY";
-        case ColorSpace.CS_CIEXYZ:
-            return "CS_CIEXYZ";
-        case ColorSpace.CS_LINEAR_RGB:
-            return "CS_LINEAR_RGB";
-        case ColorSpace.CS_PYCC:
-            return "CS_PYCC";
-        default:
-            return "unknown";
+            case ColorSpace.CS_sRGB:
+                return "CS_sRGB";
+            case ColorSpace.CS_GRAY:
+                return "CS_GRAY";
+            case ColorSpace.CS_CIEXYZ:
+                return "CS_CIEXYZ";
+            case ColorSpace.CS_LINEAR_RGB:
+                return "CS_LINEAR_RGB";
+            case ColorSpace.CS_PYCC:
+                return "CS_PYCC";
+            default:
+                return "unknown";
         }
     }
 

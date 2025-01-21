@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.palette;
 
+import org.apache.commons.imaging.ImageWriteException;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
-
-import org.apache.commons.imaging.ImageWriteException;
 
 public class MedianCutLongestAxisImplementation extends MedianCutImplementation {
     private static final Comparator<ColorGroup> COMPARATOR = new Comparator<ColorGroup>() {
@@ -57,9 +57,9 @@ public class MedianCutLongestAxisImplementation extends MedianCutImplementation 
         }
         return true;
     }
-    
+
     private void doCut(final ColorGroup colorGroup, final ColorComponent mode,
-            final List<ColorGroup> colorGroups, final boolean ignoreAlpha) throws ImageWriteException {
+                       final List<ColorGroup> colorGroups, final boolean ignoreAlpha) throws ImageWriteException {
 
         final Comparator<ColorCount> comp = new Comparator<ColorCount>() {
             public int compare(final ColorCount c1, final ColorCount c2) {

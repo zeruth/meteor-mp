@@ -18,11 +18,11 @@
 
 package org.apache.harmony.x.imageio.spi;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.spi.ImageOutputStreamSpi;
 import javax.imageio.stream.ImageOutputStream;
 import javax.imageio.stream.MemoryCacheImageOutputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,7 +43,7 @@ public class OutputStreamIOSSpi extends ImageOutputStreamSpi {
 //            if (useCache) {
 //                return new FileCacheImageOutputStream((OutputStream) output, cacheDir);
 //            } else {
-                return new MemoryCacheImageOutputStream((OutputStream) output);
+            return new MemoryCacheImageOutputStream((OutputStream) output);
 //            }
         }
         throw new IllegalArgumentException(Messages.getString("imageio.85"));

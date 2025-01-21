@@ -18,8 +18,9 @@
 package javax.imageio.plugins.jpeg;
 
 
-import javax.imageio.ImageReadParam;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
+
+import javax.imageio.ImageReadParam;
 
 public class JPEGImageReadParam extends ImageReadParam {
     private JPEGQTable qTables[];
@@ -41,7 +42,7 @@ public class JPEGImageReadParam extends ImageReadParam {
         if (qTables == null || DCHuffmanTables == null || ACHuffmanTables == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
-        if(DCHuffmanTables.length != ACHuffmanTables.length) {
+        if (DCHuffmanTables.length != ACHuffmanTables.length) {
             throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if (qTables.length > 4 || DCHuffmanTables.length > 4) {
@@ -70,5 +71,5 @@ public class JPEGImageReadParam extends ImageReadParam {
 
     public JPEGHuffmanTable[] getACHuffmanTables() {
         return acHuffmanTables == null ? null : acHuffmanTables.clone();
-    }    
+    }
 }

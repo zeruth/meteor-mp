@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.jpeg.segments;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.formats.jpeg.JpegConstants;
 
 import static org.apache.commons.imaging.common.BinaryFunctions.*;
 

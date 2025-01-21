@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.BinaryOutputStream;
+
+import java.io.IOException;
 
 abstract class TiffOutputItem {
     public static final long UNDEFINED_VALUE = -1;

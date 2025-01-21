@@ -27,33 +27,26 @@ import java.awt.color.ColorSpace;
 
 public class LUTColorConverter {
 
-    private static byte from8lRGBtosRGB_LUT[];
-
-    private static byte from16lRGBtosRGB_LUT[];
-
-    private static byte fromsRGBto8lRGB_LUT[];
-
-    private static short fromsRGBto16lRGB_LUT[];
-
-    private static byte fromsRGBto8sRGB_LUTs[][];
-
     public static ColorSpace LINEAR_RGB_CS;
-
     public static ColorSpace LINEAR_GRAY_CS;
-
     public static ColorSpace sRGB_CS;
+    private static byte from8lRGBtosRGB_LUT[];
+    private static byte from16lRGBtosRGB_LUT[];
+    private static byte fromsRGBto8lRGB_LUT[];
+    private static short fromsRGBto16lRGB_LUT[];
+    private static byte fromsRGBto8sRGB_LUTs[][];
 
     public LUTColorConverter() {
     }
 
     /*
-     * This class prepared and returned lookup tables for conversion color 
+     * This class prepared and returned lookup tables for conversion color
      * values from Linear RGB Color Space to sRGB and vice versa.
      * Conversion is producing according to sRGB Color Space definition.
      * "A Standard Default Color Space for the Internet - sRGB",
-     *  Michael Stokes (Hewlett-Packard), Matthew Anderson (Microsoft), 
-     * Srinivasan Chandrasekar (Microsoft), Ricardo Motta (Hewlett-Packard) 
-     * Version 1.10, November 5, 1996 
+     *  Michael Stokes (Hewlett-Packard), Matthew Anderson (Microsoft),
+     * Srinivasan Chandrasekar (Microsoft), Ricardo Motta (Hewlett-Packard)
+     * Version 1.10, November 5, 1996
      * This document is available: http://www.w3.org/Graphics/Color/sRGB
      */
     public static byte[] getFrom8lRGBtosRGB_LUT() {
@@ -61,9 +54,9 @@ public class LUTColorConverter {
             from8lRGBtosRGB_LUT = new byte[256];
             float v;
             for (int i = 0; i < 256; i++) {
-                v = (float)i / 255;
+                v = (float) i / 255;
                 v = (v <= 0.04045f) ? v / 12.92f :
-                    (float) Math.pow((v + 0.055) / 1.055, 2.4);
+                        (float) Math.pow((v + 0.055) / 1.055, 2.4);
                 from8lRGBtosRGB_LUT[i] = (byte) Math.round(v * 255.0f);
             }
         }
@@ -77,7 +70,7 @@ public class LUTColorConverter {
             for (int i = 0; i < 65536; i++) {
                 v = (float) i / 65535;
                 v = (v <= 0.04045f) ? v / 12.92f :
-                    (float) Math.pow((v + 0.055) / 1.055, 2.4);
+                        (float) Math.pow((v + 0.055) / 1.055, 2.4);
                 from16lRGBtosRGB_LUT[i] = (byte) Math.round(v * 255.0f);
             }
         }
@@ -91,7 +84,7 @@ public class LUTColorConverter {
             for (int i = 0; i < 256; i++) {
                 v = (float) i / 255;
                 v = (v <= 0.0031308f) ? v * 12.92f :
-                    ((float) Math.pow(v, 1.0 / 2.4)) * 1.055f - 0.055f;
+                        ((float) Math.pow(v, 1.0 / 2.4)) * 1.055f - 0.055f;
                 fromsRGBto8lRGB_LUT[i] = (byte) Math.round(v * 255.0f);
             }
         }
@@ -105,7 +98,7 @@ public class LUTColorConverter {
             for (int i = 0; i < 256; i++) {
                 v = (float) i / 255;
                 v = (v <= 0.0031308f) ? v * 12.92f :
-                    ((float) Math.pow(v, 1.0 / 2.4)) * 1.055f - 0.055f;
+                        ((float) Math.pow(v, 1.0 / 2.4)) * 1.055f - 0.055f;
                 fromsRGBto16lRGB_LUT[i] = (short) Math.round(v * 65535.0f);
             }
         }
@@ -114,10 +107,10 @@ public class LUTColorConverter {
 
     public static byte[] getsRGBLUT(int bits) {
         if (bits < 1) return null;
-        int idx = bits -1;
-        if(fromsRGBto8sRGB_LUTs == null) fromsRGBto8sRGB_LUTs = new byte[16][];
+        int idx = bits - 1;
+        if (fromsRGBto8sRGB_LUTs == null) fromsRGBto8sRGB_LUTs = new byte[16][];
 
-        if(fromsRGBto8sRGB_LUTs[idx] == null){
+        if (fromsRGBto8sRGB_LUTs[idx] == null) {
             fromsRGBto8sRGB_LUTs[idx] = createLUT(bits);
         }
         return fromsRGBto8sRGB_LUTs[idx];

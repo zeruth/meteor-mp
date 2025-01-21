@@ -20,29 +20,30 @@
 package java.awt;
 
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 import java.awt.geom.AffineTransform;
 import java.awt.image.BufferedImage;
 import java.awt.image.ColorModel;
 import java.awt.image.VolatileImage;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public abstract class GraphicsConfiguration {
-   /***************************************************************************
-    *
-    *  Constructors
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Constructors
+     *
+     ***************************************************************************/
 
     protected GraphicsConfiguration() {
     }
 
 
-   /***************************************************************************
-    *
-    *  Abstract methods
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Abstract methods
+     *
+     ***************************************************************************/
 
 
     public abstract BufferedImage createCompatibleImage(int width, int height);
@@ -67,14 +68,14 @@ public abstract class GraphicsConfiguration {
 
 
     /***************************************************************************
-    *
-    *  Public methods
-    *
-    ***************************************************************************/
+     *
+     *  Public methods
+     *
+     ***************************************************************************/
 
 
     public VolatileImage createCompatibleVolatileImage(int width, int height,
-            ImageCapabilities caps) throws AWTException {
+                                                       ImageCapabilities caps) throws AWTException {
         VolatileImage res = createCompatibleVolatileImage(width, height);
         if (!res.getCapabilities().equals(caps)) {
             // awt.14A=Can not create VolatileImage with specified capabilities
@@ -84,7 +85,7 @@ public abstract class GraphicsConfiguration {
     }
 
     public VolatileImage createCompatibleVolatileImage(int width, int height,
-            ImageCapabilities caps, int transparency) throws AWTException {
+                                                       ImageCapabilities caps, int transparency) throws AWTException {
         VolatileImage res = createCompatibleVolatileImage(width, height, transparency);
         if (!res.getCapabilities().equals(caps)) {
             // awt.14A=Can not create VolatileImage with specified capabilities

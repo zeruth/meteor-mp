@@ -19,11 +19,11 @@
  */
 package org.apache.harmony.x.imageio.spi;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.spi.ImageInputStreamSpi;
 import javax.imageio.stream.FileImageInputStream;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
 import java.io.File;
 import java.io.IOException;
 import java.util.Locale;
@@ -39,7 +39,7 @@ public class FileIISSpi extends ImageInputStreamSpi {
 
     @Override
     public ImageInputStream createInputStreamInstance(Object input, boolean useCache,
-            File cacheDir) throws IOException {
+                                                      File cacheDir) throws IOException {
         if (File.class.isInstance(input)) {
             return new FileImageInputStream((File) input);
         }

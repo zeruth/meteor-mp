@@ -23,30 +23,16 @@
  */
 package org.apache.harmony.awt.gl.image;
 
-import java.awt.Graphics;
-import java.awt.Image;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
 import org.apache.harmony.awt.gl.AwtImageBackdoorAccessor;
 import org.apache.harmony.awt.gl.ImageSurface;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.image.*;
 import java.util.ConcurrentModificationException;
 import java.util.Hashtable;
 import java.util.Iterator;
 import java.util.Vector;
-
 
 
 /**
@@ -66,13 +52,13 @@ public class OffscreenImage extends Image implements ImageConsumer {
     int height;
     int imageState;
     int hints;
+    AwtImageBackdoorAccessor ba = AwtImageBackdoorAccessor.getInstance();
     private boolean producing;
     private boolean done;
     private ImageSurface imageSurf;
-    AwtImageBackdoorAccessor ba = AwtImageBackdoorAccessor.getInstance();
 
 
-    public OffscreenImage(ImageProducer ip){
+    public OffscreenImage(ImageProducer ip) {
         imageState = 0;
         src = ip;
         width = -1;
@@ -84,18 +70,18 @@ public class OffscreenImage extends Image implements ImageConsumer {
 
     @Override
     public Object getProperty(String name, ImageObserver observer) {
-        if(name == null) {
+        if (name == null) {
             // awt.38=Property name is not defined
             throw new NullPointerException(Messages.getString("awt.38")); //$NON-NLS-1$
         }
-        if(!done && properties == null){
+        if (!done && properties == null) {
             startProduction(observer);
         }
-        if(properties == null) {
+        if (properties == null) {
             return null;
         }
         Object prop = properties.get(name);
-        if(prop == null) {
+        if (prop == null) {
             prop = UndefinedProperty;
         }
         return prop;
@@ -108,7 +94,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
 
     @Override
     public int getWidth(ImageObserver observer) {
-        if(!done && (imageState & ImageObserver.WIDTH) == 0){
+        if (!done && (imageState & ImageObserver.WIDTH) == 0) {
             startProduction(observer);
         }
         return width;
@@ -116,7 +102,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
 
     @Override
     public int getHeight(ImageObserver observer) {
-        if(!done && (imageState & ImageObserver.HEIGHT) == 0){
+        if (!done && (imageState & ImageObserver.HEIGHT) == 0) {
             startProduction(observer);
         }
         return height;
@@ -143,15 +129,11 @@ public class OffscreenImage extends Image implements ImageConsumer {
         }
     }
 
-    public  void setProperties(Hashtable<?, ?> properties) {
+    public void setProperties(Hashtable<?, ?> properties) {
         synchronized (this) {
             this.properties = properties;
         }
         imageUpdate(ImageObserver.PROPERTIES);
-    }
-
-    public synchronized void setColorModel(ColorModel cm) {
-        this.cm = cm;
     }
 
     /*
@@ -165,11 +147,11 @@ public class OffscreenImage extends Image implements ImageConsumer {
      * pixels are sending in DirectColorModel.
      */
     public void setPixels(int x, int y, int w, int h, ColorModel model,
-            int[] pixels, int off, int scansize) {
+                          int[] pixels, int off, int scansize) {
 
-        if(raster == null){
-            if(cm == null){
-                if(model == null) {
+        if (raster == null) {
+            if (cm == null) {
+                if (model == null) {
                     // awt.3A=Color Model is null
                     throw new NullPointerException(Messages.getString("awt.3A")); //$NON-NLS-1$
                 }
@@ -178,45 +160,45 @@ public class OffscreenImage extends Image implements ImageConsumer {
             createRaster();
         }
 
-        if(model == null) {
+        if (model == null) {
             model = cm;
         }
-        if(cm != model){
+        if (cm != model) {
             forceToIntARGB();
         }
 
         DataBuffer db = raster.getDataBuffer();
         Object surfData = ba.getData(db);
 
-        synchronized(surfData){
-            if(cm == model && model.getTransferType() == DataBuffer.TYPE_INT &&
-                    raster.getNumDataElements() == 1){
+        synchronized (surfData) {
+            if (cm == model && model.getTransferType() == DataBuffer.TYPE_INT &&
+                    raster.getNumDataElements() == 1) {
 
-                int data[] = (int[])surfData;
+                int data[] = (int[]) surfData;
                 int scanline = raster.getWidth();
                 DataBufferInt dbi = (DataBufferInt) db;
                 int rof = dbi.getOffset() + y * scanline + x;
-                for(int lineOff = off, line = y; line < y + h;
-                    line++, lineOff += scansize, rof += scanline){
+                for (int lineOff = off, line = y; line < y + h;
+                     line++, lineOff += scansize, rof += scanline) {
 
                     System.arraycopy(pixels, lineOff, data, rof, w);
                 }
 
-            }else if(isIntRGB){
+            } else if (isIntRGB) {
                 int buff[] = new int[w];
-                int data[] = (int[])surfData;
+                int data[] = (int[]) surfData;
                 int scanline = raster.getWidth();
                 DataBufferInt dbi = (DataBufferInt) db;
                 int rof = dbi.getOffset() + y * scanline + x;
                 for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize,
-                    rof += scanline) {
+                        rof += scanline) {
 
                     for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
                         buff[idx] = model.getRGB(pixels[sOff + idx]);
                     }
                     System.arraycopy(buff, 0, data, rof, w);
                 }
-            }else{
+            } else {
                 Object buf = null;
                 for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize) {
                     for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
@@ -227,7 +209,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
                 }
             }
         }
-        
+
         ba.releaseData(db);
         if (imageSurf != null) {
             imageSurf.addDirtyRegion(new Rectangle(x, y, w, h));
@@ -237,10 +219,10 @@ public class OffscreenImage extends Image implements ImageConsumer {
     }
 
     public void setPixels(int x, int y, int w, int h, ColorModel model,
-            byte[] pixels, int off, int scansize) {
-        if(raster == null){
-            if(cm == null){
-                if(model == null) {
+                          byte[] pixels, int off, int scansize) {
+        if (raster == null) {
+            if (cm == null) {
+                if (model == null) {
                     // awt.3A=Color Model is null
                     throw new NullPointerException(Messages.getString("awt.3A")); //$NON-NLS-1$
                 }
@@ -248,67 +230,67 @@ public class OffscreenImage extends Image implements ImageConsumer {
             }
             createRaster();
         }
-        if(model == null) {
+        if (model == null) {
             model = cm;
         }
-        if(model != cm && cm != rgbCM){
+        if (model != cm && cm != rgbCM) {
             forceToIntARGB();
         }
 
         DataBuffer db = raster.getDataBuffer();
         Object surfData = ba.getData(db);
 
-        synchronized(surfData){
-            if(isIntRGB){
+        synchronized (surfData) {
+            if (isIntRGB) {
                 int buff[] = new int[w];
-                int data[] = (int[])surfData;
+                int data[] = (int[]) surfData;
                 int scanline = raster.getWidth();
                 DataBufferInt dbi = (DataBufferInt) db;
                 int rof = dbi.getOffset() + y * scanline + x;
-                if(model instanceof IndexColorModel){
+                if (model instanceof IndexColorModel) {
 
                     IndexColorModel icm = (IndexColorModel) model;
                     int colorMap[] = new int[icm.getMapSize()];
                     icm.getRGBs(colorMap);
 
                     for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize,
-                        rof += scanline) {
+                            rof += scanline) {
                         for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
                             buff[idx] = colorMap[pixels[sOff + idx] & 0xff];
                         }
                         System.arraycopy(buff, 0, data, rof, w);
                     }
-                }else{
+                } else {
 
                     for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize,
-                        rof += scanline) {
+                            rof += scanline) {
                         for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
                             buff[idx] = model.getRGB(pixels[sOff + idx] & 0xff);
                         }
                         System.arraycopy(buff, 0, data, rof, w);
                     }
                 }
-            }else if(model == cm && model.getTransferType() == DataBuffer.TYPE_BYTE &&
-                    raster.getNumDataElements() == 1){
+            } else if (model == cm && model.getTransferType() == DataBuffer.TYPE_BYTE &&
+                    raster.getNumDataElements() == 1) {
 
-                byte data[] = (byte[])surfData;
+                byte data[] = (byte[]) surfData;
                 int scanline = raster.getWidth();
                 DataBufferByte dbb = (DataBufferByte) db;
                 int rof = dbb.getOffset() + y * scanline + x;
-                for(int lineOff = off, line = y; line < y + h;
-                    line++, lineOff += scansize, rof += scanline){
+                for (int lineOff = off, line = y; line < y + h;
+                     line++, lineOff += scansize, rof += scanline) {
                     System.arraycopy(pixels, lineOff, data, rof, w);
                 }
-            }else if(model == cm && model.getTransferType() == DataBuffer.TYPE_BYTE &&
-                    cm instanceof ComponentColorModel){
+            } else if (model == cm && model.getTransferType() == DataBuffer.TYPE_BYTE &&
+                    cm instanceof ComponentColorModel) {
 
                 byte stride[] = new byte[scansize];
                 for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize) {
                     System.arraycopy(pixels, sOff, stride, 0, scansize);
-                    
+
                     raster.setDataElements(x, sy, w, 1, stride);
                 }
-            }else {
+            } else {
                 for (int sy = y, sOff = off; sy < y + h; sy++, sOff += scansize) {
                     for (int sx = x, idx = 0; sx < x + w; sx++, idx++) {
                         int rgb = model.getRGB(pixels[sOff + idx] & 0xff);
@@ -327,7 +309,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
     }
 
     public void setDimensions(int width, int height) {
-        if(width <= 0 || height <= 0){
+        if (width <= 0 || height <= 0) {
             imageComplete(IMAGEERROR);
             return;
         }
@@ -347,55 +329,55 @@ public class OffscreenImage extends Image implements ImageConsumer {
 
     public void imageComplete(int state) {
         int flag;
-        switch(state){
-        case IMAGEABORTED:
-            flag = ImageObserver.ABORT;
-            break;
-        case IMAGEERROR:
-            flag = ImageObserver.ERROR | ImageObserver.ABORT;
-            break;
-        case SINGLEFRAMEDONE:
-            flag = ImageObserver.FRAMEBITS;
-            break;
-        case STATICIMAGEDONE:
-            flag = ImageObserver.ALLBITS;
-            break;
-        default:
-            // awt.3B=Incorrect ImageConsumer completion status
-            throw new IllegalArgumentException(Messages.getString("awt.3B")); //$NON-NLS-1$
+        switch (state) {
+            case IMAGEABORTED:
+                flag = ImageObserver.ABORT;
+                break;
+            case IMAGEERROR:
+                flag = ImageObserver.ERROR | ImageObserver.ABORT;
+                break;
+            case SINGLEFRAMEDONE:
+                flag = ImageObserver.FRAMEBITS;
+                break;
+            case STATICIMAGEDONE:
+                flag = ImageObserver.ALLBITS;
+                break;
+            default:
+                // awt.3B=Incorrect ImageConsumer completion status
+                throw new IllegalArgumentException(Messages.getString("awt.3B")); //$NON-NLS-1$
         }
 
         imageUpdate(flag);
-        if((imageState & (ImageObserver.ERROR | ImageObserver.ABORT |
-                ImageObserver.ALLBITS)) != 0 ) {
-            
+        if ((imageState & (ImageObserver.ERROR | ImageObserver.ABORT |
+                ImageObserver.ALLBITS)) != 0) {
+
             stopProduction();
         }
 
     }
 
-    public BufferedImage getBufferedImage(){
-        if(image == null){
+    public BufferedImage getBufferedImage() {
+        if (image == null) {
             ColorModel model = getColorModel();
             WritableRaster wr = getRaster();
-            if(model != null && wr != null) {
+            if (model != null && wr != null) {
                 image = new BufferedImage(model, wr, model.isAlphaPremultiplied(), null);
             }
         }
         return image;
     }
 
-    public int checkImage(ImageObserver observer){
+    public int checkImage(ImageObserver observer) {
         synchronized (this) {
             addObserver(observer);
         }
         return imageState;
     }
 
-    public boolean prepareImage(ImageObserver observer){
-        if(!done){
-            if((imageState & ImageObserver.ERROR) != 0){
-                if(observer != null){
+    public boolean prepareImage(ImageObserver observer) {
+        if (!done) {
+            if ((imageState & ImageObserver.ERROR) != 0) {
+                if (observer != null) {
                     observer.imageUpdate(this, ImageObserver.ERROR |
                             ImageObserver.ABORT, -1, -1, -1, -1);
                 }
@@ -403,40 +385,44 @@ public class OffscreenImage extends Image implements ImageConsumer {
             }
             startProduction(observer);
         }
-        
+
         return ((imageState & ImageObserver.ALLBITS) != 0);
     }
 
-    public ColorModel getColorModel(){
-        if(cm == null) {
+    public ColorModel getColorModel() {
+        if (cm == null) {
             startProduction(null);
         }
         return cm;
     }
 
-    public WritableRaster getRaster(){
-        if(raster == null) {
+    public synchronized void setColorModel(ColorModel cm) {
+        this.cm = cm;
+    }
+
+    public WritableRaster getRaster() {
+        if (raster == null) {
             startProduction(null);
         }
         return raster;
     }
 
-    public int getState(){
+    public int getState() {
         return imageState;
     }
 
-    private void addObserver(ImageObserver observer){
-        if(observer != null){
-            if(observers.contains(observer)) return;
+    private void addObserver(ImageObserver observer) {
+        if (observer != null) {
+            if (observers.contains(observer)) return;
 
-            if((imageState & ImageObserver.ERROR) != 0){
+            if ((imageState & ImageObserver.ERROR) != 0) {
                 observer.imageUpdate(this, ImageObserver.ERROR |
-                    ImageObserver.ABORT, -1, -1, -1, -1);
-          
+                        ImageObserver.ABORT, -1, -1, -1, -1);
+
                 return;
             }
 
-            if((imageState & ImageObserver.ALLBITS) != 0){
+            if ((imageState & ImageObserver.ALLBITS) != 0) {
                 observer.imageUpdate(this, imageState, 0, 0, width, height);
 
                 return;
@@ -447,10 +433,10 @@ public class OffscreenImage extends Image implements ImageConsumer {
         }
     }
 
-    private void startProduction(ImageObserver observer){
+    private void startProduction(ImageObserver observer) {
         addObserver(observer);
-        if(!producing && !done){
-            synchronized(this){
+        if (!producing && !done) {
+            synchronized (this) {
                 imageState &= ~ImageObserver.ABORT;
                 producing = true;
                 src.startProduction(this);
@@ -458,7 +444,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
         }
     }
 
-    private synchronized void stopProduction(){
+    private synchronized void stopProduction() {
         producing = false;
         src.removeConsumer(this);
         synchronized (observers) {
@@ -466,40 +452,40 @@ public class OffscreenImage extends Image implements ImageConsumer {
         }
     }
 
-    private void createRaster(){
-        try{
+    private void createRaster() {
+        try {
             raster = cm.createCompatibleWritableRaster(width, height);
             isIntRGB = false;
-            if(cm instanceof DirectColorModel){
+            if (cm instanceof DirectColorModel) {
                 DirectColorModel dcm = (DirectColorModel) cm;
-                if(dcm.getTransferType() == DataBuffer.TYPE_INT &&
+                if (dcm.getTransferType() == DataBuffer.TYPE_INT &&
                         dcm.getRedMask() == 0xff0000 &&
                         dcm.getGreenMask() == 0xff00 &&
-                        dcm.getBlueMask() == 0xff){
+                        dcm.getBlueMask() == 0xff) {
                     isIntRGB = true;
                 }
             }
-        }catch(Exception e){
+        } catch (Exception e) {
             cm = ColorModel.getRGBdefault();
             raster = cm.createCompatibleWritableRaster(width, height);
             isIntRGB = true;
         }
     }
 
-    private void imageUpdate(int state){
+    private void imageUpdate(int state) {
         imageUpdate(state, 0, 0, width, height);
     }
-    
-    private void imageUpdate(int state, int x, int y, int width, int height){
-        synchronized(this){
+
+    private void imageUpdate(int state, int x, int y, int width, int height) {
+        synchronized (this) {
             imageState |= state;
-            if((imageState & (ImageObserver.ALLBITS)) != 0 ) {
+            if ((imageState & (ImageObserver.ALLBITS)) != 0) {
                 done = true;
             }
         }
         ImageObserver observer = null;
 
-        for (Iterator<ImageObserver> i = observers.iterator(); i.hasNext();) {
+        for (Iterator<ImageObserver> i = observers.iterator(); i.hasNext(); ) {
             try {
                 observer = i.next();
             } catch (ConcurrentModificationException e) {
@@ -511,7 +497,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
 
     }
 
-    private void forceToIntARGB(){
+    private void forceToIntARGB() {
 
         int w = raster.getWidth();
         int h = raster.getHeight();
@@ -521,7 +507,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
         Object obj = null;
         int pixels[] = new int[w];
 
-        if(cm instanceof IndexColorModel){
+        if (cm instanceof IndexColorModel) {
             IndexColorModel icm = (IndexColorModel) cm;
             int colorMap[] = new int[icm.getMapSize()];
             icm.getRGBs(colorMap);
@@ -535,9 +521,9 @@ public class OffscreenImage extends Image implements ImageConsumer {
                 destRaster.setDataElements(0, y, w, 1, pixels);
             }
 
-        }else{
-            for(int y = 0; y < h; y++){
-                for(int x = 0; x < w; x++){
+        } else {
+            for (int y = 0; y < h; y++) {
+                for (int x = 0; x < w; x++) {
                     obj = raster.getDataElements(x, y, obj);
                     pixels[x] = cm.getRGB(obj);
                 }
@@ -545,12 +531,12 @@ public class OffscreenImage extends Image implements ImageConsumer {
             }
         }
 
-        synchronized(this){
-            if(imageSurf != null){
+        synchronized (this) {
+            if (imageSurf != null) {
                 imageSurf.dispose();
                 imageSurf = null;
             }
-            if(image != null){
+            if (image != null) {
                 image.flush();
                 image = null;
             }
@@ -564,7 +550,7 @@ public class OffscreenImage extends Image implements ImageConsumer {
         if (imageSurf == null) {
             ColorModel model = getColorModel();
             WritableRaster wr = getRaster();
-            if(model != null && wr != null) {
+            if (model != null && wr != null) {
                 imageSurf = new ImageSurface(model, wr);
             }
         }

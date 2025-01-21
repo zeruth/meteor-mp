@@ -20,10 +20,11 @@
 package org.apache.harmony.awt.gl.render;
 
 
-import java.awt.Shape;
-import java.awt.geom.PathIterator;
 import org.apache.harmony.awt.gl.MultiRectArea;
 import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
+import java.awt.geom.PathIterator;
 
 
 public class JavaShapeRasterizer {
@@ -53,110 +54,6 @@ public class JavaShapeRasterizer {
 
     Filler filler;
 
-    /**
-     * Rasterization filler for different path rules
-     */
-    static abstract class Filler {
-
-        static class NonZero extends Filler {
-            @Override
-            void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y) {
-
-                int[] dst = new int[length];
-                int dstLength = 1;
-                dst[0] = points[0];
-                int count = 0;
-                boolean inside = true;
-                for(int i = 0; i < length; i++) {
-                    count += orient[i] > 0 ? 1 : -1;
-                    if (count == 0) {
-                        dst[dstLength++] = points[i];
-                        inside = false;
-                    } else {
-                        if (!inside) {
-                            dst[dstLength++] = points[i];
-                            inside = true;
-                        }
-                    }
-
-                }
-
-                for(int i = 1; i < dstLength; i += 2) {
-                    dst[i]--;
-                }
-
-                dstLength = excludeEmpty(dst, dstLength);
-//              System.out.println("test");
-
-                dstLength = union(dst, dstLength);
-
-                rect.addLine(dst, dstLength);
-            }
-        }
-
-        static class EvenOdd extends Filler {
-            @Override
-            void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y) {
-    /*
-                int[] buf = new int[length];
-                int j = 0;
-                for(int i = 0; i < length - 1; i++) {
-                    if (points[i] != points[i + 1]) {
-                        buf[j++] = points[i];
-                    }
-                }
-    */
-                for(int i = 1; i < length; i += 2) {
-                    points[i]--;
-                }
-
-                length = excludeEmpty(points, length);
-//              System.out.println("test");
-
-                length = union(points, length);
-                rect.addLine(points, length);
-    /*
-                for(int i = 0; i < length;) {
-                    rect.add(points[i++], y, points[i++], y);
-                }
-    */
-            }
-        }
-
-        abstract void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y);
-
-        static int excludeEmpty(int[] points, int length) {
-            int i = 0;
-            while(i < length) {
-                if (points[i] <= points[i + 1]) {
-                    i += 2;
-                } else {
-                    length -= 2;
-                    System.arraycopy(points, i + 2, points, i, length - i);
-                }
-            }
-            return length;
-        }
-
-        static int union(int[] points, int length) {
-            int i = 1;
-            while(i < length - 1) {
-                if (points[i] < points[i - 1]) {
-                    System.arraycopy(points, i + 1, points, i - 1, length - i - 1);
-                    length -= 2;
-                } else
-                if (points[i] >= points[i + 1] - 1) {
-                    System.arraycopy(points, i + 2, points, i, length - i - 2);
-                    length -= 2;
-                } else {
-                    i += 2;
-                }
-            }
-            return length;
-        }
-
-    }
-
     public JavaShapeRasterizer() {
     }
 
@@ -174,7 +71,7 @@ public class JavaShapeRasterizer {
     }
 
     /**
-     * Adds to the buffers new edge 
+     * Adds to the buffers new edge
      */
     void addEdge(int x, int y, int num) {
         edgesX = checkBufSize(edgesX, edgesCount);
@@ -187,7 +84,7 @@ public class JavaShapeRasterizer {
     }
 
     /**
-     * Prepare all buffers and variable to rasterize shape 
+     * Prepare all buffers and variable to rasterize shape
      */
     void makeBuffer(PathIterator path, double flatness) {
         edgesX = new int[POINT_CAPACITY];
@@ -205,28 +102,28 @@ public class JavaShapeRasterizer {
         float[] coords = new float[2];
         boolean closed = true;
         while (!path.isDone()) {
-            switch(path.currentSegment(coords)) {
-            case PathIterator.SEG_MOVETO:
-                if (!closed) {
+            switch (path.currentSegment(coords)) {
+                case PathIterator.SEG_MOVETO:
+                    if (!closed) {
+                        boundCount++;
+                        bounds = checkBufSize(bounds, boundCount);
+                        bounds[boundCount] = edgesCount;
+                    }
+                    addEdge((int) coords[0], (int) coords[1], boundCount);
+                    closed = false;
+                    break;
+                case PathIterator.SEG_LINETO:
+                    addEdge((int) coords[0], (int) coords[1], boundCount);
+                    break;
+                case PathIterator.SEG_CLOSE:
                     boundCount++;
                     bounds = checkBufSize(bounds, boundCount);
                     bounds[boundCount] = edgesCount;
-                }
-                addEdge((int)coords[0], (int)coords[1], boundCount);
-                closed = false;
-                break;
-            case PathIterator.SEG_LINETO:
-                addEdge((int)coords[0], (int)coords[1], boundCount);
-                break;
-            case PathIterator.SEG_CLOSE:
-                boundCount++;
-                bounds = checkBufSize(bounds, boundCount);
-                bounds[boundCount] = edgesCount;
-                closed = true;
-                break;
-            default:
-                // awt.36=Wrong segment
-                throw new RuntimeException(Messages.getString("awt.36")); //$NON-NLS-1$
+                    closed = true;
+                    break;
+                default:
+                    // awt.36=Wrong segment
+                    throw new RuntimeException(Messages.getString("awt.36")); //$NON-NLS-1$
             }
             path.next();
         }
@@ -241,10 +138,10 @@ public class JavaShapeRasterizer {
      * Sort buffers
      */
     void sort(int[] master, int[] slave, int length) {
-        for(int i = 0; i < length - 1; i++) {
+        for (int i = 0; i < length - 1; i++) {
             int num = i;
             int min = master[num];
-            for(int j = i + 1; j < length; j++) {
+            for (int j = i + 1; j < length; j++) {
                 if (master[j] < min) {
                     num = j;
                     min = master[num];
@@ -291,7 +188,7 @@ public class JavaShapeRasterizer {
         System.arraycopy(edgesY, 0, edgesYS, 0, edgesCount);
         // Create edgesDY
         edgesDY = new int[edgesCount];
-        for(int i = 0; i < edgesCount; i++) {
+        for (int i = 0; i < edgesCount; i++) {
             int dy = edgesY[getNext(i)] - edgesY[i];
             edgesDY[i] = dy;
         }
@@ -301,9 +198,10 @@ public class JavaShapeRasterizer {
         int prev = -1;
         int i = 0;
         int pos = 0;
-        while(i < edgesCount) {
+        while (i < edgesCount) {
 
-            TOP: {
+            TOP:
+            {
                 do {
                     if (edgesDY[i] > 0) {
                         break TOP;
@@ -314,7 +212,8 @@ public class JavaShapeRasterizer {
                 continue;
             }
 
-            BOTTOM: {
+            BOTTOM:
+            {
                 do {
                     if (edgesDY[i] < 0) {
                         break BOTTOM;
@@ -361,7 +260,7 @@ public class JavaShapeRasterizer {
         int dx = edgesX[end] - x1;
         activeX[activeCount] = x1;
         activeYEnd[activeCount] = edgesY[end];
-        activeXStep[activeCount] = dx / (float)dy;
+        activeXStep[activeCount] = dx / (float) dy;
         activeDY[activeCount] = back ? -dy : dy;
         activeExt[activeCount] = back ? edgesExt[end] : edgesExt[start];
         activeCount++;
@@ -396,7 +295,8 @@ public class JavaShapeRasterizer {
 
     /**
      * Rasterizes shape with particular flatness
-     * @param shape - the souze Shape to be rasterized
+     *
+     * @param shape    - the souze Shape to be rasterized
      * @param flatness - the rasterization flatness
      * @return a MultiRectArea of rasterized shape
      */
@@ -420,14 +320,14 @@ public class JavaShapeRasterizer {
         MultiRectArea.LineCash rect = new MultiRectArea.LineCash(edgesCount);
         rect.setLine(y);
 
-        while(y <= nextY) {
+        while (y <= nextY) {
 
             crossCount = 0;
 
             if (y == nextY) {
 
                 int i = activeCount;
-                while(i > 0) {
+                while (i > 0) {
                     i--;
                     if (activeYEnd[i] == y) {
 
@@ -448,8 +348,8 @@ public class JavaShapeRasterizer {
             }
 
             // Get X crossings
-            for(int i = 0; i < activeCount; i++) {
-                crossX[crossCount] = (int)Math.ceil(activeX[i]);
+            for (int i = 0; i < activeCount; i++) {
+                crossX[crossCount] = (int) Math.ceil(activeX[i]);
                 crossDY[crossCount] = activeDY[i];
                 crossCount++;
             }
@@ -462,7 +362,7 @@ public class JavaShapeRasterizer {
                 filler.add(rect, crossX, crossDY, crossCount, y);
             }
 
-            for(int i = 0; i < activeCount; i++) {
+            for (int i = 0; i < activeCount; i++) {
                 activeX[i] += activeXStep[i];
             }
 
@@ -470,6 +370,109 @@ public class JavaShapeRasterizer {
         }
 
         return rect;
+    }
+
+    /**
+     * Rasterization filler for different path rules
+     */
+    static abstract class Filler {
+
+        static int excludeEmpty(int[] points, int length) {
+            int i = 0;
+            while (i < length) {
+                if (points[i] <= points[i + 1]) {
+                    i += 2;
+                } else {
+                    length -= 2;
+                    System.arraycopy(points, i + 2, points, i, length - i);
+                }
+            }
+            return length;
+        }
+
+        static int union(int[] points, int length) {
+            int i = 1;
+            while (i < length - 1) {
+                if (points[i] < points[i - 1]) {
+                    System.arraycopy(points, i + 1, points, i - 1, length - i - 1);
+                    length -= 2;
+                } else if (points[i] >= points[i + 1] - 1) {
+                    System.arraycopy(points, i + 2, points, i, length - i - 2);
+                    length -= 2;
+                } else {
+                    i += 2;
+                }
+            }
+            return length;
+        }
+
+        abstract void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y);
+
+        static class NonZero extends Filler {
+            @Override
+            void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y) {
+
+                int[] dst = new int[length];
+                int dstLength = 1;
+                dst[0] = points[0];
+                int count = 0;
+                boolean inside = true;
+                for (int i = 0; i < length; i++) {
+                    count += orient[i] > 0 ? 1 : -1;
+                    if (count == 0) {
+                        dst[dstLength++] = points[i];
+                        inside = false;
+                    } else {
+                        if (!inside) {
+                            dst[dstLength++] = points[i];
+                            inside = true;
+                        }
+                    }
+
+                }
+
+                for (int i = 1; i < dstLength; i += 2) {
+                    dst[i]--;
+                }
+
+                dstLength = excludeEmpty(dst, dstLength);
+//              System.out.println("test");
+
+                dstLength = union(dst, dstLength);
+
+                rect.addLine(dst, dstLength);
+            }
+        }
+
+        static class EvenOdd extends Filler {
+            @Override
+            void add(MultiRectArea.LineCash rect, int[] points, int[] orient, int length, int y) {
+    /*
+                int[] buf = new int[length];
+                int j = 0;
+                for(int i = 0; i < length - 1; i++) {
+                    if (points[i] != points[i + 1]) {
+                        buf[j++] = points[i];
+                    }
+                }
+    */
+                for (int i = 1; i < length; i += 2) {
+                    points[i]--;
+                }
+
+                length = excludeEmpty(points, length);
+//              System.out.println("test");
+
+                length = union(points, length);
+                rect.addLine(points, length);
+    /*
+                for(int i = 0; i < length;) {
+                    rect.add(points[i++], y, points[i++], y);
+                }
+    */
+            }
+        }
+
     }
 
 }

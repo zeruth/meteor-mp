@@ -22,7 +22,7 @@ public enum TiffDirectoryType {
 
     TIFF_DIRECTORY_IFD1(
             true, TiffDirectoryConstants.DIRECTORY_TYPE_DIR_1, "IFD1"),
-    
+
     TIFF_DIRECTORY_IFD2(
             true, TiffDirectoryConstants.DIRECTORY_TYPE_DIR_2, "IFD2"),
 
@@ -37,20 +37,6 @@ public enum TiffDirectoryType {
             false, TiffDirectoryConstants.DIRECTORY_TYPE_EXIF, "Exif IFD"),
     EXIF_DIRECTORY_GPS(
             false, TiffDirectoryConstants.DIRECTORY_TYPE_GPS, "GPS IFD");
-    
-    private final boolean isImageDirectory;
-    public final int directoryType;
-    public final String name;
-    
-    TiffDirectoryType(final boolean isImageDirectory, final int directoryType, final String name) {
-        this.isImageDirectory = isImageDirectory;
-        this.directoryType = directoryType;
-        this.name = name;
-    }
-    
-    public boolean isImageDirectory() {
-        return isImageDirectory;
-    }
 
     public static final TiffDirectoryType EXIF_DIRECTORY_IFD0 = TIFF_DIRECTORY_IFD0;
     public static final TiffDirectoryType TIFF_DIRECTORY_ROOT = TIFF_DIRECTORY_IFD0;
@@ -61,4 +47,16 @@ public enum TiffDirectoryType {
     public static final TiffDirectoryType EXIF_DIRECTORY_SUB_IFD1 = TIFF_DIRECTORY_IFD2;
     public static final TiffDirectoryType EXIF_DIRECTORY_SUB_IFD2 = TIFF_DIRECTORY_IFD3;
     public static final TiffDirectoryType EXIF_DIRECTORY_UNKNOWN = null;
+    public final int directoryType;
+    public final String name;
+    private final boolean isImageDirectory;
+    TiffDirectoryType(final boolean isImageDirectory, final int directoryType, final String name) {
+        this.isImageDirectory = isImageDirectory;
+        this.directoryType = directoryType;
+        this.name = name;
+    }
+
+    public boolean isImageDirectory() {
+        return isImageDirectory;
+    }
 }

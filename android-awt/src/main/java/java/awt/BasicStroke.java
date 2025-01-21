@@ -20,10 +20,11 @@
 package java.awt;
 
 
-import java.awt.geom.GeneralPath;
-import java.awt.geom.PathIterator;
 import org.apache.harmony.awt.internal.nls.Messages;
 import org.apache.harmony.misc.HashCode;
+
+import java.awt.geom.GeneralPath;
+import java.awt.geom.PathIterator;
 
 
 public class BasicStroke implements Stroke {
@@ -35,9 +36,9 @@ public class BasicStroke implements Stroke {
     public static final int JOIN_MITER = 0;
     public static final int JOIN_ROUND = 1;
     public static final int JOIN_BEVEL = 2;
-    
+
     /**
-     * Constants for calculating 
+     * Constants for calculating
      */
     static final int MAX_LEVEL = 20;        // Maximal deepness of curve subdivision
     static final double CURVE_DELTA = 2.0;  // Width tolerance
@@ -49,27 +50,27 @@ public class BasicStroke implements Stroke {
      * Stroke width
      */
     float width;
-    
+
     /**
      * Stroke cap type
      */
     int cap;
-    
+
     /**
      * Stroke join type
      */
     int join;
-    
+
     /**
      * Stroke miter limit
      */
     float miterLimit;
-    
+
     /**
      * Stroke dashes array
      */
     float dash[];
-    
+
     /**
      * Stroke dash phase
      */
@@ -93,14 +94,14 @@ public class BasicStroke implements Stroke {
     boolean isMove;
     boolean isFirst;
     boolean checkMove;
-    
+
     /**
      * The temporary and destination work paths
      */
     BufferedPath dst, lp, rp, sp;
-    
+
     /**
-     * Stroke dasher class 
+     * Stroke dasher class
      */
     Dasher dasher;
 
@@ -134,8 +135,9 @@ public class BasicStroke implements Stroke {
                 // awt.138=Zero dash length
                 throw new IllegalArgumentException(Messages.getString("awt.138")); //$NON-NLS-1$
             }
-            ZERO: {
-                for(int i = 0; i < dash.length; i++) {
+            ZERO:
+            {
+                for (int i = 0; i < dash.length; i++) {
                     if (dash[i] < 0.0) {
                         // awt.139=Negative dash[{0}]
                         throw new IllegalArgumentException(Messages.getString("awt.139", i)); //$NON-NLS-1$
@@ -214,20 +216,20 @@ public class BasicStroke implements Stroke {
             return true;
         }
         if (obj instanceof BasicStroke) {
-            BasicStroke bs = (BasicStroke)obj;
+            BasicStroke bs = (BasicStroke) obj;
             return
-                bs.width == width &&
-                bs.cap == cap &&
-                bs.join == join &&
-                bs.miterLimit == miterLimit &&
-                bs.dashPhase == dashPhase &&
-                java.util.Arrays.equals(bs.dash, dash);
+                    bs.width == width &&
+                            bs.cap == cap &&
+                            bs.join == join &&
+                            bs.miterLimit == miterLimit &&
+                            bs.dashPhase == dashPhase &&
+                            java.util.Arrays.equals(bs.dash, dash);
         }
         return false;
     }
 
     /**
-     * Calculates allowable curve derivation 
+     * Calculates allowable curve derivation
      */
     double getCurveDelta(double width) {
         double a = width + CURVE_DELTA;
@@ -237,14 +239,14 @@ public class BasicStroke implements Stroke {
     }
 
     /**
-     * Calculates value to detect small angle 
+     * Calculates value to detect small angle
      */
     double getCornerDelta(double width) {
         return width * width * Math.sin(Math.PI * CORNER_ANGLE / 180.0);
     }
 
     /**
-     * Calculates value to detect zero angle 
+     * Calculates value to detect zero angle
      */
     double getZeroDelta(double width) {
         return width * width * Math.sin(Math.PI * CORNER_ZERO / 180.0);
@@ -271,6 +273,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Generates solid stroked shape without dash
+     *
      * @param p - the PathIterator of source shape
      */
     void createSolidShape(PathIterator p) {
@@ -281,36 +284,36 @@ public class BasicStroke implements Stroke {
         checkMove = true;
         boolean isClosed = true;
 
-        while(!p.isDone()) {
-            switch(p.currentSegment(coords)) {
-            case PathIterator.SEG_MOVETO:
-                if (!isClosed) {
-                    closeSolidShape();
-                }
-                rp.clean();
-                mx = cx = coords[0];
-                my = cy = coords[1];
-                isMove = true;
-                isClosed = false;
-                break;
-            case PathIterator.SEG_LINETO:
-                addLine(cx, cy, cx = coords[0], cy = coords[1], true);
-                break;
-            case PathIterator.SEG_QUADTO:
-                addQuad(cx, cy, coords[0], coords[1], cx = coords[2], cy = coords[3]);
-                break;
-            case PathIterator.SEG_CUBICTO:
-                addCubic(cx, cy, coords[0], coords[1], coords[2], coords[3], cx = coords[4], cy = coords[5]);
-                break;
-            case PathIterator.SEG_CLOSE:
-                addLine(cx, cy, mx, my, false);
-                addJoin(lp, mx, my, lp.xMove, lp.yMove, true);
-                addJoin(rp, mx, my, rp.xMove, rp.yMove, false);
-                lp.closePath();
-                rp.closePath();
-                lp.appendReverse(rp);
-                isClosed = true;
-                break;
+        while (!p.isDone()) {
+            switch (p.currentSegment(coords)) {
+                case PathIterator.SEG_MOVETO:
+                    if (!isClosed) {
+                        closeSolidShape();
+                    }
+                    rp.clean();
+                    mx = cx = coords[0];
+                    my = cy = coords[1];
+                    isMove = true;
+                    isClosed = false;
+                    break;
+                case PathIterator.SEG_LINETO:
+                    addLine(cx, cy, cx = coords[0], cy = coords[1], true);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    addQuad(cx, cy, coords[0], coords[1], cx = coords[2], cy = coords[3]);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    addCubic(cx, cy, coords[0], coords[1], coords[2], coords[3], cx = coords[4], cy = coords[5]);
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    addLine(cx, cy, mx, my, false);
+                    addJoin(lp, mx, my, lp.xMove, lp.yMove, true);
+                    addJoin(rp, mx, my, rp.xMove, rp.yMove, false);
+                    lp.closePath();
+                    rp.closePath();
+                    lp.appendReverse(rp);
+                    isClosed = true;
+                    break;
             }
             p.next();
         }
@@ -333,6 +336,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Generates dashed stroked shape
+     *
      * @param p - the PathIterator of source shape
      */
     void createDashedShape(PathIterator p) {
@@ -343,52 +347,52 @@ public class BasicStroke implements Stroke {
         checkMove = false;
         boolean isClosed = true;
 
-        while(!p.isDone()) {
-            switch(p.currentSegment(coords)) {
-            case PathIterator.SEG_MOVETO:
+        while (!p.isDone()) {
+            switch (p.currentSegment(coords)) {
+                case PathIterator.SEG_MOVETO:
 
-                if (!isClosed) {
-                    closeDashedShape();
-                }
+                    if (!isClosed) {
+                        closeDashedShape();
+                    }
 
-                dasher = new Dasher(dash, dashPhase);
-                lp.clean();
-                rp.clean();
-                sp = null;
-                isFirst = true;
-                isMove = true;
-                isClosed = false;
-                mx = cx = coords[0];
-                my = cy = coords[1];
-                break;
-            case PathIterator.SEG_LINETO:
-                addDashLine(cx, cy, cx = coords[0], cy = coords[1]);
-                break;
-            case PathIterator.SEG_QUADTO:
-                addDashQuad(cx, cy, coords[0], coords[1], cx = coords[2], cy = coords[3]);
-                break;
-            case PathIterator.SEG_CUBICTO:
-                addDashCubic(cx, cy, coords[0], coords[1], coords[2], coords[3], cx = coords[4], cy = coords[5]);
-                break;
-            case PathIterator.SEG_CLOSE:
-                addDashLine(cx, cy, cx = mx, cy = my);
-
-                if (dasher.isConnected()) {
-                    // Connect current and head segments
-                    addJoin(lp, fmx, fmy, sp.xMove, sp.yMove, true);
-                    lp.join(sp);
-                    addJoin(lp, fmx, fmy, rp.xLast, rp.yLast, true);
-                    lp.combine(rp);
-                    addCap(lp, smx, smy, lp.xMove, lp.yMove);
-                    lp.closePath();
-                    dst.append(lp);
+                    dasher = new Dasher(dash, dashPhase);
+                    lp.clean();
+                    rp.clean();
                     sp = null;
-                } else {
-                    closeDashedShape();
-                }
+                    isFirst = true;
+                    isMove = true;
+                    isClosed = false;
+                    mx = cx = coords[0];
+                    my = cy = coords[1];
+                    break;
+                case PathIterator.SEG_LINETO:
+                    addDashLine(cx, cy, cx = coords[0], cy = coords[1]);
+                    break;
+                case PathIterator.SEG_QUADTO:
+                    addDashQuad(cx, cy, coords[0], coords[1], cx = coords[2], cy = coords[3]);
+                    break;
+                case PathIterator.SEG_CUBICTO:
+                    addDashCubic(cx, cy, coords[0], coords[1], coords[2], coords[3], cx = coords[4], cy = coords[5]);
+                    break;
+                case PathIterator.SEG_CLOSE:
+                    addDashLine(cx, cy, cx = mx, cy = my);
 
-                isClosed = true;
-                break;
+                    if (dasher.isConnected()) {
+                        // Connect current and head segments
+                        addJoin(lp, fmx, fmy, sp.xMove, sp.yMove, true);
+                        lp.join(sp);
+                        addJoin(lp, fmx, fmy, rp.xLast, rp.yLast, true);
+                        lp.combine(rp);
+                        addCap(lp, smx, smy, lp.xMove, lp.yMove);
+                        lp.closePath();
+                        dst.append(lp);
+                        sp = null;
+                    } else {
+                        closeDashedShape();
+                    }
+
+                    isClosed = true;
+                    break;
             }
             p.next();
         }
@@ -422,11 +426,12 @@ public class BasicStroke implements Stroke {
     }
 
     /**
-     * Adds cap to the work path 
-     * @param p - the BufferedPath object of work path
-     * @param x0 - the x coordinate of the source path 
+     * Adds cap to the work path
+     *
+     * @param p  - the BufferedPath object of work path
+     * @param x0 - the x coordinate of the source path
      * @param y0 - the y coordinate on the source path
-     * @param x2 - the x coordinate of the next point on the work path 
+     * @param x2 - the x coordinate of the next point on the work path
      * @param y2 - the y coordinate of the next point on the work path
      */
     void addCap(BufferedPath p, double x0, double y0, double x2, double y2) {
@@ -437,41 +442,42 @@ public class BasicStroke implements Stroke {
         double x20 = x2 - x0;
         double y20 = y2 - y0;
 
-        switch(cap) {
-        case CAP_BUTT:
-            p.lineTo(x2, y2);
-            break;
-        case CAP_ROUND:
-            double mx = x10 * CUBIC_ARC;
-            double my = y10 * CUBIC_ARC;
+        switch (cap) {
+            case CAP_BUTT:
+                p.lineTo(x2, y2);
+                break;
+            case CAP_ROUND:
+                double mx = x10 * CUBIC_ARC;
+                double my = y10 * CUBIC_ARC;
 
-            double x3 = x0 + y10;
-            double y3 = y0 - x10;
+                double x3 = x0 + y10;
+                double y3 = y0 - x10;
 
-            x10 *= CUBIC_ARC;
-            y10 *= CUBIC_ARC;
-            x20 *= CUBIC_ARC;
-            y20 *= CUBIC_ARC;
+                x10 *= CUBIC_ARC;
+                y10 *= CUBIC_ARC;
+                x20 *= CUBIC_ARC;
+                y20 *= CUBIC_ARC;
 
-            p.cubicTo(x1 + y10, y1 - x10, x3 + mx, y3 + my, x3, y3);
-            p.cubicTo(x3 - mx, y3 - my, x2 - y20, y2 + x20, x2, y2);
-            break;
-        case CAP_SQUARE:
-            p.lineTo(x1 + y10, y1 - x10);
-            p.lineTo(x2 - y20, y2 + x20);
-            p.lineTo(x2, y2);
-            break;
+                p.cubicTo(x1 + y10, y1 - x10, x3 + mx, y3 + my, x3, y3);
+                p.cubicTo(x3 - mx, y3 - my, x2 - y20, y2 + x20, x2, y2);
+                break;
+            case CAP_SQUARE:
+                p.lineTo(x1 + y10, y1 - x10);
+                p.lineTo(x2 - y20, y2 + x20);
+                p.lineTo(x2, y2);
+                break;
         }
     }
 
     /**
-     * Adds bevel and miter join to the work path 
-     * @param p - the BufferedPath object of work path
-     * @param x0 - the x coordinate of the source path 
-     * @param y0 - the y coordinate on the source path
-     * @param x2 - the x coordinate of the next point on the work path 
-     * @param y2 - the y coordinate of the next point on the work path
-     * @param isLeft - the orientation of work path, true if work path lies to the left from source path, false otherwise 
+     * Adds bevel and miter join to the work path
+     *
+     * @param p      - the BufferedPath object of work path
+     * @param x0     - the x coordinate of the source path
+     * @param y0     - the y coordinate on the source path
+     * @param x2     - the x coordinate of the next point on the work path
+     * @param y2     - the y coordinate of the next point on the work path
+     * @param isLeft - the orientation of work path, true if work path lies to the left from source path, false otherwise
      */
     void addJoin(BufferedPath p, double x0, double y0, double x2, double y2, boolean isLeft) {
         double x1 = p.xLast;
@@ -506,38 +512,39 @@ public class BasicStroke implements Stroke {
             p.lineTo(x0, y0);
             p.lineTo(x2, y2);
         } else {
-            switch(join) {
-            case JOIN_BEVEL:
-                p.lineTo(x2, y2);
-                break;
-            case JOIN_MITER:
-                double s1 = x1 * x10 + y1 * y10;
-                double s2 = x2 * x20 + y2 * y20;
-                double x3 = (s1 * y20 - s2 * y10) / sin0;
-                double y3 = (s2 * x10 - s1 * x20) / sin0;
-                double x30 = x3 - x0;
-                double y30 = y3 - y0;
-                double miterLength = Math.sqrt(x30 * x30 + y30 * y30);
-                if (miterLength < miterLimit * w2) {
-                    p.lineTo(x3, y3);
-                }
-                p.lineTo(x2, y2);
-                break;
-            case JOIN_ROUND:
-                addRoundJoin(p, x0, y0, x2, y2, isLeft);
-                break;
+            switch (join) {
+                case JOIN_BEVEL:
+                    p.lineTo(x2, y2);
+                    break;
+                case JOIN_MITER:
+                    double s1 = x1 * x10 + y1 * y10;
+                    double s2 = x2 * x20 + y2 * y20;
+                    double x3 = (s1 * y20 - s2 * y10) / sin0;
+                    double y3 = (s2 * x10 - s1 * x20) / sin0;
+                    double x30 = x3 - x0;
+                    double y30 = y3 - y0;
+                    double miterLength = Math.sqrt(x30 * x30 + y30 * y30);
+                    if (miterLength < miterLimit * w2) {
+                        p.lineTo(x3, y3);
+                    }
+                    p.lineTo(x2, y2);
+                    break;
+                case JOIN_ROUND:
+                    addRoundJoin(p, x0, y0, x2, y2, isLeft);
+                    break;
             }
         }
     }
 
     /**
-     * Adds round join to the work path 
-     * @param p - the BufferedPath object of work path
-     * @param x0 - the x coordinate of the source path 
-     * @param y0 - the y coordinate on the source path
-     * @param x2 - the x coordinate of the next point on the work path 
-     * @param y2 - the y coordinate of the next point on the work path
-     * @param isLeft - the orientation of work path, true if work path lies to the left from source path, false otherwise 
+     * Adds round join to the work path
+     *
+     * @param p      - the BufferedPath object of work path
+     * @param x0     - the x coordinate of the source path
+     * @param y0     - the y coordinate on the source path
+     * @param x2     - the x coordinate of the next point on the work path
+     * @param y2     - the y coordinate of the next point on the work path
+     * @param isLeft - the orientation of work path, true if work path lies to the left from source path, false otherwise
      */
     void addRoundJoin(BufferedPath p, double x0, double y0, double x2, double y2, boolean isLeft) {
         double x1 = p.xLast;
@@ -600,10 +607,11 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds solid line segment to the work path
-     * @param x1 - the x coordinate of the start line point
-     * @param y1 - the y coordinate of the start line point
-     * @param x2 - the x coordinate of the end line point
-     * @param y2 - the y coordinate of the end line point
+     *
+     * @param x1   - the x coordinate of the start line point
+     * @param y1   - the y coordinate of the start line point
+     * @param x2   - the x coordinate of the end line point
+     * @param y2   - the y coordinate of the end line point
      * @param zero - if true it's allowable to add zero length line segment
      */
     void addLine(double x1, double y1, double x2, double y2, boolean zero) {
@@ -644,6 +652,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds solid quad segment to the work path
+     *
      * @param x1 - the x coordinate of the first control point
      * @param y1 - the y coordinate of the first control point
      * @param x2 - the x coordinate of the second control point
@@ -677,11 +686,11 @@ public class BasicStroke implements Stroke {
 
         double w;
         w = w2 / l21;
-        double mx1 = - y21 * w;
-        double my1 =   x21 * w;
+        double mx1 = -y21 * w;
+        double my1 = x21 * w;
         w = w2 / l23;
-        double mx3 =   y23 * w;
-        double my3 = - x23 * w;
+        double mx3 = y23 * w;
+        double my3 = -x23 * w;
 
         double lx1 = x1 + mx1;
         double ly1 = y1 + my1;
@@ -740,12 +749,13 @@ public class BasicStroke implements Stroke {
 
     /**
      * Subdivides solid quad curve to make outline for source quad segment and adds it to work path
-     * @param x1 - the x coordinate of the first control point
-     * @param y1 - the y coordinate of the first control point
-     * @param x2 - the x coordinate of the second control point
-     * @param y2 - the y coordinate of the second control point
-     * @param x3 - the x coordinate of the third control point
-     * @param y3 - the y coordinate of the third control point
+     *
+     * @param x1    - the x coordinate of the first control point
+     * @param y1    - the y coordinate of the first control point
+     * @param x2    - the x coordinate of the second control point
+     * @param y2    - the y coordinate of the second control point
+     * @param x3    - the x coordinate of the third control point
+     * @param y3    - the y coordinate of the third control point
      * @param level - the maximum level of subdivision deepness
      */
     void addSubQuad(double x1, double y1, double x2, double y2, double x3, double y3, int level) {
@@ -774,8 +784,8 @@ public class BasicStroke implements Stroke {
             double mx2 = (x21 * l23 + x23 * l21) * w;
             double my2 = (y21 * l23 + y23 * l21) * w;
             w = w2 / l23;
-            double mx3 =   y23 * w;
-            double my3 = - x23 * w;
+            double mx3 = y23 * w;
+            double my3 = -x23 * w;
             lp.quadTo(x2 + mx2, y2 + my2, x3 + mx3, y3 + my3);
             rp.quadTo(x2 - mx2, y2 - my2, x3 - mx3, y3 - my3);
         }
@@ -783,6 +793,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds solid cubic segment to the work path
+     *
      * @param x1 - the x coordinate of the first control point
      * @param y1 - the y coordinate of the first control point
      * @param x2 - the x coordinate of the second control point
@@ -831,35 +842,34 @@ public class BasicStroke implements Stroke {
 
         if (l12 == 0.0) {
             w = w2 / l23;
-            mx1 =   y23 * w;
-            my1 = - x23 * w;
+            mx1 = y23 * w;
+            my1 = -x23 * w;
             w = w2 / l34;
-            mx4 =   y34 * w;
-            my4 = - x34 * w;
-            onLine = - x23 * y34 + y23 * x34 == 0.0; // sin3
-        } else
-        if (l34 == 0.0) {
+            mx4 = y34 * w;
+            my4 = -x34 * w;
+            onLine = -x23 * y34 + y23 * x34 == 0.0; // sin3
+        } else if (l34 == 0.0) {
             w = w2 / l12;
-            mx1 =   y12 * w;
-            my1 = - x12 * w;
+            mx1 = y12 * w;
+            my1 = -x12 * w;
             w = w2 / l23;
-            mx4 =   y23 * w;
-            my4 = - x23 * w;
-            onLine = - x12 * y23 + y12 * x23 == 0.0; // sin2
+            mx4 = y23 * w;
+            my4 = -x23 * w;
+            onLine = -x12 * y23 + y12 * x23 == 0.0; // sin2
         } else {
             w = w2 / l12;
-            mx1 =   y12 * w;
-            my1 = - x12 * w;
+            mx1 = y12 * w;
+            my1 = -x12 * w;
             w = w2 / l34;
-            mx4 =   y34 * w;
-            my4 = - x34 * w;
+            mx4 = y34 * w;
+            my4 = -x34 * w;
             if (l23 == 0.0) {
-                onLine = - x12 * y34 + y12 * x34 == 0.0;
+                onLine = -x12 * y34 + y12 * x34 == 0.0;
             } else {
                 onLine =
-                    - x12 * y34 + y12 * x34 == 0.0 &&
-                    - x12 * y23 + y12 * x23 == 0.0 && // sin2
-                    - x23 * y34 + y23 * x34 == 0.0;   // sin3
+                        -x12 * y34 + y12 * x34 == 0.0 &&
+                                -x12 * y23 + y12 * x23 == 0.0 && // sin2
+                                -x23 * y34 + y23 * x34 == 0.0;   // sin3
             }
         }
 
@@ -897,8 +907,7 @@ public class BasicStroke implements Stroke {
                 if (0.0 < t && t < 1.0) {
                     roots[rc++] = t;
                 }
-            } else
-            if (d > 0.0) {
+            } else if (d > 0.0) {
                 d = Math.sqrt(d);
                 double z = l12 + l34 - l23 - l23;
                 double t;
@@ -921,15 +930,15 @@ public class BasicStroke implements Stroke {
                 }
                 roots[rc++] = 1.0;
 
-                double ax = - x34 - x12 + x23 + x23;
-                double ay = - y34 - y12 + y23 + y23;
-                double bx = 3.0 * (- x23 + x12);
-                double by = 3.0 * (- y23 + y12);
-                double cx = 3.0 * (- x12);
-                double cy = 3.0 * (- y12);
+                double ax = -x34 - x12 + x23 + x23;
+                double ay = -y34 - y12 + y23 + y23;
+                double bx = 3.0 * (-x23 + x12);
+                double by = 3.0 * (-y23 + y12);
+                double cx = 3.0 * (-x12);
+                double cy = 3.0 * (-y12);
                 double xPrev = x1;
                 double yPrev = y1;
-                for(int i = 0; i < rc; i++) {
+                for (int i = 0; i < rc; i++) {
                     double t = roots[i];
                     double px = t * (t * (t * ax + bx) + cx) + x1;
                     double py = t * (t * (t * ay + by) + cy) + y1;
@@ -943,8 +952,8 @@ public class BasicStroke implements Stroke {
                     }
                     xPrev = px;
                     yPrev = py;
-                    mx1 = - mx1;
-                    my1 = - my1;
+                    mx1 = -mx1;
+                    my1 = -my1;
                 }
             } else {
                 lp.cubicTo(x2 + mx1, y2 + my1, x3 + mx4, y3 + my4, x4 + mx4, y4 + my4);
@@ -957,14 +966,15 @@ public class BasicStroke implements Stroke {
 
     /**
      * Subdivides solid cubic curve to make outline for source quad segment and adds it to work path
-     * @param x1 - the x coordinate of the first control point
-     * @param y1 - the y coordinate of the first control point
-     * @param x2 - the x coordinate of the second control point
-     * @param y2 - the y coordinate of the second control point
-     * @param x3 - the x coordinate of the third control point
-     * @param y3 - the y coordinate of the third control point
-     * @param x4 - the x coordinate of the fours control point
-     * @param y4 - the y coordinate of the fours control point
+     *
+     * @param x1    - the x coordinate of the first control point
+     * @param y1    - the y coordinate of the first control point
+     * @param x2    - the x coordinate of the second control point
+     * @param y2    - the y coordinate of the second control point
+     * @param x3    - the x coordinate of the third control point
+     * @param y3    - the y coordinate of the third control point
+     * @param x4    - the x coordinate of the fours control point
+     * @param y4    - the y coordinate of the fours control point
      * @param level - the maximum level of subdivision deepness
      */
     void addSubCubic(double x1, double y1, double x2, double y2, double x3, double y3, double x4, double y4, int level) {
@@ -975,19 +985,18 @@ public class BasicStroke implements Stroke {
         double x34 = x3 - x4;
         double y34 = y3 - y4;
 
-        double cos2 = - x12 * x23 - y12 * y23;
-        double cos3 = - x23 * x34 - y23 * y34;
-        double sin2 = - x12 * y23 + y12 * x23;
-        double sin3 = - x23 * y34 + y23 * x34;
-        double sin0 = - x12 * y34 + y12 * x34;
-        double cos0 = - x12 * x34 - y12 * y34;
+        double cos2 = -x12 * x23 - y12 * y23;
+        double cos3 = -x23 * x34 - y23 * y34;
+        double sin2 = -x12 * y23 + y12 * x23;
+        double sin3 = -x23 * y34 + y23 * x34;
+        double sin0 = -x12 * y34 + y12 * x34;
+        double cos0 = -x12 * x34 - y12 * y34;
 
         if (level < MAX_LEVEL && (sin2 != 0.0 || sin3 != 0.0 || sin0 != 0.0) &&
-            (cos2 >= 0.0 || cos3 >= 0.0 || cos0 >= 0.0 ||
-            (Math.abs(sin2 / cos2) > curveDelta) ||
-            (Math.abs(sin3 / cos3) > curveDelta) ||
-            (Math.abs(sin0 / cos0) > curveDelta)))
-        {
+                (cos2 >= 0.0 || cos3 >= 0.0 || cos0 >= 0.0 ||
+                        (Math.abs(sin2 / cos2) > curveDelta) ||
+                        (Math.abs(sin3 / cos3) > curveDelta) ||
+                        (Math.abs(sin0 / cos0) > curveDelta))) {
             double cx = (x2 + x3) / 2.0;
             double cy = (y2 + y3) / 2.0;
             double lx2 = (x2 + x1) / 2.0;
@@ -1010,27 +1019,26 @@ public class BasicStroke implements Stroke {
 
             if (l12 == 0.0) {
                 w = w2 / l23;
-                mx1 =   y23 * w;
-                my1 = - x23 * w;
+                mx1 = y23 * w;
+                my1 = -x23 * w;
                 w = w2 / l34;
-                mx4 =   y34 * w;
-                my4 = - x34 * w;
-            } else
-            if (l34 == 0.0) {
+                mx4 = y34 * w;
+                my4 = -x34 * w;
+            } else if (l34 == 0.0) {
                 w = w2 / l12;
-                mx1 =   y12 * w;
-                my1 = - x12 * w;
+                mx1 = y12 * w;
+                my1 = -x12 * w;
                 w = w2 / l23;
-                mx4 =   y23 * w;
-                my4 = - x23 * w;
+                mx4 = y23 * w;
+                my4 = -x23 * w;
             } else {
                 // Common case
                 w = w2 / l12;
-                mx1 =   y12 * w;
-                my1 = - x12 * w;
+                mx1 = y12 * w;
+                my1 = -x12 * w;
                 w = w2 / l34;
-                mx4 =   y34 * w;
-                my4 = - x34 * w;
+                mx4 = y34 * w;
+                my4 = -x34 * w;
             }
 
             if (sin2 == 0.0) {
@@ -1057,6 +1065,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds dashed line segment to the work path
+     *
      * @param x1 - the x coordinate of the start line point
      * @param y1 - the y coordinate of the start line point
      * @param x2 - the x coordinate of the end line point
@@ -1075,12 +1084,12 @@ public class BasicStroke implements Stroke {
         double px1, py1;
         px1 = py1 = 0.0;
         double w = w2 / l21;
-        double mx = - y21 * w;
-        double my =   x21 * w;
+        double mx = -y21 * w;
+        double my = x21 * w;
 
         dasher.init(new DashIterator.Line(l21));
 
-        while(!dasher.eof()) {
+        while (!dasher.eof()) {
             double t = dasher.getValue();
             scx = x1 + t * x21;
             scy = y1 + t * y21;
@@ -1103,28 +1112,27 @@ public class BasicStroke implements Stroke {
                     addJoin(lp, x1, y1, lx1, ly1, true);
                     addJoin(rp, x1, y1, rx1, ry1, false);
                 }
-            } else
-                if (dasher.isContinue()) {
-                    double px2 = scx;
-                    double py2 = scy;
-                    lp.lineTo(px2 + mx, py2 + my);
-                    rp.lineTo(px2 - mx, py2 - my);
-                    if (dasher.close) {
-                        addCap(lp, px2, py2, rp.xLast, rp.yLast);
-                        lp.combine(rp);
-                        if (isFirst) {
-                            isFirst = false;
-                            fmx = smx;
-                            fmy = smy;
-                            sp = lp;
-                            lp = new BufferedPath();
-                        } else {
-                            addCap(lp, smx, smy, lp.xMove, lp.yMove);
-                            lp.closePath();
-                        }
-                        isMove = true;
+            } else if (dasher.isContinue()) {
+                double px2 = scx;
+                double py2 = scy;
+                lp.lineTo(px2 + mx, py2 + my);
+                rp.lineTo(px2 - mx, py2 - my);
+                if (dasher.close) {
+                    addCap(lp, px2, py2, rp.xLast, rp.yLast);
+                    lp.combine(rp);
+                    if (isFirst) {
+                        isFirst = false;
+                        fmx = smx;
+                        fmy = smy;
+                        sp = lp;
+                        lp = new BufferedPath();
+                    } else {
+                        addCap(lp, smx, smy, lp.xMove, lp.yMove);
+                        lp.closePath();
                     }
+                    isMove = true;
                 }
+            }
 
             dasher.next();
         }
@@ -1132,6 +1140,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds dashed quad segment to the work path
+     *
      * @param x1 - the x coordinate of the first control point
      * @param y1 - the y coordinate of the first control point
      * @param x2 - the x coordinate of the second control point
@@ -1176,7 +1185,7 @@ public class BasicStroke implements Stroke {
 
         dasher.init(new DashIterator.Quad(x1, y1, x2, y2, x3, y3));
 
-        while(!dasher.eof()) {
+        while (!dasher.eof()) {
             double t = dasher.getValue();
             double dx = t * ax + bx;
             double dy = t * ay + by;
@@ -1188,8 +1197,8 @@ public class BasicStroke implements Stroke {
                 dx1 = dx;
                 dy1 = dy;
                 double w = w2 / Math.sqrt(dx1 * dx1 + dy1 * dy1);
-                double mx1 = - dy1 * w;
-                double my1 =   dx1 * w;
+                double mx1 = -dy1 * w;
+                double my1 = dx1 * w;
                 double lx1 = px1 + mx1;
                 double ly1 = py1 + my1;
                 double rx1 = px1 - mx1;
@@ -1205,33 +1214,32 @@ public class BasicStroke implements Stroke {
                     addJoin(lp, x1, y1, lx1, ly1, true);
                     addJoin(rp, x1, y1, rx1, ry1, false);
                 }
-            } else 
-                if (dasher.isContinue()) {
-                    double px3 = scx;
-                    double py3 = scy;
-                    double sx = x2 - x23 * prev;
-                    double sy = y2 - y23 * prev;
-                    double t2 = (t - prev) / (1 - prev);
-                    double px2 = px1 + (sx - px1) * t2;
-                    double py2 = py1 + (sy - py1) * t2;
+            } else if (dasher.isContinue()) {
+                double px3 = scx;
+                double py3 = scy;
+                double sx = x2 - x23 * prev;
+                double sy = y2 - y23 * prev;
+                double t2 = (t - prev) / (1 - prev);
+                double px2 = px1 + (sx - px1) * t2;
+                double py2 = py1 + (sy - py1) * t2;
 
-                    addQuad(px1, py1, px2, py2, px3, py3);
-                    if (dasher.isClosed()) {
-                        addCap(lp, px3, py3, rp.xLast, rp.yLast);
-                        lp.combine(rp);
-                        if (isFirst) {
-                            isFirst = false;
-                            fmx = smx;
-                            fmy = smy;
-                            sp = lp;
-                            lp = new BufferedPath();
-                        } else {
-                            addCap(lp, smx, smy, lp.xMove, lp.yMove);
-                            lp.closePath();
-                        }
-                        isMove = true;
+                addQuad(px1, py1, px2, py2, px3, py3);
+                if (dasher.isClosed()) {
+                    addCap(lp, px3, py3, rp.xLast, rp.yLast);
+                    lp.combine(rp);
+                    if (isFirst) {
+                        isFirst = false;
+                        fmx = smx;
+                        fmy = smy;
+                        sp = lp;
+                        lp = new BufferedPath();
+                    } else {
+                        addCap(lp, smx, smy, lp.xMove, lp.yMove);
+                        lp.closePath();
                     }
+                    isMove = true;
                 }
+            }
 
             prev = t;
             dasher.next();
@@ -1240,6 +1248,7 @@ public class BasicStroke implements Stroke {
 
     /**
      * Adds dashed cubic segment to the work path
+     *
      * @param x1 - the x coordinate of the first control point
      * @param y1 - the y coordinate of the first control point
      * @param x2 - the x coordinate of the second control point
@@ -1299,7 +1308,7 @@ public class BasicStroke implements Stroke {
 
         dasher.init(new DashIterator.Cubic(x1, y1, x2, y2, x3, y3, x4, y4));
 
-        while(!dasher.eof()) {
+        while (!dasher.eof()) {
 
             double t = dasher.getValue();
             scx = t * (t * (t * ax + bx) + cx) + dx;
@@ -1310,8 +1319,8 @@ public class BasicStroke implements Stroke {
                 double dx1 = t * (t * (ax + ax + ax) + bx + bx) + cx;
                 double dy1 = t * (t * (ay + ay + ay) + by + by) + cy;
                 double w = w2 / Math.sqrt(dx1 * dx1 + dy1 * dy1);
-                double mx1 = - dy1 * w;
-                double my1 =   dx1 * w;
+                double mx1 = -dy1 * w;
+                double my1 = dx1 * w;
                 double lx1 = px1 + mx1;
                 double ly1 = py1 + my1;
                 double rx1 = px1 - mx1;
@@ -1327,42 +1336,41 @@ public class BasicStroke implements Stroke {
                     addJoin(lp, x1, y1, lx1, ly1, true);
                     addJoin(rp, x1, y1, rx1, ry1, false);
                 }
-            } else 
-                if (dasher.isContinue()) {
-                    double sx1 = x2 - x23 * prev;
-                    double sy1 = y2 - y23 * prev;
-                    double sx2 = x3 - x34 * prev;
-                    double sy2 = y3 - y34 * prev;
-                    double sx3 = sx1 + (sx2 - sx1) * prev;
-                    double sy3 = sy1 + (sy2 - sy1) * prev;
-                    double t2 = (t - prev) / (1 - prev);
-                    double sx4 = sx3 + (sx2 - sx3) * t2;
-                    double sy4 = sy3 + (sy2 - sy3) * t2;
+            } else if (dasher.isContinue()) {
+                double sx1 = x2 - x23 * prev;
+                double sy1 = y2 - y23 * prev;
+                double sx2 = x3 - x34 * prev;
+                double sy2 = y3 - y34 * prev;
+                double sx3 = sx1 + (sx2 - sx1) * prev;
+                double sy3 = sy1 + (sy2 - sy1) * prev;
+                double t2 = (t - prev) / (1 - prev);
+                double sx4 = sx3 + (sx2 - sx3) * t2;
+                double sy4 = sy3 + (sy2 - sy3) * t2;
 
-                    double px4 = scx;
-                    double py4 = scy;
-                    double px2 = px1 + (sx3 - px1) * t2;
-                    double py2 = py1 + (sy3 - py1) * t2;
-                    double px3 = px2 + (sx4 - px2) * t2;
-                    double py3 = py2 + (sy4 - py2) * t2;
+                double px4 = scx;
+                double py4 = scy;
+                double px2 = px1 + (sx3 - px1) * t2;
+                double py2 = py1 + (sy3 - py1) * t2;
+                double px3 = px2 + (sx4 - px2) * t2;
+                double py3 = py2 + (sy4 - py2) * t2;
 
-                    addCubic(px1, py1, px2, py2, px3, py3, px4, py4);
-                    if (dasher.isClosed()) {
-                        addCap(lp, px4, py4, rp.xLast, rp.yLast);
-                        lp.combine(rp);
-                        if (isFirst) {
-                            isFirst = false;
-                            fmx = smx;
-                            fmy = smy;
-                            sp = lp;
-                            lp = new BufferedPath();
-                        } else {
-                            addCap(lp, smx, smy, lp.xMove, lp.yMove);
-                            lp.closePath();
-                        }
-                        isMove = true;
+                addCubic(px1, py1, px2, py2, px3, py3, px4, py4);
+                if (dasher.isClosed()) {
+                    addCap(lp, px4, py4, rp.xLast, rp.yLast);
+                    lp.combine(rp);
+                    if (isFirst) {
+                        isFirst = false;
+                        fmx = smx;
+                        fmy = smy;
+                        sp = lp;
+                        lp = new BufferedPath();
+                    } else {
+                        addCap(lp, smx, smy, lp.xMove, lp.yMove);
+                        lp.closePath();
                     }
+                    isMove = true;
                 }
+            }
 
             prev = t;
             dasher.next();
@@ -1370,93 +1378,14 @@ public class BasicStroke implements Stroke {
     }
 
     /**
-     *  Dasher class provides dashing for particular dash style
-     */
-    class Dasher {
-        
-        double pos;
-        boolean close, visible, first;
-        float dash[];
-        float phase;
-        int index;
-        DashIterator iter;
-        
-        Dasher(float dash[], float phase) {
-            this.dash = dash;
-            this.phase = phase;
-            index = 0;
-            pos = phase;
-            visible = true;
-            while (pos >= dash[index]) {
-                visible = !visible;
-                pos -= dash[index];
-                index = (index + 1) % dash.length;
-            }            
-            pos = -pos;
-            first = visible;
-        }
-        
-        void init(DashIterator iter) {
-            this.iter = iter;
-            close = true;
-        }
-        
-        boolean isOpen() {
-            return visible && pos < iter.length;
-        }
-        
-        boolean isContinue() {
-            return !visible && pos > 0;
-        }
-        
-        boolean isClosed() {
-            return close;
-        }
-        
-        boolean isConnected() {
-            return first && !close;
-        }
-
-        boolean eof() {
-            if (!close) {
-                pos -= iter.length;
-                return true;
-            }
-            if (pos >= iter.length) {
-                if (visible) {
-                    pos -= iter.length;
-                    return true;
-                }
-                close = pos == iter.length;
-            }
-            return false;
-        }
-        
-        void next() {
-            if (close) {
-                pos += dash[index];
-                index = (index + 1) % dash.length;
-            } else {
-                // Go back
-                index = (index + dash.length - 1) % dash.length;
-                pos -= dash[index];
-            }
-            visible = !visible;
-        }
-        
-        double getValue() {
-            double t = iter.getNext(pos);
-            return t < 0 ? 0 : (t > 1 ? 1 : t);
-        }
-        
-    }
-
-    /**
-     * DashIterator class provides dashing for particular segment type  
+     * DashIterator class provides dashing for particular segment type
      */
     static abstract class DashIterator {
 
         static final double FLATNESS = 1.0;
+        double length;
+
+        abstract double getNext(double dashPos);
 
         static class Line extends DashIterator {
 
@@ -1486,7 +1415,7 @@ public class BasicStroke implements Stroke {
                 double nx = x1 + x3 - x2 - x2;
                 double ny = y1 + y3 - y2 - y2;
 
-                int n = (int)(1 + Math.sqrt(0.75 * (Math.abs(nx) + Math.abs(ny)) * FLATNESS));
+                int n = (int) (1 + Math.sqrt(0.75 * (Math.abs(nx) + Math.abs(ny)) * FLATNESS));
                 step = 1.0 / n;
 
                 double ax = x1 + x3 - x2 - x2;
@@ -1506,7 +1435,7 @@ public class BasicStroke implements Stroke {
                 double pvx = vx;
                 double pvy = vy;
                 length = 0.0;
-                for(int i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                     vx += dx1;
                     vy += dy1;
                     dx1 += dx2;
@@ -1557,7 +1486,7 @@ public class BasicStroke implements Stroke {
                 double ny2 = y2 + y4 - y3 - y3;
 
                 double max = Math.max(Math.abs(nx1) + Math.abs(ny1), Math.abs(nx2) + Math.abs(ny2));
-                int n = (int)(1 + Math.sqrt(0.75 * max) * FLATNESS);
+                int n = (int) (1 + Math.sqrt(0.75 * max) * FLATNESS);
                 step = 1.0 / n;
 
                 double ax = x4 - x1 + 3.0 * (x2 - x3);
@@ -1581,7 +1510,7 @@ public class BasicStroke implements Stroke {
                 double pvx = vx;
                 double pvy = vy;
                 length = 0.0;
-                for(int i = 0; i < n; i++) {
+                for (int i = 0; i < n; i++) {
                     vx += dx1;
                     vy += dy1;
                     dx1 += dx2;
@@ -1615,10 +1544,6 @@ public class BasicStroke implements Stroke {
             }
 
         }
-
-        double length;
-
-        abstract double getNext(double dashPos);
 
     }
 
@@ -1676,35 +1601,35 @@ public class BasicStroke implements Stroke {
         void moveTo(double x, double y) {
             checkBuf(1, 2);
             types[typeSize++] = PathIterator.SEG_MOVETO;
-            points[pointSize++] = xMove = (float)x;
-            points[pointSize++] = yMove = (float)y;
+            points[pointSize++] = xMove = (float) x;
+            points[pointSize++] = yMove = (float) y;
         }
 
         void lineTo(double x, double y) {
             checkBuf(1, 2);
             types[typeSize++] = PathIterator.SEG_LINETO;
-            points[pointSize++] = xLast = (float)x;
-            points[pointSize++] = yLast = (float)y;
+            points[pointSize++] = xLast = (float) x;
+            points[pointSize++] = yLast = (float) y;
         }
 
         void quadTo(double x1, double y1, double x2, double y2) {
             checkBuf(1, 4);
             types[typeSize++] = PathIterator.SEG_QUADTO;
-            points[pointSize++] = (float)x1;
-            points[pointSize++] = (float)y1;
-            points[pointSize++] = xLast = (float)x2;
-            points[pointSize++] = yLast = (float)y2;
+            points[pointSize++] = (float) x1;
+            points[pointSize++] = (float) y1;
+            points[pointSize++] = xLast = (float) x2;
+            points[pointSize++] = yLast = (float) y2;
         }
 
         void cubicTo(double x1, double y1, double x2, double y2, double x3, double y3) {
             checkBuf(1, 6);
             types[typeSize++] = PathIterator.SEG_CUBICTO;
-            points[pointSize++] = (float)x1;
-            points[pointSize++] = (float)y1;
-            points[pointSize++] = (float)x2;
-            points[pointSize++] = (float)y2;
-            points[pointSize++] = xLast = (float)x3;
-            points[pointSize++] = yLast = (float)y3;
+            points[pointSize++] = (float) x1;
+            points[pointSize++] = (float) y1;
+            points[pointSize++] = (float) x2;
+            points[pointSize++] = (float) y2;
+            points[pointSize++] = xLast = (float) x3;
+            points[pointSize++] = yLast = (float) y3;
         }
 
         void closePath() {
@@ -1713,8 +1638,8 @@ public class BasicStroke implements Stroke {
         }
 
         void setLast(double x, double y) {
-            points[pointSize - 2] = xLast = (float)x;
-            points[pointSize - 1] = yLast = (float)y;
+            points[pointSize - 2] = xLast = (float) x;
+            points[pointSize - 1] = yLast = (float) y;
         }
 
         void append(BufferedPath p) {
@@ -1730,13 +1655,13 @@ public class BasicStroke implements Stroke {
         void appendReverse(BufferedPath p) {
             checkBuf(p.typeSize, p.pointSize);
             // Skip last point, beacause it's the first point of the second path
-            for(int i = p.pointSize - 2; i >= 0; i -= 2) {
+            for (int i = p.pointSize - 2; i >= 0; i -= 2) {
                 points[pointSize++] = p.points[i + 0];
                 points[pointSize++] = p.points[i + 1];
             }
             // Skip first type, beacuse it's always MOVETO
             int closeIndex = 0;
-            for(int i = p.typeSize - 1; i >= 0; i--) {
+            for (int i = p.typeSize - 1; i >= 0; i--) {
                 byte type = p.types[i];
                 if (type == PathIterator.SEG_MOVETO) {
                     types[closeIndex] = PathIterator.SEG_MOVETO;
@@ -1766,12 +1691,12 @@ public class BasicStroke implements Stroke {
         void combine(BufferedPath p) {
             checkBuf(p.typeSize - 1, p.pointSize - 2);
             // Skip last point, beacause it's the first point of the second path
-            for(int i = p.pointSize - 4; i >= 0; i -= 2) {
+            for (int i = p.pointSize - 4; i >= 0; i -= 2) {
                 points[pointSize++] = p.points[i + 0];
                 points[pointSize++] = p.points[i + 1];
             }
             // Skip first type, beacuse it's always MOVETO
-            for(int i = p.typeSize - 1; i >= 1; i--) {
+            for (int i = p.typeSize - 1; i >= 1; i--) {
                 types[typeSize++] = p.types[i];
             }
             xLast = points[pointSize - 2];
@@ -1781,28 +1706,110 @@ public class BasicStroke implements Stroke {
         GeneralPath createGeneralPath() {
             GeneralPath p = new GeneralPath();
             int j = 0;
-            for(int i = 0; i < typeSize; i++) {
+            for (int i = 0; i < typeSize; i++) {
                 int type = types[i];
-                switch(type){
-                case PathIterator.SEG_MOVETO:
-                    p.moveTo(points[j], points[j + 1]);
-                    break;
-                case PathIterator.SEG_LINETO:
-                    p.lineTo(points[j], points[j + 1]);
-                    break;
-                case PathIterator.SEG_QUADTO:
-                    p.quadTo(points[j], points[j + 1], points[j + 2], points[j + 3]);
-                    break;
-                case PathIterator.SEG_CUBICTO:
-                    p.curveTo(points[j], points[j + 1], points[j + 2], points[j + 3], points[j + 4], points[j + 5]);
-                    break;
-                case PathIterator.SEG_CLOSE:
-                    p.closePath();
-                    break;
+                switch (type) {
+                    case PathIterator.SEG_MOVETO:
+                        p.moveTo(points[j], points[j + 1]);
+                        break;
+                    case PathIterator.SEG_LINETO:
+                        p.lineTo(points[j], points[j + 1]);
+                        break;
+                    case PathIterator.SEG_QUADTO:
+                        p.quadTo(points[j], points[j + 1], points[j + 2], points[j + 3]);
+                        break;
+                    case PathIterator.SEG_CUBICTO:
+                        p.curveTo(points[j], points[j + 1], points[j + 2], points[j + 3], points[j + 4], points[j + 5]);
+                        break;
+                    case PathIterator.SEG_CLOSE:
+                        p.closePath();
+                        break;
                 }
                 j += pointShift[type];
             }
             return p;
+        }
+
+    }
+
+    /**
+     * Dasher class provides dashing for particular dash style
+     */
+    class Dasher {
+
+        double pos;
+        boolean close, visible, first;
+        float dash[];
+        float phase;
+        int index;
+        DashIterator iter;
+
+        Dasher(float dash[], float phase) {
+            this.dash = dash;
+            this.phase = phase;
+            index = 0;
+            pos = phase;
+            visible = true;
+            while (pos >= dash[index]) {
+                visible = !visible;
+                pos -= dash[index];
+                index = (index + 1) % dash.length;
+            }
+            pos = -pos;
+            first = visible;
+        }
+
+        void init(DashIterator iter) {
+            this.iter = iter;
+            close = true;
+        }
+
+        boolean isOpen() {
+            return visible && pos < iter.length;
+        }
+
+        boolean isContinue() {
+            return !visible && pos > 0;
+        }
+
+        boolean isClosed() {
+            return close;
+        }
+
+        boolean isConnected() {
+            return first && !close;
+        }
+
+        boolean eof() {
+            if (!close) {
+                pos -= iter.length;
+                return true;
+            }
+            if (pos >= iter.length) {
+                if (visible) {
+                    pos -= iter.length;
+                    return true;
+                }
+                close = pos == iter.length;
+            }
+            return false;
+        }
+
+        void next() {
+            if (close) {
+                pos += dash[index];
+                index = (index + 1) % dash.length;
+            } else {
+                // Go back
+                index = (index + dash.length - 1) % dash.length;
+                pos -= dash[index];
+            }
+            visible = !visible;
+        }
+
+        double getValue() {
+            double t = iter.getNext(pos);
+            return t < 0 ? 0 : (t > 1 ? 1 : t);
         }
 
     }

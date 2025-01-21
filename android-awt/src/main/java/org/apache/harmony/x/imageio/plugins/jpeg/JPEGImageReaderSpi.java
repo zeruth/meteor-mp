@@ -19,12 +19,12 @@
  */
 package org.apache.harmony.x.imageio.plugins.jpeg;
 
-import javax.imageio.ImageReader;
-import javax.imageio.spi.ImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.ImageSignature;
 import org.apache.harmony.x.imageio.plugins.ImageType;
 import org.apache.harmony.x.imageio.plugins.PluginUtils;
 
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -32,21 +32,21 @@ public class JPEGImageReaderSpi extends ImageReaderSpi {
 
     public JPEGImageReaderSpi() {
         super(PluginUtils.VENDOR_NAME, PluginUtils.DEFAULT_VERSION,
-                        ImageType.JPEG.getNames(),
-                        ImageType.JPEG.getSuffixes(),
-                        ImageType.JPEG.getMimeTypes(),
-                        JPEGImageReader.class.getName(), STANDARD_INPUT_TYPE,
-                        JPEGSpiConsts.writerSpiNames,
-                        JPEGSpiConsts.supportsStandardStreamMetadataFormat,
-                        JPEGSpiConsts.nativeStreamMetadataFormatName,
-                        JPEGSpiConsts.nativeStreamMetadataFormatClassName,
-                        JPEGSpiConsts.extraStreamMetadataFormatNames,
-                        JPEGSpiConsts.extraStreamMetadataFormatClassNames,
-                        JPEGSpiConsts.supportsStandardImageMetadataFormat,
-                        JPEGSpiConsts.nativeImageMetadataFormatName,
-                        JPEGSpiConsts.nativeImageMetadataFormatClassName,
-                        JPEGSpiConsts.extraImageMetadataFormatNames,
-                        JPEGSpiConsts.extraImageMetadataFormatClassNames);
+                ImageType.JPEG.getNames(),
+                ImageType.JPEG.getSuffixes(),
+                ImageType.JPEG.getMimeTypes(),
+                JPEGImageReader.class.getName(), STANDARD_INPUT_TYPE,
+                JPEGSpiConsts.writerSpiNames,
+                JPEGSpiConsts.supportsStandardStreamMetadataFormat,
+                JPEGSpiConsts.nativeStreamMetadataFormatName,
+                JPEGSpiConsts.nativeStreamMetadataFormatClassName,
+                JPEGSpiConsts.extraStreamMetadataFormatNames,
+                JPEGSpiConsts.extraStreamMetadataFormatClassNames,
+                JPEGSpiConsts.supportsStandardImageMetadataFormat,
+                JPEGSpiConsts.nativeImageMetadataFormatName,
+                JPEGSpiConsts.nativeImageMetadataFormatClassName,
+                JPEGSpiConsts.extraImageMetadataFormatNames,
+                JPEGSpiConsts.extraImageMetadataFormatClassNames);
     }
 
     @Override
@@ -56,7 +56,7 @@ public class JPEGImageReaderSpi extends ImageReaderSpi {
 
     @Override
     public ImageReader createReaderInstance(Object extension)
-                    throws IOException {
+            throws IOException {
         return new JPEGImageReader(this);
     }
 

@@ -18,8 +18,9 @@
 package javax.imageio.metadata;
 
 
-import javax.imageio.IIOException;
 import org.w3c.dom.Node;
+
+import javax.imageio.IIOException;
 
 public class IIOInvalidTreeException extends IIOException {
     protected Node offendingNode = null;

@@ -19,7 +19,7 @@
  */
 package java.awt.image;
 
-import java.awt.Point;
+import java.awt.*;
 
 public interface WritableRenderedImage extends RenderedImage {
 

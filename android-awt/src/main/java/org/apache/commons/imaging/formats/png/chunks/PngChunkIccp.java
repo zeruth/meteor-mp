@@ -16,13 +16,14 @@
  */
 package org.apache.commons.imaging.formats.png.chunks;
 
+import org.apache.commons.imaging.ImageReadException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.zip.InflaterInputStream;
 
-import org.apache.commons.imaging.ImageReadException;
-
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.findNull;
+import static org.apache.commons.imaging.common.BinaryFunctions.getStreamBytes;
 
 public class PngChunkIccp extends PngChunk {
     // private final PngImageParser parser;
@@ -32,7 +33,7 @@ public class PngChunkIccp extends PngChunk {
     public final byte[] uncompressedProfile;
 
     public PngChunkIccp(
-    // PngImageParser parser,
+            // PngImageParser parser,
             final int length, final int chunkType, final int crc, final byte[] bytes)
             throws ImageReadException, IOException {
         super(length, chunkType, crc, bytes);

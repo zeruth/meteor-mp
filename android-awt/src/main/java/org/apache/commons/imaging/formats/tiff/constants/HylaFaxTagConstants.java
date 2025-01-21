@@ -16,13 +16,13 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 public interface HylaFaxTagConstants {
     TagInfoLong EXIF_TAG_FAX_RECV_PARAMS = new TagInfoLong(
@@ -43,8 +43,8 @@ public interface HylaFaxTagConstants {
 
     List<TagInfo> ALL_HYLAFAX_TAGS =
             Collections.unmodifiableList(Arrays.asList(
-                EXIF_TAG_FAX_RECV_PARAMS,
-                EXIF_TAG_FAX_SUB_ADDRESS,
-                EXIF_TAG_FAX_RECV_TIME,
-                EXIF_TAG_FAX_DCS));
+                    EXIF_TAG_FAX_RECV_PARAMS,
+                    EXIF_TAG_FAX_SUB_ADDRESS,
+                    EXIF_TAG_FAX_RECV_TIME,
+                    EXIF_TAG_FAX_DCS));
 }

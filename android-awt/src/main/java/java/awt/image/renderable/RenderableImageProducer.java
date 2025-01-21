@@ -19,12 +19,7 @@
  */
 package java.awt.image.renderable;
 
-import java.awt.image.ColorModel;
-import java.awt.image.ImageConsumer;
-import java.awt.image.ImageProducer;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
-
+import java.awt.image.*;
 import java.util.Vector;
 
 
@@ -53,34 +48,35 @@ public class RenderableImageProducer implements ImageProducer, Runnable {
         t.start();
     }
 
-    public void requestTopDownLeftRightResend(ImageConsumer ic) {}
+    public void requestTopDownLeftRightResend(ImageConsumer ic) {
+    }
 
     public synchronized void removeConsumer(ImageConsumer ic) {
-        if(ic != null) {
+        if (ic != null) {
             consumers.removeElement(ic);
         }
     }
 
     public synchronized void addConsumer(ImageConsumer ic) {
-        if(ic != null && !consumers.contains(ic)){
+        if (ic != null && !consumers.contains(ic)) {
             consumers.addElement(ic);
         }
     }
 
     public void run() {
-        if(rbl == null) {
+        if (rbl == null) {
             return;
         }
 
         RenderedImage rd;
-        if(rc != null) {
+        if (rc != null) {
             rd = rbl.createRendering(rc);
         } else {
             rd = rbl.createDefaultRendering();
         }
 
         ColorModel cm = rd.getColorModel();
-        if(cm == null) {
+        if (cm == null) {
             cm = ColorModel.getRGBdefault();
         }
 
@@ -99,8 +95,8 @@ public class RenderableImageProducer implements ImageProducer, Runnable {
         int scanLine[] = new int[w];
         int pixel[] = null;
 
-        for(int y = 0; y < h; y++){
-            for(int x = 0; x < w; x++){
+        for (int y = 0; y < h; y++) {
+            for (int x = 0; x < w; x++) {
                 pixel = r.getPixel(x, y, pixel);
                 scanLine[x] = cm.getDataElement(pixel, 0);
             }

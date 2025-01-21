@@ -21,7 +21,6 @@ package java.awt;
 
 /**
  * Stroke
- *
  */
 public interface Stroke {
     public Shape createStrokedShape(Shape p);

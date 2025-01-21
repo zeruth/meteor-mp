@@ -24,11 +24,11 @@ import org.apache.harmony.awt.gl.MultiRectArea;
 public class JavaArcRasterizer {
 
     /**
-     * Adds particular arc segment to mra 
+     * Adds particular arc segment to mra
      */
     static void addX0LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int x1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x2 = line[i];
             int y = cy + (b - i);
             if (x1 <= finish && x2 >= start) {
@@ -40,7 +40,7 @@ public class JavaArcRasterizer {
 
     static void addX1LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int x1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x2 = line[i];
             int y = cy - (b - i);
             if (x1 <= finish && x2 >= start) {
@@ -52,7 +52,7 @@ public class JavaArcRasterizer {
 
     static void addX2LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int x1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x2 = line[i];
             int y = cy - (b - i);
             if (x1 <= finish && x2 >= start) {
@@ -64,7 +64,7 @@ public class JavaArcRasterizer {
 
     static void addX3LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int x1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x2 = line[i];
             int y = cy + (b - i);
             if (x1 <= finish && x2 >= start) {
@@ -76,7 +76,7 @@ public class JavaArcRasterizer {
 
     static void addY0LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int y1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x = cx + (b - i);
             int y2 = line[i];
             if (y1 <= finish && y2 >= start) {
@@ -88,7 +88,7 @@ public class JavaArcRasterizer {
 
     static void addY1LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int y1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x = cx - (b - i);
             int y2 = line[i];
             if (y1 <= finish && y2 >= start) {
@@ -100,7 +100,7 @@ public class JavaArcRasterizer {
 
     static void addY2LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int y1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x = cx - (b - i);
             int y2 = line[i];
             if (y1 <= finish && y2 >= start) {
@@ -112,7 +112,7 @@ public class JavaArcRasterizer {
 
     static void addY3LineSeg(MultiRectArea mra, int[] line, int cx, int cy, int b, int start, int finish) {
         int y1 = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             int x = cx + (b - i);
             int y2 = line[i];
             if (y1 <= finish && y2 >= start) {
@@ -124,7 +124,7 @@ public class JavaArcRasterizer {
 
     static void addX0Line(MultiRectArea mra, int[] line, int cx, int cy, int b) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx + prev, cy + (b - i), cx + line[i], cy + (b - i));
             prev = line[i] + 1;
         }
@@ -132,7 +132,7 @@ public class JavaArcRasterizer {
 
     static void addX1Line(MultiRectArea mra, int[] line, int cx, int cy, int b) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx + prev, cy - (b - i), cx + line[i], cy - (b - i));
             prev = line[i] + 1;
         }
@@ -140,7 +140,7 @@ public class JavaArcRasterizer {
 
     static void addX2Line(MultiRectArea mra, int[] line, int cx, int cy, int b) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx - line[i], cy - (b - i), cx - prev, cy - (b - i));
             prev = line[i] + 1;
         }
@@ -148,7 +148,7 @@ public class JavaArcRasterizer {
 
     static void addX3Line(MultiRectArea mra, int[] line, int cx, int cy, int b) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx - line[i], cy + (b - i), cx - prev, cy + (b - i));
             prev = line[i] + 1;
         }
@@ -156,7 +156,7 @@ public class JavaArcRasterizer {
 
     static void addY0Line(MultiRectArea mra, int[] line, int cx, int cy, int a) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx + (a - i), cy + prev, cx + (a - i), cy + line[i]);
             prev = line[i] + 1;
         }
@@ -164,7 +164,7 @@ public class JavaArcRasterizer {
 
     static void addY1Line(MultiRectArea mra, int[] line, int cx, int cy, int a) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx - (a - i), cy + prev, cx - (a - i), cy + line[i]);
             prev = line[i] + 1;
         }
@@ -172,7 +172,7 @@ public class JavaArcRasterizer {
 
     static void addY2Line(MultiRectArea mra, int[] line, int cx, int cy, int a) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx - (a - i), cy - line[i], cx - (a - i), cy - prev);
             prev = line[i] + 1;
         }
@@ -180,7 +180,7 @@ public class JavaArcRasterizer {
 
     static void addY3Line(MultiRectArea mra, int[] line, int cx, int cy, int a) {
         int prev = 0;
-        for(int i = 0; i < line.length; i++) {
+        for (int i = 0; i < line.length; i++) {
             mra.addRect(cx + (a - i), cy - line[i], cx + (a - i), cy - prev);
             prev = line[i] + 1;
         }
@@ -222,31 +222,31 @@ public class JavaArcRasterizer {
      * Adds head/tail arc segment to MultiRectArea
      */
     static void addSeg(MultiRectArea mra, int cx1, int cy1, int cx2, int cy2, int a, int b, int[] xline, int[] yline, int[] bounds) {
-        switch(bounds[0]) {
-        case 0:
-            addY3LineSeg(mra, yline, cx2, cy1, a, bounds[1], bounds[2]);
-            break;
-        case 1:
-            addX1LineSeg(mra, xline, cx2, cy1, b, bounds[1], bounds[2]);
-            break;
-        case 2:
-            addX2LineSeg(mra, xline, cx1, cy1, b, bounds[1], bounds[2]);
-            break;
-        case 3:
-            addY2LineSeg(mra, yline, cx1, cy1, a, bounds[1], bounds[2]);
-            break;
-        case 4:
-            addY1LineSeg(mra, yline, cx1, cy2, a, bounds[1], bounds[2]);
-            break;
-        case 5:
-            addX3LineSeg(mra, xline, cx1, cy2, b, bounds[1], bounds[2]);
-            break;
-        case 6:
-            addX0LineSeg(mra, xline, cx2, cy2, b, bounds[1], bounds[2]);
-            break;
-        case 7:
-            addY0LineSeg(mra, yline, cx2, cy2, a, bounds[1], bounds[2]);
-            break;
+        switch (bounds[0]) {
+            case 0:
+                addY3LineSeg(mra, yline, cx2, cy1, a, bounds[1], bounds[2]);
+                break;
+            case 1:
+                addX1LineSeg(mra, xline, cx2, cy1, b, bounds[1], bounds[2]);
+                break;
+            case 2:
+                addX2LineSeg(mra, xline, cx1, cy1, b, bounds[1], bounds[2]);
+                break;
+            case 3:
+                addY2LineSeg(mra, yline, cx1, cy1, a, bounds[1], bounds[2]);
+                break;
+            case 4:
+                addY1LineSeg(mra, yline, cx1, cy2, a, bounds[1], bounds[2]);
+                break;
+            case 5:
+                addX3LineSeg(mra, xline, cx1, cy2, b, bounds[1], bounds[2]);
+                break;
+            case 6:
+                addX0LineSeg(mra, xline, cx2, cy2, b, bounds[1], bounds[2]);
+                break;
+            case 7:
+                addY0LineSeg(mra, yline, cx2, cy2, a, bounds[1], bounds[2]);
+                break;
         }
     }
 
@@ -255,51 +255,51 @@ public class JavaArcRasterizer {
      */
     static int[] getSegment1(double angle, int ax, int ay, int xcount, int ycount) {
         int[] bounds = new int[3];
-        switch((int)(angle / 90)) {
-        case 0:
-            if (xcount <  ax) {
-                bounds[0] = 0; // Y3
-                bounds[1] = -ay;
-                bounds[2] = ycount;
-            } else {
-                bounds[0] = 1; // X1
-                bounds[1] = 0;
-                bounds[2] = ax;
-            }
-            break;
-        case 1:
-            if (xcount > -ax) {
-                bounds[0] = 2; // X2
-                bounds[1] = -ax;
-                bounds[2] = xcount;
-            } else {
-                bounds[0] = 3; // Y2
-                bounds[1] = 0;
-                bounds[2] = -ay;
-            }
-            break;
-        case 2:
-            if (xcount < -ax) {
-                bounds[0] = 4; // Y1
-                bounds[1] = ay;
-                bounds[2] = ycount;
-            } else {
-                bounds[0] = 5; // X3
-                bounds[1] = 0;
-                bounds[2] = -ax;
-            }
-            break;
-        case 3:
-            if (xcount >  ax) {
-                bounds[0] = 6; // X0
-                bounds[1] = ax;
-                bounds[2] = xcount;
-            } else {
-                bounds[0] = 7; // Y0
-                bounds[1] = 0;
-                bounds[2] = ay;
-            }
-            break;
+        switch ((int) (angle / 90)) {
+            case 0:
+                if (xcount < ax) {
+                    bounds[0] = 0; // Y3
+                    bounds[1] = -ay;
+                    bounds[2] = ycount;
+                } else {
+                    bounds[0] = 1; // X1
+                    bounds[1] = 0;
+                    bounds[2] = ax;
+                }
+                break;
+            case 1:
+                if (xcount > -ax) {
+                    bounds[0] = 2; // X2
+                    bounds[1] = -ax;
+                    bounds[2] = xcount;
+                } else {
+                    bounds[0] = 3; // Y2
+                    bounds[1] = 0;
+                    bounds[2] = -ay;
+                }
+                break;
+            case 2:
+                if (xcount < -ax) {
+                    bounds[0] = 4; // Y1
+                    bounds[1] = ay;
+                    bounds[2] = ycount;
+                } else {
+                    bounds[0] = 5; // X3
+                    bounds[1] = 0;
+                    bounds[2] = -ax;
+                }
+                break;
+            case 3:
+                if (xcount > ax) {
+                    bounds[0] = 6; // X0
+                    bounds[1] = ax;
+                    bounds[2] = xcount;
+                } else {
+                    bounds[0] = 7; // Y0
+                    bounds[1] = 0;
+                    bounds[2] = ay;
+                }
+                break;
         }
         return bounds;
     }
@@ -309,64 +309,65 @@ public class JavaArcRasterizer {
      */
     static int[] getSegment2(double angle, int ax, int ay, int xcount, int ycount) {
         int[] bounds = new int[3];
-        switch((int)(angle / 90)) {
-        case 0:
-            if (xcount <  ax) {
-                bounds[0] = 0; // Y3
-                bounds[1] = 0;
-                bounds[2] = -ay;
-            } else {
-                bounds[0] = 1; // X1
-                bounds[1] = ax;
-                bounds[2] = xcount;
-            }
-            break;
-        case 1:
-            if (xcount > -ax) {
-                bounds[0] = 2; // X2
-                bounds[1] = 0;
-                bounds[2] = -ax;
-            } else {
-                bounds[0] = 3; // Y2
-                bounds[1] = -ay;
-                bounds[2] = ycount;
-            }
-            break;
-        case 2:
-            if (xcount < -ax) {
-                bounds[0] = 4; // Y1
-                bounds[1] = 0;
-                bounds[2] = ay;
-            } else {
-                bounds[0] = 5; // X3
-                bounds[1] = -ax;
-                bounds[2] = xcount;
-            }
-            break;
-        case 3:
-            if (xcount >  ax) {
-                bounds[0] = 6; // X0
-                bounds[1] = 0;
-                bounds[2] = ax;
-            } else {
-                bounds[0] = 7; // Y0
-                bounds[1] = ay;
-                bounds[2] = ycount;
-            }
-            break;
+        switch ((int) (angle / 90)) {
+            case 0:
+                if (xcount < ax) {
+                    bounds[0] = 0; // Y3
+                    bounds[1] = 0;
+                    bounds[2] = -ay;
+                } else {
+                    bounds[0] = 1; // X1
+                    bounds[1] = ax;
+                    bounds[2] = xcount;
+                }
+                break;
+            case 1:
+                if (xcount > -ax) {
+                    bounds[0] = 2; // X2
+                    bounds[1] = 0;
+                    bounds[2] = -ax;
+                } else {
+                    bounds[0] = 3; // Y2
+                    bounds[1] = -ay;
+                    bounds[2] = ycount;
+                }
+                break;
+            case 2:
+                if (xcount < -ax) {
+                    bounds[0] = 4; // Y1
+                    bounds[1] = 0;
+                    bounds[2] = ay;
+                } else {
+                    bounds[0] = 5; // X3
+                    bounds[1] = -ax;
+                    bounds[2] = xcount;
+                }
+                break;
+            case 3:
+                if (xcount > ax) {
+                    bounds[0] = 6; // X0
+                    bounds[1] = 0;
+                    bounds[2] = ax;
+                } else {
+                    bounds[0] = 7; // Y0
+                    bounds[1] = ay;
+                    bounds[2] = ycount;
+                }
+                break;
         }
         return bounds;
     }
 
     /**
      * Rasterizes arc using clippind and dashing style
-     * @param x1 - the x coordinate of the left-upper corner of the arc bounds
-     * @param y1 - the y coordinate of the left-upper corner of the arc bounds
-     * @param width - the width of the arc bounds
-     * @param height - the height of the arc bounds
-     * @param angleStart - the start angle of the arc in degrees
+     *
+     * @param x1          - the x coordinate of the left-upper corner of the arc bounds
+     * @param y1          - the y coordinate of the left-upper corner of the arc bounds
+     * @param width       - the width of the arc bounds
+     * @param height      - the height of the arc bounds
+     * @param angleStart  - the start angle of the arc in degrees
      * @param angleExtent - the angle extent in degrees
-     * @param clip - the MultiRectArea object of clipping area
+     * @param clip        - the MultiRectArea object of clipping area
      * @return a MultiRectArea of rasterizer arc
      */
     public static MultiRectArea rasterize(int x, int y, int width, int height, double angleStart, double angleExtent, MultiRectArea clip) {
@@ -391,11 +392,11 @@ public class JavaArcRasterizer {
 
         int xcount, ycount;
         if (a < b) {
-            xcount = (int)Math.ceil(a * a / c);
-            ycount = (int)Math.floor(b * b / c);
+            xcount = (int) Math.ceil(a * a / c);
+            ycount = (int) Math.floor(b * b / c);
         } else {
-            xcount = (int)Math.floor(a * a / c);
-            ycount = (int)Math.ceil(b * b / c);
+            xcount = (int) Math.floor(a * a / c);
+            ycount = (int) Math.ceil(b * b / c);
         }
 
         int[] xline = createLine(a, b, xcount, ycount);
@@ -403,12 +404,12 @@ public class JavaArcRasterizer {
 
         // Correct lines
         int i = xline.length;
-        while(xline[--i] > xcount) {
+        while (xline[--i] > xcount) {
             xline[i] = xcount;
         }
 
         i = yline.length;
-        while(yline[--i] > ycount) {
+        while (yline[--i] > ycount) {
             yline[i] = ycount;
         }
 
@@ -435,10 +436,10 @@ public class JavaArcRasterizer {
 
             double radStart = -Math.toRadians(angleStart);
             double radFinish = -Math.toRadians(angleFinish);
-            int ax1 = (int)(a * Math.cos(radStart));
-            int ay1 = (int)(b * Math.sin(radStart));
-            int ax2 = (int)(a * Math.cos(radFinish));
-            int ay2 = (int)(b * Math.sin(radFinish));
+            int ax1 = (int) (a * Math.cos(radStart));
+            int ay1 = (int) (b * Math.sin(radStart));
+            int ax2 = (int) (a * Math.cos(radFinish));
+            int ay2 = (int) (b * Math.sin(radFinish));
 
             int[] seg1 = getSegment1(angleStart, ax1, ay1, xcount, ycount);
             int[] seg2 = getSegment2(angleFinish, ax2, ay2, xcount, ycount);
@@ -461,31 +462,31 @@ public class JavaArcRasterizer {
             int finishSeg = seg2[0];
 
             while (startSeg != finishSeg) {
-                switch(startSeg) {
-                case 0:
-                    addY3Line(mra, yline, cx2, cy1, a);
-                    break;
-                case 1:
-                    addX1Line(mra, xline, cx2, cy1, b);
-                    break;
-                case 2:
-                    addX2Line(mra, xline, cx1, cy1, b);
-                    break;
-                case 3:
-                    addY2Line(mra, yline, cx1, cy1, a);
-                    break;
-                case 4:
-                    addY1Line(mra, yline, cx1, cy2, a);
-                    break;
-                case 5:
-                    addX3Line(mra, xline, cx1, cy2, b);
-                    break;
-                case 6:
-                    addX0Line(mra, xline, cx2, cy2, b);
-                    break;
-                case 7:
-                    addY0Line(mra, yline, cx2, cy2, a);
-                    break;
+                switch (startSeg) {
+                    case 0:
+                        addY3Line(mra, yline, cx2, cy1, a);
+                        break;
+                    case 1:
+                        addX1Line(mra, xline, cx2, cy1, b);
+                        break;
+                    case 2:
+                        addX2Line(mra, xline, cx1, cy1, b);
+                        break;
+                    case 3:
+                        addY2Line(mra, yline, cx1, cy1, a);
+                        break;
+                    case 4:
+                        addY1Line(mra, yline, cx1, cy2, a);
+                        break;
+                    case 5:
+                        addX3Line(mra, xline, cx1, cy2, b);
+                        break;
+                    case 6:
+                        addX0Line(mra, xline, cx2, cy2, b);
+                        break;
+                    case 7:
+                        addY0Line(mra, yline, cx2, cy2, a);
+                        break;
                 }
                 startSeg = (startSeg + 1) % 8;
             }

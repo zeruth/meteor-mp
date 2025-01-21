@@ -41,9 +41,8 @@ public class SfntlyLineMetrics extends LineMetrics {
     // units per EM square in font value
     int units_per_EM = 0;
 
-   
 
-    public SfntlyLineMetrics(){
+    public SfntlyLineMetrics() {
 
     }
 
@@ -143,10 +142,10 @@ public class SfntlyLineMetrics extends LineMetrics {
 
 
     @Override
-    public Object clone(){
-        try{
+    public Object clone() {
+        try {
             return super.clone();
-        }catch (CloneNotSupportedException e){
+        } catch (CloneNotSupportedException e) {
             return null;
         }
     }

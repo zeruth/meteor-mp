@@ -16,7 +16,6 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Oct 14, 2005
  */
 
@@ -53,11 +52,11 @@ public class ShortLookupTable extends LookupTable {
         int offset = getOffset();
         if (getNumComponents() == 1) {
             for (int i = 0; i < src.length; i++) {
-                dst[i] = data[0][src[i]-offset];
+                dst[i] = data[0][src[i] - offset];
             }
         } else {
             for (int i = 0; i < getNumComponents(); i++) {
-                dst[i] = data[i][src[i]-offset];
+                dst[i] = data[i][src[i] - offset];
             }
         }
 
@@ -73,11 +72,11 @@ public class ShortLookupTable extends LookupTable {
         int offset = getOffset();
         if (getNumComponents() == 1) {
             for (int i = 0; i < src.length; i++) {
-                dst[i] = data[0][src[i]-offset];
+                dst[i] = data[0][src[i] - offset];
             }
         } else {
             for (int i = 0; i < getNumComponents(); i++) {
-                dst[i] = data[i][src[i]-offset];
+                dst[i] = data[i][src[i] - offset];
             }
         }
 

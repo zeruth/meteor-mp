@@ -16,41 +16,32 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.ImageBuilder;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.palette.PaletteFactory;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.PrintWriter;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_FORMAT;
 import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 public class PnmImageParser extends ImageParser {
-    private static final String DEFAULT_EXTENSION = ".pnm";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".pbm", ".pgm",
-            ".ppm", ".pnm", ".pam" };
     public static final String PARAM_KEY_PNM_RAWBITS = "PNM_RAWBITS";
     public static final String PARAM_VALUE_PNM_RAWBITS_YES = "YES";
     public static final String PARAM_VALUE_PNM_RAWBITS_NO = "NO";
+    private static final String DEFAULT_EXTENSION = ".pnm";
+    private static final String[] ACCEPTED_EXTENSIONS = {".pbm", ".pgm",
+            ".ppm", ".pnm", ".pam"};
 
     public PnmImageParser() {
         super.setByteOrder(ByteOrder.LITTLE_ENDIAN);
@@ -74,7 +65,7 @@ public class PnmImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] {
+        return new ImageFormat[]{
                 ImageFormats.PBM,
                 ImageFormats.PGM,
                 ImageFormats.PPM,
@@ -91,19 +82,19 @@ public class PnmImageParser extends ImageParser {
         if (identifier1 != PnmConstants.PNM_PREFIX_BYTE) {
             throw new ImageReadException("PNM file has invalid prefix byte 1");
         }
-        
+
         final WhiteSpaceReader wsr = new WhiteSpaceReader(is);
-        
+
         if (identifier2 == PnmConstants.PBM_TEXT_CODE
                 || identifier2 == PnmConstants.PBM_RAW_CODE
                 || identifier2 == PnmConstants.PGM_TEXT_CODE
                 || identifier2 == PnmConstants.PGM_RAW_CODE
                 || identifier2 == PnmConstants.PPM_TEXT_CODE
                 || identifier2 == PnmConstants.PPM_RAW_CODE) {
-            
+
             final int width = Integer.parseInt(wsr.readtoWhiteSpace());
             final int height = Integer.parseInt(wsr.readtoWhiteSpace());
-    
+
             if (identifier2 == PnmConstants.PBM_TEXT_CODE) {
                 return new PbmFileInfo(width, height, false);
             } else if (identifier2 == PnmConstants.PBM_RAW_CODE) {
@@ -134,7 +125,7 @@ public class PnmImageParser extends ImageParser {
             boolean seenMaxVal = false;
             final StringBuilder tupleType = new StringBuilder();
             boolean seenTupleType = false;
-            
+
             // Advance to next line
             wsr.readLine();
             String line;
@@ -166,7 +157,7 @@ public class PnmImageParser extends ImageParser {
                     throw new ImageReadException("Invalid PAM file header type " + type);
                 }
             }
-            
+
             if (!seenWidth) {
                 throw new ImageReadException("PAM header has no WIDTH");
             } else if (!seenHeight) {
@@ -178,7 +169,7 @@ public class PnmImageParser extends ImageParser {
             } else if (!seenTupleType) {
                 throw new ImageReadException("PAM header has no TUPLTYPE");
             }
-            
+
             return new PamFileInfo(width, height, depth, maxVal, tupleType.toString());
         } else {
             throw new ImageReadException("PNM file has invalid prefix byte 2");
@@ -330,7 +321,7 @@ public class PnmImageParser extends ImageParser {
                     writer = new PgmWriter(useRawbits);
                 } else if (subtype.equals(ImageFormats.PPM)) {
                     writer = new PpmWriter(useRawbits);
-                } else if (subtype.equals(ImageFormats.PAM)) { 
+                } else if (subtype.equals(ImageFormats.PAM)) {
                     writer = new PamWriter();
                 }
             }
@@ -339,7 +330,7 @@ public class PnmImageParser extends ImageParser {
         if (writer == null) {
             if (hasAlpha) {
                 writer = new PamWriter();
-            } else {   
+            } else {
                 writer = new PpmWriter(useRawbits);
             }
         }
@@ -355,7 +346,7 @@ public class PnmImageParser extends ImageParser {
         if (params.containsKey(PARAM_KEY_FORMAT)) {
             params.remove(PARAM_KEY_FORMAT);
         }
-        
+
         if (!params.isEmpty()) {
             final Object firstKey = params.keySet().iterator().next();
             throw new ImageWriteException("Unknown parameter: " + firstKey);
@@ -367,11 +358,9 @@ public class PnmImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override

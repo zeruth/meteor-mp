@@ -16,8 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff.datareaders;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
 import org.apache.commons.imaging.formats.tiff.TiffDirectory;
@@ -26,6 +24,8 @@ import org.apache.commons.imaging.formats.tiff.TiffImageData;
 import org.apache.commons.imaging.formats.tiff.photometricinterpreters.PhotometricInterpreter;
 import org.apache.commons.imaging.formats.tiff.photometricinterpreters.PhotometricInterpreterRgb;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.nio.ByteOrder;
@@ -43,10 +43,10 @@ public final class DataReaderTiled extends DataReader {
     private final TiffImageData.Tiles imageData;
 
     public DataReaderTiled(final TiffDirectory directory,
-            final PhotometricInterpreter photometricInterpreter, final int tileWidth,
-            final int tileLength, final int bitsPerPixel, final int[] bitsPerSample,
-            final int predictor, final int samplesPerPixel, final int width, final int height,
-            final int compression, final ByteOrder byteOrder, final TiffImageData.Tiles imageData) {
+                           final PhotometricInterpreter photometricInterpreter, final int tileWidth,
+                           final int tileLength, final int bitsPerPixel, final int[] bitsPerSample,
+                           final int predictor, final int samplesPerPixel, final int width, final int height,
+                           final int compression, final ByteOrder byteOrder, final TiffImageData.Tiles imageData) {
         super(directory, photometricInterpreter, bitsPerSample, predictor,
                 samplesPerPixel, width, height);
 
@@ -61,7 +61,7 @@ public final class DataReaderTiled extends DataReader {
     }
 
     private void interpretTile(final ImageBuilder imageBuilder, final byte[] bytes,
-            final int startX, final int startY, final int xLimit, final int yLimit) throws ImageReadException, IOException {
+                               final int startX, final int startY, final int xLimit, final int yLimit) throws ImageReadException, IOException {
         // changes introduced May 2012
         // The following block of code implements changes that
         // reduce image loading time by using special-case processing
@@ -187,11 +187,10 @@ public final class DataReaderTiled extends DataReader {
 
         }
     }
-    
+
     @Override
     public BufferedImage readImageData(final Rectangle subImage)
-            throws ImageReadException, IOException
-    {
+            throws ImageReadException, IOException {
         final int bitsPerRow = tileWidth * bitsPerPixel;
         final int bytesPerRow = (bitsPerRow + 7) / 8;
         final int bytesPerTile = bytesPerRow * tileLength;
@@ -214,10 +213,10 @@ public final class DataReaderTiled extends DataReader {
 
         final int x0 = col0 * tileWidth;
         final int y0 = row0 * tileLength;
-        
+
         final ImageBuilder workingBuilder =
                 new ImageBuilder(workingWidth, workingHeight, false);
-        
+
         for (int iRow = row0; iRow <= row1; iRow++) {
             for (int iCol = col0; iCol <= col1; iCol++) {
                 final int tile = iRow * nColumnsOfTiles + iCol;
@@ -229,18 +228,18 @@ public final class DataReaderTiled extends DataReader {
                 interpretTile(workingBuilder, decompressed, x, y, workingWidth, workingHeight);
             }
         }
-   
+
         if (subImage.x == x0
                 && subImage.y == y0
                 && subImage.width == workingWidth
                 && subImage.height == workingHeight) {
-            return workingBuilder.getBufferedImage(); 
+            return workingBuilder.getBufferedImage();
         }
         return workingBuilder.getSubimage(
-            subImage.x - x0,
-            subImage.y - y0,
-            subImage.width,
-            subImage.height);
+                subImage.x - x0,
+                subImage.y - y0,
+                subImage.width,
+                subImage.height);
     }
 
 }

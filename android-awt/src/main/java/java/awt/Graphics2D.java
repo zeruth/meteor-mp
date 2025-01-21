@@ -25,7 +25,6 @@ import java.awt.image.BufferedImageOp;
 import java.awt.image.ImageObserver;
 import java.awt.image.RenderedImage;
 import java.awt.image.renderable.RenderableImage;
-
 import java.text.AttributedCharacterIterator;
 import java.util.Map;
 
@@ -65,7 +64,11 @@ public abstract class Graphics2D extends Graphics {
 
     public abstract Color getBackground();
 
+    public abstract void setBackground(Color color);
+
     public abstract Composite getComposite();
+
+    public abstract void setComposite(Composite comp);
 
     public abstract GraphicsConfiguration getDeviceConfiguration();
 
@@ -73,13 +76,21 @@ public abstract class Graphics2D extends Graphics {
 
     public abstract Paint getPaint();
 
+    public abstract void setPaint(Paint paint);
+
     public abstract Object getRenderingHint(RenderingHints.Key key);
 
     public abstract RenderingHints getRenderingHints();
 
+    public abstract void setRenderingHints(Map<?, ?> hints);
+
     public abstract Stroke getStroke();
 
+    public abstract void setStroke(Stroke s);
+
     public abstract AffineTransform getTransform();
+
+    public abstract void setTransform(AffineTransform Tx);
 
     public abstract boolean hit(Rectangle rect, Shape s, boolean onStroke);
 
@@ -89,19 +100,7 @@ public abstract class Graphics2D extends Graphics {
 
     public abstract void scale(double sx, double sy);
 
-    public abstract void setBackground(Color color);
-
-    public abstract void setComposite(Composite comp);
-
-    public abstract void setPaint(Paint paint);
-
     public abstract void setRenderingHint(RenderingHints.Key key, Object value);
-
-    public abstract void setRenderingHints(Map<?, ?> hints);
-
-    public abstract void setStroke(Stroke s);
-
-    public abstract void setTransform(AffineTransform Tx);
 
     public abstract void shear(double shx, double shy);
 

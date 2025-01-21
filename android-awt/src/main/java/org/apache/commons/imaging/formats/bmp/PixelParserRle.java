@@ -16,11 +16,11 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
 
 class PixelParserRle extends PixelParser {
 
@@ -62,7 +62,7 @@ class PixelParserRle extends PixelParser {
     }
 
     private int processByteOfData(final int[] rgbs, final int repeat, int x, final int y,
-            final int width, final int height, final ImageBuilder imageBuilder) {
+                                  final int width, final int height, final ImageBuilder imageBuilder) {
         // int rbg
         int pixelsWritten = 0;
         for (int i = 0; i < repeat; i++) {
@@ -100,58 +100,58 @@ class PixelParserRle extends PixelParser {
 
             if (a == 0) {
                 switch (b) {
-                case 0: {
-                    // EOL
-                    y--;
-                    x = 0;
-                    break;
-                }
-                case 1:
-                    // EOF
-                    done = true;
-                    break;
-                case 2: {
-                    final int deltaX = 0xff & BinaryFunctions.readByte("RLE deltaX", is, "BMP: Bad RLE");
-                    final int deltaY = 0xff & BinaryFunctions.readByte("RLE deltaY", is, "BMP: Bad RLE");
-                    x += deltaX;
-                    y -= deltaY;
-                    break;
-                }
-                default: {
-                    final int samplesPerByte = getSamplesPerByte();
-                    int size = b / samplesPerByte;
-                    if ((b % samplesPerByte) > 0) {
-                        size++;
+                    case 0: {
+                        // EOL
+                        y--;
+                        x = 0;
+                        break;
                     }
-                    if ((size % 2) != 0) {
-                        size++;
+                    case 1:
+                        // EOF
+                        done = true;
+                        break;
+                    case 2: {
+                        final int deltaX = 0xff & BinaryFunctions.readByte("RLE deltaX", is, "BMP: Bad RLE");
+                        final int deltaY = 0xff & BinaryFunctions.readByte("RLE deltaY", is, "BMP: Bad RLE");
+                        x += deltaX;
+                        y -= deltaY;
+                        break;
                     }
+                    default: {
+                        final int samplesPerByte = getSamplesPerByte();
+                        int size = b / samplesPerByte;
+                        if ((b % samplesPerByte) > 0) {
+                            size++;
+                        }
+                        if ((size % 2) != 0) {
+                            size++;
+                        }
 
-                    // System.out.println("b: " + b);
-                    // System.out.println("size: " + size);
-                    // System.out.println("SamplesPerByte: " + SamplesPerByte);
+                        // System.out.println("b: " + b);
+                        // System.out.println("size: " + size);
+                        // System.out.println("SamplesPerByte: " + SamplesPerByte);
 
-                    final byte[] bytes = BinaryFunctions.readBytes("bytes", is, size, "RLE: Absolute Mode");
+                        final byte[] bytes = BinaryFunctions.readBytes("bytes", is, size, "RLE: Absolute Mode");
 
-                    int remaining = b;
+                        int remaining = b;
 
-                    for (int i = 0; remaining > 0; i++) {
-                    // for (int i = 0; i < bytes.length; i++)
-                        final int[] samples = convertDataToSamples(0xff & bytes[i]);
-                        final int towrite = Math.min(remaining, samplesPerByte);
-                        // System.out.println("remaining: " + remaining);
-                        // System.out.println("SamplesPerByte: "
-                        // + SamplesPerByte);
-                        // System.out.println("towrite: " + towrite);
-                        final int written = processByteOfData(samples, towrite, x, y,
-                                width, height, imageBuilder);
-                        // System.out.println("written: " + written);
-                        // System.out.println("");
-                        x += written;
-                        remaining -= written;
+                        for (int i = 0; remaining > 0; i++) {
+                            // for (int i = 0; i < bytes.length; i++)
+                            final int[] samples = convertDataToSamples(0xff & bytes[i]);
+                            final int towrite = Math.min(remaining, samplesPerByte);
+                            // System.out.println("remaining: " + remaining);
+                            // System.out.println("SamplesPerByte: "
+                            // + SamplesPerByte);
+                            // System.out.println("towrite: " + towrite);
+                            final int written = processByteOfData(samples, towrite, x, y,
+                                    width, height, imageBuilder);
+                            // System.out.println("written: " + written);
+                            // System.out.println("");
+                            x += written;
+                            remaining -= written;
+                        }
+                        break;
                     }
-                    break;
-                }
                 }
             } else {
                 final int[] rgbs = convertDataToSamples(b);

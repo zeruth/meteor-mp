@@ -25,11 +25,6 @@ import java.util.List;
  */
 class HuffmanTree<T> {
     private final List<Node<T>> nodes = new ArrayList<Node<T>>();
-    
-    private final static class Node<T> {
-        boolean empty = true;
-        T value;
-    }
 
     public final void insert(final String pattern, final T value) throws HuffmanTreeException {
         int position = 0;
@@ -86,5 +81,10 @@ class HuffmanTree<T> {
             }
         }
         return node.value;
+    }
+
+    private final static class Node<T> {
+        boolean empty = true;
+        T value;
     }
 }

@@ -19,15 +19,6 @@
  */
 package org.apache.harmony.x.imageio.plugins.png;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import javax.imageio.IIOImage;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriteParam;
-import javax.imageio.ImageWriter;
-import javax.imageio.metadata.IIOMetadata;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.stream.ImageOutputStream;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.Imaging;
@@ -35,6 +26,15 @@ import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.OutputStreamWrapper;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import javax.imageio.IIOImage;
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriteParam;
+import javax.imageio.ImageWriter;
+import javax.imageio.metadata.IIOMetadata;
+import javax.imageio.spi.ImageWriterSpi;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -42,13 +42,6 @@ import java.util.Map;
 
 
 public class PNGImageWriter extends ImageWriter {
-    private static int[][] BAND_OFFSETS = {
-            {}, {
-                0 }, {
-                    0, 1 }, {
-                    0, 1, 2 }, {
-                    0, 1, 2, 3 } };
-
     // Each pixel is a grayscale sample.
     private static final int PNG_COLOR_TYPE_GRAY = 0;
     // Each pixel is an R,G,B triple.
@@ -59,6 +52,12 @@ public class PNGImageWriter extends ImageWriter {
     private static final int PNG_COLOR_TYPE_GRAY_ALPHA = 4;
     // Each pixel is an R,G,B triple, followed by an alpha sample.
     private static final int PNG_COLOR_TYPE_RGBA = 6;
+    private static int[][] BAND_OFFSETS = {
+            {}, {
+            0}, {
+            0, 1}, {
+            0, 1, 2}, {
+            0, 1, 2, 3}};
 
 
     public PNGImageWriter(ImageWriterSpi iwSpi) {
@@ -104,29 +103,28 @@ public class PNGImageWriter extends ImageWriter {
         RenderedImage image = iioimage.getRenderedImage();
 
         try {
-        	Map params = new HashMap();
-        	Imaging.writeImage((BufferedImage) image,
-        			wrapOutput(getOutput()),
-        			ImageFormats.PNG,
-        			params);
+            Map params = new HashMap();
+            Imaging.writeImage((BufferedImage) image,
+                    wrapOutput(getOutput()),
+                    ImageFormats.PNG,
+                    params);
+        } catch (ImageWriteException e) {
+            e.printStackTrace();
         }
-        catch (ImageWriteException e) {
-			e.printStackTrace();
-		}
-        
+
     }
 
     private OutputStream wrapOutput(Object output) {
-		if(output instanceof OutputStream) {
-			return (OutputStream)output;
-		} else if(output instanceof ImageOutputStream){
-			return new OutputStreamWrapper((ImageOutputStream) output);
-		} else {
-			throw new UnsupportedOperationException(output.getClass().getName());
-		}
-	}
+        if (output instanceof OutputStream) {
+            return (OutputStream) output;
+        } else if (output instanceof ImageOutputStream) {
+            return new OutputStreamWrapper((ImageOutputStream) output);
+        } else {
+            throw new UnsupportedOperationException(output.getClass().getName());
+        }
+    }
 
-	public ImageWriteParam getDefaultWriteParam() {
+    public ImageWriteParam getDefaultWriteParam() {
         return new PNGImageWriterParam();
     }
 }

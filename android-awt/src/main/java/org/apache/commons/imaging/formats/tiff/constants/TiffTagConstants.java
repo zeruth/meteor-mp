@@ -16,20 +16,11 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAny;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByteOrShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUnknown;
 
 /**
  * Tags from the TIFF6 specification.
@@ -216,7 +207,7 @@ public interface TiffTagConstants {
             TiffDirectoryType.TIFF_DIRECTORY_ROOT);
 
     TagInfoRational TIFF_TAG_YPOSITION = new TagInfoRational(
-            "YPosition",  0x11F, -1,
+            "YPosition", 0x11F, -1,
             TiffDirectoryType.TIFF_DIRECTORY_ROOT);
 
     TagInfoLong TIFF_TAG_FREE_OFFSETS = new TagInfoLong(

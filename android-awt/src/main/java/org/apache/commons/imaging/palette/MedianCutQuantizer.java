@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.palette;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.util.Debug;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,7 +33,7 @@ public class MedianCutQuantizer {
     }
 
     private Map<Integer, ColorCount> groupColors1(final BufferedImage image, final int max,
-            final int mask) {
+                                                  final int mask) {
         final Map<Integer, ColorCount> colorMap = new HashMap<Integer, ColorCount>();
 
         final int width = image.getWidth();
@@ -81,9 +81,9 @@ public class MedianCutQuantizer {
         }
         throw new Error("");
     }
-    
+
     public Palette process(final BufferedImage image, final int maxColors,
-            final MedianCutImplementation medianCutImplementation, final boolean verbose)
+                           final MedianCutImplementation medianCutImplementation, final boolean verbose)
             throws ImageWriteException {
         final Map<Integer, ColorCount> colorMap = groupColors(image, maxColors);
 

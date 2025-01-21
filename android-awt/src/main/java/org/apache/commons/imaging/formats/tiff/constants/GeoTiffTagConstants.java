@@ -16,14 +16,14 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Geo Tiff.
@@ -42,7 +42,7 @@ public interface GeoTiffTagConstants {
     TagInfoDouble EXIF_TAG_MODEL_TIEPOINT_TAG = new TagInfoDouble(
             "ModelTiepointTag", 0x8482, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoDouble EXIF_TAG_MODEL_TRANSFORMATION_TAG = new TagInfoDouble(
             "ModelTransformationTag", 0x85d8, 16,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -50,15 +50,15 @@ public interface GeoTiffTagConstants {
     TagInfoShort EXIF_TAG_GEO_KEY_DIRECTORY_TAG = new TagInfoShort(
             "GeoKeyDirectoryTag", 0x87af, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoDouble EXIF_TAG_GEO_DOUBLE_PARAMS_TAG = new TagInfoDouble(
             "GeoDoubleParamsTag", 0x87b0, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoAscii EXIF_TAG_GEO_ASCII_PARAMS_TAG = new TagInfoAscii(
             "GeoAsciiParamsTag", 0x87b1, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     List<TagInfo> ALL_GEO_TIFF_TAGS =
             Collections.unmodifiableList(Arrays.asList(
                     EXIF_TAG_MODEL_PIXEL_SCALE_TAG,

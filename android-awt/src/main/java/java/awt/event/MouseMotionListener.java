@@ -14,6 +14,7 @@ public interface MouseMotionListener extends EventListener {
      * Due to platform-dependent Drag&amp;Drop implementations,
      * {@code MOUSE_DRAGGED} events may not be delivered during a native
      * Drag&amp;Drop operation.
+     *
      * @param e the event to be processed
      */
     public void mouseDragged(MouseEvent e);
@@ -21,6 +22,7 @@ public interface MouseMotionListener extends EventListener {
     /**
      * Invoked when the mouse cursor has been moved onto a component
      * but no buttons have been pushed.
+     *
      * @param e the event to be processed
      */
     public void mouseMoved(MouseEvent e);

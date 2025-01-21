@@ -19,7 +19,8 @@ package org.apache.commons.imaging.formats.png.chunks;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 public class PngChunkPhys extends PngChunk {
     public final int pixelsPerUnitXAxis;

@@ -16,17 +16,11 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDirectory;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
 
 /**
  * RFC 2301: File Format for Internet Fax
@@ -41,14 +35,14 @@ public interface Rfc2301TagConstants {
     TagInfoShortOrLong TIFF_TAG_BAD_FAX_LINES = new TagInfoShortOrLong(
             "BadFaxLines", 0x0146, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoShort TIFF_TAG_CLEAN_FAX_DATA = new TagInfoShort(
             "CleanFaxData", 0x0147, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
     int CLEAN_FAX_DATA_VALUE_CLEAN = 0;
     int CLEAN_FAX_DATA_VALUE_REGENERATED = 1;
     int CLEAN_FAX_DATA_VALUE_UNCLEAN = 2;
-    
+
     TagInfoShortOrLong TIFF_TAG_CONSECUTIVE_BAD_FAX_LINES = new TagInfoShortOrLong(
             "ConsecutiveBadFaxLines", 0x0148, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -56,13 +50,13 @@ public interface Rfc2301TagConstants {
     TagInfoDirectory TIFF_TAG_GLOBAL_PARAMETERS_IFD = new TagInfoDirectory(
             "GlobalParametersIFD", 0x0190, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong TIFF_TAG_PROFILE_TYPE = new TagInfoLong(
             "ProfileType", 0x0191, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
     int PROFILE_TYPE_VALUE_UNSPECIFIED = 0;
     int PROFILE_TYPE_VALUE_GROUP_3_FAX = 1;
-    
+
     TagInfoByte TIFF_TAG_FAX_PROFILE = new TagInfoByte(
             "FaxProfile", 0x0192, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -73,7 +67,7 @@ public interface Rfc2301TagConstants {
     int FAX_PROFILE_VALUE_LOSSY_COLOR_AND_GRAYSCALE_C = 4;
     int FAX_PROFILE_VALUE_LOSSLESS_COLOR_AND_GRAYSCALE_L = 5;
     int FAX_PROFILE_VALUE_MIXED_RASTER_CONTENT_M = 6;
-    
+
     TagInfoLong TIFF_TAG_CODING_METHODS = new TagInfoLong(
             "CodingMethods", 0x0193, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -83,11 +77,11 @@ public interface Rfc2301TagConstants {
     int CODING_METHODS_VALUE_T82_T85 = 16;
     int CODING_METHODS_VALUE_T81 = 32;
     int CODING_METHODS_VALUE_T82_T43 = 64;
-    
+
     TagInfoByte TIFF_TAG_VERSION_YEAR = new TagInfoByte(
             "VersionYear", 0x0194, 4,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoByte TIFF_TAG_MODE_NUMBER = new TagInfoByte(
             "ModeNumber", 0x0195, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -95,7 +89,7 @@ public interface Rfc2301TagConstants {
     TagInfoRational TIFF_TAG_DECODE = new TagInfoRational(
             "Decode", 0x01b1, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoShort TIFF_TAG_DEFAULT_IMAGE_COLOR = new TagInfoShort(
             "DefaultImageColor", 0x01b2, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);

@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUndefined;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUndefined;
 
 /**
  * TIFF specification supplement 2
@@ -40,7 +40,7 @@ public interface AdobePhotoshopTagConstants {
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
 
     List<TagInfo> ALL_ADOBE_PHOTOSHOP_TAGS =
-            Collections.unmodifiableList(Arrays.asList(new TagInfo[] {
+            Collections.unmodifiableList(Arrays.asList(new TagInfo[]{
                     EXIF_TAG_JPEGTABLES,
                     EXIF_TAG_IMAGE_SOURCE_DATA
             }));

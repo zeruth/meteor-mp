@@ -19,12 +19,12 @@
  */
 package java.awt.image.renderable;
 
-import java.awt.RenderingHints;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.RenderedImage;
-import org.apache.harmony.awt.internal.nls.Messages;
-
 import java.util.Vector;
 
 
@@ -80,20 +80,20 @@ public class RenderableImageOp implements RenderableImage {
     }
 
     public RenderedImage createScaledRendering(int w, int h, RenderingHints hints) {
-        if(w == 0 && h == 0) {
+        if (w == 0 && h == 0) {
             // awt.60=Width and Height mustn't be equal zero both
             throw new IllegalArgumentException(Messages.getString("awt.60")); //$NON-NLS-1$
         }
-        if(w == 0){
-            w = Math.round(h*(getWidth()/getHeight()));
+        if (w == 0) {
+            w = Math.round(h * (getWidth() / getHeight()));
         }
 
-        if(h == 0){
-            h = Math.round(w*(getHeight()/getWidth()));
+        if (h == 0) {
+            h = Math.round(w * (getHeight() / getWidth()));
         }
 
-        double sx = (double)w/getWidth();
-        double sy = (double)h/getHeight();
+        double sx = (double) w / getWidth();
+        double sy = (double) h / getHeight();
 
         AffineTransform at = AffineTransform.getScaleInstance(sx, sy);
         RenderContext context = new RenderContext(at, hints);
@@ -101,14 +101,14 @@ public class RenderableImageOp implements RenderableImage {
     }
 
     public Vector<RenderableImage> getSources() {
-        if(paramBlock.getNumSources() == 0) {
+        if (paramBlock.getNumSources() == 0) {
             return null;
         }
         Vector<RenderableImage> v = new Vector<RenderableImage>();
-        int  i = 0;
-        while(i < paramBlock.getNumSources()){
+        int i = 0;
+        while (i < paramBlock.getNumSources()) {
             Object o = paramBlock.getSource(i);
-            if(o instanceof RenderableImage){
+            if (o instanceof RenderableImage) {
                 v.addElement((RenderableImage) o);
             }
             i++;

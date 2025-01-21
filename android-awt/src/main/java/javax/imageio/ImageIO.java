@@ -18,22 +18,16 @@
 package javax.imageio;
 
 
-import java.awt.image.BufferedImage;
-import java.awt.image.RenderedImage;
-import javax.imageio.spi.IIORegistry;
-import javax.imageio.spi.ImageInputStreamSpi;
-import javax.imageio.spi.ImageOutputStreamSpi;
-import javax.imageio.spi.ImageReaderSpi;
-import javax.imageio.spi.ImageReaderWriterSpi;
-import javax.imageio.spi.ImageWriterSpi;
-import javax.imageio.spi.ServiceRegistry;
-import javax.imageio.stream.ImageInputStream;
-import javax.imageio.stream.ImageOutputStream;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.harmony.luni.util.NotImplementedException;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import javax.imageio.spi.*;
+import javax.imageio.stream.ImageInputStream;
+import javax.imageio.stream.ImageOutputStream;
+import java.awt.image.BufferedImage;
+import java.awt.image.RenderedImage;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
@@ -48,29 +42,30 @@ import java.util.List;
 public final class ImageIO {
 
     private static final IIORegistry registry = IIORegistry.getDefaultInstance();
-    private static final Cache cacheInfo =  new Cache();
-    
-    private ImageIO() {}
-    
+    private static final Cache cacheInfo = new Cache();
+
+    private ImageIO() {
+    }
+
 
     public static void scanForPlugins() {
         registry.registerApplicationClasspathSpis();
-    }
-
-    public static void setUseCache(boolean useCache) {
-        cacheInfo.setUseCache(useCache);
     }
 
     public static boolean getUseCache() {
         return cacheInfo.getUseCache();
     }
 
-    public static void setCacheDirectory(File cacheDirectory) {
-        cacheInfo.setCacheDirectory(cacheDirectory);
+    public static void setUseCache(boolean useCache) {
+        cacheInfo.setUseCache(useCache);
     }
 
     public static File getCacheDirectory() {
         return cacheInfo.getCacheDirectory();
+    }
+
+    public static void setCacheDirectory(File cacheDirectory) {
+        cacheInfo.setCacheDirectory(cacheDirectory);
     }
 
     public static ImageInputStream createImageInputStream(Object input)
@@ -86,8 +81,8 @@ public final class ImageIO {
             ImageInputStreamSpi spi = it.next();
             if (spi.getInputClass().isInstance(input)) {
                 return getUseCache() ?
-                		spi.createInputStreamInstance(input, true, getCacheDirectory()) :
-                		spi.createInputStreamInstance(input);
+                        spi.createInputStreamInstance(input, true, getCacheDirectory()) :
+                        spi.createInputStreamInstance(input);
             }
         }
         return null;
@@ -104,9 +99,9 @@ public final class ImageIO {
         while (it.hasNext()) {
             ImageOutputStreamSpi spi = it.next();
             if (spi.getOutputClass().isInstance(output)) {
-            	return getUseCache() ?
-            			spi.createOutputStreamInstance(output, true, getCacheDirectory()) :
-            		    spi.createOutputStreamInstance(output);
+                return getUseCache() ?
+                        spi.createOutputStreamInstance(output, true, getCacheDirectory()) :
+                        spi.createOutputStreamInstance(output);
             }
         }
         return null;
@@ -121,7 +116,7 @@ public final class ImageIO {
             FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
         }
 
-        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
+        return (String[]) FormatNames.toArray(new String[FormatNames.size()]);
     }
 
     public static String[] getReaderMIMETypes() {
@@ -133,7 +128,7 @@ public final class ImageIO {
             MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
         }
 
-        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
+        return (String[]) MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageReader> getImageReaders(Object input) {
@@ -169,10 +164,10 @@ public final class ImageIO {
     }
 
     public static Iterator<ImageReader> getImageReadersByMIMEType(
-                    final String MIMEType) {
+            final String MIMEType) {
         return new SpiIteratorToReadersIteratorWrapper(
                 registry.getServiceProviders(ImageReaderSpi.class,
-                new MIMETypeFilter(MIMEType), true));
+                        new MIMETypeFilter(MIMEType), true));
     }
 
     public static String[] getWriterFormatNames() {
@@ -184,7 +179,7 @@ public final class ImageIO {
             FormatNames.addAll(Arrays.asList(spi.getFormatNames()));
         }
 
-        return (String[])FormatNames.toArray(new String[FormatNames.size()]);
+        return (String[]) FormatNames.toArray(new String[FormatNames.size()]);
     }
 
     public static String[] getWriterMIMETypes() {
@@ -196,7 +191,7 @@ public final class ImageIO {
             MIMETypes.addAll(Arrays.asList(spi.getMIMETypes()));
         }
 
-        return (String[])MIMETypes.toArray(new String[MIMETypes.size()]);
+        return (String[]) MIMETypes.toArray(new String[MIMETypes.size()]);
     }
 
     public static Iterator<ImageWriter> getImageWritersByFormatName(String formatName) {
@@ -220,10 +215,10 @@ public final class ImageIO {
     }
 
     public static Iterator<ImageWriter> getImageWritersByMIMEType(
-                    final String MIMEType) {
+            final String MIMEType) {
         return new SpiIteratorToWritersIteratorWrapper(
                 registry.getServiceProviders(ImageWriterSpi.class,
-                new MIMETypeFilter(MIMEType), true));
+                        new MIMETypeFilter(MIMEType), true));
     }
 
     public static ImageWriter getImageWriter(ImageReader reader) {
@@ -286,7 +281,7 @@ public final class ImageIO {
     }
 
     public static Iterator<ImageWriter> getImageWriters(ImageTypeSpecifier type,
-                                           String formatName) {
+                                                        String formatName) {
         if (type == null) {
             throw new NullPointerException(Messages.getString("imageio.51"));
         }
@@ -302,7 +297,7 @@ public final class ImageIO {
     }
 
     public static Iterator<ImageTranscoder> getImageTranscoders(ImageReader reader,
-                                               ImageWriter writer) throws NotImplementedException {
+                                                                ImageWriter writer) throws NotImplementedException {
         // TODO: implement
         throw new NotImplementedException();
     }
@@ -329,13 +324,13 @@ public final class ImageIO {
 				throw new IOException(e);
 			}
         }*/
-        	
+
         try {
-			return Imaging.getBufferedImage(input);
-		} catch (ImageReadException e) {
-			// TODO Auto-generated catch block
-			throw new IOException(e);
-		}
+            return Imaging.getBufferedImage(input);
+        } catch (ImageReadException e) {
+            // TODO Auto-generated catch block
+            throw new IOException(e);
+        }
         
 /*        ImageInputStream stream = createImageInputStream(input);
         return read(stream);*/
@@ -345,13 +340,13 @@ public final class ImageIO {
         if (input == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.52"));
         }
-        
+
         try {
-			return Imaging.getBufferedImage(input);
-		} catch (ImageReadException e) {
-			// TODO Auto-generated catch block
-			throw new IOException(e);
-		}
+            return Imaging.getBufferedImage(input);
+        } catch (ImageReadException e) {
+            // TODO Auto-generated catch block
+            throw new IOException(e);
+        }
         //ImageParser parser=new getBufferedImage
 /*        PngImageParser parser = new PngImageParser();
         try {
@@ -369,7 +364,7 @@ public final class ImageIO {
         InputStream stream = input.openStream();
         BufferedImage res = read(stream);
         stream.close();
-        
+
         return res;
     }
 
@@ -393,7 +388,7 @@ public final class ImageIO {
         } catch (IOException e) {
             // Stream could be already closed, proceed silently in this case
         }
-        
+
         return res;
     }
 
@@ -459,42 +454,42 @@ public final class ImageIO {
     }
 
     private static class Cache {
-    	// we can't use a cache in AppEngine
+        // we can't use a cache in AppEngine
         private boolean useCache = false;
         private File cacheDirectory = null;
-        
+
         public Cache() {
         }
-    	
+
         public File getCacheDirectory() {
             return cacheDirectory;
         }
-    	
+
         public void setCacheDirectory(File cacheDirectory) {
             if ((cacheDirectory != null) && (!cacheDirectory.isDirectory())) {
                 throw new IllegalArgumentException(Messages.getString("imageio.0B"));
             }
-            
+
             SecurityManager security = System.getSecurityManager();
             if (security != null) {
                 String filepath;
-                
+
                 if (cacheDirectory == null) {
                     filepath = System.getProperty("java.io.tmpdir");
                 } else {
                     filepath = cacheDirectory.getPath();
                 }
-                
+
                 security.checkWrite(filepath);
             }
-            
+
             this.cacheDirectory = cacheDirectory;
         }
-        
+
         public boolean getUseCache() {
             return useCache;
         }
-        
+
         public void setUseCache(boolean useCache) {
             this.useCache = useCache;
         }
@@ -561,7 +556,7 @@ public final class ImageIO {
             if (mimeType == null) {
                 throw new NullPointerException(Messages.getString("imageio.55"));
             }
-            
+
             this.mimeType = mimeType;
         }
 

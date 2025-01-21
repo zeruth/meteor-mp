@@ -16,25 +16,14 @@
  */
 package org.apache.commons.imaging.formats.rgbe;
 
-import java.awt.Dimension;
-import java.awt.Point;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.BandedSampleModel;
-import java.awt.image.BufferedImage;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferFloat;
-import java.awt.image.Raster;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -42,7 +31,7 @@ import java.util.Map;
 
 /**
  * Parser for Radiance HDR images
- * 
+ *
  * @author <a href="mailto:peter@electrotank.com">peter royal</a>
  */
 public class RgbeImageParser extends ImageParser {
@@ -63,12 +52,12 @@ public class RgbeImageParser extends ImageParser {
 
     @Override
     protected String[] getAcceptedExtensions() {
-        return new String[] { ".hdr", ".pic" };
+        return new String[]{".hdr", ".pic"};
     }
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.RGBE };
+        return new ImageFormat[]{ImageFormats.RGBE};
     }
 
     @Override

@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
 
 /**
  * Alias Sketchbook Pro multi-layer TIFF
@@ -34,6 +34,6 @@ public interface AliasSketchbookProTagConstants {
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
 
     List<TagInfo> ALL_ALIAS_SKETCHBOOK_PRO_TAGS =
-            Collections.unmodifiableList(Arrays.asList(new TagInfo[] {
+            Collections.unmodifiableList(Arrays.asList(new TagInfo[]{
                     EXIF_TAG_ALIAS_LAYER_METADATA}));
 }

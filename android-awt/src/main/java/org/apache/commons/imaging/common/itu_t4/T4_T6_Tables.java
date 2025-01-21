@@ -81,7 +81,7 @@ class T4_T6_Tables {
             new Entry("01001011", 60),
             new Entry("00110010", 61),
             new Entry("00110011", 62),
-            new Entry("00110100", 63), };
+            new Entry("00110100", 63),};
 
     public static final Entry[] BLACK_TERMINATING_CODES = {
             new Entry("0000110111", 0),
@@ -147,7 +147,7 @@ class T4_T6_Tables {
             new Entry("000000101100", 60),
             new Entry("000001011010", 61),
             new Entry("000001100110", 62),
-            new Entry("000001100111", 63), };
+            new Entry("000001100111", 63),};
 
     public static final Entry[] WHITE_MAKE_UP_CODES = {
             new Entry("11011", 64),
@@ -176,7 +176,7 @@ class T4_T6_Tables {
             new Entry("010011001", 1536),
             new Entry("010011010", 1600),
             new Entry("011000", 1664),
-            new Entry("010011011", 1728), };
+            new Entry("010011011", 1728),};
 
     public static final Entry[] BLACK_MAKE_UP_CODES = {
             new Entry("0000001111", 64),
@@ -205,7 +205,7 @@ class T4_T6_Tables {
             new Entry("0000001011010", 1536),
             new Entry("0000001011011", 1600),
             new Entry("0000001100100", 1664),
-            new Entry("0000001100101", 1728), };
+            new Entry("0000001100101", 1728),};
 
     public static final Entry[] ADDITIONAL_MAKE_UP_CODES = {
             new Entry("00000001000", 1792),
@@ -220,7 +220,7 @@ class T4_T6_Tables {
             new Entry("000000011100", 2368),
             new Entry("000000011101", 2432),
             new Entry("000000011110", 2496),
-            new Entry("000000011111", 2560), };
+            new Entry("000000011111", 2560),};
 
     public static final Entry EOL = new Entry("000000000001", 0);
     public static final Entry EOL13 = new Entry("0000000000001", 0);
@@ -239,7 +239,7 @@ class T4_T6_Tables {
     public static final Entry VL1 = new Entry("010", 0);
     public static final Entry VL2 = new Entry("000010", 0);
     public static final Entry VL3 = new Entry("0000010", 0);
-    
+
     public static class Entry {
         String bitString;
         Integer value;

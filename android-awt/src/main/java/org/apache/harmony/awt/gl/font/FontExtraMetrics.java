@@ -16,7 +16,6 @@
  */
 /**
  * @author Ilya S. Okomin
- * 
  */
 package org.apache.harmony.awt.gl.font;
 
@@ -24,8 +23,8 @@ package org.apache.harmony.awt.gl.font;
  * Extra font metrics: sub/superscripts sizes, offsets, average char width.
  */
 public class FontExtraMetrics {
-    
-    /* !! Subscript/superscript metrics are undefined for Type1. As a possible 
+
+    /* !! Subscript/superscript metrics are undefined for Type1. As a possible
      * solution we can use values for Type1, that are proportionate to TrueType
      * ones:
      *  SubscriptSizeX == 0.7 * fontSize
@@ -36,14 +35,14 @@ public class FontExtraMetrics {
      *  SuperscriptSizeY == 0.65 * fontSize
      *  SuperscriptOffsetX == 0;
      *  SuperscriptOffsetY == 0.45 * fontSize
-     *  
+     *
      */
-    
+
     /*
      * The average width of characters in the font.
      */
     private float lAverageCharWidth;
-    
+
     /*
      * Horizontal size for subscripts.
      */
@@ -52,47 +51,47 @@ public class FontExtraMetrics {
     /*
      * Vertical size for subscripts.
      */
-    private float lSubscriptSizeY; 
-    
-    /*
-     * Horizontal offset for subscripts, the offset from the character origin 
-     * to the origin of the subscript character.
-     */
-    private float lSubscriptOffsetX; 
+    private float lSubscriptSizeY;
 
     /*
-     * Vertical offset for subscripts, the offset from the character origin 
+     * Horizontal offset for subscripts, the offset from the character origin
+     * to the origin of the subscript character.
+     */
+    private float lSubscriptOffsetX;
+
+    /*
+     * Vertical offset for subscripts, the offset from the character origin
      * to the origin of the subscript character.
      */
     private float lSubscriptOffsetY;
-    
+
     /*
      * Horizontal size for superscripts.
      */
-    private float lSuperscriptSizeX; 
+    private float lSuperscriptSizeX;
 
     /*
      * Vertical size for superscripts.
      */
     private float lSuperscriptSizeY;
-    
+
     /*
-     * Horizontal offset for superscripts, the offset from the character 
+     * Horizontal offset for superscripts, the offset from the character
      * base line to the base line of the superscript character.
      */
     private float lSuperscriptOffsetX;
 
     /*
-     * Vertical offset for superscripts, the offset from the character 
+     * Vertical offset for superscripts, the offset from the character
      * base line to the base line of the superscript character.
      */
     private float lSuperscriptOffsetY;
-    
-    public FontExtraMetrics(){
+
+    public FontExtraMetrics() {
         // default constructor
     }
 
-    public FontExtraMetrics(float[] metrics){
+    public FontExtraMetrics(float[] metrics) {
         lAverageCharWidth = metrics[0];
         lSubscriptSizeX = metrics[1];
         lSubscriptSizeY = metrics[2];
@@ -104,41 +103,41 @@ public class FontExtraMetrics {
         lSuperscriptOffsetY = metrics[8];
     }
 
-    public float getAverageCharWidth(){
+    public float getAverageCharWidth() {
         return lAverageCharWidth;
     }
-    
-    public float getSubscriptSizeX(){
+
+    public float getSubscriptSizeX() {
         return lSubscriptSizeX;
     }
 
-    public float getSubscriptSizeY(){
+    public float getSubscriptSizeY() {
         return lSubscriptSizeY;
     }
 
-    public float getSubscriptOffsetX(){
+    public float getSubscriptOffsetX() {
         return lSubscriptOffsetX;
     }
 
-    public float getSubscriptOffsetY(){
+    public float getSubscriptOffsetY() {
         return lSubscriptOffsetY;
     }
 
-    public float getSuperscriptSizeX(){
+    public float getSuperscriptSizeX() {
         return lSuperscriptSizeX;
     }
 
-    public float getSuperscriptSizeY(){
+    public float getSuperscriptSizeY() {
         return lSuperscriptSizeY;
     }
 
-    public float getSuperscriptOffsetX(){
+    public float getSuperscriptOffsetX() {
         return lSuperscriptOffsetX;
     }
 
-    public float getSuperscriptOffsetY(){
+    public float getSuperscriptOffsetY() {
         return lSuperscriptOffsetY;
     }
-    
-    
+
+
 }

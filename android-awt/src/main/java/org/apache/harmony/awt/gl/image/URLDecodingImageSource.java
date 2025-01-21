@@ -34,7 +34,7 @@ public class URLDecodingImageSource extends DecodingImageSource {
 
     URL url;
 
-    public URLDecodingImageSource(URL url){
+    public URLDecodingImageSource(URL url) {
         SecurityManager security = System.getSecurityManager();
         if (security != null) {
             security.checkConnect(url.getHost(), url.getPort());
@@ -63,10 +63,10 @@ public class URLDecodingImageSource extends DecodingImageSource {
 
     @Override
     protected InputStream getInputStream() {
-        try{
+        try {
             URLConnection uc = url.openConnection();
             return new BufferedInputStream(uc.getInputStream());
-        }catch(IOException e){
+        } catch (IOException e) {
             return null;
         }
     }

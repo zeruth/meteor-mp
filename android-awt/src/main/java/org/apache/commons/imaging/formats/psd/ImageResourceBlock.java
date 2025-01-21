@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.psd;
 
-import java.io.UnsupportedEncodingException;
-
 import org.apache.commons.imaging.util.Debug;
+
+import java.io.UnsupportedEncodingException;
 
 class ImageResourceBlock {
     protected final int id;

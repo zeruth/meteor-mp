@@ -48,6 +48,22 @@ final class ICC_ProfileStub extends ICC_Profile {
         colorspace = csSpecifier;
     }
 
+    public static ICC_Profile getInstance(String fileName) throws IOException {
+        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
+    }
+
+    public static ICC_Profile getInstance(InputStream s) throws IOException {
+        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
+    }
+
+    public static ICC_Profile getInstance(byte[] data) {
+        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
+    }
+
+    public static ICC_Profile getInstance(int cspace) {
+        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
+    }
+
     @Override
     public void write(String fileName) throws IOException {
         throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
@@ -136,22 +152,6 @@ final class ICC_ProfileStub extends ICC_Profile {
             default:
                 throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
         }
-    }
-
-    public static ICC_Profile getInstance(String fileName) throws IOException {
-        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
-    }
-
-    public static ICC_Profile getInstance(InputStream s) throws IOException {
-        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
-    }
-
-    public static ICC_Profile getInstance(byte[] data) {
-        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
-    }
-
-    public static ICC_Profile getInstance(int cspace) {
-        throw new UnsupportedOperationException("Stub cannot perform this operation"); //$NON-NLS-1$
     }
 
     public ICC_Profile loadProfile() {

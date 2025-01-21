@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
+import org.apache.commons.imaging.ImageReadException;
+
 import java.io.IOException;
 import java.nio.ByteOrder;
-
-import org.apache.commons.imaging.ImageReadException;
 
 import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
@@ -36,7 +36,7 @@ class PixelParserBitFields extends PixelParserSimple {
     private final int alphaMask;
 
     private int bytecount;
-    
+
     public PixelParserBitFields(final BmpHeaderInfo bhi, final byte[] colorTable, final byte[] imageData) {
         super(bhi, colorTable, imageData);
 

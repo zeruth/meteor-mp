@@ -38,23 +38,18 @@ public abstract class DataBuffer {
 
     public static final int TYPE_UNDEFINED = 32;
 
-    protected int dataType;
-
-    protected int banks;
-
-    protected int offset;
-
-    protected int size;
-
-    protected int offsets[];
-    
-    boolean dataChanged = true;
-    boolean dataTaken = false;
-    DataBufferListener listener;
-
     static {
         AwtImageBackdoorAccessorImpl.init();
     }
+
+    protected int dataType;
+    protected int banks;
+    protected int offset;
+    protected int size;
+    protected int offsets[];
+    boolean dataChanged = true;
+    boolean dataTaken = false;
+    DataBufferListener listener;
 
     protected DataBuffer(int dataType, int size, int numBanks, int[] offsets) {
         this.dataType = dataType;
@@ -90,6 +85,29 @@ public abstract class DataBuffer {
         this.banks = 1;
         this.offset = 0;
         this.offsets = new int[1];
+    }
+
+    public static int getDataTypeSize(int type) {
+        switch (type) {
+
+            case TYPE_BYTE:
+                return 8;
+
+            case TYPE_USHORT:
+            case TYPE_SHORT:
+                return 16;
+
+            case TYPE_INT:
+            case TYPE_FLOAT:
+                return 32;
+
+            case TYPE_DOUBLE:
+                return 64;
+
+            default:
+                // awt.22C=Unknown data type {0}
+                throw new IllegalArgumentException(Messages.getString("awt.22C", type)); //$NON-NLS-1$
+        }
     }
 
     public abstract void setElem(int bank, int i, int val);
@@ -156,61 +174,38 @@ public abstract class DataBuffer {
         return this.dataType;
     }
 
-    public static int getDataTypeSize(int type) {
-        switch (type) {
-
-        case TYPE_BYTE:
-            return 8;
-
-        case TYPE_USHORT:
-        case TYPE_SHORT:
-            return 16;
-
-        case TYPE_INT:
-        case TYPE_FLOAT:
-            return 32;
-
-        case TYPE_DOUBLE:
-            return 64;
-
-        default:
-            // awt.22C=Unknown data type {0}
-            throw new IllegalArgumentException(Messages.getString("awt.22C", type)); //$NON-NLS-1$
-        }
-    }
-    
-    void notifyChanged(){
-        if(listener != null && !dataChanged){
+    void notifyChanged() {
+        if (listener != null && !dataChanged) {
             dataChanged = true;
             listener.dataChanged();
         }
     }
-    
-    void notifyTaken(){
-        if(listener != null && !dataTaken){
+
+    void notifyTaken() {
+        if (listener != null && !dataTaken) {
             dataTaken = true;
             listener.dataTaken();
         }
     }
-    
-    void releaseData(){
-        if(listener != null && dataTaken){
+
+    void releaseData() {
+        if (listener != null && dataTaken) {
             dataTaken = false;
             listener.dataReleased();
         }
     }
-    
-    void addDataBufferListener(DataBufferListener listener){
+
+    void addDataBufferListener(DataBufferListener listener) {
         this.listener = listener;
     }
-    
-    void removeDataBufferListener(){
+
+    void removeDataBufferListener() {
         listener = null;
     }
-    
-    void validate(){
+
+    void validate() {
         dataChanged = false;
     }
-    
+
 }
 

@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.formats.psd.datareaders;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
 import org.apache.commons.imaging.common.BinaryFunctions;
@@ -28,6 +27,7 @@ import org.apache.commons.imaging.formats.psd.PsdHeaderInfo;
 import org.apache.commons.imaging.formats.psd.dataparsers.DataParser;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -41,7 +41,7 @@ public class CompressedDataReader extends DataReader {
 
     @Override
     public void readData(final InputStream is, final BufferedImage bi,
-            final ImageContents imageContents, final BinaryFileParser bfp)
+                         final ImageContents imageContents, final BinaryFileParser bfp)
             throws ImageReadException, IOException {
         final PsdHeaderInfo header = imageContents.header;
         final int width = header.columns;

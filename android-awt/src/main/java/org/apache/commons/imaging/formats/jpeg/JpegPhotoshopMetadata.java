@@ -16,14 +16,14 @@
  */
 package org.apache.commons.imaging.formats.jpeg;
 
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.formats.jpeg.iptc.IptcRecord;
 import org.apache.commons.imaging.formats.jpeg.iptc.IptcTypes;
 import org.apache.commons.imaging.formats.jpeg.iptc.PhotoshopApp13Data;
 import org.apache.commons.imaging.util.Debug;
+
+import java.util.Collections;
+import java.util.List;
 
 public class JpegPhotoshopMetadata extends ImageMetadata {
 

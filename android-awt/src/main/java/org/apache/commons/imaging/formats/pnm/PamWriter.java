@@ -17,9 +17,9 @@
 
 package org.apache.commons.imaging.formats.pnm;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -28,15 +28,15 @@ class PamWriter extends PnmWriter {
     public PamWriter() {
         super(true);
     }
-    
+
     @Override
     public void writeImage(final BufferedImage src, final OutputStream os,
-            final Map<String, Object> params) throws ImageWriteException, IOException {
+                           final Map<String, Object> params) throws ImageWriteException, IOException {
 
         os.write(PnmConstants.PNM_PREFIX_BYTE);
         os.write(PnmConstants.PAM_RAW_CODE);
         os.write(PnmConstants.PNM_NEWLINE);
-        
+
         final int width = src.getWidth();
         final int height = src.getHeight();
 
@@ -45,19 +45,19 @@ class PamWriter extends PnmWriter {
 
         os.write(("HEIGHT " + height).getBytes("US-ASCII"));
         os.write(PnmConstants.PNM_NEWLINE);
-        
+
         os.write(("DEPTH 4").getBytes("US-ASCII"));
         os.write(PnmConstants.PNM_NEWLINE);
-        
+
         os.write(("MAXVAL 255").getBytes("US-ASCII"));
         os.write(PnmConstants.PNM_NEWLINE);
 
         os.write(("TUPLTYPE RGB_ALPHA").getBytes("US-ASCII"));
         os.write(PnmConstants.PNM_NEWLINE);
-        
+
         os.write(("ENDHDR").getBytes("US-ASCII"));
         os.write(PnmConstants.PNM_NEWLINE);
-        
+
         for (int y = 0; y < height; y++) {
             for (int x = 0; x < width; x++) {
                 final int argb = src.getRGB(x, y);

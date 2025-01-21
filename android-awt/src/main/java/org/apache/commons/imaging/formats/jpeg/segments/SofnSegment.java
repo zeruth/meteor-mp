@@ -16,13 +16,14 @@
  */
 package org.apache.commons.imaging.formats.jpeg.segments;
 
+import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.imaging.formats.jpeg.JpegConstants;
-
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 public class SofnSegment extends Segment {
     public final int width;
@@ -30,21 +31,6 @@ public class SofnSegment extends Segment {
     public final int numberOfComponents;
     public final int precision;
     private final Component[] components;
-
-    public static class Component {
-        public final int componentIdentifier;
-        public final int horizontalSamplingFactor;
-        public final int verticalSamplingFactor;
-        public final int quantTabDestSelector;
-
-        public Component(final int componentIdentifier, final int horizontalSamplingFactor,
-                final int veritcalSamplingFactor, final int quantTabDestSelector) {
-            this.componentIdentifier = componentIdentifier;
-            this.horizontalSamplingFactor = horizontalSamplingFactor;
-            this.verticalSamplingFactor = veritcalSamplingFactor;
-            this.quantTabDestSelector = quantTabDestSelector;
-        }
-    }
 
     public SofnSegment(final int marker, final byte[] segmentData) throws IOException {
         this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
@@ -83,29 +69,45 @@ public class SofnSegment extends Segment {
             System.out.println("");
         }
     }
-    
+
     /**
      * Returns a copy of all the components.
+     *
      * @return the components
      */
     public Component[] getComponents() {
         return components.clone();
     }
-    
+
     /**
      * Returns the component at the specified index.
+     *
      * @param index the array index
      * @return the component
      */
     public Component getComponents(final int index) {
         return components[index];
     }
-    
 
     @Override
     public String getDescription() {
         return "SOFN (SOF" + (marker - JpegConstants.SOF0_MARKER) + ") ("
                 + getSegmentType() + ")";
+    }
+
+    public static class Component {
+        public final int componentIdentifier;
+        public final int horizontalSamplingFactor;
+        public final int verticalSamplingFactor;
+        public final int quantTabDestSelector;
+
+        public Component(final int componentIdentifier, final int horizontalSamplingFactor,
+                         final int veritcalSamplingFactor, final int quantTabDestSelector) {
+            this.componentIdentifier = componentIdentifier;
+            this.horizontalSamplingFactor = horizontalSamplingFactor;
+            this.verticalSamplingFactor = veritcalSamplingFactor;
+            this.quantTabDestSelector = quantTabDestSelector;
+        }
     }
 
 }

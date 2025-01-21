@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.ImageInfo;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 class PbmFileInfo extends FileInfo {
     private int bitcache;
@@ -30,7 +30,7 @@ class PbmFileInfo extends FileInfo {
     public PbmFileInfo(final int width, final int height, final boolean rawbits) {
         super(width, height, rawbits);
     }
-    
+
     @Override
     public boolean hasAlpha() {
         return false;

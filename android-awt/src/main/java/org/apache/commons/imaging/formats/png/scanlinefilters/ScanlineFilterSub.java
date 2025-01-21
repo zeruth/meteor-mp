@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.png.scanlinefilters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
+
+import java.io.IOException;
 
 public class ScanlineFilterSub extends ScanlineFilter {
     private final int bytesPerPixel;
@@ -34,7 +34,7 @@ public class ScanlineFilterSub extends ScanlineFilter {
             final int prevIndex = i - bytesPerPixel;
             if (prevIndex >= 0) {
                 dst[i] = (byte) ((src[i] + dst[prevIndex]) % 256);
-            // dst[i] = 0xff & (src[i] + src[prevIndex]);
+                // dst[i] = 0xff & (src[i] + src[prevIndex]);
             } else {
                 dst[i] = src[i];
             }

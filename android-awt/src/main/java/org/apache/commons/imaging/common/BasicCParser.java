@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,18 +15,14 @@
 
 package org.apache.commons.imaging.common;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PushbackInputStream;
-import java.util.Map;
-
 import org.apache.commons.imaging.ImageReadException;
+
+import java.io.*;
+import java.util.Map;
 
 /**
  * A rudimentary preprocessor and parser for the C programming
- * language. 
+ * language.
  */
 public class BasicCParser {
     private final PushbackInputStream is;
@@ -35,71 +31,8 @@ public class BasicCParser {
         this.is = new PushbackInputStream(is);
     }
 
-    public String nextToken() throws IOException, ImageReadException {
-        // I don't know how complete the C parsing in an XPM file
-        // is meant to be, this is just the very basics...
-
-        boolean inString = false;
-        boolean inIdentifier = false;
-        boolean hadBackSlash = false;
-        final StringBuilder token = new StringBuilder();
-        for (int c = is.read(); c != -1; c = is.read()) {
-            if (inString) {
-                if (c == '\\') {
-                    token.append('\\');
-                    hadBackSlash = !hadBackSlash;
-                } else if (c == '"') {
-                    token.append('"');
-                    if (!hadBackSlash) {
-                        return token.toString();
-                    }
-                    hadBackSlash = false;
-                } else if (c == '\r' || c == '\n') {
-                    throw new ImageReadException(
-                            "Unterminated string in XPM file");
-                } else {
-                    token.append((char) c);
-                    hadBackSlash = false;
-                }
-            } else if (inIdentifier) {
-                if (Character.isLetterOrDigit(c) || c == '_') {
-                    token.append((char) c);
-                } else {
-                    is.unread(c);
-                    return token.toString();
-                }
-            } else {
-                if (c == '"') {
-                    token.append('"');
-                    inString = true;
-                } else if (Character.isLetterOrDigit(c) || c == '_') {
-                    token.append((char) c);
-                    inIdentifier = true;
-                } else if (c == '{' || c == '}' || c == '[' || c == ']'
-                        || c == '*' || c == ';' || c == '=' || c == ',') {
-                    token.append((char) c);
-                    return token.toString();
-                } else if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
-                    // ignore
-                } else {
-                    throw new ImageReadException(
-                            "Unhandled/invalid character '" + ((char) c)
-                                    + "' found in XPM file");
-                }
-            }
-        }
-
-        if (inIdentifier) {
-            return token.toString();
-        }
-        if (inString) {
-            throw new ImageReadException("Unterminated string ends XMP file");
-        }
-        return null;
-    }
-
     public static ByteArrayOutputStream preprocess(final InputStream is,
-            final StringBuilder firstComment, final Map<String, String> defines)
+                                                   final StringBuilder firstComment, final Map<String, String> defines)
             throws IOException, ImageReadException {
         boolean inSingleQuotes = false;
         boolean inString = false;
@@ -197,7 +130,7 @@ public class BasicCParser {
                         throw new ImageReadException("Bad preprocessor directive");
                     }
                     if (!tokens[0].equals("define")) {
-                        throw new ImageReadException("Invalid/unsupported " 
+                        throw new ImageReadException("Invalid/unsupported "
                                 + "preprocessor directive '" + tokens[0] + "'");
                     }
                     defines.put(tokens[1], (tokens.length == 3) ? tokens[2]
@@ -375,5 +308,68 @@ public class BasicCParser {
             throw new ImageReadException("Parsing XPM file failed, "
                     + "unterminated escape sequence found in string");
         }
+    }
+
+    public String nextToken() throws IOException, ImageReadException {
+        // I don't know how complete the C parsing in an XPM file
+        // is meant to be, this is just the very basics...
+
+        boolean inString = false;
+        boolean inIdentifier = false;
+        boolean hadBackSlash = false;
+        final StringBuilder token = new StringBuilder();
+        for (int c = is.read(); c != -1; c = is.read()) {
+            if (inString) {
+                if (c == '\\') {
+                    token.append('\\');
+                    hadBackSlash = !hadBackSlash;
+                } else if (c == '"') {
+                    token.append('"');
+                    if (!hadBackSlash) {
+                        return token.toString();
+                    }
+                    hadBackSlash = false;
+                } else if (c == '\r' || c == '\n') {
+                    throw new ImageReadException(
+                            "Unterminated string in XPM file");
+                } else {
+                    token.append((char) c);
+                    hadBackSlash = false;
+                }
+            } else if (inIdentifier) {
+                if (Character.isLetterOrDigit(c) || c == '_') {
+                    token.append((char) c);
+                } else {
+                    is.unread(c);
+                    return token.toString();
+                }
+            } else {
+                if (c == '"') {
+                    token.append('"');
+                    inString = true;
+                } else if (Character.isLetterOrDigit(c) || c == '_') {
+                    token.append((char) c);
+                    inIdentifier = true;
+                } else if (c == '{' || c == '}' || c == '[' || c == ']'
+                        || c == '*' || c == ';' || c == '=' || c == ',') {
+                    token.append((char) c);
+                    return token.toString();
+                } else if (c == ' ' || c == '\t' || c == '\r' || c == '\n') {
+                    // ignore
+                } else {
+                    throw new ImageReadException(
+                            "Unhandled/invalid character '" + ((char) c)
+                                    + "' found in XPM file");
+                }
+            }
+        }
+
+        if (inIdentifier) {
+            return token.toString();
+        }
+        if (inString) {
+            throw new ImageReadException("Unterminated string ends XMP file");
+        }
+        return null;
     }
 }

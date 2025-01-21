@@ -28,7 +28,6 @@ package java.awt.geom.impl;
 import java.awt.geom.PathIterator;
 import java.awt.geom.QuadCurve2D;
 import java.awt.geom.Rectangle2D;
-
 import java.util.Vector;
 
 /*import org.openawt.geom.PathIterator;
@@ -58,14 +57,51 @@ final class Order3 extends Curve {
     private double ycoeff1;
     private double ycoeff2;
     private double ycoeff3;
+    private double TforY1;
+    private double YforT1;
+    private double TforY2;
+    private double YforT2;
+    private double TforY3;
+    private double YforT3;
+
+    public Order3(double x0, double y0,
+                  double cx0, double cy0,
+                  double cx1, double cy1,
+                  double x1, double y1,
+                  int direction) {
+        super(direction);
+        // REMIND: Better accuracy in the root finding methods would
+        //  ensure that cys are in range.  As it stands, they are never
+        //  more than "1 mantissa bit" out of range...
+        if (cy0 < y0) cy0 = y0;
+        if (cy1 > y1) cy1 = y1;
+        this.x0 = x0;
+        this.y0 = y0;
+        this.cx0 = cx0;
+        this.cy0 = cy0;
+        this.cx1 = cx1;
+        this.cy1 = cy1;
+        this.x1 = x1;
+        this.y1 = y1;
+        xmin = Math.min(Math.min(x0, x1), Math.min(cx0, cx1));
+        xmax = Math.max(Math.max(x0, x1), Math.max(cx0, cx1));
+        xcoeff0 = x0;
+        xcoeff1 = (cx0 - x0) * 3.0;
+        xcoeff2 = (cx1 - cx0 - cx0 + x0) * 3.0;
+        xcoeff3 = x1 - (cx1 - cx0) * 3.0 - x0;
+        ycoeff0 = y0;
+        ycoeff1 = (cy0 - y0) * 3.0;
+        ycoeff2 = (cy1 - cy0 - cy0 + y0) * 3.0;
+        ycoeff3 = y1 - (cy1 - cy0) * 3.0 - y0;
+        YforT1 = YforT2 = YforT3 = y0;
+    }
 
     public static void insert(Vector curves, double tmp[],
                               double x0, double y0,
                               double cx0, double cy0,
                               double cx1, double cy1,
                               double x1, double y1,
-                              int direction)
-    {
+                              int direction) {
         int numparams = getHorizontalParams(y0, cy0, cy1, y1, tmp);
         if (numparams == 0) {
             // We are using addInstance here to avoid inserting horisontal
@@ -74,10 +110,14 @@ final class Order3 extends Curve {
             return;
         }
         // Store coordinates for splitting at tmp[3..10]
-        tmp[3] = x0;  tmp[4]  = y0;
-        tmp[5] = cx0; tmp[6]  = cy0;
-        tmp[7] = cx1; tmp[8]  = cy1;
-        tmp[9] = x1;  tmp[10] = y1;
+        tmp[3] = x0;
+        tmp[4] = y0;
+        tmp[5] = cx0;
+        tmp[6] = cy0;
+        tmp[7] = cx1;
+        tmp[8] = cy1;
+        tmp[9] = x1;
+        tmp[10] = y1;
         double t = tmp[0];
         if (numparams > 1 && t > tmp[1]) {
             // Perform a "2 element sort"...
@@ -97,11 +137,11 @@ final class Order3 extends Curve {
         }
         while (numparams >= 0) {
             addInstance(curves,
-                        tmp[index + 0], tmp[index + 1],
-                        tmp[index + 2], tmp[index + 3],
-                        tmp[index + 4], tmp[index + 5],
-                        tmp[index + 6], tmp[index + 7],
-                        direction);
+                    tmp[index + 0], tmp[index + 1],
+                    tmp[index + 2], tmp[index + 3],
+                    tmp[index + 4], tmp[index + 5],
+                    tmp[index + 6], tmp[index + 7],
+                    direction);
             numparams--;
             if (direction == INCREASING) {
                 index += 6;
@@ -119,10 +159,10 @@ final class Order3 extends Curve {
                                    int direction) {
         if (y0 > y1) {
             curves.add(new Order3(x1, y1, cx1, cy1, cx0, cy0, x0, y0,
-                                  -direction));
+                    -direction));
         } else if (y1 > y0) {
             curves.add(new Order3(x0, y0, cx0, cy0, cx1, cy1, x1, y1,
-                                  direction));
+                    direction));
         }
     }
 
@@ -199,16 +239,16 @@ final class Order3 extends Curve {
      */
     public static void split(double coords[], int pos, double t) {
         double x0, y0, cx0, cy0, cx1, cy1, x1, y1;
-        coords[pos+12] = x1 = coords[pos+6];
-        coords[pos+13] = y1 = coords[pos+7];
-        cx1 = coords[pos+4];
-        cy1 = coords[pos+5];
+        coords[pos + 12] = x1 = coords[pos + 6];
+        coords[pos + 13] = y1 = coords[pos + 7];
+        cx1 = coords[pos + 4];
+        cy1 = coords[pos + 5];
         x1 = cx1 + (x1 - cx1) * t;
         y1 = cy1 + (y1 - cy1) * t;
-        x0 = coords[pos+0];
-        y0 = coords[pos+1];
-        cx0 = coords[pos+2];
-        cy0 = coords[pos+3];
+        x0 = coords[pos + 0];
+        y0 = coords[pos + 1];
+        cx0 = coords[pos + 2];
+        cy0 = coords[pos + 3];
         x0 = x0 + (cx0 - x0) * t;
         y0 = y0 + (cy0 - y0) * t;
         cx0 = cx0 + (cx1 - cx0) * t;
@@ -217,49 +257,16 @@ final class Order3 extends Curve {
         cy1 = cy0 + (y1 - cy0) * t;
         cx0 = x0 + (cx0 - x0) * t;
         cy0 = y0 + (cy0 - y0) * t;
-        coords[pos+2] = x0;
-        coords[pos+3] = y0;
-        coords[pos+4] = cx0;
-        coords[pos+5] = cy0;
-        coords[pos+6] = cx0 + (cx1 - cx0) * t;
-        coords[pos+7] = cy0 + (cy1 - cy0) * t;
-        coords[pos+8] = cx1;
-        coords[pos+9] = cy1;
-        coords[pos+10] = x1;
-        coords[pos+11] = y1;
-    }
-
-    public Order3(double x0, double y0,
-                  double cx0, double cy0,
-                  double cx1, double cy1,
-                  double x1, double y1,
-                  int direction)
-    {
-        super(direction);
-        // REMIND: Better accuracy in the root finding methods would
-        //  ensure that cys are in range.  As it stands, they are never
-        //  more than "1 mantissa bit" out of range...
-        if (cy0 < y0) cy0 = y0;
-        if (cy1 > y1) cy1 = y1;
-        this.x0 = x0;
-        this.y0 = y0;
-        this.cx0 = cx0;
-        this.cy0 = cy0;
-        this.cx1 = cx1;
-        this.cy1 = cy1;
-        this.x1 = x1;
-        this.y1 = y1;
-        xmin = Math.min(Math.min(x0, x1), Math.min(cx0, cx1));
-        xmax = Math.max(Math.max(x0, x1), Math.max(cx0, cx1));
-        xcoeff0 = x0;
-        xcoeff1 = (cx0 - x0) * 3.0;
-        xcoeff2 = (cx1 - cx0 - cx0 + x0) * 3.0;
-        xcoeff3 = x1 - (cx1 - cx0) * 3.0 - x0;
-        ycoeff0 = y0;
-        ycoeff1 = (cy0 - y0) * 3.0;
-        ycoeff2 = (cy1 - cy0 - cy0 + y0) * 3.0;
-        ycoeff3 = y1 - (cy1 - cy0) * 3.0 - y0;
-        YforT1 = YforT2 = YforT3 = y0;
+        coords[pos + 2] = x0;
+        coords[pos + 3] = y0;
+        coords[pos + 4] = cx0;
+        coords[pos + 5] = cy0;
+        coords[pos + 6] = cx0 + (cx1 - cx0) * t;
+        coords[pos + 7] = cy0 + (cy1 - cy0) * t;
+        coords[pos + 8] = cx1;
+        coords[pos + 9] = cy1;
+        coords[pos + 10] = x1;
+        coords[pos + 11] = y1;
     }
 
     public int getOrder() {
@@ -322,13 +329,6 @@ final class Order3 extends Curve {
         return (direction == DECREASING) ? y0 : y1;
     }
 
-    private double TforY1;
-    private double YforT1;
-    private double TforY2;
-    private double YforT2;
-    private double TforY3;
-    private double YforT3;
-
     /*
      * Solve the cubic whose coefficients are in the a,b,c,d fields and
      * return the first root in the range [0, 1].
@@ -363,11 +363,11 @@ final class Order3 extends Curve {
             t = refine(a, b, c, y, Q * Math.cos(theta / 3.0) - a_3);
             if (t < 0) {
                 t = refine(a, b, c, y,
-                           Q * Math.cos((theta + Math.PI * 2.0)/ 3.0) - a_3);
+                        Q * Math.cos((theta + Math.PI * 2.0) / 3.0) - a_3);
             }
             if (t < 0) {
                 t = refine(a, b, c, y,
-                           Q * Math.cos((theta - Math.PI * 2.0)/ 3.0) - a_3);
+                        Q * Math.cos((theta - Math.PI * 2.0) / 3.0) - a_3);
             }
         } else {
             boolean neg = (R < 0.0);
@@ -413,8 +413,7 @@ final class Order3 extends Curve {
     }
 
     public double refine(double a, double b, double c,
-                         double target, double t)
-    {
+                         double target, double t) {
         if (t < -0.1 || t > 1.1) {
             return -1;
         }
@@ -466,20 +465,19 @@ final class Order3 extends Curve {
             long ydiff = diffbits(y, origy);
             long yerr = diffbits(y, target);
             if (yerr > 0 || (verbose && tdiff > 0)) {
-                System.out.println("target was y = "+target);
-                System.out.println("original was y = "+origy+", t = "+origt);
-                System.out.println("final was y = "+y+", t = "+t);
-                System.out.println("t diff is "+tdiff);
-                System.out.println("y diff is "+ydiff);
-                System.out.println("y error is "+yerr);
+                System.out.println("target was y = " + target);
+                System.out.println("original was y = " + origy + ", t = " + origt);
+                System.out.println("final was y = " + y + ", t = " + t);
+                System.out.println("t diff is " + tdiff);
+                System.out.println("y diff is " + ydiff);
+                System.out.println("y error is " + yerr);
                 double tlow = prev(t);
                 double ylow = YforT(tlow);
                 double thi = next(t);
                 double yhi = YforT(thi);
                 if (Math.abs(target - ylow) < Math.abs(target - y) ||
-                    Math.abs(target - yhi) < Math.abs(target - y))
-                {
-                    System.out.println("adjacent y's = ["+ylow+", "+yhi+"]");
+                        Math.abs(target - yhi) < Math.abs(target - y)) {
+                    System.out.println("adjacent y's = [" + ylow + ", " + yhi + "]");
                 }
             }
         }
@@ -506,31 +504,31 @@ final class Order3 extends Curve {
 
     public double dXforT(double t, int deriv) {
         switch (deriv) {
-        case 0:
-            return (((xcoeff3 * t) + xcoeff2) * t + xcoeff1) * t + xcoeff0;
-        case 1:
-            return ((3 * xcoeff3 * t) + 2 * xcoeff2) * t + xcoeff1;
-        case 2:
-            return (6 * xcoeff3 * t) + 2 * xcoeff2;
-        case 3:
-            return 6 * xcoeff3;
-        default:
-            return 0;
+            case 0:
+                return (((xcoeff3 * t) + xcoeff2) * t + xcoeff1) * t + xcoeff0;
+            case 1:
+                return ((3 * xcoeff3 * t) + 2 * xcoeff2) * t + xcoeff1;
+            case 2:
+                return (6 * xcoeff3 * t) + 2 * xcoeff2;
+            case 3:
+                return 6 * xcoeff3;
+            default:
+                return 0;
         }
     }
 
     public double dYforT(double t, int deriv) {
         switch (deriv) {
-        case 0:
-            return (((ycoeff3 * t) + ycoeff2) * t + ycoeff1) * t + ycoeff0;
-        case 1:
-            return ((3 * ycoeff3 * t) + 2 * ycoeff2) * t + ycoeff1;
-        case 2:
-            return (6 * ycoeff3 * t) + 2 * ycoeff2;
-        case 3:
-            return 6 * ycoeff3;
-        default:
-            return 0;
+            case 0:
+                return (((ycoeff3 * t) + ycoeff2) * t + ycoeff1) * t + ycoeff0;
+            case 1:
+                return ((3 * ycoeff3 * t) + 2 * ycoeff2) * t + ycoeff1;
+            case 2:
+                return (6 * ycoeff3 * t) + 2 * ycoeff2;
+            case 3:
+                return 6 * ycoeff3;
+            default:
+                return 0;
         }
     }
 
@@ -603,11 +601,11 @@ final class Order3 extends Curve {
             split(eqn, 0, t0 / t1);
             i = 6;
         }
-        return new Order3(eqn[i+0], ystart,
-                          eqn[i+2], eqn[i+3],
-                          eqn[i+4], eqn[i+5],
-                          eqn[i+6], yend,
-                          dir);
+        return new Order3(eqn[i + 0], ystart,
+                eqn[i + 2], eqn[i + 3],
+                eqn[i + 4], eqn[i + 5],
+                eqn[i + 6], yend,
+                dir);
     }
 
     public Curve getReversedCurve() {
@@ -634,7 +632,7 @@ final class Order3 extends Curve {
     }
 
     public String controlPointString() {
-        return (("("+round(getCX0())+", "+round(getCY0())+"), ")+
-                ("("+round(getCX1())+", "+round(getCY1())+"), "));
+        return (("(" + round(getCX0()) + ", " + round(getCY0()) + "), ") +
+                ("(" + round(getCX1()) + ", " + round(getCY1()) + "), "));
     }
 }

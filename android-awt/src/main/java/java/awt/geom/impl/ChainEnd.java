@@ -56,8 +56,7 @@ final class ChainEnd {
      */
     public CurveLink linkTo(ChainEnd that) {
         if (etag == AreaOp.ETAG_IGNORE ||
-            that.etag == AreaOp.ETAG_IGNORE)
-        {
+                that.etag == AreaOp.ETAG_IGNORE) {
             throw new InternalError("ChainEnd linked more than once!");
         }
         if (etag == that.etag) {

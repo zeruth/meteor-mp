@@ -112,19 +112,8 @@ class ImageResourceType {
             new ImageResourceType(8000, "Lightroom workflow, if present the document is in the middle of a Lightroom workflow"),
             new ImageResourceType(10000, "Print flags information (center crop marks, bleed width value, bleed width scale)")
     };
-
-    public static String getDescription(final int id) {
-        for (ImageResourceType type : TYPES) {
-            if (type.from <= id && id <= type.to) {
-                return type.description;
-            }
-        }
-        return "Unknown";
-    }
-
     public final int from;
     public final int to;
-
     public final String description;
 
     public ImageResourceType(int id, String description) {
@@ -137,5 +126,14 @@ class ImageResourceType {
         this.from = id;
         this.to = id2;
         this.description = description;
+    }
+
+    public static String getDescription(final int id) {
+        for (ImageResourceType type : TYPES) {
+            if (type.from <= id && id <= type.to) {
+                return type.description;
+            }
+        }
+        return "Unknown";
     }
 }

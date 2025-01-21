@@ -16,39 +16,36 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Oct 14, 2005
  */
 
 package java.awt.image;
 
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public class LookupOp implements BufferedImageOp, RasterOp {
-    private final LookupTable lut;
-    private RenderingHints hints;
-    
-    // TODO remove when this field is used
-    @SuppressWarnings("unused")
-    private final boolean canUseIpp;
-
     static int levelInitializer[] = new int[0x10000];
 
     static {
-        for (int i=1; i<=0x10000; i++) {
-            levelInitializer[i-1] = i;
+        for (int i = 1; i <= 0x10000; i++) {
+            levelInitializer[i - 1] = i;
         }
     }
 
+    private final LookupTable lut;
+    // TODO remove when this field is used
+    @SuppressWarnings("unused")
+    private final boolean canUseIpp;
+    private RenderingHints hints;
+
     public LookupOp(LookupTable lookup, RenderingHints hints) {
-        if (lookup == null){
+        if (lookup == null) {
             throw new NullPointerException(Messages.getString("awt.01", "lookup")); //$NON-NLS-1$ //$NON-NLS-2$
         }
         lut = lookup;
@@ -110,8 +107,8 @@ public class LookupOp implements BufferedImageOp, RasterOp {
 
         WritableRaster r =
                 dstCM.isCompatibleSampleModel(src.getSampleModel()) ?
-                src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
-                dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
+                        src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
+                        dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
 
         return new BufferedImage(
                 dstCM,
@@ -128,10 +125,10 @@ public class LookupOp implements BufferedImageOp, RasterOp {
             if (src.getNumBands() != dst.getNumBands()) {
                 throw new IllegalArgumentException(Messages.getString("awt.237")); //$NON-NLS-1$            }
             }
-            if (src.getWidth() != dst.getWidth()){
+            if (src.getWidth() != dst.getWidth()) {
                 throw new IllegalArgumentException(Messages.getString("awt.28F")); //$NON-NLS-1$            }
             }
-            if (src.getHeight() != dst.getHeight()){
+            if (src.getHeight() != dst.getHeight()) {
                 throw new IllegalArgumentException(Messages.getString("awt.290")); //$NON-NLS-1$            }
             }
         }
@@ -143,10 +140,10 @@ public class LookupOp implements BufferedImageOp, RasterOp {
 
         // TODO
         // if (!canUseIpp || ippFilter(src, dst, BufferedImage.TYPE_CUSTOM, false) != 0)
-            if (slowFilter(src, dst, false) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src, dst, false) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         return dst;
     }
@@ -164,7 +161,7 @@ public class LookupOp implements BufferedImageOp, RasterOp {
         int nLUTComponents = lut.getNumComponents();
         boolean skipAlpha;
         if (srcCM.hasAlpha()) {
-            if (nLUTComponents == 1 || nLUTComponents == nComponents-1) {
+            if (nLUTComponents == 1 || nLUTComponents == nComponents - 1) {
                 skipAlpha = true;
             } else if (nLUTComponents == nComponents) {
                 skipAlpha = false;
@@ -183,11 +180,11 @@ public class LookupOp implements BufferedImageOp, RasterOp {
         if (dst == null) {
             dst = createCompatibleDestImage(src, null);
         } else {
-            if (src.getWidth() != dst.getWidth()){
+            if (src.getWidth() != dst.getWidth()) {
                 throw new IllegalArgumentException(Messages.getString("awt.291")); //$NON-NLS-1$
             }
 
-            if (src.getHeight() != dst.getHeight()){
+            if (src.getHeight() != dst.getHeight()) {
                 throw new IllegalArgumentException(Messages.getString("awt.292")); //$NON-NLS-1$
             }
 
@@ -206,10 +203,10 @@ public class LookupOp implements BufferedImageOp, RasterOp {
 
         // TODO
         //if (!canUseIpp || ippFilter(src.getRaster(), dst.getRaster(), src.getType(), skipAlpha) != 0)
-            if (slowFilter(src.getRaster(), dst.getRaster(), skipAlpha) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src.getRaster(), dst.getRaster(), skipAlpha) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         if (finalDst != null) {
             Graphics2D g = finalDst.createGraphics();
@@ -238,39 +235,39 @@ public class LookupOp implements BufferedImageOp, RasterOp {
         int[] pixels = null;
         int offset = lut.getOffset();
 
-        if (lut instanceof ByteLookupTable){
-            byte[][] byteData = ((ByteLookupTable)lut).getTable();
+        if (lut instanceof ByteLookupTable) {
+            byte[][] byteData = ((ByteLookupTable) lut).getTable();
             pixels = src.getPixels(minSrcX, minSrcY, srcWidth, srcHeight, pixels);
 
-            if (lut.getNumComponents() != 1){
-                for (int i=0; i < pixels.length; i+= numBands){
-                    for (int b = 0; b < numBands2Process; b++){
-                        pixels[i+b] = byteData[b][pixels[i+b]-offset] & 0xFF;
+            if (lut.getNumComponents() != 1) {
+                for (int i = 0; i < pixels.length; i += numBands) {
+                    for (int b = 0; b < numBands2Process; b++) {
+                        pixels[i + b] = byteData[b][pixels[i + b] - offset] & 0xFF;
                     }
                 }
             } else {
-                for (int i=0; i < pixels.length; i+= numBands){
-                    for (int b = 0; b < numBands2Process; b++){
-                        pixels[i+b] = byteData[0][pixels[i+b]-offset] & 0xFF;
+                for (int i = 0; i < pixels.length; i += numBands) {
+                    for (int b = 0; b < numBands2Process; b++) {
+                        pixels[i + b] = byteData[0][pixels[i + b] - offset] & 0xFF;
                     }
                 }
             }
 
             dst.setPixels(minDstX, minDstY, srcWidth, srcHeight, pixels);
-        } else if (lut instanceof ShortLookupTable){
-            short[][] shortData  = ((ShortLookupTable)lut).getTable();
+        } else if (lut instanceof ShortLookupTable) {
+            short[][] shortData = ((ShortLookupTable) lut).getTable();
             pixels = src.getPixels(minSrcX, minSrcY, srcWidth, srcHeight, pixels);
 
-            if (lut.getNumComponents() != 1){
-                for (int i=0; i < pixels.length; i+= numBands){
-                    for (int b = 0; b < numBands2Process; b++){
-                        pixels[i+b] = shortData[b][pixels[i+b]-offset] & 0xFFFF;
+            if (lut.getNumComponents() != 1) {
+                for (int i = 0; i < pixels.length; i += numBands) {
+                    for (int b = 0; b < numBands2Process; b++) {
+                        pixels[i + b] = shortData[b][pixels[i + b] - offset] & 0xFFFF;
                     }
                 }
             } else {
-                for (int i=0; i < pixels.length; i+= numBands){
-                    for (int b = 0; b < numBands2Process; b++){
-                        pixels[i+b] = shortData[0][pixels[i+b]-offset] & 0xFFFF;
+                for (int i = 0; i < pixels.length; i += numBands) {
+                    for (int b = 0; b < numBands2Process; b++) {
+                        pixels[i + b] = shortData[0][pixels[i + b] - offset] & 0xFFFF;
                     }
                 }
             }
@@ -280,8 +277,8 @@ public class LookupOp implements BufferedImageOp, RasterOp {
             int pixel[] = new int[src.getNumBands()];
             int maxY = minSrcY + srcHeight;
             int maxX = minSrcX + srcWidth;
-            for (int srcY=minSrcY, dstY = minDstY; srcY < maxY; srcY++, dstY++){
-                for (int srcX=minSrcX, dstX = minDstX; srcX < maxX; srcX++, dstX++){
+            for (int srcY = minSrcY, dstY = minDstY; srcY < maxY; srcY++, dstY++) {
+                for (int srcX = minSrcX, dstX = minDstX; srcX < maxX; srcX++, dstX++) {
                     src.getPixel(srcX, srcY, pixel);
                     lut.lookupPixel(pixel, pixel);
                     dst.setPixel(dstX, dstY, pixel);

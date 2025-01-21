@@ -20,6 +20,7 @@ import java.io.Serializable;
 import java.util.Comparator;
 
 class ColorSpaceSubset {
+    public static final RgbComparator RGB_COMPARATOR = new RgbComparator();
     final int[] mins;
     final int[] maxs;
     final int precision;
@@ -28,7 +29,6 @@ class ColorSpaceSubset {
     int rgb; // median
     // the index in the palette.
     private int index;
-    public static final RgbComparator RGB_COMPARATOR = new RgbComparator();
 
     ColorSpaceSubset(final int total, final int precision) {
         this.total = total;
@@ -90,11 +90,11 @@ class ColorSpaceSubset {
         final int colorArea = rdiff * gdiff * bdiff;
 
         System.out.println(prefix + ": [" + Integer.toHexString(rgb)
-                + "] total : " + total
-        // + " ("
-        // + (100.0 * (double) total / (double) total_area)
-        // + " %)"
-                );
+                        + "] total : " + total
+                // + " ("
+                // + (100.0 * (double) total / (double) total_area)
+                // + " %)"
+        );
         System.out.println("\t" + "rgb: " + Integer.toHexString(rgb) + ", "
                 + "red: " + Integer.toHexString(mins[0] << (8 - precision))
                 + ", " + Integer.toHexString(maxs[0] << (8 - precision)) + ", "
@@ -140,7 +140,7 @@ class ColorSpaceSubset {
             for (int green = mins[1]; green <= maxs[1]; green++) {
                 for (int blue = mins[2]; blue <= maxs[2]; blue++) {
                     // note: order reversed
-                    final int idx = (blue << (2 * precision)) 
+                    final int idx = (blue << (2 * precision))
                             | (green << (1 * precision))
                             | (red << (0 * precision));
                     final int count = table[idx];

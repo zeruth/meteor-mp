@@ -50,8 +50,8 @@ public final class GlyphJustificationInfo {
     public final float weight;
 
     public GlyphJustificationInfo(float weight, boolean growAbsorb, int growPriority,
-            float growLeftLimit, float growRightLimit, boolean shrinkAbsorb,
-            int shrinkPriority, float shrinkLeftLimit, float shrinkRightLimit) {
+                                  float growLeftLimit, float growRightLimit, boolean shrinkAbsorb,
+                                  int shrinkPriority, float shrinkLeftLimit, float shrinkRightLimit) {
 
         if (weight < 0) {
             // awt.19C=weight must be a positive number

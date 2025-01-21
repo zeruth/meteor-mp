@@ -26,7 +26,7 @@ import org.apache.harmony.awt.internal.nls.Messages;
 public class PixelInterleavedSampleModel extends ComponentSampleModel {
 
     public PixelInterleavedSampleModel(int dataType, int w, int h,
-            int pixelStride, int scanlineStride, int bandOffsets[]) {
+                                       int pixelStride, int scanlineStride, int bandOffsets[]) {
 
         super(dataType, w, h, pixelStride, scanlineStride, bandOffsets);
 

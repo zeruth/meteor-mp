@@ -24,7 +24,6 @@ import org.apache.harmony.misc.HashCode;
 import java.io.Serializable;
 
 
-
 public class Insets implements Cloneable, Serializable {
 
     private static final long serialVersionUID = -2272572637695466749L;
@@ -71,14 +70,14 @@ public class Insets implements Cloneable, Serializable {
 
     @Override
     public String toString() {
-        /* The format is based on 1.5 release behavior 
+        /* The format is based on 1.5 release behavior
          * which can be revealed by the following code:
          * System.out.println(new Insets(1, 2, 3, 4));
          */
 
         return (getClass().getName() +
                 "[left=" + left + ",top=" + top + //$NON-NLS-1$ //$NON-NLS-2$
-                ",right=" + right + ",bottom="  + bottom + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                ",right=" + right + ",bottom=" + bottom + "]"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public void set(int top, int left, int bottom, int right) {

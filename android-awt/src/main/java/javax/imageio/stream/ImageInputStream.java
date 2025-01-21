@@ -26,9 +26,9 @@ import java.nio.ByteOrder;
 
 public interface ImageInputStream extends DataInput {
 
-    void setByteOrder(ByteOrder byteOrder);
-
     ByteOrder getByteOrder();
+
+    void setByteOrder(ByteOrder byteOrder);
 
     int read() throws IOException;
 

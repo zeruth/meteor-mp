@@ -19,12 +19,12 @@
  */
 package javax.imageio;
 
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
+import javax.imageio.metadata.IIOMetadata;
 import java.awt.image.BufferedImage;
 import java.awt.image.Raster;
 import java.awt.image.RenderedImage;
-import javax.imageio.metadata.IIOMetadata;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
 import java.util.List;
 
 

@@ -20,7 +20,6 @@
 package javax.imageio.event;
 
 import javax.imageio.ImageReader;
-
 import java.util.EventListener;
 
 

@@ -20,43 +20,16 @@ package java.awt;
 import org.apache.harmony.awt.gl.font.FontMetricsImpl;
 
 
-public  class Toolkit {
+public class Toolkit {
+    public static final Toolkit INSTANCE = new Toolkit();
+
+    //   private static final ResourceBundle properties = loadResources(RECOURCE_PATH);
     private static final String RECOURCE_PATH = "org.apache.harmony.awt.resources.AWTProperties"; //$NON-NLS-1$
 
- //   private static final ResourceBundle properties = loadResources(RECOURCE_PATH);
-
-    public static final Toolkit INSTANCE = new Toolkit();
-    
-    public FontMetrics getFontMetrics(Font font) {
-    	
-    	return new FontMetricsImpl(font);
-    	//throw new UnsupportedOperationException();
-//    	lockAWT();
-//    	try {
-//    		FontMetrics fm;
-//    		for (FontMetrics element : cacheFM) {
-//    			fm = element;
-//    			if (fm == null){
-//    				break;
-//    			}
-//
-//    			if (fm.getFont().equals(font)){
-//    				return fm;
-//    			}
-//    		}
-//    		fm = new FontMetricsImpl(font);
-//
-//    		System.arraycopy(cacheFM, 0, cacheFM, 1, cacheFM.length -1);
-//    		cacheFM[0] = fm;
-//
-//    		return fm;
-//
-//    		//      return getGraphicsFactory().getFontMetrics(font);
-//    	} finally {
-//    		unlockAWT();
-//    	}
+    public static Toolkit getDefaultToolkit() {
+        return INSTANCE;
     }
-    
+
 
 //    protected AWTEventsManager awtEventsManager;
 
@@ -180,10 +153,36 @@ public  class Toolkit {
 //        }
 //    }
 
-    public static Toolkit getDefaultToolkit() {
-    	return INSTANCE;
+    public FontMetrics getFontMetrics(Font font) {
+
+        return new FontMetricsImpl(font);
+        //throw new UnsupportedOperationException();
+//    	lockAWT();
+//    	try {
+//    		FontMetrics fm;
+//    		for (FontMetrics element : cacheFM) {
+//    			fm = element;
+//    			if (fm == null){
+//    				break;
+//    			}
+//
+//    			if (fm.getFont().equals(font)){
+//    				return fm;
+//    			}
+//    		}
+//    		fm = new FontMetricsImpl(font);
+//
+//    		System.arraycopy(cacheFM, 0, cacheFM, 1, cacheFM.length -1);
+//    		cacheFM[0] = fm;
+//
+//    		return fm;
+//
+//    		//      return getGraphicsFactory().getFontMetrics(font);
+//    	} finally {
+//    		unlockAWT();
+//    	}
     }
-    
+
 //
 //    Font getDefaultFont() {
 //        return wtk.getSystemProperties().getDefaultFont();

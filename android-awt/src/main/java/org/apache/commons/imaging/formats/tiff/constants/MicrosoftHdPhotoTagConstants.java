@@ -16,19 +16,15 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.common.BinaryConstant;
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.imaging.common.BinaryConstant;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUndefined;
-
 /**
- * Microsoft's HDP/WDP file format. 
+ * Microsoft's HDP/WDP file format.
  */
 public interface MicrosoftHdPhotoTagConstants {
     /*
@@ -161,7 +157,7 @@ public interface MicrosoftHdPhotoTagConstants {
     int TRANSFOMATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_90_CW = 5;
     int TRANSFOMATION_VALUE_MIRROR_HORIZONTAL_AND_ROTATE_270_CW = 6;
     int TRANSFOMATION_VALUE_ROTATE_270_CW = 7;
-    
+
     TagInfoLong EXIF_TAG_UNCOMPRESSED = new TagInfoLong(
             "Uncompressed", 0xbc03, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -175,33 +171,33 @@ public interface MicrosoftHdPhotoTagConstants {
     TagInfoLong EXIF_TAG_IMAGE_WIDTH = new TagInfoLong(
             "ImageWidth", 0xbc80, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_IMAGE_HEIGHT = new TagInfoLong(
             "ImageHeight", 0xbc81, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_WIDTH_RESOLUTION = new TagInfoFloat(
             "WidthResolution", 0xbc82, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_HEIGHT_RESOLUTION = new TagInfoFloat(
             "HeightResolution", 0xbc83, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     // FIXME: might be an offset?
     TagInfoLong EXIF_TAG_IMAGE_OFFSET = new TagInfoLong(
             "ImageOffset", 0xbcc0, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_IMAGE_BYTE_COUNT = new TagInfoLong(
             "ImageByteCount", 0xbcc1, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     // FIXME: might be an offset?
     TagInfoLong EXIF_TAG_ALPHA_OFFSET = new TagInfoLong(
             "AlphaOffset", 0xbcc2, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_ALPHA_BYTE_COUNT = new TagInfoLong(
             "AlphaByteCount", 0xbcc3, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -225,7 +221,7 @@ public interface MicrosoftHdPhotoTagConstants {
     TagInfoUndefined EXIF_TAG_PADDING = new TagInfoUndefined(
             "Padding", 0xea1c, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     List<TagInfo> ALL_MICROSOFT_HD_PHOTO_TAGS =
             Collections.unmodifiableList(Arrays.asList(
                     EXIF_TAG_PIXEL_FORMAT,

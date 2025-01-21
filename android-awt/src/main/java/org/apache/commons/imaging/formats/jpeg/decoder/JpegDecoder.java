@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,12 +15,6 @@
 
 package org.apache.commons.imaging.formats.jpeg.decoder;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DirectColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
@@ -31,6 +25,7 @@ import org.apache.commons.imaging.formats.jpeg.segments.DqtSegment;
 import org.apache.commons.imaging.formats.jpeg.segments.SofnSegment;
 import org.apache.commons.imaging.formats.jpeg.segments.SosSegment;
 
+import java.awt.image.*;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.util.Arrays;
@@ -52,15 +47,19 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
     private final DqtSegment.QuantizationTable[] quantizationTables = new DqtSegment.QuantizationTable[4];
     private final DhtSegment.HuffmanTable[] huffmanDCTables = new DhtSegment.HuffmanTable[4];
     private final DhtSegment.HuffmanTable[] huffmanACTables = new DhtSegment.HuffmanTable[4];
-    private SofnSegment sofnSegment;
-    private SosSegment sosSegment;
     private final float[][] scaledQuantizationTables = new float[4][];
-    private BufferedImage image;
-    private ImageReadException imageReadException;
-    private IOException ioException;
     private final int[] zz = new int[64];
     private final int[] blockInt = new int[64];
     private final float[] block = new float[64];
+    private SofnSegment sofnSegment;
+    private SosSegment sosSegment;
+    private BufferedImage image;
+    private ImageReadException imageReadException;
+    private IOException ioException;
+
+    private static int fastRound(final float x) {
+        return (int) (x + 0.5f);
+    }
 
     public boolean beginSOS() {
         return true;
@@ -100,14 +99,14 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                 colorModel = new DirectColorModel(24, 0x00ff0000, 0x0000ff00,
                         0x000000ff);
                 raster = Raster.createPackedRaster(DataBuffer.TYPE_INT,
-                        sofnSegment.width, sofnSegment.height, new int[] {
-                                0x00ff0000, 0x0000ff00, 0x000000ff }, null);
+                        sofnSegment.width, sofnSegment.height, new int[]{
+                                0x00ff0000, 0x0000ff00, 0x000000ff}, null);
             } else if (sofnSegment.numberOfComponents == 1) {
                 colorModel = new DirectColorModel(24, 0x00ff0000, 0x0000ff00,
                         0x000000ff);
                 raster = Raster.createPackedRaster(DataBuffer.TYPE_INT,
-                        sofnSegment.width, sofnSegment.height, new int[] {
-                                0x00ff0000, 0x0000ff00, 0x000000ff }, null);
+                        sofnSegment.width, sofnSegment.height, new int[]{
+                                0x00ff0000, 0x0000ff00, 0x000000ff}, null);
                 // FIXME: why do images come out too bright with CS_GRAY?
                 // colorModel = new ComponentColorModel(
                 // ColorSpace.getInstance(ColorSpace.CS_GRAY), false, true,
@@ -171,7 +170,7 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
     }
 
     public boolean visitSegment(final int marker, final byte[] markerBytes,
-            final int segmentLength, final byte[] segmentLengthBytes, final byte[] segmentData)
+                                final int segmentLength, final byte[] segmentLengthBytes, final byte[] segmentData)
             throws ImageReadException, IOException {
         final int[] sofnSegments = {
                 JpegConstants.SOF0_MARKER,
@@ -389,10 +388,6 @@ public class JpegDecoder extends BinaryFileParser implements JpegUtils.Visitor {
                 }
             }
         }
-    }
-
-    private static int fastRound(final float x) {
-        return (int) (x + 0.5f);
     }
 
     private int extend(int v, final int t) {

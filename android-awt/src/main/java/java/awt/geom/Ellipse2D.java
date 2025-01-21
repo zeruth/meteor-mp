@@ -26,6 +26,60 @@ import java.util.NoSuchElementException;
 
 public abstract class Ellipse2D extends RectangularShape {
 
+    protected Ellipse2D() {
+    }
+
+    public boolean contains(double px, double py) {
+        if (isEmpty()) {
+            return false;
+        }
+
+        double a = (px - getX()) / getWidth() - 0.5;
+        double b = (py - getY()) / getHeight() - 0.5;
+
+        return a * a + b * b < 0.25;
+    }
+
+    public boolean intersects(double rx, double ry, double rw, double rh) {
+        if (isEmpty() || rw <= 0.0 || rh <= 0.0) {
+            return false;
+        }
+
+        double cx = getX() + getWidth() / 2.0;
+        double cy = getY() + getHeight() / 2.0;
+
+        double rx1 = rx;
+        double ry1 = ry;
+        double rx2 = rx + rw;
+        double ry2 = ry + rh;
+
+        double nx = cx < rx1 ? rx1 : (cx > rx2 ? rx2 : cx);
+        double ny = cy < ry1 ? ry1 : (cy > ry2 ? ry2 : cy);
+
+        return contains(nx, ny);
+    }
+
+    public boolean contains(double rx, double ry, double rw, double rh) {
+        if (isEmpty() || rw <= 0.0 || rh <= 0.0) {
+            return false;
+        }
+
+        double rx1 = rx;
+        double ry1 = ry;
+        double rx2 = rx + rw;
+        double ry2 = ry + rh;
+
+        return
+                contains(rx1, ry1) &&
+                        contains(rx2, ry1) &&
+                        contains(rx2, ry2) &&
+                        contains(rx1, ry2);
+    }
+
+    public PathIterator getPathIterator(AffineTransform at) {
+        return new Iterator(this, at);
+    }
+
     public static class Float extends Ellipse2D {
 
         public float x;
@@ -74,10 +128,10 @@ public abstract class Ellipse2D extends RectangularShape {
 
         @Override
         public void setFrame(double x, double y, double width, double height) {
-            this.x = (float)x;
-            this.y = (float)y;
-            this.width = (float)width;
-            this.height = (float)height;
+            this.x = (float) x;
+            this.y = (float) y;
+            this.width = (float) width;
+            this.height = (float) height;
         }
 
         public Rectangle2D getBounds2D() {
@@ -138,7 +192,7 @@ public abstract class Ellipse2D extends RectangularShape {
     }
 
     /*
-     * Ellipse2D path iterator 
+     * Ellipse2D path iterator
      */
     class Iterator implements PathIterator {
 
@@ -158,27 +212,27 @@ public abstract class Ellipse2D extends RectangularShape {
          * The points coordinates calculation table.
          */
         final double points[][] = {
-                { 1.0, 0.5 + u, 0.5 + u, 1.0, 0.5, 1.0 },
-                { 0.5 - u, 1.0, 0.0, 0.5 + u, 0.0, 0.5 },
-                { 0.0, 0.5 - u, 0.5 - u, 0.0, 0.5, 0.0 },
-                { 0.5 + u, 0.0, 1.0, 0.5 - u, 1.0, 0.5 }
+                {1.0, 0.5 + u, 0.5 + u, 1.0, 0.5, 1.0},
+                {0.5 - u, 1.0, 0.0, 0.5 + u, 0.0, 0.5},
+                {0.0, 0.5 - u, 0.5 - u, 0.0, 0.5, 0.0},
+                {0.5 + u, 0.0, 1.0, 0.5 - u, 1.0, 0.5}
         };
 
         /**
-         * The x coordinate of left-upper corner of the ellipse bounds 
+         * The x coordinate of left-upper corner of the ellipse bounds
          */
         double x;
-        
+
         /**
          * The y coordinate of left-upper corner of the ellipse bounds
          */
         double y;
-        
+
         /**
          * The width of the ellipse bounds
          */
         double width;
-        
+
         /**
          * The height of the ellipse bounds
          */
@@ -196,6 +250,7 @@ public abstract class Ellipse2D extends RectangularShape {
 
         /**
          * Constructs a new Ellipse2D.Iterator for given ellipse and transformation
+         *
          * @param e - the source Ellipse2D object
          * @param t - the AffineTransform object to apply rectangle path
          */
@@ -268,16 +323,16 @@ public abstract class Ellipse2D extends RectangularShape {
                 type = SEG_MOVETO;
                 count = 1;
                 double p[] = points[3];
-                coords[0] = (float)(x + p[4] * width);
-                coords[1] = (float)(y + p[5] * height);
+                coords[0] = (float) (x + p[4] * width);
+                coords[1] = (float) (y + p[5] * height);
             } else {
                 type = SEG_CUBICTO;
                 count = 3;
                 int j = 0;
                 double p[] = points[index - 1];
                 for (int i = 0; i < 3; i++) {
-                    coords[j] = (float)(x + p[j++] * width);
-                    coords[j] = (float)(y + p[j++] * height);
+                    coords[j] = (float) (x + p[j++] * width);
+                    coords[j] = (float) (y + p[j++] * height);
                 }
             }
             if (t != null) {
@@ -286,60 +341,6 @@ public abstract class Ellipse2D extends RectangularShape {
             return type;
         }
 
-    }
-
-    protected Ellipse2D() {
-    }
-
-    public boolean contains(double px, double py) {
-        if (isEmpty()) {
-            return false;
-        }
-
-        double a = (px - getX()) / getWidth() - 0.5;
-        double b = (py - getY()) / getHeight() - 0.5;
-
-        return a * a + b * b < 0.25;
-    }
-
-    public boolean intersects(double rx, double ry, double rw, double rh) {
-        if (isEmpty() || rw <= 0.0 || rh <= 0.0) {
-            return false;
-        }
-
-        double cx = getX() + getWidth() / 2.0;
-        double cy = getY() + getHeight() / 2.0;
-
-        double rx1 = rx;
-        double ry1 = ry;
-        double rx2 = rx + rw;
-        double ry2 = ry + rh;
-
-        double nx = cx < rx1 ? rx1 : (cx > rx2 ? rx2 : cx);
-        double ny = cy < ry1 ? ry1 : (cy > ry2 ? ry2 : cy);
-
-        return contains(nx, ny);
-    }
-
-    public boolean contains(double rx, double ry, double rw, double rh) {
-        if (isEmpty() || rw <= 0.0 || rh <= 0.0) {
-            return false;
-        }
-
-        double rx1 = rx;
-        double ry1 = ry;
-        double rx2 = rx + rw;
-        double ry2 = ry + rh;
-
-        return
-            contains(rx1, ry1) &&
-            contains(rx2, ry1) &&
-            contains(rx2, ry2) &&
-            contains(rx1, ry2);
-    }
-
-    public PathIterator getPathIterator(AffineTransform at) {
-        return new Iterator(this, at);
     }
 }
 

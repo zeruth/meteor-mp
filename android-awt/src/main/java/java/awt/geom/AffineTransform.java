@@ -19,17 +19,15 @@
  */
 package java.awt.geom;
 
-import java.awt.Shape;
 import org.apache.harmony.awt.internal.nls.Messages;
 import org.apache.harmony.misc.HashCode;
 
+import java.awt.*;
 import java.io.IOException;
 import java.io.Serializable;
 
 
 public class AffineTransform implements Cloneable, Serializable {
-
-    private static final long serialVersionUID = 1330973210523860834L;
 
     public static final int TYPE_IDENTITY = 0;
     public static final int TYPE_TRANSLATION = 1;
@@ -41,17 +39,15 @@ public class AffineTransform implements Cloneable, Serializable {
     public static final int TYPE_FLIP = 64;
     public static final int TYPE_MASK_SCALE = TYPE_UNIFORM_SCALE | TYPE_GENERAL_SCALE;
     public static final int TYPE_MASK_ROTATION = TYPE_QUADRANT_ROTATION | TYPE_GENERAL_ROTATION;
-
     /**
      * The <code>TYPE_UNKNOWN</code> is an initial type value
      */
     static final int TYPE_UNKNOWN = -1;
-    
     /**
-     * The min value equivalent to zero. If absolute value less then ZERO it considered as zero.  
+     * The min value equivalent to zero. If absolute value less then ZERO it considered as zero.
      */
     static final double ZERO = 1E-10;
-   
+    private static final long serialVersionUID = 1330973210523860834L;
     /**
      * The values of transformation matrix
      */
@@ -63,7 +59,7 @@ public class AffineTransform implements Cloneable, Serializable {
     double m12;
 
     /**
-     * The transformation <code>type</code> 
+     * The transformation <code>type</code>
      */
     transient int type;
 
@@ -127,22 +123,52 @@ public class AffineTransform implements Cloneable, Serializable {
         }
     }
 
+    public static AffineTransform getTranslateInstance(double mx, double my) {
+        AffineTransform t = new AffineTransform();
+        t.setToTranslation(mx, my);
+        return t;
+    }
+
+    public static AffineTransform getScaleInstance(double scx, double scY) {
+        AffineTransform t = new AffineTransform();
+        t.setToScale(scx, scY);
+        return t;
+    }
+
+    public static AffineTransform getShearInstance(double shx, double shy) {
+        AffineTransform m = new AffineTransform();
+        m.setToShear(shx, shy);
+        return m;
+    }
+
+    public static AffineTransform getRotateInstance(double angle) {
+        AffineTransform t = new AffineTransform();
+        t.setToRotation(angle);
+        return t;
+    }
+
+    public static AffineTransform getRotateInstance(double angle, double x, double y) {
+        AffineTransform t = new AffineTransform();
+        t.setToRotation(angle, x, y);
+        return t;
+    }
+
     /*
      * Method returns type of affine transformation.
-     * 
+     *
      * Transform matrix is
      *   m00 m01 m02
      *   m10 m11 m12
-     * 
-     * According analytic geometry new basis vectors are (m00, m01) and (m10, m11), 
-     * translation vector is (m02, m12). Original basis vectors are (1, 0) and (0, 1). 
-     * Type transformations classification:  
+     *
+     * According analytic geometry new basis vectors are (m00, m01) and (m10, m11),
+     * translation vector is (m02, m12). Original basis vectors are (1, 0) and (0, 1).
+     * Type transformations classification:
      *   TYPE_IDENTITY - new basis equals original one and zero translation
-     *   TYPE_TRANSLATION - translation vector isn't zero  
+     *   TYPE_TRANSLATION - translation vector isn't zero
      *   TYPE_UNIFORM_SCALE - vectors length of new basis equals
-     *   TYPE_GENERAL_SCALE - vectors length of new basis doesn't equal 
+     *   TYPE_GENERAL_SCALE - vectors length of new basis doesn't equal
      *   TYPE_FLIP - new basis vector orientation differ from original one
-     *   TYPE_QUADRANT_ROTATION - new basis is rotated by 90, 180, 270, or 360 degrees     
+     *   TYPE_QUADRANT_ROTATION - new basis is rotated by 90, 180, 270, or 360 degrees
      *   TYPE_GENERAL_ROTATION - new basis is rotated by arbitrary angle
      *   TYPE_GENERAL_TRANSFORM - transformation can't be inversed
      */
@@ -160,11 +186,10 @@ public class AffineTransform implements Cloneable, Serializable {
 
         if (m02 != 0.0 || m12 != 0.0) {
             type |= TYPE_TRANSLATION;
-        } else
-            if (m00 == 1.0 && m11 == 1.0 && m01 == 0.0 && m10 == 0.0) {
-                type = TYPE_IDENTITY;
-                return type;
-            }
+        } else if (m00 == 1.0 && m11 == 1.0 && m01 == 0.0 && m10 == 0.0) {
+            type = TYPE_IDENTITY;
+            return type;
+        }
 
         if (m00 * m11 - m01 * m10 < 0.0) {
             type |= TYPE_FLIP;
@@ -174,19 +199,16 @@ public class AffineTransform implements Cloneable, Serializable {
         double dy = m01 * m01 + m11 * m11;
         if (dx != dy) {
             type |= TYPE_GENERAL_SCALE;
-        } else
-            if (dx != 1.0) {
-                type |= TYPE_UNIFORM_SCALE;
-            }
+        } else if (dx != 1.0) {
+            type |= TYPE_UNIFORM_SCALE;
+        }
 
         if ((m00 == 0.0 && m11 == 0.0) ||
-            (m10 == 0.0 && m01 == 0.0 && (m00 < 0.0 || m11 < 0.0)))
-        {
+                (m10 == 0.0 && m01 == 0.0 && (m00 < 0.0 || m11 < 0.0))) {
             type |= TYPE_QUADRANT_ROTATION;
-        } else
-            if (m01 != 0.0 || m10 != 0.0) {
-                type |= TYPE_GENERAL_ROTATION;
-            }
+        } else if (m01 != 0.0 || m10 != 0.0) {
+            type |= TYPE_GENERAL_ROTATION;
+        }
 
         return type;
     }
@@ -296,11 +318,10 @@ public class AffineTransform implements Cloneable, Serializable {
         if (Math.abs(cos) < ZERO) {
             cos = 0.0;
             sin = sin > 0.0 ? 1.0 : -1.0;
-        } else
-            if (Math.abs(sin) < ZERO) {
-                sin = 0.0;
-                cos = cos > 0.0 ? 1.0 : -1.0;
-            }
+        } else if (Math.abs(sin) < ZERO) {
+            sin = 0.0;
+            cos = cos > 0.0 ? 1.0 : -1.0;
+        }
         m00 = m11 = cos;
         m01 = -sin;
         m10 = sin;
@@ -313,36 +334,6 @@ public class AffineTransform implements Cloneable, Serializable {
         m02 = px * (1.0 - m00) + py * m10;
         m12 = py * (1.0 - m00) - px * m10;
         type = TYPE_UNKNOWN;
-    }
-
-    public static AffineTransform getTranslateInstance(double mx, double my) {
-        AffineTransform t = new AffineTransform();
-        t.setToTranslation(mx, my);
-        return t;
-    }
-
-    public static AffineTransform getScaleInstance(double scx, double scY) {
-        AffineTransform t = new AffineTransform();
-        t.setToScale(scx, scY);
-        return t;
-    }
-
-    public static AffineTransform getShearInstance(double shx, double shy) {
-        AffineTransform m = new AffineTransform();
-        m.setToShear(shx, shy);
-        return m;
-    }
-
-    public static AffineTransform getRotateInstance(double angle) {
-        AffineTransform t = new AffineTransform();
-        t.setToRotation(angle);
-        return t;
-    }
-
-    public static AffineTransform getRotateInstance(double angle, double x, double y) {
-        AffineTransform t = new AffineTransform();
-        t.setToRotation(angle, x, y);
-        return t;
     }
 
     public void translate(double mx, double my) {
@@ -365,11 +356,12 @@ public class AffineTransform implements Cloneable, Serializable {
         concatenate(AffineTransform.getRotateInstance(angle, px, py));
     }
 
-    /** 
-     * Multiply matrix of two AffineTransform objects 
+    /**
+     * Multiply matrix of two AffineTransform objects
+     *
      * @param t1 - the AffineTransform object is a multiplicand
      * @param t2 - the AffineTransform object is a multiplier
-     * @return an AffineTransform object that is a result of t1 multiplied by matrix t2. 
+     * @return an AffineTransform object that is a result of t1 multiplied by matrix t2.
      */
     AffineTransform multiply(AffineTransform t1, AffineTransform t2) {
         return new AffineTransform(
@@ -396,10 +388,10 @@ public class AffineTransform implements Cloneable, Serializable {
             throw new NoninvertibleTransformException(Messages.getString("awt.204")); //$NON-NLS-1$
         }
         return new AffineTransform(
-                 m11 / det, // m00
+                m11 / det, // m00
                 -m10 / det, // m10
                 -m01 / det, // m01
-                 m00 / det, // m11
+                m00 / det, // m11
                 (m01 * m12 - m11 * m02) / det, // m02
                 (m10 * m02 - m00 * m12) / det  // m12
         );
@@ -423,10 +415,10 @@ public class AffineTransform implements Cloneable, Serializable {
 
     public void transform(Point2D[] src, int srcOff, Point2D[] dst, int dstOff, int length) {
         while (--length >= 0) {
-            Point2D srcPoint = src[srcOff++]; 
+            Point2D srcPoint = src[srcOff++];
             double x = srcPoint.getX();
             double y = srcPoint.getY();
-            Point2D dstPoint = dst[dstOff]; 
+            Point2D dstPoint = dst[dstOff];
             if (dstPoint == null) {
                 if (srcPoint instanceof Point2D.Double) {
                     dstPoint = new Point2D.Double();
@@ -438,8 +430,8 @@ public class AffineTransform implements Cloneable, Serializable {
             dst[dstOff++] = dstPoint;
         }
     }
-    
-     public void transform(double[] src, int srcOff, double[] dst, int dstOff, int length) {
+
+    public void transform(double[] src, int srcOff, double[] dst, int dstOff, int length) {
         int step = 2;
         if (src == dst && srcOff < dstOff && dstOff < srcOff + length * 2) {
             srcOff = srcOff + length * 2 - 2;
@@ -466,13 +458,13 @@ public class AffineTransform implements Cloneable, Serializable {
         while (--length >= 0) {
             float x = src[srcOff + 0];
             float y = src[srcOff + 1];
-            dst[dstOff + 0] = (float)(x * m00 + y * m01 + m02);
-            dst[dstOff + 1] = (float)(x * m10 + y * m11 + m12);
+            dst[dstOff + 0] = (float) (x * m00 + y * m01 + m02);
+            dst[dstOff + 1] = (float) (x * m10 + y * m11 + m12);
             srcOff += step;
             dstOff += step;
         }
     }
-    
+
     public void transform(float[] src, int srcOff, double[] dst, int dstOff, int length) {
         while (--length >= 0) {
             float x = src[srcOff++];
@@ -486,8 +478,8 @@ public class AffineTransform implements Cloneable, Serializable {
         while (--length >= 0) {
             double x = src[srcOff++];
             double y = src[srcOff++];
-            dst[dstOff++] = (float)(x * m00 + y * m01 + m02);
-            dst[dstOff++] = (float)(x * m10 + y * m11 + m12);
+            dst[dstOff++] = (float) (x * m00 + y * m01 + m02);
+            dst[dstOff++] = (float) (x * m10 + y * m11 + m12);
         }
     }
 
@@ -539,8 +531,7 @@ public class AffineTransform implements Cloneable, Serializable {
     }
 
     public void inverseTransform(double[] src, int srcOff, double[] dst, int dstOff, int length)
-        throws NoninvertibleTransformException
-    {
+            throws NoninvertibleTransformException {
         double det = getDeterminant();
         if (Math.abs(det) < ZERO) {
             // awt.204=Determinant is zero
@@ -560,7 +551,7 @@ public class AffineTransform implements Cloneable, Serializable {
             return null;
         }
         if (src instanceof GeneralPath) {
-            return ((GeneralPath)src).createTransformedShape(this);
+            return ((GeneralPath) src).createTransformedShape(this);
         }
         PathIterator path = src.getPathIterator(this);
         GeneralPath dst = new GeneralPath(path.getWindingRule());
@@ -571,9 +562,9 @@ public class AffineTransform implements Cloneable, Serializable {
     @Override
     public String toString() {
         return
-            getClass().getName() +
-            "[[" + m00 + ", " + m01 + ", " + m02 + "], [" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
-                + m10 + ", " + m11 + ", " + m12 + "]]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                getClass().getName() +
+                        "[[" + m00 + ", " + m01 + ", " + m02 + "], [" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$
+                        + m10 + ", " + m11 + ", " + m12 + "]]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     @Override
@@ -603,18 +594,19 @@ public class AffineTransform implements Cloneable, Serializable {
             return true;
         }
         if (obj instanceof AffineTransform) {
-            AffineTransform t = (AffineTransform)obj;
+            AffineTransform t = (AffineTransform) obj;
             return
-                m00 == t.m00 && m01 == t.m01 &&
-                m02 == t.m02 && m10 == t.m10 &&
-                m11 == t.m11 && m12 == t.m12;
+                    m00 == t.m00 && m01 == t.m01 &&
+                            m02 == t.m02 && m10 == t.m10 &&
+                            m11 == t.m11 && m12 == t.m12;
         }
         return false;
     }
 
-    
+
     /**
      * Write AffineTrasform object to the output steam.
+     *
      * @param stream - the output stream
      * @throws IOException - if there are I/O errors while writing to the output strem
      */
@@ -622,12 +614,13 @@ public class AffineTransform implements Cloneable, Serializable {
         stream.defaultWriteObject();
     }
 
-    
+
     /**
      * Read AffineTransform object from the input stream
+     *
      * @param stream - the input steam
-     * @throws IOException - if there are I/O errors while reading from the input strem
-     * @throws ClassNotFoundException - if class could not be found 
+     * @throws IOException            - if there are I/O errors while reading from the input strem
+     * @throws ClassNotFoundException - if class could not be found
      */
     private void readObject(java.io.ObjectInputStream stream) throws IOException, ClassNotFoundException {
         stream.defaultReadObject();

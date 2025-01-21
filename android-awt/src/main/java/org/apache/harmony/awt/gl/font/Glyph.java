@@ -19,192 +19,168 @@
  */
 package org.apache.harmony.awt.gl.font;
 
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.font.GlyphJustificationInfo;
 import java.awt.font.GlyphMetrics;
 import java.awt.image.BufferedImage;
 
-public abstract class Glyph{
-
-    // character of the glyph
-    protected char glChar;
-    
-    // precise glyph metrics
-    protected GlyphMetrics glMetrics;
-    
-    // glyph metrics in pixels
-    protected GlyphMetrics glPointMetrics;
-    
-    //  glyph code of this Glyph
-    int glCode;
-    
-    // justification info of this glyph
-    GlyphJustificationInfo glJustInfo;
-    
-    // native font handle of the font corresponding to this glyph
-    long pFont;
-    
-    // size of the font corresponding to this glyph
-    int fontSize;
-    
-    // bitmap representation of the glyph
-    byte[] bitmap = null;
-    
-    // Buffered image representation of the glyph
-    BufferedImage image;
-    
-    // shape that representing the outline of this glyph
-    protected Shape glOutline = null;
+public abstract class Glyph {
 
     /**
      * image bitmap parameters
      */
-    
+
     //  top side bearing
     public int bmp_top = 0;
-    
     // left side bearing
     public int bmp_left = 0;
-
     // number of bytes in row
     public int bmp_pitch;
-    
     // number of rows
     public int bmp_rows;
-    
     // width of the row
     public int bmp_width;
+    // character of the glyph
+    protected char glChar;
+    // precise glyph metrics
+    protected GlyphMetrics glMetrics;
+    // glyph metrics in pixels
+    protected GlyphMetrics glPointMetrics;
+    // shape that representing the outline of this glyph
+    protected Shape glOutline = null;
+    //  glyph code of this Glyph
+    int glCode;
+    // justification info of this glyph
+    GlyphJustificationInfo glJustInfo;
+    // native font handle of the font corresponding to this glyph
+    long pFont;
+    // size of the font corresponding to this glyph
+    int fontSize;
+    // bitmap representation of the glyph
+    byte[] bitmap = null;
+    // Buffered image representation of the glyph
+    BufferedImage image;
 
     /**
-     *  Retruns handle to Native Font object
+     * Retruns handle to Native Font object
      */
-    public long getPFont(){
+    public long getPFont() {
         return this.pFont;
     }
 
     /**
-     *  Retruns char value of this glyph object
+     * Retruns char value of this glyph object
      */
-    public char getChar(){
+    public char getChar() {
         return glChar;
     }
 
     /**
-     *  Retruns precise width of this glyph object
+     * Retruns precise width of this glyph object
      */
-    public int getWidth(){
-        return Math.round((float)getGlyphMetrics().getBounds2D().getWidth());
+    public int getWidth() {
+        return Math.round((float) getGlyphMetrics().getBounds2D().getWidth());
     }
 
     /**
-     *  Retruns precise height of this glyph object
+     * Retruns precise height of this glyph object
      */
-    public int getHeight(){
-        return Math.round((float)getGlyphMetrics().getBounds2D().getHeight());
+    public int getHeight() {
+        return Math.round((float) getGlyphMetrics().getBounds2D().getHeight());
     }
 
     /**
-     *  Retruns glyph code of this glyph object
+     * Retruns glyph code of this glyph object
      */
-    public int getGlyphCode(){
+    public int getGlyphCode() {
         return glCode;
     }
 
     /**
-     *  Retruns GlyphMetrics of this glyph object with precise metrics.
+     * Retruns GlyphMetrics of this glyph object with precise metrics.
      */
-    public GlyphMetrics getGlyphMetrics(){
+    public GlyphMetrics getGlyphMetrics() {
         return glMetrics;
     }
 
     /**
-     *  Retruns GlyphMetrics of this glyph object in pixels.
+     * Retruns GlyphMetrics of this glyph object in pixels.
      */
-    public GlyphMetrics getGlyphPointMetrics(){
+    public GlyphMetrics getGlyphPointMetrics() {
         return glPointMetrics;
     }
 
     /**
-     *  Retruns GlyphJustificationInfo of this glyph object
+     * Retruns GlyphJustificationInfo of this glyph object
      */
-    public GlyphJustificationInfo getGlyphJustificationInfo(){
+    public GlyphJustificationInfo getGlyphJustificationInfo() {
         return glJustInfo;
     }
 
     /**
-     *  Sets JustificationInfo of this glyph object
-     * 
-     * @param newJustInfo GlyphJustificationInfo object to set to the Glyph object 
+     * Sets JustificationInfo of this glyph object
+     *
+     * @param newJustInfo GlyphJustificationInfo object to set to the Glyph object
      */
-    public void setGlyphJustificationInfo(GlyphJustificationInfo newJustInfo){
+    public void setGlyphJustificationInfo(GlyphJustificationInfo newJustInfo) {
         this.glJustInfo = newJustInfo;
     }
 
     /**
-     * Returns an int array of 3 elements, so-called ABC structure that contains 
+     * Returns an int array of 3 elements, so-called ABC structure that contains
      * the width of the character:
      * 1st element = left side bearing of the glyph
      * 2nd element = width of the glyph
-     * 3d element = right side bearing of the glyph 
+     * 3d element = right side bearing of the glyph
      */
-    public int[] getABC(){
+    public int[] getABC() {
         int[] abc = new int[3];
-        abc[0] = (int)getGlyphMetrics().getLSB();
-        abc[1] = (int)getGlyphMetrics().getBounds2D().getWidth();
-        abc[2] = (int)getGlyphMetrics().getRSB();
+        abc[0] = (int) getGlyphMetrics().getLSB();
+        abc[1] = (int) getGlyphMetrics().getBounds2D().getWidth();
+        abc[2] = (int) getGlyphMetrics().getRSB();
 
         return abc;
-    }
-
-    /**
-     * Sets BufferedImage representation of this glyph to the specified parameter.
-     * 
-     * @param newImage new BufferedImage object to be set as BufferedImage 
-     * representation.
-     */
-    public void setImage(BufferedImage newImage){
-        this.image = newImage;
     }
 
     /**
      * Returns true if this Glyph and specified object are equal.
      */
     @Override
-    public boolean equals(Object obj){
-         if (obj == this) {
+    public boolean equals(Object obj) {
+        if (obj == this) {
             return true;
         }
 
         if (obj != null) {
-          try {
-            Glyph gl = (Glyph)obj;
+            try {
+                Glyph gl = (Glyph) obj;
 
-            return  ((this.getChar() == gl.getChar())
-              && (this.getGlyphMetrics().equals(gl.getGlyphMetrics()))
-              && (this.getGlyphCode() == gl.getGlyphCode()));
-          } catch (ClassCastException e) {
-          }
+                return ((this.getChar() == gl.getChar())
+                        && (this.getGlyphMetrics().equals(gl.getGlyphMetrics()))
+                        && (this.getGlyphCode() == gl.getGlyphCode()));
+            } catch (ClassCastException e) {
+            }
         }
 
         return false;
     }
 
     /**
-     * Returns height of the glyph in points. 
+     * Returns height of the glyph in points.
      */
-    public int getPointHeight(){
-        return (int)getGlyphPointMetrics().getBounds2D().getHeight();
+    public int getPointHeight() {
+        return (int) getGlyphPointMetrics().getBounds2D().getHeight();
     }
 
     /**
-     * Returns width of the glyph in points. 
+     * Returns width of the glyph in points.
      */
-    public int getPointWidth(){
-        return (int)getGlyphPointMetrics().getBounds2D().getWidth();
+    public int getPointWidth() {
+        return (int) getGlyphPointMetrics().getBounds2D().getWidth();
     }
 
-    public Shape getShape(){
-        if (glOutline == null){
+    public Shape getShape() {
+        if (glOutline == null) {
             glOutline = initOutline(this.glChar);
         }
         return glOutline;
@@ -213,19 +189,29 @@ public abstract class Glyph{
     /**
      * Sets BufferedImage representation of this glyph.
      */
-    public BufferedImage getImage(){
+    public BufferedImage getImage() {
         //!! Implementation classes must override this method
         return null;
     }
 
     /**
-     *  Returns array of bytes, representing image of this glyph
+     * Sets BufferedImage representation of this glyph to the specified parameter.
+     *
+     * @param newImage new BufferedImage object to be set as BufferedImage
+     *                 representation.
+     */
+    public void setImage(BufferedImage newImage) {
+        this.image = newImage;
+    }
+
+    /**
+     * Returns array of bytes, representing image of this glyph
      */
     public abstract byte[] getBitmap();
 
     /**
-     * Returns shape that represents outline of the specified character. 
-     * 
+     * Returns shape that represents outline of the specified character.
+     *
      * @param c specified character
      */
     public abstract Shape initOutline(char c);

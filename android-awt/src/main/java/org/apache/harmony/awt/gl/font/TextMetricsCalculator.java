@@ -16,16 +16,15 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  */
 
 package org.apache.harmony.awt.gl.font;
 
-import java.awt.Font;
-import java.awt.font.GraphicAttribute;
-import java.awt.font.LineMetrics;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.font.GraphicAttribute;
+import java.awt.font.LineMetrics;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -46,9 +45,8 @@ public class TextMetricsCalculator {
     float descent = 0;
     float leading = 0;
     float advance = 0;
-
-    private float baselineOffsets[];
     int baselineIndex;
+    private float baselineOffsets[];
 
     public TextMetricsCalculator(TextRunBreaker breaker) {
         this.breaker = breaker;
@@ -103,7 +101,7 @@ public class TextMetricsCalculator {
 
             if (
                     align == GraphicAttribute.TOP_ALIGNMENT ||
-                    align == GraphicAttribute.BOTTOM_ALIGNMENT
+                            align == GraphicAttribute.BOTTOM_ALIGNMENT
             ) {
                 baselineIndex = GraphicAttribute.ROMAN_BASELINE;
             } else {

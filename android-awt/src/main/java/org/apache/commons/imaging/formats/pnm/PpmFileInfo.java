@@ -16,18 +16,18 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.ImageFormats;
 import org.apache.commons.imaging.ImageInfo;
 import org.apache.commons.imaging.ImageReadException;
 
+import java.io.IOException;
+import java.io.InputStream;
+
 class PpmFileInfo extends FileInfo {
     private final int max;
     private final float scale;
-    private final int bytesPerSample; 
+    private final int bytesPerSample;
 
     public PpmFileInfo(final int width, final int height, final boolean rawbits, final int max) throws ImageReadException {
         super(width, height, rawbits);
@@ -44,7 +44,7 @@ class PpmFileInfo extends FileInfo {
         }
         this.max = max;
     }
-    
+
     @Override
     public boolean hasAlpha() {
         return false;
@@ -92,9 +92,9 @@ class PpmFileInfo extends FileInfo {
         final int alpha = 0xff;
 
         return ((0xff & alpha) << 24)
-             | ((0xff & red)   << 16)
-             | ((0xff & green) << 8)
-             | ((0xff & blue)  << 0);
+                | ((0xff & red) << 16)
+                | ((0xff & green) << 8)
+                | ((0xff & blue) << 0);
     }
 
     @Override
@@ -108,9 +108,9 @@ class PpmFileInfo extends FileInfo {
         blue = scaleSample(blue, scale, max);
         final int alpha = 0xff;
 
-        return ((0xff & alpha)  << 24)
-              | ((0xff & red)   << 16)
-              | ((0xff & green) << 8)
-              | ((0xff & blue)  << 0);
+        return ((0xff & alpha) << 24)
+                | ((0xff & red) << 16)
+                | ((0xff & green) << 8)
+                | ((0xff & blue) << 0);
     }
 }

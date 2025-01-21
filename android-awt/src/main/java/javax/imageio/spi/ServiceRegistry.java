@@ -26,15 +26,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.URL;
-import java.util.Enumeration;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.NoSuchElementException;
-import java.util.Set;
-import java.util.Stack;
 
 public class ServiceRegistry {
 
@@ -44,8 +37,8 @@ public class ServiceRegistry {
         if (null == categoriesIterator) {
             throw new IllegalArgumentException(Messages.getString("imageio.5D"));
         }
-        while(categoriesIterator.hasNext()) {
-            Class<?> c =  categoriesIterator.next();
+        while (categoriesIterator.hasNext()) {
+            Class<?> c = categoriesIterator.next();
             categories.addCategory(c);
         }
     }
@@ -63,7 +56,7 @@ public class ServiceRegistry {
     }
 
     public void registerServiceProviders(Iterator<?> providers) {
-        for (Iterator<?> iterator = providers; iterator.hasNext();) {
+        for (Iterator<?> iterator = providers; iterator.hasNext(); ) {
             categories.addProvider(iterator.next(), null);
         }
     }
@@ -80,12 +73,12 @@ public class ServiceRegistry {
         categories.removeProvider(provider);
     }
 
-//    @SuppressWarnings("unchecked")
+    //    @SuppressWarnings("unchecked")
     public <T> Iterator<T> getServiceProviders(Class<T> category, Filter filter, boolean useOrdering) {
         return new FilteredIterator<T>(filter, (Iterator<T>) categories.getProviders(category, useOrdering));
     }
 
-//    @SuppressWarnings("unchecked")
+    //    @SuppressWarnings("unchecked")
     public <T> Iterator<T> getServiceProviders(Class<T> category, boolean useOrdering) {
         return (Iterator<T>) categories.getProviders(category, useOrdering);
     }
@@ -119,7 +112,7 @@ public class ServiceRegistry {
         if (provider == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.5E"));
         }
-        
+
         return categories.contains(provider);
     }
 
@@ -147,30 +140,30 @@ public class ServiceRegistry {
                     return true;
                 }
             }
-            
+
             return false;
         }
 
         <T> boolean setOrdering(Class<T> category, T firstProvider, T secondProvider) {
             ProvidersMap providers = categories.get(category);
-            
+
             if (providers == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
-            
+
             return providers.setOrdering(firstProvider, secondProvider);
         }
-        
+
         <T> boolean unsetOrdering(Class<T> category, T firstProvider, T secondProvider) {
             ProvidersMap providers = categories.get(category);
-            
+
             if (providers == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
-            
+
             return providers.unsetOrdering(firstProvider, secondProvider);
         }
-        
+
         Iterator<?> getProviders(Class<?> category, boolean useOrdering) {
             ProvidersMap providers = categories.get(category);
             if (null == providers) {
@@ -178,17 +171,17 @@ public class ServiceRegistry {
             }
             return providers.getProviders(useOrdering);
         }
-        
+
         <T> T getServiceProviderByClass(Class<T> providerClass) {
-        	for (Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
-        		if (e.getKey().isAssignableFrom(providerClass)) {
-        			T provider = e.getValue().getServiceProviderByClass(providerClass);
-        			if (provider != null) {
-        				return provider;
-        			}
-        		}
-        	}
-        	return null;
+            for (Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+                if (e.getKey().isAssignableFrom(providerClass)) {
+                    T provider = e.getValue().getServiceProviderByClass(providerClass);
+                    if (provider != null) {
+                        return provider;
+                    }
+                }
+            }
+            return null;
         }
 
         Iterator<Class<?>> list() {
@@ -203,6 +196,7 @@ public class ServiceRegistry {
          * Adds a provider to the category. If <code>category</code> is
          * <code>null</code> then the provider will be added to all categories
          * which the provider is assignable from.
+         *
          * @param provider provider to add
          * @param category category to add provider to
          * @return if there were such provider in some category
@@ -216,7 +210,7 @@ public class ServiceRegistry {
             if (category == null) {
                 rt = findAndAdd(provider);
             } else {
-                rt  = addToNamed(provider, category);
+                rt = addToNamed(provider, category);
             }
 
             if (provider instanceof RegisterableService) {
@@ -248,49 +242,49 @@ public class ServiceRegistry {
             }
             return rt;
         }
-        
+
         boolean removeProvider(Object provider, Class<?> category) {
             if (provider == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.5E"));
             }
-            
+
             if (!category.isAssignableFrom(provider.getClass())) {
                 throw new ClassCastException();
             }
-            
+
             Object obj = categories.get(category);
-            
+
             if (obj == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
-            
+
             return ((ProvidersMap) obj).removeProvider(provider, registry, category);
         }
-        
+
         void removeProvider(Object provider) {
             if (provider == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.5E"));
             }
-            
+
             for (Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
                 ProvidersMap providers = e.getValue();
                 providers.removeProvider(provider, registry, e.getKey());
             }
         }
-        
+
         void removeAll(Class<?> category) {
             Object obj = categories.get(category);
-            
+
             if (obj == null) {
                 throw new IllegalArgumentException(Messages.getString("imageio.92", category));
             }
-            
-            ((ProvidersMap) obj).clear(registry);         
+
+            ((ProvidersMap) obj).clear(registry);
         }
-        
+
         void removeAll() {
-            for ( Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
-                removeAll(e.getKey());                
+            for (Entry<Class<?>, ProvidersMap> e : categories.entrySet()) {
+                removeAll(e.getKey());
             }
         }
     }
@@ -301,15 +295,15 @@ public class ServiceRegistry {
         Map<Object, ProviderNode> nodeMap = new HashMap<Object, ProviderNode>();
 
         boolean addProvider(Object provider) {
-            ProviderNode node =  new ProviderNode(provider);
+            ProviderNode node = new ProviderNode(provider);
             nodeMap.put(provider, node);
             Object obj = providers.put(provider.getClass(), provider);
-            
-            if (obj !=  null) {
+
+            if (obj != null) {
                 nodeMap.remove(obj);
                 return false;
             }
-            
+
             return true;
         }
 
@@ -318,32 +312,32 @@ public class ServiceRegistry {
         }
 
         boolean removeProvider(Object provider,
-                ServiceRegistry registry, Class<?> category) {
-            
+                               ServiceRegistry registry, Class<?> category) {
+
             Object obj = providers.get(provider.getClass());
             if ((obj == null) || (obj != provider)) {
                 return false;
             }
-            
+
             providers.remove(provider.getClass());
             nodeMap.remove(provider);
-            
+
             if (provider instanceof RegisterableService) {
                 ((RegisterableService) provider).onDeregistration(registry, category);
-            }            
-            
+            }
+
             return true;
         }
-        
+
         void clear(ServiceRegistry registry) {
             for (Entry<Class<?>, Object> e : providers.entrySet()) {
                 Object provider = e.getValue();
-                
+
                 if (provider instanceof RegisterableService) {
                     ((RegisterableService) provider).onDeregistration(registry, e.getKey());
                 }
             }
-            
+
             providers.clear();
             nodeMap.clear();
         }
@@ -354,65 +348,65 @@ public class ServiceRegistry {
 
         Iterator<?> getProviders(boolean useOrdering) {
             if (useOrdering) {
-                return new OrderedProviderIterator(nodeMap.values().iterator());              
+                return new OrderedProviderIterator(nodeMap.values().iterator());
             }
-            
+
             return providers.values().iterator();
         }
-        
+
         @SuppressWarnings("unchecked")
-		<T> T getServiceProviderByClass(Class<T> providerClass) {
-        	return (T)providers.get(providerClass);
+        <T> T getServiceProviderByClass(Class<T> providerClass) {
+            return (T) providers.get(providerClass);
         }
-        
+
         public <T> boolean setOrdering(T firstProvider, T secondProvider) {
             if (firstProvider == secondProvider) {
                 throw new IllegalArgumentException(Messages.getString("imageio.98"));
             }
-            
+
             if ((firstProvider == null) || (secondProvider == null)) {
                 throw new IllegalArgumentException(Messages.getString("imageio.5E"));
             }
-           
+
             ProviderNode firstNode = nodeMap.get(firstProvider);
             ProviderNode secondNode = nodeMap.get(secondProvider);
-                    
+
             // if the ordering is already set, return false
             if ((firstNode == null) || (firstNode.contains(secondNode))) {
                 return false;
             }
-            
+
             // put secondProvider into firstProvider's outgoing nodes list
             firstNode.addOutEdge(secondNode);
             // increase secondNode's incoming edge by 1
-            secondNode.addInEdge();         
-            
+            secondNode.addInEdge();
+
             return true;
         }
-        
+
         public <T> boolean unsetOrdering(T firstProvider, T secondProvider) {
             if (firstProvider == secondProvider) {
                 throw new IllegalArgumentException(Messages.getString("imageio.98"));
             }
-            
+
             if ((firstProvider == null) || (secondProvider == null)) {
                 throw new IllegalArgumentException(Messages.getString("imageio.5E"));
             }
-            
+
             ProviderNode firstNode = nodeMap.get(firstProvider);
-            ProviderNode secondNode = nodeMap.get(secondProvider); 
-                    
+            ProviderNode secondNode = nodeMap.get(secondProvider);
+
             // if the ordering is not set, return false
             if ((firstNode == null) || (!firstNode.contains(secondNode))) {
                 return false;
             }
-                    
+
             // remove secondProvider from firstProvider's outgoing nodes list
             firstNode.removeOutEdge(secondNode);
             // decrease secondNode's incoming edge by 1
             secondNode.removeInEdge();
-                    
-            return true;            
+
+            return true;
         }
     }
 
@@ -459,48 +453,48 @@ public class ServiceRegistry {
             }
         }
     }
-    
+
     private static class ProviderNode {
         // number of incoming edges
-        private int incomingEdges;  
+        private int incomingEdges;
         // all outgoing nodes
-        private Set<Object> outgoingNodes; 
+        private Set<Object> outgoingNodes;
         private Object provider;
-                
+
         public ProviderNode(Object provider) {
             incomingEdges = 0;
             outgoingNodes = new HashSet<Object>();
             this.provider = provider;
         }
-            
+
         public Object getProvider() {
             return provider;
         }
-        
+
         public Iterator<Object> getOutgoingNodes() {
             return outgoingNodes.iterator();
         }
-        
+
         public boolean addOutEdge(Object secondProvider) {
             return outgoingNodes.add(secondProvider);
         }
-        
+
         public <T> boolean removeOutEdge(Object provider) {
             return outgoingNodes.remove(provider);
         }
-        
+
         public void addInEdge() {
             incomingEdges++;
         }
-        
+
         public void removeInEdge() {
             incomingEdges--;
         }
-        
+
         public int getIncomingEdges() {
             return incomingEdges;
         }
-        
+
         public boolean contains(Object provider) {
             return outgoingNodes.contains(provider);
         }
@@ -508,6 +502,7 @@ public class ServiceRegistry {
 
     /**
      * The iterator implements Kahn topological sorting algorithm.
+     *
      * @see <a href="http://en.wikipedia.org/wiki/Topological_sorting">Wikipedia</a>
      * for further reference.
      */
@@ -521,7 +516,7 @@ public class ServiceRegistry {
         // when a node is returned by iterator, the counters for connected
         // nodes decrement
         private Map<ProviderNode, Integer> incomingEdges = new HashMap<ProviderNode, Integer>();
-        
+
         public OrderedProviderIterator(Iterator it) {
             // find all the nodes that with no incoming edges and
             // add them to firstNodes
@@ -533,59 +528,59 @@ public class ServiceRegistry {
                 }
             }
         }
-            
+
         public boolean hasNext() {
             return !firstNodes.empty();
         }
 
         public Object next() {
             if (firstNodes.empty()) {
-               throw new NoSuchElementException();
+                throw new NoSuchElementException();
             }
-                            
+
             // get a node from firstNodes
             ProviderNode node = firstNodes.pop();
-                            
+
             // find all the outgoing nodes
             Iterator it = node.getOutgoingNodes();
             while (it.hasNext()) {
                 ProviderNode outNode = (ProviderNode) it.next();
-                
+
                 // remove the incoming edge from the node.
                 int edges = incomingEdges.get(outNode);
                 edges--;
                 incomingEdges.put(outNode, new Integer(edges));
-                
+
                 // add to the firstNodes if this node's incoming edge is equal to 0
                 if (edges == 0) {
                     firstNodes.push(outNode);
                 }
             }
-            
+
             incomingEdges.remove(node);
-                            
+
             return node.getProvider();
         }
-        
+
         public void remove() {
             throw new UnsupportedOperationException();
         }
     }
-    
+
     static class LookupProvidersIterator<T> implements Iterator {
 
         private Set<String> providerNames = new HashSet<String>();
         private Iterator<String> it = null;
         private ClassLoader loader = null;
-        
+
         public LookupProvidersIterator(Class<T> providerClass, ClassLoader loader) {
             this.loader = loader;
-            
+
             Enumeration<URL> e = null;
             try {
-                e = loader.getResources("META-INF/services/"+providerClass.getName()); //$NON-NLS-1$
+                e = loader.getResources("META-INF/services/" + providerClass.getName()); //$NON-NLS-1$
                 while (e.hasMoreElements()) {
-                    Set<String> names = parse((URL)e.nextElement());
+                    Set<String> names = parse((URL) e.nextElement());
                     providerNames.addAll(names);
                 }
             } catch (IOException e1) {
@@ -594,9 +589,9 @@ public class ServiceRegistry {
 
             it = providerNames.iterator();
         }
-        
+
         /*
-         * Parse the provider-configuration file as specified 
+         * Parse the provider-configuration file as specified
          * @see <a href="http://java.sun.com/j2se/1.5.0/docs/guide/jar/jar.html#Provider Configuration File">JAR File Specification</a>
          */
         private Set<String> parse(URL u) {
@@ -606,20 +601,20 @@ public class ServiceRegistry {
             try {
                 input = u.openStream();
                 reader = new BufferedReader(new InputStreamReader(input, "utf-8")); //$NON-NLS-1$
-                
+
                 String line;
                 while ((line = reader.readLine()) != null) {
                     // The comment character is '#' (0x23)
                     // on each line all characters following the first comment character are ignored
                     int sharpIndex = line.indexOf('#');
-                    if (sharpIndex>=0) {
+                    if (sharpIndex >= 0) {
                         line = line.substring(0, sharpIndex);
                     }
-                    
+
                     // Whitespaces are ignored
                     line = line.trim();
-                    
-                    if (line.length()>0) {
+
+                    if (line.length() > 0) {
                         // a java class name, check if identifier correct
                         char[] namechars = line.toCharArray();
                         for (int i = 0; i < namechars.length; i++) {
@@ -644,10 +639,10 @@ public class ServiceRegistry {
                     throw new ServiceConfigurationError(e.toString());
                 }
             }
-            
+
             return names;
         }
-        
+
         public boolean hasNext() {
             return it.hasNext();
         }
@@ -656,8 +651,8 @@ public class ServiceRegistry {
             if (!hasNext()) {
                 throw new NoSuchElementException();
             }
-            
-            String name = (String)it.next();
+
+            String name = (String) it.next();
             try {
                 return Class.forName(name, true, loader).newInstance();
             } catch (Exception e) {
@@ -666,23 +661,22 @@ public class ServiceRegistry {
         }
 
         public void remove() {
-            throw new UnsupportedOperationException();   
+            throw new UnsupportedOperationException();
         }
     }
-    
+
     /**
      * An Error that can be thrown when something wrong occurs in loading a service
      * provider.
      */
     static class ServiceConfigurationError extends Error {
-        
+
         private static final long serialVersionUID = 74132770414881L;
 
         /**
          * The constructor
-         * 
-         * @param msg
-         *            the message of this error
+         *
+         * @param msg the message of this error
          */
         public ServiceConfigurationError(String msg) {
             super(msg);
@@ -690,11 +684,9 @@ public class ServiceRegistry {
 
         /**
          * The constructor
-         * 
-         * @param msg
-         *            the message of this error
-         * @param cause 
-         *            the cause of this error
+         *
+         * @param msg   the message of this error
+         * @param cause the cause of this error
          */
         public ServiceConfigurationError(String msg, Throwable cause) {
             super(msg, cause);

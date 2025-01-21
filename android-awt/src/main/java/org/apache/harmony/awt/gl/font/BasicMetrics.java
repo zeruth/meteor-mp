@@ -16,12 +16,11 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  */
 
 package org.apache.harmony.awt.gl.font;
 
-import java.awt.Font;
+import java.awt.*;
 import java.awt.font.GraphicAttribute;
 import java.awt.font.LineMetrics;
 
@@ -90,12 +89,12 @@ public class BasicMetrics {
         italicAngle = 0;
         superScriptOffset = 0;
 
-        underlineOffset = Math.max(descent/2, 1);
+        underlineOffset = Math.max(descent / 2, 1);
 
         // Just suggested, should be cap_stem_width or something like that
-        underlineThickness = Math.max(ascent/13, 1);
+        underlineThickness = Math.max(ascent / 13, 1);
 
-        strikethroughOffset = -ascent/2; // Something like middle of the line
+        strikethroughOffset = -ascent / 2; // Something like middle of the line
         strikethroughThickness = underlineThickness;
     }
 

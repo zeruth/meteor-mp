@@ -17,26 +17,22 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 18.11.2005
- *
  */
 package org.apache.harmony.awt.gl.render;
 
 
-import java.awt.AlphaComposite;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.CompositeContext;
-import java.awt.Rectangle;
+import org.apache.harmony.awt.gl.MultiRectArea;
+import org.apache.harmony.awt.gl.Surface;
+import org.apache.harmony.awt.gl.XORComposite;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.ColorModel;
 import java.awt.image.Raster;
 import java.awt.image.WritableRaster;
-import org.apache.harmony.awt.gl.MultiRectArea;
-import org.apache.harmony.awt.gl.Surface;
-import org.apache.harmony.awt.gl.XORComposite;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 /**
@@ -45,6 +41,9 @@ import org.apache.harmony.awt.internal.nls.Messages;
  */
 public class JavaBlitter implements Blitter {
 
+    final static int AlphaCompositeMode = 1;
+    final static int XORMode = 2;
+    final static JavaBlitter inst = new JavaBlitter();
     /**
      * Instead of multiplication and division we are using values from
      * Lookup tables.
@@ -52,42 +51,60 @@ public class JavaBlitter implements Blitter {
     static byte mulLUT[][]; // Lookup table for multiplication
     static byte divLUT[][]; // Lookup table for division
 
-    static{
+    static {
         mulLUT = new byte[256][256];
-        for(int i = 0; i < 256; i++){
-            for(int j = 0; j < 256; j++){
-                mulLUT[i][j] = (byte)((float)(i * j)/255 + 0.5f);
+        for (int i = 0; i < 256; i++) {
+            for (int j = 0; j < 256; j++) {
+                mulLUT[i][j] = (byte) ((float) (i * j) / 255 + 0.5f);
             }
         }
         divLUT = new byte[256][256];
-        for(int i = 1; i < 256; i++){
-            for(int j = 0; j < i; j++){
-                divLUT[i][j] = (byte)(((float)j / 255) / ((float)i/ 255) * 255 + 0.5f);
+        for (int i = 1; i < 256; i++) {
+            for (int j = 0; j < i; j++) {
+                divLUT[i][j] = (byte) (((float) j / 255) / ((float) i / 255) * 255 + 0.5f);
             }
-            for(int j = i; j < 256; j++){
-                divLUT[i][j] = (byte)255;
+            for (int j = i; j < 256; j++) {
+                divLUT[i][j] = (byte) 255;
             }
         }
     }
 
-    final static int AlphaCompositeMode = 1;
-    final static int XORMode = 2;
-
-    final static JavaBlitter inst = new JavaBlitter();
-
-    public static JavaBlitter getInstance(){
+    public static JavaBlitter getInstance() {
         return inst;
     }
 
-    public void blit(int srcX, int srcY, Surface srcSurf, int dstX, int dstY,
-            Surface dstSurf, int width, int height, AffineTransform sysxform,
-            AffineTransform xform, Composite comp, Color bgcolor,
-            MultiRectArea clip) {
+    public static Rectangle2D getBounds2D(AffineTransform at, Rectangle r) {
+        int x = r.x;
+        int y = r.y;
+        int width = r.width;
+        int height = r.height;
 
-        if(xform == null){
+        float[] corners = {
+                x, y,
+                x + width + 1, y,
+                x + width + 1, y + height + 1,
+                x, y + height + 1
+        };
+
+        at.transform(corners, 0, corners, 0, 4);
+
+        Rectangle2D.Float bounds = new Rectangle2D.Float(corners[0], corners[1], 0, 0);
+        bounds.add(corners[2], corners[3]);
+        bounds.add(corners[4], corners[5]);
+        bounds.add(corners[6], corners[7]);
+
+        return bounds;
+    }
+
+    public void blit(int srcX, int srcY, Surface srcSurf, int dstX, int dstY,
+                     Surface dstSurf, int width, int height, AffineTransform sysxform,
+                     AffineTransform xform, Composite comp, Color bgcolor,
+                     MultiRectArea clip) {
+
+        if (xform == null) {
             blit(srcX, srcY, srcSurf, dstX, dstY, dstSurf, width, height,
                     sysxform, comp, bgcolor, clip);
-        }else{
+        } else {
             double scaleX = xform.getScaleX();
             double scaleY = xform.getScaleY();
             double scaledX = dstX / scaleX;
@@ -103,19 +120,19 @@ public class JavaBlitter implements Blitter {
     }
 
     public void blit(int srcX, int srcY, Surface srcSurf, int dstX, int dstY,
-            Surface dstSurf, int width, int height, AffineTransform sysxform,
-            Composite comp, Color bgcolor, MultiRectArea clip) {
+                     Surface dstSurf, int width, int height, AffineTransform sysxform,
+                     Composite comp, Color bgcolor, MultiRectArea clip) {
 
-        if(sysxform == null) {
+        if (sysxform == null) {
             sysxform = new AffineTransform();
         }
         int type = sysxform.getType();
-        switch(type){
+        switch (type) {
             case AffineTransform.TYPE_TRANSLATION:
                 dstX += sysxform.getTranslateX();
                 dstY += sysxform.getTranslateY();
             case AffineTransform.TYPE_IDENTITY:
-                 blit(srcX, srcY, srcSurf, dstX, dstY, dstSurf,
+                blit(srcX, srcY, srcSurf, dstX, dstY, dstSurf,
                         width, height, comp, bgcolor, clip);
                 break;
             default:
@@ -134,7 +151,7 @@ public class JavaBlitter implements Blitter {
 
                 transformedBlit(srcCM, srcR, 0, 0, dstCM, dstR, dstX, dstY, w, h,
                         sysxform, comp, bgcolor, clip);
-                
+
                 Rectangle dirtyReg = JavaBlitter.getBounds2D(sysxform, new Rectangle(dstX, dstY, w, h)).getBounds();
                 Rectangle bounds = new Rectangle(dstSurf.getWidth(), dstSurf.getHeight()).getBounds();
                 dstSurf.addDirtyRegion(bounds.intersection(dirtyReg));
@@ -143,8 +160,8 @@ public class JavaBlitter implements Blitter {
     }
 
     public void blit(int srcX, int srcY, Surface srcSurf, int dstX, int dstY,
-            Surface dstSurf, int width, int height, Composite comp,
-            Color bgcolor, MultiRectArea clip) {
+                     Surface dstSurf, int width, int height, Composite comp,
+                     Color bgcolor, MultiRectArea clip) {
 
         javaBlt(srcX, srcY, srcSurf.getWidth(), srcSurf.getHeight(),
                 srcSurf.getColorModel(), srcSurf.getRaster(), dstX, dstY,
@@ -155,63 +172,64 @@ public class JavaBlitter implements Blitter {
         dstSurf.addDirtyRegion(new Rectangle(dstX, dstY, width, height));
 
     }
+
     public void javaBlt(int srcX, int srcY, int srcW, int srcH,
-            ColorModel srcCM, Raster srcRast, int dstX, int dstY,
-            int dstW, int dstH, ColorModel dstCM, WritableRaster dstRast,
-            int width, int height, Composite comp, Color bgcolor,
-            MultiRectArea clip){
+                        ColorModel srcCM, Raster srcRast, int dstX, int dstY,
+                        int dstW, int dstH, ColorModel dstCM, WritableRaster dstRast,
+                        int width, int height, Composite comp, Color bgcolor,
+                        MultiRectArea clip) {
 
         int srcX2 = srcW - 1;
         int srcY2 = srcH - 1;
         int dstX2 = dstW - 1;
         int dstY2 = dstH - 1;
 
-        if(srcX < 0){
+        if (srcX < 0) {
             width += srcX;
             srcX = 0;
         }
-        if(srcY < 0){
+        if (srcY < 0) {
             height += srcY;
             srcY = 0;
         }
 
-        if(dstX < 0){
+        if (dstX < 0) {
             width += dstX;
             srcX -= dstX;
             dstX = 0;
         }
-        if(dstY < 0){
+        if (dstY < 0) {
             height += dstY;
             srcY -= dstY;
             dstY = 0;
         }
 
-        if(srcX > srcX2 || srcY > srcY2) {
+        if (srcX > srcX2 || srcY > srcY2) {
             return;
         }
-        if(dstX > dstX2 || dstY > dstY2) {
+        if (dstX > dstX2 || dstY > dstY2) {
             return;
         }
 
-        if(srcX + width > srcX2) {
+        if (srcX + width > srcX2) {
             width = srcX2 - srcX + 1;
         }
-        if(srcY + height > srcY2) {
+        if (srcY + height > srcY2) {
             height = srcY2 - srcY + 1;
         }
-        if(dstX + width > dstX2) {
+        if (dstX + width > dstX2) {
             width = dstX2 - dstX + 1;
         }
-        if(dstY + height > dstY2) {
+        if (dstY + height > dstY2) {
             height = dstY2 - dstY + 1;
         }
 
-        if(width <= 0 || height <= 0) {
+        if (width <= 0 || height <= 0) {
             return;
         }
 
         int clipRects[];
-        if(clip != null) {
+        if (clip != null) {
             clipRects = clip.rect;
         } else {
             clipRects = new int[]{5, 0, 0, dstW - 1, dstH - 1};
@@ -224,20 +242,20 @@ public class JavaBlitter implements Blitter {
         Color xorcolor = null;
         CompositeContext cont = null;
 
-        if(comp instanceof AlphaComposite){
+        if (comp instanceof AlphaComposite) {
             isAlphaComp = true;
             AlphaComposite ac = (AlphaComposite) comp;
             rule = ac.getRule();
             alpha = ac.getAlpha();
-        }else if(comp instanceof XORComposite){
+        } else if (comp instanceof XORComposite) {
             isXORComp = true;
             XORComposite xcomp = (XORComposite) comp;
             xorcolor = xcomp.getXORColor();
-        }else{
+        } else {
             cont = comp.createContext(srcCM, dstCM, null);
         }
 
-        for(int i = 1; i < clipRects[0]; i += 4){
+        for (int i = 1; i < clipRects[0]; i += 4) {
             int _sx = srcX;
             int _sy = srcY;
 
@@ -252,43 +270,43 @@ public class JavaBlitter implements Blitter {
             int cx2 = clipRects[i + 2];     // Clipping right bottom X
             int cy2 = clipRects[i + 3];     // Clipping right bottom Y
 
-            if(_dx > cx2 || _dy > cy2 || dstX2 < cx || dstY2 < cy) {
+            if (_dx > cx2 || _dy > cy2 || dstX2 < cx || dstY2 < cy) {
                 continue;
             }
 
-            if(cx > _dx){
+            if (cx > _dx) {
                 int shx = cx - _dx;
                 _w -= shx;
                 _dx = cx;
                 _sx += shx;
             }
 
-            if(cy > _dy){
+            if (cy > _dy) {
                 int shy = cy - _dy;
                 _h -= shy;
                 _dy = cy;
                 _sy += shy;
             }
 
-            if(_dx + _w > cx2 + 1){
+            if (_dx + _w > cx2 + 1) {
                 _w = cx2 - _dx + 1;
             }
 
-            if(_dy + _h > cy2 + 1){
+            if (_dy + _h > cy2 + 1) {
                 _h = cy2 - _dy + 1;
             }
 
-            if(_sx > srcX2 || _sy > srcY2) {
+            if (_sx > srcX2 || _sy > srcY2) {
                 continue;
             }
 
-            if(isAlphaComp){
+            if (isAlphaComp) {
                 alphaCompose(_sx, _sy, srcCM, srcRast, _dx, _dy,
                         dstCM, dstRast, _w, _h, rule, alpha, bgcolor);
-            }else if(isXORComp){
+            } else if (isXORComp) {
                 xorCompose(_sx, _sy, srcCM, srcRast, _dx, _dy,
                         dstCM, dstRast, _w, _h, xorcolor);
-            }else{
+            } else {
                 Raster sr = srcRast.createChild(_sx, _sy, _w, _h, 0, 0, null);
                 WritableRaster dr = dstRast.createWritableChild(_dx, _dy,
                         _w, _h, 0, 0, null);
@@ -298,22 +316,22 @@ public class JavaBlitter implements Blitter {
     }
 
     void alphaCompose(int srcX, int srcY, ColorModel srcCM, Raster srcRast,
-            int dstX, int dstY, ColorModel dstCM, WritableRaster dstRast,
-            int width, int height, int rule, float alpha, Color bgcolor){
+                      int dstX, int dstY, ColorModel dstCM, WritableRaster dstRast,
+                      int width, int height, int rule, float alpha, Color bgcolor) {
 
         Object srcPixel, dstPixel;
-        int srcConstAllpha = (int)(alpha * 255 + 0.5f);
+        int srcConstAllpha = (int) (alpha * 255 + 0.5f);
         int srcRGB, dstRGB = 0;
 
-        if(bgcolor != null){
+        if (bgcolor != null) {
             dstRGB = bgcolor.getRGB();
         }
 
-        for(int sy = srcY, dy = dstY, srcYMax = srcY + height; sy < srcYMax; sy++, dy++){
-            for(int sx = srcX, dx = dstX, srcXMax = srcX + width; sx < srcXMax; sx++, dx++){
+        for (int sy = srcY, dy = dstY, srcYMax = srcY + height; sy < srcYMax; sy++, dy++) {
+            for (int sx = srcX, dx = dstX, srcXMax = srcX + width; sx < srcXMax; sx++, dx++) {
                 srcPixel = srcRast.getDataElements(sx, sy, null);
                 srcRGB = srcCM.getRGB(srcPixel);
-                if(bgcolor == null){
+                if (bgcolor == null) {
                     dstPixel = dstRast.getDataElements(dx, dy, null);
                     dstRGB = dstCM.getRGB(dstPixel);
                 }
@@ -323,21 +341,21 @@ public class JavaBlitter implements Blitter {
                         rule, srcConstAllpha);
 
                 dstPixel = dstCM.getDataElements(dstRGB, null);
-                dstRast.setDataElements(dx,dy,dstPixel);
+                dstRast.setDataElements(dx, dy, dstPixel);
             }
         }
     }
 
     void xorCompose(int srcX, int srcY, ColorModel srcCM, Raster srcRast,
-            int dstX, int dstY, ColorModel dstCM, WritableRaster dstRast,
-            int width, int height, Color xorcolor){
+                    int dstX, int dstY, ColorModel dstCM, WritableRaster dstRast,
+                    int width, int height, Color xorcolor) {
 
         Object srcPixel, dstPixel;
         int xorRGB = xorcolor.getRGB();
         int srcRGB, dstRGB;
 
-        for(int sy = srcY, dy = dstY, srcYMax = srcY + height; sy < srcYMax; sy++, dy++){
-            for(int sx = srcX, dx = dstX, srcXMax = srcX + width; sx < srcXMax; sx++, dx++){
+        for (int sy = srcY, dy = dstY, srcYMax = srcY + height; sy < srcYMax; sy++, dy++) {
+            for (int sx = srcX, dx = dstX, srcXMax = srcX + width; sx < srcXMax; sx++, dx++) {
                 srcPixel = srcRast.getDataElements(sx, sy, null);
                 dstPixel = dstRast.getDataElements(dx, dy, null);
 
@@ -347,7 +365,7 @@ public class JavaBlitter implements Blitter {
 
                 dstRGB = 0xff000000 | dstRGB;
                 dstPixel = dstCM.getDataElements(dstRGB, dstPixel);
-                dstRast.setDataElements(dx,dy,dstPixel);
+                dstRast.setDataElements(dx, dy, dstPixel);
 
             }
         }
@@ -355,9 +373,9 @@ public class JavaBlitter implements Blitter {
     }
 
     private void transformedBlit(ColorModel srcCM, Raster srcR, int srcX, int srcY,
-            ColorModel dstCM, WritableRaster dstR, int dstX, int dstY,
-            int width, int height, AffineTransform at, Composite comp,
-            Color bgcolor,MultiRectArea clip) {
+                                 ColorModel dstCM, WritableRaster dstR, int dstX, int dstY,
+                                 int width, int height, AffineTransform at, Composite comp,
+                                 Color bgcolor, MultiRectArea clip) {
 
         Rectangle srcBounds = new Rectangle(srcX, srcY, width, height);
         Rectangle dstBlitBounds = new Rectangle(dstX, dstY, width, height);
@@ -370,7 +388,7 @@ public class JavaBlitter implements Blitter {
 
         AffineTransform inv = null;
         try {
-             inv = at.createInverse();
+            inv = at.createInverse();
         } catch (NoninvertibleTransformException e) {
             return;
         }
@@ -379,7 +397,7 @@ public class JavaBlitter implements Blitter {
         inv.getMatrix(m);
 
         int clipRects[];
-        if(clip != null) {
+        if (clip != null) {
             clipRects = clip.rect;
         } else {
             clipRects = new int[]{5, 0, 0, dstR.getWidth(), dstR.getHeight()};
@@ -391,18 +409,18 @@ public class JavaBlitter implements Blitter {
         int bgRGB = bgcolor == null ? 0 : bgcolor.getRGB();
         int srcRGB = 0, dstRGB = 0;
         Object srcVal = null, dstVal = null;
-        if(comp instanceof AlphaComposite){
+        if (comp instanceof AlphaComposite) {
             compType = AlphaCompositeMode;
             AlphaComposite ac = (AlphaComposite) comp;
             rule = ac.getRule();
-            srcConstAlpha = (int)(ac.getAlpha() * 255 + 0.5f);
-        }else if(comp instanceof XORComposite){
+            srcConstAlpha = (int) (ac.getAlpha() * 255 + 0.5f);
+        } else if (comp instanceof XORComposite) {
             compType = XORMode;
             XORComposite xor = (XORComposite) comp;
             bgRGB = xor.getXORColor().getRGB();
         }
 
-        for(int i = 1; i < clipRects[0]; i += 4){
+        for (int i = 1; i < clipRects[0]; i += 4) {
             Rectangle dstBounds = new Rectangle(clipRects[i], clipRects[i + 1], 0, 0);
             dstBounds.add(clipRects[i + 2] + 1, clipRects[i + 1]);
             dstBounds.add(clipRects[i + 2] + 1, clipRects[i + 3] + 1);
@@ -420,28 +438,28 @@ public class JavaBlitter implements Blitter {
             int maxX = minX + bounds.width;
             int maxY = minY + bounds.height;
 
-            int hx = (int)((m[0] * 256) + 0.5);
-            int hy = (int)((m[1] * 256) + 0.5);
-            int vx = (int)((m[2] * 256) + 0.5);
-            int vy = (int)((m[3] * 256) + 0.5);
-            int sx = (int)((m[4] + m[0] * (bounds.x - translateX) + m[2] * (bounds.y - translateY)) * 256 + 0.5);
-            int sy = (int)((m[5] + m[1] * (bounds.x - translateX) + m[3] * (bounds.y - translateY)) * 256 + 0.5);
+            int hx = (int) ((m[0] * 256) + 0.5);
+            int hy = (int) ((m[1] * 256) + 0.5);
+            int vx = (int) ((m[2] * 256) + 0.5);
+            int vy = (int) ((m[3] * 256) + 0.5);
+            int sx = (int) ((m[4] + m[0] * (bounds.x - translateX) + m[2] * (bounds.y - translateY)) * 256 + 0.5);
+            int sy = (int) ((m[5] + m[1] * (bounds.x - translateX) + m[3] * (bounds.y - translateY)) * 256 + 0.5);
 
             vx -= hx * bounds.width;
             vy -= hy * bounds.width;
 
-            for(int y = minY; y < maxY; y++) {
-                for(int x = minX; x < maxX; x++) {
+            for (int y = minY; y < maxY; y++) {
+                for (int x = minX; x < maxX; x++) {
                     int px = sx >> 8;
                     int py = sy >> 8;
                     if (px >= minSrcX && py >= minSrcY && px < maxSrcX && py < maxSrcY) {
-                        switch(compType){
+                        switch (compType) {
                             case AlphaCompositeMode:
-                                srcVal = srcR.getDataElements(px , py , null);
+                                srcVal = srcR.getDataElements(px, py, null);
                                 srcRGB = srcCM.getRGB(srcVal);
-                                if(bgcolor != null){
+                                if (bgcolor != null) {
                                     dstRGB = bgRGB;
-                                }else{
+                                } else {
                                     dstVal = dstR.getDataElements(x, y, null);
                                     dstRGB = dstCM.getRGB(dstVal);
                                 }
@@ -453,7 +471,7 @@ public class JavaBlitter implements Blitter {
                                 break;
 
                             case XORMode:
-                                srcVal = srcR.getDataElements(px , py , null);
+                                srcVal = srcR.getDataElements(px, py, null);
                                 srcRGB = srcCM.getRGB(srcVal);
                                 dstVal = dstR.getDataElements(x, y, null);
                                 dstRGB = dstCM.getRGB(dstVal);
@@ -480,32 +498,9 @@ public class JavaBlitter implements Blitter {
 
     }
 
-    public static Rectangle2D getBounds2D(AffineTransform at, Rectangle r) {
-        int x = r.x;
-        int y = r.y;
-        int width = r.width;
-        int height = r.height;
-
-        float[] corners = {
-            x, y,
-            x + width + 1, y,
-            x + width + 1, y + height + 1,
-            x, y + height + 1
-        };
-
-        at.transform(corners, 0, corners, 0, 4);
-
-        Rectangle2D.Float bounds = new Rectangle2D.Float(corners[0], corners[1], 0 , 0);
-        bounds.add(corners[2], corners[3]);
-        bounds.add(corners[4], corners[5]);
-        bounds.add(corners[6], corners[7]);
-
-        return bounds;
-    }
-
     private int compose(int srcRGB, boolean isSrcAlphaPre,
-            int dstRGB, boolean dstHasAlpha, boolean isDstAlphaPre,
-            int rule, int srcConstAlpha){
+                        int dstRGB, boolean dstHasAlpha, boolean isDstAlphaPre,
+                        int rule, int srcConstAlpha) {
 
         int sa, sr, sg, sb, da, dr, dg, db;
 
@@ -514,12 +509,12 @@ public class JavaBlitter implements Blitter {
         sg = (srcRGB >> 8) & 0xff;
         sb = srcRGB & 0xff;
 
-        if(isSrcAlphaPre){
+        if (isSrcAlphaPre) {
             sa = mulLUT[srcConstAlpha][sa] & 0xff;
             sr = mulLUT[srcConstAlpha][sr] & 0xff;
             sg = mulLUT[srcConstAlpha][sg] & 0xff;
             sb = mulLUT[srcConstAlpha][sb] & 0xff;
-        }else{
+        } else {
             sa = mulLUT[srcConstAlpha][sa] & 0xff;
             sr = mulLUT[sa][sr] & 0xff;
             sg = mulLUT[sa][sg] & 0xff;
@@ -531,7 +526,7 @@ public class JavaBlitter implements Blitter {
         dg = (dstRGB >> 8) & 0xff;
         db = dstRGB & 0xff;
 
-        if(!isDstAlphaPre){
+        if (!isDstAlphaPre) {
             dr = mulLUT[da][dr] & 0xff;
             dg = mulLUT[da][dg] & 0xff;
             db = mulLUT[da][db] & 0xff;
@@ -539,58 +534,58 @@ public class JavaBlitter implements Blitter {
 
         int Fs = 0;
         int Fd = 0;
-        switch(rule){
-        case AlphaComposite.CLEAR:
-            break;
+        switch (rule) {
+            case AlphaComposite.CLEAR:
+                break;
 
-        case AlphaComposite.DST:
-            Fd = 255;
-            break;
+            case AlphaComposite.DST:
+                Fd = 255;
+                break;
 
-        case AlphaComposite.DST_ATOP:
-            Fs = 255 - da;
-            Fd = sa;
-            break;
+            case AlphaComposite.DST_ATOP:
+                Fs = 255 - da;
+                Fd = sa;
+                break;
 
-        case AlphaComposite.DST_IN:
-            Fd = sa;
-            break;
+            case AlphaComposite.DST_IN:
+                Fd = sa;
+                break;
 
-        case AlphaComposite.DST_OUT:
-            Fd = 255 - sa;
-            break;
+            case AlphaComposite.DST_OUT:
+                Fd = 255 - sa;
+                break;
 
-        case AlphaComposite.DST_OVER:
-            Fs = 255 - da;
-            Fd = 255;
-            break;
+            case AlphaComposite.DST_OVER:
+                Fs = 255 - da;
+                Fd = 255;
+                break;
 
-        case AlphaComposite.SRC:
-            Fs = 255;
-            break;
+            case AlphaComposite.SRC:
+                Fs = 255;
+                break;
 
-        case AlphaComposite.SRC_ATOP:
-            Fs = da;
-            Fd = 255 - sa;
-            break;
+            case AlphaComposite.SRC_ATOP:
+                Fs = da;
+                Fd = 255 - sa;
+                break;
 
-        case AlphaComposite.SRC_IN:
-            Fs = da;
-            break;
+            case AlphaComposite.SRC_IN:
+                Fs = da;
+                break;
 
-        case AlphaComposite.SRC_OUT:
-            Fs = 255 - da;
-            break;
+            case AlphaComposite.SRC_OUT:
+                Fs = 255 - da;
+                break;
 
-        case AlphaComposite.SRC_OVER:
-            Fs = 255;
-            Fd = 255 - sa;
-            break;
+            case AlphaComposite.SRC_OVER:
+                Fs = 255;
+                Fd = 255 - sa;
+                break;
 
-        case AlphaComposite.XOR:
-            Fs = 255 - da;
-            Fd = 255 - sa;
-            break;
+            case AlphaComposite.XOR:
+                Fs = 255 - da;
+                Fd = 255 - sa;
+                break;
         }
         dr = (mulLUT[sr][Fs] & 0xff) + (mulLUT[dr][Fd] & 0xff);
         dg = (mulLUT[sg][Fs] & 0xff) + (mulLUT[dg][Fd] & 0xff);
@@ -598,14 +593,14 @@ public class JavaBlitter implements Blitter {
 
         da = (mulLUT[sa][Fs] & 0xff) + (mulLUT[da][Fd] & 0xff);
 
-        if(!isDstAlphaPre){
-            if(da != 255){
+        if (!isDstAlphaPre) {
+            if (da != 255) {
                 dr = divLUT[da][dr] & 0xff;
                 dg = divLUT[da][dg] & 0xff;
                 db = divLUT[da][db] & 0xff;
             }
         }
-        if(!dstHasAlpha) {
+        if (!dstHasAlpha) {
             da = 0xff;
         }
         dstRGB = (da << 24) | (dr << 16) | (dg << 8) | db;

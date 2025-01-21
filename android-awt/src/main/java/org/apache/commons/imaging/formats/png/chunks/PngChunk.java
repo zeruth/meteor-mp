@@ -16,21 +16,20 @@
  */
 package org.apache.commons.imaging.formats.png.chunks;
 
-import java.io.ByteArrayInputStream;
-
 import org.apache.commons.imaging.common.BinaryFileParser;
+
+import java.io.ByteArrayInputStream;
 
 public class PngChunk extends BinaryFileParser {
     public final int length;
     public final int chunkType;
     public final int crc;
-    private final byte[] bytes;
-
-    private final boolean[] propertyBits;
     public final boolean ancillary;
     public final boolean isPrivate;
     public final boolean reserved;
     public final boolean safeToCopy;
+    private final byte[] bytes;
+    private final boolean[] propertyBits;
 
     public PngChunk(final int length, final int chunkType, final int crc, final byte[] bytes) {
         this.length = length;

@@ -16,20 +16,20 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Jun 14, 2005
  */
 
 package org.apache.harmony.awt.gl.font;
 
 
-import java.awt.Shape;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.font.TextHitInfo;
 import java.awt.font.TextLayout;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Line2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 /**
@@ -73,7 +73,7 @@ public class CaretManager {
             }
             return visual;
         } else if (idx < 0) {
-            return breaker.isLTR() ? 0: breaker.getCharCount();
+            return breaker.isLTR() ? 0 : breaker.getCharCount();
         } else {
             return breaker.isLTR() ? breaker.getCharCount() : 0;
         }
@@ -125,10 +125,10 @@ public class CaretManager {
             angle = seg.metrics.italicAngle;
 
         } else { // Last character
-            int logIdx = breaker.getLogicalFromVisual(visual-1);
+            int logIdx = breaker.getLogicalFromVisual(visual - 1);
             int segmentIdx = breaker.logical2segment[logIdx];
             seg = breaker.runSegments.get(segmentIdx);
-            advance = seg.x + seg.getAdvanceDelta(seg.getStart(), logIdx+1);
+            advance = seg.x + seg.getAdvanceDelta(seg.getStart(), logIdx + 1);
         }
 
         angle = seg.metrics.italicAngle;
@@ -154,7 +154,7 @@ public class CaretManager {
 
         TextHitInfo newInfo;
 
-        while(visual <= breaker.getCharCount()) {
+        while (visual <= breaker.getCharCount()) {
             visual++;
             newInfo = getHitInfoFromVisual(visual);
 
@@ -165,7 +165,7 @@ public class CaretManager {
             if (hitInfo.getCharIndex() >= 0) { // Don't check for leftmost info
                 if (
                         breaker.logical2segment[newInfo.getCharIndex()] !=
-                        breaker.logical2segment[hitInfo.getCharIndex()]
+                                breaker.logical2segment[hitInfo.getCharIndex()]
                 ) {
                     return newInfo; // We crossed segment boundary
                 }
@@ -196,7 +196,7 @@ public class CaretManager {
 
         TextHitInfo newInfo;
 
-        while(visual >= 0) {
+        while (visual >= 0) {
             visual--;
             newInfo = getHitInfoFromVisual(visual);
 
@@ -208,7 +208,7 @@ public class CaretManager {
             if (hitInfo.getCharIndex() < breaker.logical2segment.length) {
                 if (
                         breaker.logical2segment[newInfo.getCharIndex()] !=
-                        breaker.logical2segment[hitInfo.getCharIndex()]
+                                breaker.logical2segment[hitInfo.getCharIndex()]
                 ) {
                     return newInfo; // We crossed segment boundary
                 }
@@ -328,7 +328,7 @@ public class CaretManager {
         if (charIdx >= 0 && charIdx < breaker.getCharCount()) {
             TextRunSegment segment = breaker.runSegments.get(breaker.logical2segment[charIdx]);
             y1 = segment.metrics.descent;
-            y2 = - segment.metrics.ascent - segment.metrics.leading;
+            y2 = -segment.metrics.ascent - segment.metrics.leading;
 
             x1 = x2 = segment.getCharPosition(charIdx) + (hitInfo.isLeadingEdge() ?
                     0 : segment.getCharAdvance(charIdx));
@@ -351,7 +351,7 @@ public class CaretManager {
             */
         } else {
             y1 = layout.getDescent();
-            y2 = - layout.getAscent() - layout.getLeading();
+            y2 = -layout.getAscent() - layout.getLeading();
             x1 = x2 = ((breaker.getBaseLevel() & 0x1) == 0 ^ charIdx < 0) ?
                     layout.getAdvance() : 0;
         }
@@ -391,14 +391,14 @@ public class CaretManager {
         Shape caret1 = getCaretShape(hit1, layout);
 
         if (getVisualFromHitInfo(hit1) == getVisualFromHitInfo(hit2)) {
-            return new Shape[] {caret1, null};
+            return new Shape[]{caret1, null};
         }
         Shape caret2 = getCaretShape(hit2, layout);
 
         TextHitInfo strongHit = policy.getStrongCaret(hit1, hit2, layout);
         return strongHit.equals(hit1) ?
-                new Shape[] {caret1, caret2} :
-                new Shape[] {caret2, caret1};
+                new Shape[]{caret1, caret2} :
+                new Shape[]{caret2, caret1};
     }
 
     /**
@@ -472,14 +472,14 @@ public class CaretManager {
         logical = runStart = prevLogical = breaker.getLogicalFromVisual(visual1);
 
         // Get all the runs. We use the fact that direction is constant in all runs.
-        for (int i=visual1+1; i<=visual2; i++) {
+        for (int i = visual1 + 1; i <= visual2; i++) {
             logical = breaker.getLogicalFromVisual(i);
-            int diff = logical-prevLogical;
+            int diff = logical - prevLogical;
 
             // Start of the next run encountered
             if (diff > 1 || diff < -1) {
-                results[(numRuns)*2] = Math.min(runStart, prevLogical);
-                results[(numRuns)*2 + 1] = Math.max(runStart, prevLogical);
+                results[(numRuns) * 2] = Math.min(runStart, prevLogical);
+                results[(numRuns) * 2 + 1] = Math.max(runStart, prevLogical);
                 numRuns++;
                 runStart = logical;
             }
@@ -488,12 +488,12 @@ public class CaretManager {
         }
 
         // The last unsaved run
-        results[(numRuns)*2] = Math.min(runStart, logical);
-        results[(numRuns)*2 + 1] = Math.max(runStart, logical);
+        results[(numRuns) * 2] = Math.min(runStart, logical);
+        results[(numRuns) * 2 + 1] = Math.max(runStart, logical);
         numRuns++;
 
-        int retval[] = new int[numRuns*2];
-        System.arraycopy(results, 0, retval, 0, numRuns*2);
+        int retval[] = new int[numRuns * 2];
+        System.arraycopy(results, 0, retval, 0, numRuns * 2);
         return retval;
     }
 
@@ -512,10 +512,10 @@ public class CaretManager {
     ) {
         GeneralPath res = new GeneralPath();
 
-        for (int i=firstEndpoint; i<=secondEndpoint; i++) {
+        for (int i = firstEndpoint; i <= secondEndpoint; i++) {
             int endRun = breaker.getLevelRunLimit(i, secondEndpoint);
             TextHitInfo hit1 = TextHitInfo.leading(i);
-            TextHitInfo hit2 = TextHitInfo.trailing(endRun-1);
+            TextHitInfo hit2 = TextHitInfo.trailing(endRun - 1);
 
             Line2D caret1 = getCaretShape(hit1, layout, false, true, bounds);
             Line2D caret2 = getCaretShape(hit2, layout, false, true, bounds);

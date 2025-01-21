@@ -19,7 +19,7 @@
  */
 package java.awt.image.renderable;
 
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.RenderedImage;
 
 public interface RenderedImageFactory {

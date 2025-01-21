@@ -16,18 +16,18 @@
  */
 package org.apache.commons.imaging.palette;
 
+import org.apache.commons.imaging.ImageWriteException;
+
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 
-import org.apache.commons.imaging.ImageWriteException;
-
 public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplementation {
     @Override
     public boolean performNextMedianCut(final List<ColorGroup> colorGroups,
-            final boolean ignoreAlpha) throws ImageWriteException {
+                                        final boolean ignoreAlpha) throws ImageWriteException {
         int maxPoints = 0;
         ColorGroup colorGroup = null;
         for (ColorGroup group : colorGroups) {
@@ -41,9 +41,8 @@ public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplemen
         if (colorGroup == null) {
             return false;
         }
-        
-        
-        
+
+
         double bestScore = Double.MAX_VALUE;
         ColorComponent bestColorComponent = null;
         int bestMedianIndex = -1;
@@ -58,9 +57,9 @@ public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplemen
             int medianIndex;
             for (medianIndex = 0; medianIndex < colorGroup.colorCounts.size(); medianIndex++) {
                 final ColorCount colorCount = colorGroup.colorCounts.get(medianIndex);
-    
+
                 newCount += colorCount.count;
-    
+
                 if (newCount < countHalf) {
                     oldCount = newCount;
                 } else {
@@ -99,7 +98,7 @@ public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplemen
         if (bestColorComponent == null) {
             return false;
         }
-        
+
         Collections.sort(colorGroup.colorCounts, new ColorComparer(bestColorComponent));
         final List<ColorCount> lowerColors = new ArrayList<ColorCount>(
                 colorGroup.colorCounts.subList(0, bestMedianIndex + 1));
@@ -111,7 +110,7 @@ public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplemen
         colorGroups.remove(colorGroup);
         colorGroups.add(lowerGroup);
         colorGroups.add(upperGroup);
-        
+
         final ColorCount medianValue = colorGroup.colorCounts.get(bestMedianIndex);
         int limit;
         switch (bestColorComponent) {
@@ -133,16 +132,16 @@ public class MedianCutMostPopulatedBoxesImplementation extends MedianCutImplemen
         colorGroup.cut = new ColorGroupCut(lowerGroup, upperGroup, bestColorComponent, limit);
         return true;
     }
-    
+
     private static class ColorComparer implements Comparator<ColorCount>, Serializable {
         private static final long serialVersionUID = 1L;
-        
+
         private final ColorComponent colorComponent;
-        
+
         public ColorComparer(final ColorComponent colorComponent) {
             this.colorComponent = colorComponent;
         }
-        
+
         public int compare(final ColorCount c1, final ColorCount c2) {
             switch (colorComponent) {
                 case ALPHA:

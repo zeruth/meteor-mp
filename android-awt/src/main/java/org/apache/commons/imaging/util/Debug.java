@@ -17,16 +17,10 @@
 package org.apache.commons.imaging.util;
 
 import java.awt.color.ICC_Profile;
-
 import java.io.File;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
+import java.util.*;
 
 public final class Debug {
 
@@ -34,6 +28,9 @@ public final class Debug {
     // public static String newline = System.getProperty("line.separator");
     private static final String NEWLINE = "\r\n";
     private static long counter;
+
+    private Debug() {
+    }
 
     public static void debug(final String message) {
         if (DEBUG) {
@@ -302,8 +299,5 @@ public final class Debug {
         }
 
         return result.toString();
-    }
-
-    private Debug() {
     }
 }

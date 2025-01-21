@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,11 +15,11 @@
 
 package org.apache.commons.imaging.formats.jpeg.decoder;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 class JpegInputStream {
     // Figure F.18, F.2.2.5, page 111 of ITU-T T.81

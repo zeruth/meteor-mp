@@ -20,21 +20,19 @@
 package org.apache.harmony.x.imageio.plugins.jpeg;
 
 public class JPEGSpiConsts {
+    static final String[] writerSpiNames = {JPEGImageWriterSpi.class.getName()};
+    static final String[] readerSpiNames = {JPEGImageReaderSpi.class.getName()};
+    // -- TODO fill this stuff with correct data
+    static final boolean supportsStandardStreamMetadataFormat = false;
+    static final String nativeStreamMetadataFormatName = null;
+    static final String nativeStreamMetadataFormatClassName = null;
+    static final String[] extraStreamMetadataFormatNames = null;
+    static final String[] extraStreamMetadataFormatClassNames = null;
+    static final boolean supportsStandardImageMetadataFormat = false;
+    static final String nativeImageMetadataFormatName = null;
+    static final String nativeImageMetadataFormatClassName = null;
+    static final String[] extraImageMetadataFormatNames = null;
+    static final String[] extraImageMetadataFormatClassNames = null;
     private JPEGSpiConsts() {
     }
-
-    static final String[] writerSpiNames                       = { JPEGImageWriterSpi.class.getName() };
-    static final String[] readerSpiNames                       = { JPEGImageReaderSpi.class.getName() };
-
-    // -- TODO fill this stuff with correct data
-    static final boolean  supportsStandardStreamMetadataFormat = false;
-    static final String   nativeStreamMetadataFormatName       = null;
-    static final String   nativeStreamMetadataFormatClassName  = null;
-    static final String[] extraStreamMetadataFormatNames       = null;
-    static final String[] extraStreamMetadataFormatClassNames  = null;
-    static final boolean  supportsStandardImageMetadataFormat  = false;
-    static final String   nativeImageMetadataFormatName        = null;
-    static final String   nativeImageMetadataFormatClassName   = null;
-    static final String[] extraImageMetadataFormatNames        = null;
-    static final String[] extraImageMetadataFormatClassNames   = null;
 }

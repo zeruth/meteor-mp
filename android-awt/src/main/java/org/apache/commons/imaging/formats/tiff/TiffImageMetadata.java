@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.ImageMetadata;
@@ -26,24 +25,12 @@ import org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString;
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputDirectory;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputField;
 import org.apache.commons.imaging.formats.tiff.write.TiffOutputSet;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -52,8 +39,8 @@ import java.util.List;
 import java.util.Map;
 
 public class TiffImageMetadata extends ImageMetadata {
-    public final TiffContents contents;
     private static final Map<Object, Integer> TAG_COUNTS = countTags(AllTagConstants.ALL_TAGS);
+    public final TiffContents contents;
 
     public TiffImageMetadata(final TiffContents contents) {
         this.contents = contents;
@@ -74,111 +61,6 @@ public class TiffImageMetadata extends ImageMetadata {
         return map;
     }
 
-    public static class Directory extends ImageMetadata implements
-            IImageMetadataItem {
-        // private BufferedImage thumbnail = null;
-
-        public final int type;
-
-        private final TiffDirectory directory;
-        private final ByteOrder byteOrder;
-
-        public Directory(final ByteOrder byteOrder, final TiffDirectory directory) {
-            this.type = directory.type;
-            this.directory = directory;
-            this.byteOrder = byteOrder;
-        }
-
-        public void add(final TiffField entry) {
-            add(new TiffImageMetadata.Item(entry));
-        }
-
-        public BufferedImage getThumbnail() throws ImageReadException,
-                IOException {
-            return directory.getTiffImage(byteOrder);
-        }
-
-        public TiffImageData getTiffImageData() {
-            return directory.getTiffImageData();
-        }
-
-        public TiffField findField(final TagInfo tagInfo) throws ImageReadException {
-            return directory.findField(tagInfo);
-        }
-
-        public List<TiffField> getAllFields() {
-            return directory.getDirectoryEntries();
-        }
-
-        public JpegImageData getJpegImageData() {
-            return directory.getJpegImageData();
-        }
-
-        @Override
-        public String toString(final String prefix) {
-            return (prefix != null ? prefix : "") + directory.description()
-                    + ": " //
-                    + (getTiffImageData() != null ? " (tiffImageData)" : "") //
-                    + (getJpegImageData() != null ? " (jpegImageData)" : "") //
-                    + "\n" + super.toString(prefix) + "\n";
-        }
-
-        public TiffOutputDirectory getOutputDirectory(final ByteOrder byteOrder)
-                throws ImageWriteException {
-            try {
-                final TiffOutputDirectory dstDir = new TiffOutputDirectory(type,
-                        byteOrder);
-
-                final List<? extends IImageMetadataItem> entries = getItems();
-                for (IImageMetadataItem entry : entries) {
-                    final TiffImageMetadata.Item item = (TiffImageMetadata.Item) entry;
-                    final TiffField srcField = item.getTiffField();
-
-                    if (null != dstDir.findField(srcField.getTag())) {
-                        // ignore duplicate tags in a directory.
-                        continue;
-                    } else if (srcField.getTagInfo().isOffset()) {
-                        // ignore offset fields.
-                        continue;
-                    }
-
-                    final TagInfo tagInfo = srcField.getTagInfo();
-                    final FieldType fieldType = srcField.getFieldType();
-                    // byte bytes[] = srcField.fieldType.getRawBytes(srcField);
-
-                    // Debug.debug("tagInfo", tagInfo);
-
-                    final Object value = srcField.getValue();
-
-                    // Debug.debug("value", Debug.getType(value));
-
-                    final byte[] bytes = tagInfo.encodeValue(fieldType, value,
-                            byteOrder);
-
-                    // if (tagInfo.isUnknown())
-                    // Debug.debug(
-                    // "\t" + "unknown tag(0x"
-                    // + Integer.toHexString(srcField.tag)
-                    // + ") bytes", bytes);
-
-                    final int count = bytes.length / fieldType.getSize();
-                    final TiffOutputField dstField = new TiffOutputField(
-                            srcField.getTag(), tagInfo, fieldType, count, bytes);
-                    dstField.setSortHint(srcField.getSortHint());
-                    dstDir.add(dstField);
-                }
-
-                dstDir.setTiffImageData(getTiffImageData());
-                dstDir.setJpegImageData(getJpegImageData());
-
-                return dstDir;
-            } catch (final ImageReadException e) {
-                throw new ImageWriteException(e.getMessage(), e);
-            }
-        }
-
-    }
-
     public List<? extends IImageMetadataItem> getDirectories() {
         return super.getItems();
     }
@@ -194,21 +76,6 @@ public class TiffImageMetadata extends ImageMetadata {
         }
 
         return result;
-    }
-
-    public static class Item extends ImageMetadata.Item {
-        private final TiffField entry;
-
-        public Item(final TiffField entry) {
-            // super(entry.getTagName() + " (" + entry.getFieldTypeName() + ")",
-            super(entry.getTagName(), entry.getValueDescription());
-            this.entry = entry;
-        }
-
-        public TiffField getTiffField() {
-            return entry;
-        }
-
     }
 
     public TiffOutputSet getOutputSet() throws ImageWriteException {
@@ -509,6 +376,126 @@ public class TiffImageMetadata extends ImageMetadata {
                 longitudeMinutes, longitudeSeconds);
     }
 
+    public static class Directory extends ImageMetadata implements
+            IImageMetadataItem {
+        // private BufferedImage thumbnail = null;
+
+        public final int type;
+
+        private final TiffDirectory directory;
+        private final ByteOrder byteOrder;
+
+        public Directory(final ByteOrder byteOrder, final TiffDirectory directory) {
+            this.type = directory.type;
+            this.directory = directory;
+            this.byteOrder = byteOrder;
+        }
+
+        public void add(final TiffField entry) {
+            add(new TiffImageMetadata.Item(entry));
+        }
+
+        public BufferedImage getThumbnail() throws ImageReadException,
+                IOException {
+            return directory.getTiffImage(byteOrder);
+        }
+
+        public TiffImageData getTiffImageData() {
+            return directory.getTiffImageData();
+        }
+
+        public TiffField findField(final TagInfo tagInfo) throws ImageReadException {
+            return directory.findField(tagInfo);
+        }
+
+        public List<TiffField> getAllFields() {
+            return directory.getDirectoryEntries();
+        }
+
+        public JpegImageData getJpegImageData() {
+            return directory.getJpegImageData();
+        }
+
+        @Override
+        public String toString(final String prefix) {
+            return (prefix != null ? prefix : "") + directory.description()
+                    + ": " //
+                    + (getTiffImageData() != null ? " (tiffImageData)" : "") //
+                    + (getJpegImageData() != null ? " (jpegImageData)" : "") //
+                    + "\n" + super.toString(prefix) + "\n";
+        }
+
+        public TiffOutputDirectory getOutputDirectory(final ByteOrder byteOrder)
+                throws ImageWriteException {
+            try {
+                final TiffOutputDirectory dstDir = new TiffOutputDirectory(type,
+                        byteOrder);
+
+                final List<? extends IImageMetadataItem> entries = getItems();
+                for (IImageMetadataItem entry : entries) {
+                    final TiffImageMetadata.Item item = (TiffImageMetadata.Item) entry;
+                    final TiffField srcField = item.getTiffField();
+
+                    if (null != dstDir.findField(srcField.getTag())) {
+                        // ignore duplicate tags in a directory.
+                        continue;
+                    } else if (srcField.getTagInfo().isOffset()) {
+                        // ignore offset fields.
+                        continue;
+                    }
+
+                    final TagInfo tagInfo = srcField.getTagInfo();
+                    final FieldType fieldType = srcField.getFieldType();
+                    // byte bytes[] = srcField.fieldType.getRawBytes(srcField);
+
+                    // Debug.debug("tagInfo", tagInfo);
+
+                    final Object value = srcField.getValue();
+
+                    // Debug.debug("value", Debug.getType(value));
+
+                    final byte[] bytes = tagInfo.encodeValue(fieldType, value,
+                            byteOrder);
+
+                    // if (tagInfo.isUnknown())
+                    // Debug.debug(
+                    // "\t" + "unknown tag(0x"
+                    // + Integer.toHexString(srcField.tag)
+                    // + ") bytes", bytes);
+
+                    final int count = bytes.length / fieldType.getSize();
+                    final TiffOutputField dstField = new TiffOutputField(
+                            srcField.getTag(), tagInfo, fieldType, count, bytes);
+                    dstField.setSortHint(srcField.getSortHint());
+                    dstDir.add(dstField);
+                }
+
+                dstDir.setTiffImageData(getTiffImageData());
+                dstDir.setJpegImageData(getJpegImageData());
+
+                return dstDir;
+            } catch (final ImageReadException e) {
+                throw new ImageWriteException(e.getMessage(), e);
+            }
+        }
+
+    }
+
+    public static class Item extends ImageMetadata.Item {
+        private final TiffField entry;
+
+        public Item(final TiffField entry) {
+            // super(entry.getTagName() + " (" + entry.getFieldTypeName() + ")",
+            super(entry.getTagName(), entry.getValueDescription());
+            this.entry = entry;
+        }
+
+        public TiffField getTiffField() {
+            return entry;
+        }
+
+    }
+
     public static class GPSInfo {
         public final String latitudeRef;
         public final String longitudeRef;
@@ -521,12 +508,12 @@ public class TiffImageMetadata extends ImageMetadata {
         public final RationalNumber longitudeSeconds;
 
         public GPSInfo(final String latitudeRef, final String longitudeRef,
-                final RationalNumber latitudeDegrees,
-                final RationalNumber latitudeMinutes,
-                final RationalNumber latitudeSeconds,
-                final RationalNumber longitudeDegrees,
-                final RationalNumber longitudeMinutes,
-                final RationalNumber longitudeSeconds) {
+                       final RationalNumber latitudeDegrees,
+                       final RationalNumber latitudeMinutes,
+                       final RationalNumber latitudeSeconds,
+                       final RationalNumber longitudeDegrees,
+                       final RationalNumber longitudeMinutes,
+                       final RationalNumber longitudeSeconds) {
             this.latitudeRef = latitudeRef;
             this.longitudeRef = longitudeRef;
             this.latitudeDegrees = latitudeDegrees;

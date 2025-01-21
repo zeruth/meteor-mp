@@ -22,12 +22,12 @@ import java.nio.charset.Charset;
 
 public class PsdHeaderInfo {
     public final int version;
-    private final byte[] reserved;
     public final int channels;
     public final int rows;
     public final int columns;
     public final int depth;
     public final int mode;
+    private final byte[] reserved;
 
     public PsdHeaderInfo(int version, byte[] reserved, int channels, int rows, int columns, int depth, int mode) {
         this.version = version;

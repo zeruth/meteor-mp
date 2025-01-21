@@ -16,13 +16,6 @@
  */
 package org.apache.commons.imaging.formats.rgbe;
 
-import java.io.Closeable;
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteOrder;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.common.ByteConversions;
@@ -30,21 +23,49 @@ import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 
+import java.io.Closeable;
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteOrder;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 class RgbeInfo implements Closeable {
     // #?RADIANCE
-    private static final byte[] HEADER = new byte[] {
-        0x23, 0x3F, 0x52, 0x41, 0x44, 0x49, 0x41, 0x4E, 0x43, 0x45
+    private static final byte[] HEADER = new byte[]{
+            0x23, 0x3F, 0x52, 0x41, 0x44, 0x49, 0x41, 0x4E, 0x43, 0x45
     };
     private static final Pattern RESOLUTION_STRING = Pattern.compile("-Y (\\d+) \\+X (\\d+)");
-
+    private static final byte[] TWO_TWO = new byte[]{0x2, 0x2};
     private final InputStream in;
     private ImageMetadata metadata;
     private int width = -1;
     private int height = -1;
-    private static final byte[] TWO_TWO = new byte[] { 0x2, 0x2 };
 
     RgbeInfo(final ByteSource byteSource) throws IOException {
         this.in = byteSource.getInputStream();
+    }
+
+    private static void decompress(final InputStream in, final byte[] out)
+            throws IOException {
+        int position = 0;
+        final int total = out.length;
+
+        while (position < total) {
+            final int n = in.read();
+
+            if (n > 128) {
+                final int value = in.read();
+
+                for (int i = 0; i < (n & 0x7f); i++) {
+                    out[position++] = (byte) value;
+                }
+            } else {
+                for (int i = 0; i < n; i++) {
+                    out[position++] = (byte) in.read();
+                }
+            }
+        }
     }
 
     IImageMetadata getMetadata() throws IOException, ImageReadException {
@@ -165,27 +186,5 @@ class RgbeInfo implements Closeable {
         }
 
         return out;
-    }
-
-    private static void decompress(final InputStream in, final byte[] out)
-            throws IOException {
-        int position = 0;
-        final int total = out.length;
-
-        while (position < total) {
-            final int n = in.read();
-
-            if (n > 128) {
-                final int value = in.read();
-
-                for (int i = 0; i < (n & 0x7f); i++) {
-                    out[position++] = (byte) value;
-                }
-            } else {
-                for (int i = 0; i < n; i++) {
-                    out[position++] = (byte) in.read();
-                }
-            }
-        }
     }
 }

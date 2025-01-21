@@ -16,11 +16,11 @@
  */
 package org.apache.commons.imaging.common;
 
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.util.IoUtils;
+
+import java.io.ByteArrayOutputStream;
+import java.io.IOException;
 
 public class PackBits {
 
@@ -115,7 +115,7 @@ public class PackBits {
             int ptr = 0;
             while (ptr < bytes.length) {
                 int dup = findNextDuplicate(bytes, ptr);
-    
+
                 if (dup == ptr) {
                     // write run length
                     final int len = findRunLength(bytes, dup);
@@ -126,7 +126,7 @@ public class PackBits {
                 } else {
                     // write literals
                     int len = dup - ptr;
-    
+
                     if (dup > 0) {
                         final int runlen = findRunLength(bytes, dup);
                         if (runlen < 3) {
@@ -140,12 +140,12 @@ public class PackBits {
                             }
                         }
                     }
-    
+
                     if (dup < 0) {
                         len = bytes.length - ptr;
                     }
                     final int actualLen = Math.min(len, 128);
-    
+
                     baos.write(actualLen - 1);
                     for (int i = 0; i < actualLen; i++) {
                         baos.write(bytes[ptr]);

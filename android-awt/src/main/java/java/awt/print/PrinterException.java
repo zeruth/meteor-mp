@@ -27,7 +27,7 @@ public class PrinterException extends Exception {
         super();
     }
 
-   public PrinterException (String msg) {
+    public PrinterException(String msg) {
         super(msg);
     }
 

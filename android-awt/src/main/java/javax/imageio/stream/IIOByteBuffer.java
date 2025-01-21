@@ -23,7 +23,7 @@ package javax.imageio.stream;
  * @author Sergey I. Salishev
  */
 public class IIOByteBuffer {
-    
+
     private byte[] data;
     private int offset;
     private int length;
@@ -38,20 +38,20 @@ public class IIOByteBuffer {
         return data;
     }
 
-    public int getLength() {
-        return length;
-    }
-
-    public int getOffset() {
-        return offset;
-    }
-
     public void setData(byte[] data) {
         this.data = data;
     }
 
+    public int getLength() {
+        return length;
+    }
+
     public void setLength(int length) {
         this.length = length;
+    }
+
+    public int getOffset() {
+        return offset;
     }
 
     public void setOffset(int offset) {

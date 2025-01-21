@@ -16,22 +16,22 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.RationalNumber;
 import org.apache.commons.imaging.formats.tiff.constants.GpsTagConstants;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.util.Debug;
 
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
+
 import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
 
 public final class TiffOutputSet {
+    private static final String NEWLINE = System.getProperty("line.separator");
     public final ByteOrder byteOrder;
     private final List<TiffOutputDirectory> directories = new ArrayList<TiffOutputDirectory>();
-    private static final String NEWLINE = System.getProperty("line.separator");
 
     public TiffOutputSet() {
         this(DEFAULT_TIFF_BYTE_ORDER);
@@ -126,11 +126,9 @@ public final class TiffOutputSet {
 
     /**
      * A convenience method to update GPS values in EXIF metadata.
-     * 
-     * @param longitude
-     *            Longitude in degrees E, negative values are W.
-     * @param latitude
-     *            latitude in degrees N, negative values are S.
+     *
+     * @param longitude Longitude in degrees E, negative values are W.
+     * @param latitude  latitude in degrees N, negative values are S.
      * @throws ImageWriteException
      */
     public void setGPSInDegrees(double longitude, double latitude)

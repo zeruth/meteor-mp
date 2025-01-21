@@ -19,12 +19,12 @@
  */
 package org.apache.harmony.x.imageio.plugins.jpeg;
 
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriter;
-import javax.imageio.spi.ImageWriterSpi;
 import org.apache.harmony.x.imageio.plugins.ImageType;
 import org.apache.harmony.x.imageio.plugins.PluginUtils;
 
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriter;
+import javax.imageio.spi.ImageWriterSpi;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -33,21 +33,21 @@ public class JPEGImageWriterSpi extends ImageWriterSpi {
     public JPEGImageWriterSpi() {
         /* TODO: support st. metadata format */
         super(PluginUtils.VENDOR_NAME, PluginUtils.DEFAULT_VERSION,
-                        ImageType.JPEG.getNames(),
-                        ImageType.JPEG.getSuffixes(),
-                        ImageType.JPEG.getMimeTypes(),
-                        JPEGImageWriter.class.getName(), STANDARD_OUTPUT_TYPE,
-                        JPEGSpiConsts.readerSpiNames,
-                        JPEGSpiConsts.supportsStandardStreamMetadataFormat,
-                        JPEGSpiConsts.nativeStreamMetadataFormatName,
-                        JPEGSpiConsts.nativeStreamMetadataFormatClassName,
-                        JPEGSpiConsts.extraStreamMetadataFormatNames,
-                        JPEGSpiConsts.extraStreamMetadataFormatClassNames,
-                        JPEGSpiConsts.supportsStandardImageMetadataFormat,
-                        JPEGSpiConsts.nativeImageMetadataFormatName,
-                        JPEGSpiConsts.nativeImageMetadataFormatClassName,
-                        JPEGSpiConsts.extraImageMetadataFormatNames,
-                        JPEGSpiConsts.extraImageMetadataFormatClassNames);
+                ImageType.JPEG.getNames(),
+                ImageType.JPEG.getSuffixes(),
+                ImageType.JPEG.getMimeTypes(),
+                JPEGImageWriter.class.getName(), STANDARD_OUTPUT_TYPE,
+                JPEGSpiConsts.readerSpiNames,
+                JPEGSpiConsts.supportsStandardStreamMetadataFormat,
+                JPEGSpiConsts.nativeStreamMetadataFormatName,
+                JPEGSpiConsts.nativeStreamMetadataFormatClassName,
+                JPEGSpiConsts.extraStreamMetadataFormatNames,
+                JPEGSpiConsts.extraStreamMetadataFormatClassNames,
+                JPEGSpiConsts.supportsStandardImageMetadataFormat,
+                JPEGSpiConsts.nativeImageMetadataFormatName,
+                JPEGSpiConsts.nativeImageMetadataFormatClassName,
+                JPEGSpiConsts.extraImageMetadataFormatNames,
+                JPEGSpiConsts.extraImageMetadataFormatClassNames);
     }
 
     @Override

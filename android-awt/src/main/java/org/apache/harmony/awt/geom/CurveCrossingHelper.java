@@ -17,11 +17,9 @@
 package org.apache.harmony.awt.geom;
 
 import java.awt.geom.PathIterator;
-
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-
 
 
 public class CurveCrossingHelper {
@@ -33,8 +31,8 @@ public class CurveCrossingHelper {
     private List<IntersectPoint> isectPoints = new ArrayList<IntersectPoint>();
 
     public CurveCrossingHelper(double[][] coords, int[] sizes,
-            int[][] rules, int[] rulesSizes,
-            int[][] offsets) {
+                               int[][] rules, int[] rulesSizes,
+                               int[][] offsets) {
         this.coords = coords;
         this.rules = rules;
         this.sizes = sizes;
@@ -84,10 +82,10 @@ public class CurveCrossingHelper {
                             edge1[0], edge1[1], edge1[2],
                             edge1[3], edge2[0], edge2[1],
                             edge2[2], edge2[3], edge2[4],
-                            edge2[5],  params);
+                            edge2[5], params);
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.line(params[2*k], edge1[0], edge1[2]);
-                        points[2*k + 1] = GeometryUtil.line(params[2*k], edge1[1], edge1[3]);
+                        points[2 * k] = GeometryUtil.line(params[2 * k], edge1[0], edge1[2]);
+                        points[2 * k + 1] = GeometryUtil.line(params[2 * k], edge1[1], edge1[3]);
                     }
                 } else if (rule1 == PathIterator.SEG_QUADTO &&
                         (rule2 == PathIterator.SEG_LINETO || rule2 == PathIterator.SEG_CLOSE)) {
@@ -97,10 +95,10 @@ public class CurveCrossingHelper {
                             edge1[2], edge1[3], edge1[4],
                             edge1[5], params);
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.line(
-                                params[2*k + 1], edge2[0], edge2[2]);
-                        points[2*k + 1] = GeometryUtil.line(
-                                params[2*k + 1], edge2[1], edge2[3]);
+                        points[2 * k] = GeometryUtil.line(
+                                params[2 * k + 1], edge2[0], edge2[2]);
+                        points[2 * k + 1] = GeometryUtil.line(
+                                params[2 * k + 1], edge2[1], edge2[3]);
                     }
                 } else if ((rule1 == PathIterator.SEG_CUBICTO) &&
                         ((rule2 == PathIterator.SEG_LINETO) ||
@@ -113,10 +111,10 @@ public class CurveCrossingHelper {
                             params);
 
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.line(
-                                params[2*k + 1], edge2[0], edge2[2]);
-                        points[2*k + 1] = GeometryUtil.line(
-                                params[2*k + 1], edge2[1], edge2[3]);
+                        points[2 * k] = GeometryUtil.line(
+                                params[2 * k + 1], edge2[0], edge2[2]);
+                        points[2 * k + 1] = GeometryUtil.line(
+                                params[2 * k + 1], edge2[1], edge2[3]);
                     }
                 } else if (((rule1 == PathIterator.SEG_LINETO) ||
                         (rule1 == PathIterator.SEG_CLOSE)) &&
@@ -129,10 +127,10 @@ public class CurveCrossingHelper {
                             params);
 
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.line(
-                                params[2*k], edge1[0], edge1[2]);
-                        points[2*k + 1] = GeometryUtil.line(
-                                params[2*k], edge1[1], edge1[3]);
+                        points[2 * k] = GeometryUtil.line(
+                                params[2 * k], edge1[0], edge1[2]);
+                        points[2 * k + 1] = GeometryUtil.line(
+                                params[2 * k], edge1[1], edge1[3]);
                     }
                 } else if ((rule1 == PathIterator.SEG_QUADTO) &&
                         (rule2 == PathIterator.SEG_QUADTO)) {
@@ -142,10 +140,10 @@ public class CurveCrossingHelper {
                             edge2[2], edge2[3], edge2[4], edge2[5],
                             params);
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.quad(
-                                params[2*k], edge1[0], edge1[2], edge1[4]);
-                        points[2*k + 1] = GeometryUtil.quad(
-                                params[2*k], edge1[1], edge1[3], edge1[5]);
+                        points[2 * k] = GeometryUtil.quad(
+                                params[2 * k], edge1[0], edge1[2], edge1[4]);
+                        points[2 * k + 1] = GeometryUtil.quad(
+                                params[2 * k], edge1[1], edge1[3], edge1[5]);
                     }
                 } else if ((rule1 == PathIterator.SEG_QUADTO) &&
                         (rule2 == PathIterator.SEG_CUBICTO)) {
@@ -157,10 +155,10 @@ public class CurveCrossingHelper {
                             edge2[6], edge2[7], params);
 
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.quad(
-                                params[2*k], edge1[0], edge1[2], edge1[4]);
-                        points[2*k + 1] = GeometryUtil.quad(
-                                params[2*k], edge1[1], edge1[3], edge1[5]);
+                        points[2 * k] = GeometryUtil.quad(
+                                params[2 * k], edge1[0], edge1[2], edge1[4]);
+                        points[2 * k + 1] = GeometryUtil.quad(
+                                params[2 * k], edge1[1], edge1[3], edge1[5]);
                     }
                 } else if ((rule1 == PathIterator.SEG_CUBICTO) &&
                         (rule2 == PathIterator.SEG_QUADTO)) {
@@ -172,10 +170,10 @@ public class CurveCrossingHelper {
                             edge2[6], edge2[7], params);
 
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.quad(
-                                params[2*k + 1], edge2[0], edge2[2], edge2[4]);
-                        points[2*k + 1] = GeometryUtil.quad(
-                                params[2*k + 1], edge2[1], edge2[3], edge2[5]);
+                        points[2 * k] = GeometryUtil.quad(
+                                params[2 * k + 1], edge2[0], edge2[2], edge2[4]);
+                        points[2 * k + 1] = GeometryUtil.quad(
+                                params[2 * k + 1], edge2[1], edge2[3], edge2[5]);
                     }
                 } else if ((rule1 == PathIterator.SEG_CUBICTO) &&
                         (rule2 == PathIterator.SEG_CUBICTO)) {
@@ -187,10 +185,10 @@ public class CurveCrossingHelper {
                             params);
 
                     for (int k = 0; k < ipCount; k++) {
-                        points[2*k] = GeometryUtil.cubic(
-                                params[2*k], edge1[0], edge1[2], edge1[4], edge1[6]);
-                        points[2*k + 1] = GeometryUtil.cubic(
-                                params[2*k], edge1[1], edge1[3], edge1[5], edge1[7]);
+                        points[2 * k] = GeometryUtil.cubic(
+                                params[2 * k], edge1[0], edge1[2], edge1[4], edge1[6]);
+                        points[2 * k + 1] = GeometryUtil.cubic(
+                                params[2 * k], edge1[1], edge1[3], edge1[5], edge1[7]);
                     }
                 }
 
@@ -201,18 +199,18 @@ public class CurveCrossingHelper {
 
                 for (int k = 0; k < ipCount; k++) {
                     IntersectPoint ip = null;
-                    if (!containsPoint(points[2*k], points[2*k + 1])) {
+                    if (!containsPoint(points[2 * k], points[2 * k + 1])) {
                         for (Iterator<IntersectPoint> iter = isectPoints.iterator();
-                        iter.hasNext(); ) {
+                             iter.hasNext(); ) {
                             ip = iter.next();
                             if ((begIndex1 == ip.getBegIndex(true)) &&
                                     (endIndex1 == ip.getEndIndex(true))) {
 
-                                if (ip.getParam(true) > params[2*k]) {
-                                    endIndex1 = - (isectPoints.indexOf(ip) + 1);
+                                if (ip.getParam(true) > params[2 * k]) {
+                                    endIndex1 = -(isectPoints.indexOf(ip) + 1);
                                     ip.setBegIndex1(-(isectPoints.size() + 1));
                                 } else {
-                                    begIndex1 = - (isectPoints.indexOf(ip) + 1);
+                                    begIndex1 = -(isectPoints.indexOf(ip) + 1);
                                     ip.setEndIndex1(-(isectPoints.size() + 1));
                                 }
                             }
@@ -220,11 +218,11 @@ public class CurveCrossingHelper {
                             if ((begIndex2 == ip.getBegIndex(false)) &&
                                     (endIndex2 == ip.getEndIndex(false))) {
 
-                                if (ip.getParam(false) > params[2*k + 1]) {
-                                    endIndex2 = - (isectPoints.indexOf(ip) + 1);
+                                if (ip.getParam(false) > params[2 * k + 1]) {
+                                    endIndex2 = -(isectPoints.indexOf(ip) + 1);
                                     ip.setBegIndex2(-(isectPoints.size() + 1));
                                 } else {
-                                    begIndex2 = - (isectPoints.indexOf(ip) + 1);
+                                    begIndex2 = -(isectPoints.indexOf(ip) + 1);
                                     ip.setEndIndex2(-(isectPoints.size() + 1));
                                 }
                             }
@@ -242,8 +240,8 @@ public class CurveCrossingHelper {
                                 rule1, i,
                                 begIndex2, endIndex2,
                                 rule2, j,
-                                points[2*k], points[2*k + 1],
-                                params[2*k], params[2*k + 1]));
+                                points[2 * k], points[2 * k + 1],
+                                params[2 * k], params[2 * k + 1]));
                     }
                 }
             }
@@ -252,52 +250,52 @@ public class CurveCrossingHelper {
     }
 
     private int getCurrentEdge(int areaIndex, int index,
-            double[] c, double[] mp, double[] cp) {
+                               double[] c, double[] mp, double[] cp) {
         int endIndex = 0;
 
         switch (rules[areaIndex][index]) {
-        case PathIterator.SEG_MOVETO:
-            cp[0] = mp[0] = coords[areaIndex][offsets[areaIndex][index]];
-            cp[1] = mp[1] = coords[areaIndex][offsets[areaIndex][index] + 1];
-            break;
-        case PathIterator.SEG_LINETO:
-            c[0] = cp[0];
-            c[1] = cp[1];
-            cp[0] = c[2] = coords[areaIndex][offsets[areaIndex][index]];
-            cp[1] = c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
-            endIndex = 0;
-            break;
-        case PathIterator.SEG_QUADTO:
-            c[0] = cp[0];
-            c[1] = cp[1];
-            c[2] = coords[areaIndex][offsets[areaIndex][index]];
-            c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
-            cp[0] = c[4] = coords[areaIndex][offsets[areaIndex][index] + 2];
-            cp[1] = c[5] = coords[areaIndex][offsets[areaIndex][index] + 3];
-            endIndex = 2;
-            break;
-        case PathIterator.SEG_CUBICTO:
-            c[0] = cp[0];
-            c[1] = cp[1];
-            c[2] = coords[areaIndex][offsets[areaIndex][index]];
-            c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
-            c[4] = coords[areaIndex][offsets[areaIndex][index] + 2];
-            c[5] = coords[areaIndex][offsets[areaIndex][index] + 3];
-            cp[0] = c[6] = coords[areaIndex][offsets[areaIndex][index] + 4];
-            cp[1] = c[7] = coords[areaIndex][offsets[areaIndex][index] + 5];
-            endIndex = 4;
-            break;
-        case PathIterator.SEG_CLOSE:
-            c[0] = cp[0];
-            c[1] = cp[1];
-            cp[0] = c[2] = mp[0];
-            cp[1] = c[3] = mp[1];
-            if (offsets[areaIndex][index] >= sizes[areaIndex]) {
-                endIndex = -sizes[areaIndex];
-            } else {
+            case PathIterator.SEG_MOVETO:
+                cp[0] = mp[0] = coords[areaIndex][offsets[areaIndex][index]];
+                cp[1] = mp[1] = coords[areaIndex][offsets[areaIndex][index] + 1];
+                break;
+            case PathIterator.SEG_LINETO:
+                c[0] = cp[0];
+                c[1] = cp[1];
+                cp[0] = c[2] = coords[areaIndex][offsets[areaIndex][index]];
+                cp[1] = c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
                 endIndex = 0;
-            }
-            break;
+                break;
+            case PathIterator.SEG_QUADTO:
+                c[0] = cp[0];
+                c[1] = cp[1];
+                c[2] = coords[areaIndex][offsets[areaIndex][index]];
+                c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
+                cp[0] = c[4] = coords[areaIndex][offsets[areaIndex][index] + 2];
+                cp[1] = c[5] = coords[areaIndex][offsets[areaIndex][index] + 3];
+                endIndex = 2;
+                break;
+            case PathIterator.SEG_CUBICTO:
+                c[0] = cp[0];
+                c[1] = cp[1];
+                c[2] = coords[areaIndex][offsets[areaIndex][index]];
+                c[3] = coords[areaIndex][offsets[areaIndex][index] + 1];
+                c[4] = coords[areaIndex][offsets[areaIndex][index] + 2];
+                c[5] = coords[areaIndex][offsets[areaIndex][index] + 3];
+                cp[0] = c[6] = coords[areaIndex][offsets[areaIndex][index] + 4];
+                cp[1] = c[7] = coords[areaIndex][offsets[areaIndex][index] + 5];
+                endIndex = 4;
+                break;
+            case PathIterator.SEG_CLOSE:
+                c[0] = cp[0];
+                c[1] = cp[1];
+                cp[0] = c[2] = mp[0];
+                cp[1] = c[3] = mp[1];
+                if (offsets[areaIndex][index] >= sizes[areaIndex]) {
+                    endIndex = -sizes[areaIndex];
+                } else {
+                    endIndex = 0;
+                }
+                break;
         }
         return offsets[areaIndex][index] + endIndex;
     }

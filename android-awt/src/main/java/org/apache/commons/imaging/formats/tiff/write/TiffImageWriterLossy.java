@@ -16,15 +16,15 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.common.BinaryOutputStream;
+
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
 import java.util.List;
 
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.common.BinaryOutputStream;
-
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_HEADER_SIZE;
 
 public class TiffImageWriterLossy extends TiffImageWriterBase {
 
@@ -67,7 +67,7 @@ public class TiffImageWriterLossy extends TiffImageWriterBase {
     }
 
     private void writeStep(final BinaryOutputStream bos,
-            final List<TiffOutputItem> outputItems) throws IOException,
+                           final List<TiffOutputItem> outputItems) throws IOException,
             ImageWriteException {
         writeImageFileHeader(bos);
 

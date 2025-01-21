@@ -19,11 +19,9 @@
  */
 package javax.imageio.event;
 
-import java.awt.image.BufferedImage;
 import javax.imageio.ImageReader;
-
+import java.awt.image.BufferedImage;
 import java.util.EventListener;
-
 
 
 /**
@@ -32,23 +30,23 @@ import java.util.EventListener;
 public interface IIOReadUpdateListener extends EventListener {
 
     void imageUpdate(ImageReader source, BufferedImage theImage, int minX,
-            int minY, int width, int height, int periodX, int periodY,
-            int[] bands);
-    
+                     int minY, int width, int height, int periodX, int periodY,
+                     int[] bands);
+
     void passComplete(ImageReader source, BufferedImage theImage);
-    
+
     void passStarted(ImageReader source, BufferedImage theImage, int pass,
-            int minPass, int maxPass, int minX, int minY, int periodX,
-            int periodY, int[] bands);
+                     int minPass, int maxPass, int minX, int minY, int periodX,
+                     int periodY, int[] bands);
 
     void thumbnailPassComplete(ImageReader source, BufferedImage theImage);
-    
+
     void thumbnailPassStarted(ImageReader source, BufferedImage theThumbnail,
-            int pass, int minPass, int maxPass, int minX, int minY,
-            int periodX, int periodY, int[] bands);
-    
+                              int pass, int minPass, int maxPass, int minX, int minY,
+                              int periodX, int periodY, int[] bands);
+
     void thumbnailUpdate(ImageReader source, BufferedImage theThumbnail,
-            int minX, int minY, int width, int height, int periodX,
-            int periodY, int[] bands);
+                         int minX, int minY, int width, int height, int periodX,
+                         int periodY, int[] bands);
 }
 

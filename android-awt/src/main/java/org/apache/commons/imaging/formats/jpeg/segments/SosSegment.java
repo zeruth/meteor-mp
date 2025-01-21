@@ -20,28 +20,15 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 public class SosSegment extends Segment {
     public final int numberOfComponents;
-    private final Component[] components;
     public final int startOfSpectralSelection;
     public final int endOfSpectralSelection;
     public final int successiveApproximationBitHigh;
     public final int successiveApproximationBitLow;
-
-    public static class Component {
-        public final int scanComponentSelector;
-        public final int dcCodingTableSelector;
-        public final int acCodingTableSelector;
-
-        public Component(final int scanComponentSelector, final int dcCodingTableSelector,
-                final int acCodingTableSelector) {
-            this.scanComponentSelector = scanComponentSelector;
-            this.dcCodingTableSelector = dcCodingTableSelector;
-            this.acCodingTableSelector = acCodingTableSelector;
-        }
-    }
+    private final Component[] components;
 
     public SosSegment(final int marker, final byte[] segmentData) throws IOException {
         this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
@@ -96,17 +83,19 @@ public class SosSegment extends Segment {
             System.out.println("");
         }
     }
-    
+
     /**
      * Returns a copy of all the components.
+     *
      * @return all the components
      */
     public Component[] getComponents() {
         return components.clone();
     }
-    
+
     /**
      * Return a component at the specified index.
+     *
      * @param index the component index
      * @return the component
      */
@@ -117,6 +106,19 @@ public class SosSegment extends Segment {
     @Override
     public String getDescription() {
         return "SOS (" + getSegmentType() + ")";
+    }
+
+    public static class Component {
+        public final int scanComponentSelector;
+        public final int dcCodingTableSelector;
+        public final int acCodingTableSelector;
+
+        public Component(final int scanComponentSelector, final int dcCodingTableSelector,
+                         final int acCodingTableSelector) {
+            this.scanComponentSelector = scanComponentSelector;
+            this.dcCodingTableSelector = dcCodingTableSelector;
+            this.acCodingTableSelector = acCodingTableSelector;
+        }
     }
 
 }

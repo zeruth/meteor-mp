@@ -19,7 +19,7 @@
  */
 package java.awt.image;
 
-import java.awt.Image;
+import java.awt.*;
 
 public interface ImageObserver {
 
@@ -40,7 +40,7 @@ public interface ImageObserver {
     public static final int ABORT = 128;
 
     public boolean imageUpdate(Image img, int infoflags, int x, int y,
-            int width, int height);
+                               int width, int height);
 
 }
 

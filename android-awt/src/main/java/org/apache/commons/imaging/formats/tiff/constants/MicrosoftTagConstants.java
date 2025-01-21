@@ -16,13 +16,13 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString;
+
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * Largely undocumented and derived by experimentation.
@@ -31,7 +31,7 @@ public interface MicrosoftTagConstants {
     TagInfoShort EXIF_TAG_RATING = new TagInfoShort(
             "Rating", 0x4746, 1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoShort EXIF_TAG_RATING_PERCENT = new TagInfoShort(
             "RatingPercent", 0x4749, 1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
@@ -53,7 +53,7 @@ public interface MicrosoftTagConstants {
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
 
     TagInfoXpString EXIF_TAG_XPSUBJECT = new TagInfoXpString(
-            "XPSubject",  0x9c9f, -1,
+            "XPSubject", 0x9c9f, -1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
 
     List<TagInfo> ALL_MICROSOFT_TAGS =

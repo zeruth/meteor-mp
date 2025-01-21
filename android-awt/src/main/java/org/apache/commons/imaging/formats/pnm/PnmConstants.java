@@ -29,5 +29,5 @@ interface PnmConstants {
 
     byte PNM_SEPARATOR = 0x20; // Space
     byte PNM_NEWLINE = 0x0A; // "usually a newline"
-                             // (http://netpbm.sourceforge.net/doc/pbm.html)
+    // (http://netpbm.sourceforge.net/doc/pbm.html)
 }

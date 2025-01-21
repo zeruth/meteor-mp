@@ -16,33 +16,11 @@
  */
 package org.apache.commons.imaging.formats.png;
 
-import java.awt.Dimension;
-import java.awt.color.ColorSpace;
-import java.awt.color.ICC_ColorSpace;
-import java.awt.color.ICC_Profile;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import org.apache.commons.imaging.ColorTools;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.ImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
-import org.apache.commons.imaging.formats.png.chunks.PngChunk;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkGama;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkIccp;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkIdat;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkIhdr;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkItxt;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkPhys;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkPlte;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkText;
-import org.apache.commons.imaging.formats.png.chunks.PngChunkZtxt;
-import org.apache.commons.imaging.formats.png.chunks.PngTextChunk;
+import org.apache.commons.imaging.formats.png.chunks.*;
 import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFilter;
 import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFilterGrayscale;
 import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFilterIndexedColor;
@@ -50,12 +28,13 @@ import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFi
 import org.apache.commons.imaging.icc.IccProfileParser;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.color.ICC_ColorSpace;
+import java.awt.color.ICC_Profile;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -63,15 +42,20 @@ import java.util.Map;
 import java.util.zip.InflaterInputStream;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_VERBOSE;
-import static org.apache.commons.imaging.common.BinaryFunctions.printCharQuad;
-import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readAndVerifyBytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.skipBytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
 public class PngImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".png";
-    private static final String[] ACCEPTED_EXTENSIONS = { DEFAULT_EXTENSION, };
+    private static final String[] ACCEPTED_EXTENSIONS = {DEFAULT_EXTENSION,};
+
+    public static String getChunkTypeName(final int chunkType) {
+        final StringBuilder result = new StringBuilder();
+        result.append((char) (0xff & (chunkType >> 24)));
+        result.append((char) (0xff & (chunkType >> 16)));
+        result.append((char) (0xff & (chunkType >> 8)));
+        result.append((char) (0xff & (chunkType >> 0)));
+        return result.toString();
+    }
 
     @Override
     public String getName() {
@@ -88,21 +72,12 @@ public class PngImageParser extends ImageParser {
         return ACCEPTED_EXTENSIONS;
     }
 
-    @Override
-    protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.PNG, //
-        };
-    }
-
     // private final static int tRNS = CharsToQuad('t', 'R', 'N', 's');
 
-    public static String getChunkTypeName(final int chunkType) {
-        final StringBuilder result = new StringBuilder();
-        result.append((char) (0xff & (chunkType >> 24)));
-        result.append((char) (0xff & (chunkType >> 16)));
-        result.append((char) (0xff & (chunkType >> 8)));
-        result.append((char) (0xff & (chunkType >> 0)));
-        return result.toString();
+    @Override
+    protected ImageFormat[] getAcceptedTypes() {
+        return new ImageFormat[]{ImageFormats.PNG, //
+        };
     }
 
     /**
@@ -118,7 +93,7 @@ public class PngImageParser extends ImageParser {
         return chunkTypes;
     }
 
-    public boolean hasChuckType(final ByteSource byteSource, final ChunkType chunkType) 
+    public boolean hasChuckType(final ByteSource byteSource, final ChunkType chunkType)
             throws ImageReadException, IOException {
         InputStream is = null;
         boolean canThrow = false;
@@ -126,7 +101,7 @@ public class PngImageParser extends ImageParser {
             is = byteSource.getInputStream();
 
             readSignature(is);
-            final List<PngChunk> chunks = readChunks(is, new ChunkType[] { chunkType }, true);
+            final List<PngChunk> chunks = readChunks(is, new ChunkType[]{chunkType}, true);
             canThrow = true;
             return !chunks.isEmpty();
         } finally {
@@ -149,7 +124,7 @@ public class PngImageParser extends ImageParser {
     }
 
     private List<PngChunk> readChunks(final InputStream is, final ChunkType[] chunkTypes,
-            final boolean returnAfterFirst) throws ImageReadException, IOException {
+                                      final boolean returnAfterFirst) throws ImageReadException, IOException {
         final List<PngChunk> result = new ArrayList<PngChunk>();
 
         while (true) {
@@ -201,7 +176,7 @@ public class PngImageParser extends ImageParser {
                     result.add(new PngChunkGama(length, chunkType, crc, bytes));
                 } else if (chunkType == ChunkType.iTXt.value) {
                     result.add(new PngChunkItxt(length, chunkType, crc, bytes));
-                } else { 
+                } else {
                     result.add(new PngChunk(length, chunkType, crc, bytes));
                 }
 
@@ -228,7 +203,7 @@ public class PngImageParser extends ImageParser {
     }
 
     private List<PngChunk> readChunks(final ByteSource byteSource, final ChunkType[] chunkTypes,
-            final boolean returnAfterFirst) throws ImageReadException, IOException {
+                                      final boolean returnAfterFirst) throws ImageReadException, IOException {
         InputStream is = null;
         boolean canThrow = false;
         try {
@@ -247,7 +222,7 @@ public class PngImageParser extends ImageParser {
     @Override
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] { ChunkType.iCCP },
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{ChunkType.iCCP},
                 true);
 
         if ((chunks == null) || (chunks.isEmpty())) {
@@ -269,7 +244,7 @@ public class PngImageParser extends ImageParser {
     @Override
     public Dimension getImageSize(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] { ChunkType.IHDR, }, true);
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{ChunkType.IHDR,}, true);
 
         if ((chunks == null) || (chunks.isEmpty())) {
             throw new ImageReadException("Png: No chunks");
@@ -287,7 +262,7 @@ public class PngImageParser extends ImageParser {
     @Override
     public IImageMetadata getMetadata(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] { ChunkType.tEXt, ChunkType.zTXt, }, true);
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{ChunkType.tEXt, ChunkType.zTXt,}, true);
 
         if ((chunks == null) || (chunks.isEmpty())) {
             return null;
@@ -339,7 +314,7 @@ public class PngImageParser extends ImageParser {
     @Override
     public ImageInfo getImageInfo(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] {
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{
                 ChunkType.IHDR,
                 ChunkType.pHYs,
                 ChunkType.tEXt,
@@ -347,7 +322,7 @@ public class PngImageParser extends ImageParser {
                 ChunkType.tRNS,
                 ChunkType.PLTE,
                 ChunkType.iTXt,
-            }, false);
+        }, false);
 
         // if(chunks!=null)
         // System.out.println("chunks: " + chunks.size());
@@ -486,7 +461,7 @@ public class PngImageParser extends ImageParser {
         // throw new ImageWriteException("Unknown parameter: " + firstKey);
         // }
 
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] {
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{
                 ChunkType.IHDR,
                 ChunkType.PLTE,
                 ChunkType.IDAT,
@@ -494,7 +469,7 @@ public class PngImageParser extends ImageParser {
                 ChunkType.iCCP,
                 ChunkType.gAMA,
                 ChunkType.sRGB,
-            }, false);
+        }, false);
 
         if ((chunks == null) || (chunks.isEmpty())) {
             throw new ImageReadException("PNG: no chunks");
@@ -705,7 +680,7 @@ public class PngImageParser extends ImageParser {
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
 
-        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[] { ChunkType.iTXt }, false);
+        final List<PngChunk> chunks = readChunks(byteSource, new ChunkType[]{ChunkType.iTXt}, false);
 
         if ((chunks == null) || (chunks.isEmpty())) {
             return null;

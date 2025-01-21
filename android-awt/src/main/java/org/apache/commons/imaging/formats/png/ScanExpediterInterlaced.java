@@ -16,36 +16,34 @@
  */
 package org.apache.commons.imaging.formats.png;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.png.chunks.PngChunkPlte;
 import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFilter;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 class ScanExpediterInterlaced extends ScanExpediter {
-    private static final int[] STARTING_ROW = { 0, 0, 4, 0, 2, 0, 1 };
-    private static final int[] STARTING_COL = { 0, 4, 0, 2, 0, 1, 0 };
-    private static final int[] ROW_INCREMENT = { 8, 8, 8, 4, 4, 2, 2 };
-    private static final int[] COL_INCREMENT = { 8, 8, 4, 4, 2, 2, 1 };
+    private static final int[] STARTING_ROW = {0, 0, 4, 0, 2, 0, 1};
+    private static final int[] STARTING_COL = {0, 4, 0, 2, 0, 1, 0};
+    private static final int[] ROW_INCREMENT = {8, 8, 8, 4, 4, 2, 2};
+    private static final int[] COL_INCREMENT = {8, 8, 4, 4, 2, 2, 1};
 //    private static final int Block_Height[] = { 8, 8, 4, 4, 2, 2, 1 };
 //    private static final int Block_Width[] = { 8, 4, 4, 2, 2, 1, 1 };
 
     public ScanExpediterInterlaced(int width, int height, InputStream is,
-            BufferedImage bi,
-            ColorType colorType, int bitDepth, int bitsPerPixel,
-            PngChunkPlte fPNGChunkPLTE,
-            GammaCorrection gammaCorrection,
-            TransparencyFilter transparencyFilter)
-
-    {
-        super(width, height, is, bi, colorType, bitDepth, bitsPerPixel, 
+                                   BufferedImage bi,
+                                   ColorType colorType, int bitDepth, int bitsPerPixel,
+                                   PngChunkPlte fPNGChunkPLTE,
+                                   GammaCorrection gammaCorrection,
+                                   TransparencyFilter transparencyFilter) {
+        super(width, height, is, bi, colorType, bitDepth, bitsPerPixel,
                 fPNGChunkPLTE, gammaCorrection, transparencyFilter);
     }
 
     private void visit(final int x, final int y, final BufferedImage bi, final BitParser fBitParser,
-            final int pixelIndexInScanline)
+                       final int pixelIndexInScanline)
             throws ImageReadException, IOException {
         final int rgb = getRGB(fBitParser, pixelIndexInScanline);
         bi.setRGB(x, y, rgb);

@@ -27,10 +27,10 @@ import java.text.BreakIterator;
 
 
 public final class LineBreakMeasurer {
+    int maxpos = 0;
     private TextMeasurer tm = null;
     private BreakIterator bi = null;
     private int position = 0;
-    int maxpos = 0;
 
     public LineBreakMeasurer(AttributedCharacterIterator text, FontRenderContext frc) {
         this(text, BreakIterator.getLineInstance(), frc);
@@ -59,6 +59,14 @@ public final class LineBreakMeasurer {
 
     public int getPosition() {
         return position;
+    }
+
+    public void setPosition(int pos) {
+        if (tm.aci.getBeginIndex() > pos || maxpos < pos) {
+            // awt.33=index is out of range
+            throw new IllegalArgumentException(Messages.getString("awt.33")); //$NON-NLS-1$
+        }
+        position = pos;
     }
 
     public void insertChar(AttributedCharacterIterator newText, int pos) {
@@ -95,7 +103,7 @@ public final class LineBreakMeasurer {
 
     public int nextOffset(float wrappingWidth, int offsetLimit, boolean requireNextWord) {
         if (offsetLimit <= position) {
-            // awt.203=Offset limit should be greater than current position. 
+            // awt.203=Offset limit should be greater than current position.
             throw new IllegalArgumentException(Messages.getString("awt.203")); //$NON-NLS-1$
         }
 
@@ -119,19 +127,11 @@ public final class LineBreakMeasurer {
             if (requireNextWord) {
                 correctedPos = position;
             } else {
-                correctedPos = Math.max(position+1, breakPos);
+                correctedPos = Math.max(position + 1, breakPos);
             }
         }
 
         return Math.min(correctedPos, offsetLimit);
-    }
-
-    public void setPosition(int pos) {
-        if (tm.aci.getBeginIndex() > pos || maxpos < pos) {
-            // awt.33=index is out of range
-            throw new IllegalArgumentException(Messages.getString("awt.33")); //$NON-NLS-1$
-        }
-        position = pos;
     }
 }
 

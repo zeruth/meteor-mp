@@ -23,7 +23,7 @@ import java.text.NumberFormat;
  */
 public class RationalNumber extends Number {
 
-    private static final long serialVersionUID = -8412262656468158691L;    
+    private static final long serialVersionUID = -8412262656468158691L;
 
     // int-precision tolerance
     private static final double TOLERANCE = 1E-8;
@@ -74,72 +74,6 @@ public class RationalNumber extends Number {
         }
     }
 
-    public RationalNumber negate() {
-        return new RationalNumber(-numerator, divisor);
-    }
-
-    @Override
-    public double doubleValue() {
-        return (double) numerator / (double) divisor;
-    }
-
-    @Override
-    public float floatValue() {
-        return (float) numerator / (float) divisor;
-    }
-
-    @Override
-    public int intValue() {
-        return numerator / divisor;
-    }
-
-    @Override
-    public long longValue() {
-        return (long) numerator / (long) divisor;
-    }
-
-    @Override
-    public String toString() {
-        if (divisor == 0) {
-            return "Invalid rational (" + numerator + "/" + divisor + ")";
-        }
-        final NumberFormat nf = NumberFormat.getInstance();
-
-        if ((numerator % divisor) == 0) {
-            return nf.format(numerator / divisor);
-        }
-        return numerator + "/" + divisor + " (" + nf.format((double) numerator / divisor) + ")";
-    }
-
-    public String toDisplayString() {
-        if ((numerator % divisor) == 0) {
-            return Integer.toString(numerator / divisor);
-        }
-        final NumberFormat nf = NumberFormat.getInstance();
-        nf.setMaximumFractionDigits(3);
-        return nf.format((double) numerator / (double) divisor);
-    }
-    
-
-    private static class Option {
-        public final RationalNumber rationalNumber;
-        public final double error;
-
-        private Option(final RationalNumber rationalNumber, final double error) {
-            this.rationalNumber = rationalNumber;
-            this.error = error;
-        }
-
-        public static Option factory(final RationalNumber rationalNumber, final double value) {
-            return new Option(rationalNumber, Math.abs(rationalNumber .doubleValue() - value));
-        }
-
-        @Override
-        public String toString() {
-            return rationalNumber.toString();
-        }
-    }
-
     /**
      * Calculate rational number using successive approximations.
      */
@@ -186,7 +120,7 @@ public class RationalNumber extends Number {
         Option bestOption = (low.error < high.error) ? low : high;
 
         final int maxIterations = 100; // value is quite high, actually.
-                                       // shouldn't matter.
+        // shouldn't matter.
         for (int count = 0; bestOption.error > TOLERANCE
                 && count < maxIterations; count++) {
             final RationalNumber mediant = RationalNumber.factoryMethod(
@@ -217,6 +151,71 @@ public class RationalNumber extends Number {
 
         return negative ? bestOption.rationalNumber.negate()
                 : bestOption.rationalNumber;
+    }
+
+    public RationalNumber negate() {
+        return new RationalNumber(-numerator, divisor);
+    }
+
+    @Override
+    public double doubleValue() {
+        return (double) numerator / (double) divisor;
+    }
+
+    @Override
+    public float floatValue() {
+        return (float) numerator / (float) divisor;
+    }
+
+    @Override
+    public int intValue() {
+        return numerator / divisor;
+    }
+
+    @Override
+    public long longValue() {
+        return (long) numerator / (long) divisor;
+    }
+
+    @Override
+    public String toString() {
+        if (divisor == 0) {
+            return "Invalid rational (" + numerator + "/" + divisor + ")";
+        }
+        final NumberFormat nf = NumberFormat.getInstance();
+
+        if ((numerator % divisor) == 0) {
+            return nf.format(numerator / divisor);
+        }
+        return numerator + "/" + divisor + " (" + nf.format((double) numerator / divisor) + ")";
+    }
+
+    public String toDisplayString() {
+        if ((numerator % divisor) == 0) {
+            return Integer.toString(numerator / divisor);
+        }
+        final NumberFormat nf = NumberFormat.getInstance();
+        nf.setMaximumFractionDigits(3);
+        return nf.format((double) numerator / (double) divisor);
+    }
+
+    private static class Option {
+        public final RationalNumber rationalNumber;
+        public final double error;
+
+        private Option(final RationalNumber rationalNumber, final double error) {
+            this.rationalNumber = rationalNumber;
+            this.error = error;
+        }
+
+        public static Option factory(final RationalNumber rationalNumber, final double value) {
+            return new Option(rationalNumber, Math.abs(rationalNumber.doubleValue() - value));
+        }
+
+        @Override
+        public String toString() {
+            return rationalNumber.toString();
+        }
     }
 
 }

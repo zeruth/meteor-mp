@@ -17,20 +17,19 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 10.11.2005
- *
  */
 package org.apache.harmony.awt.gl;
 
 
-import java.awt.Rectangle;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.WritableRaster;
 import org.apache.harmony.awt.gl.color.LUTColorConverter;
 import org.apache.harmony.awt.gl.image.DataBufferListener;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.ColorModel;
+import java.awt.image.DataBuffer;
+import java.awt.image.WritableRaster;
 
 
 /**
@@ -44,17 +43,17 @@ public class ImageSurface extends Surface implements DataBufferListener {
     ColorModel cm;
     WritableRaster raster;
     Object data;
-    
+
     boolean needToRefresh = true;
     boolean dataTaken = false;
-    
+
     AwtImageBackdoorAccessor ba = AwtImageBackdoorAccessor.getInstance();
 
-    public ImageSurface(ColorModel cm, WritableRaster raster){
+    public ImageSurface(ColorModel cm, WritableRaster raster) {
         this(cm, raster, Surface.getType(cm, raster));
     }
 
-    public ImageSurface(ColorModel cm, WritableRaster raster, int type){
+    public ImageSurface(ColorModel cm, WritableRaster raster, int type) {
         if (!cm.isCompatibleRaster(raster)) {
             // awt.4D=The raster is incompatible with this ColorModel
             throw new IllegalArgumentException(Messages.getString("awt.4D")); //$NON-NLS-1$
@@ -75,13 +74,13 @@ public class ImageSurface extends Surface implements DataBufferListener {
         // For the moment we can build natively only images which have 
         // sRGB, Linear_RGB, Linear_Gray Color Space and type different
         // from BufferedImage.TYPE_CUSTOM
-        if(cs == LUTColorConverter.sRGB_CS){
+        if (cs == LUTColorConverter.sRGB_CS) {
             csType = sRGB_CS;
-        }else if(cs == LUTColorConverter.LINEAR_RGB_CS){
+        } else if (cs == LUTColorConverter.LINEAR_RGB_CS) {
             csType = Linear_RGB_CS;
-        }else if(cs == LUTColorConverter.LINEAR_GRAY_CS){
+        } else if (cs == LUTColorConverter.LINEAR_GRAY_CS) {
             csType = Linear_Gray_CS;
-        }else{
+        } else {
             csType = Custom_CS;
         }
     }
@@ -96,26 +95,6 @@ public class ImageSurface extends Surface implements DataBufferListener {
         return raster;
     }
 
-    @Override
-    public Object getData(){
-        return data;
-    }
-
-    @Override
-    public boolean isNativeDrawable(){
-        return false;
-    }
-
-    @Override
-    public int getSurfaceType() {
-        return surfaceType;
-    }
-
-    @Override
-    public synchronized void dispose() {
-        ba.removeDataBufferListener(raster.getDataBuffer());
-    }
-
     /**
      * Supposes that new raster is compatible with an old one
      * @param r
@@ -127,6 +106,26 @@ public class ImageSurface extends Surface implements DataBufferListener {
         ba.addDataBufferListener(db, this);
         this.width = r.getWidth();
         this.height = r.getHeight();
+    }
+
+    @Override
+    public Object getData() {
+        return data;
+    }
+
+    @Override
+    public boolean isNativeDrawable() {
+        return false;
+    }
+
+    @Override
+    public int getSurfaceType() {
+        return surfaceType;
+    }
+
+    @Override
+    public synchronized void dispose() {
+        ba.removeDataBufferListener(raster.getDataBuffer());
     }
 
     @Override
@@ -155,35 +154,35 @@ public class ImageSurface extends Surface implements DataBufferListener {
         needToRefresh = true;
         clearValidCaches();
     }
-    
-    public void dataReleased(){
+
+    public void dataReleased() {
         dataTaken = false;
         needToRefresh = true;
         clearValidCaches();
     }
-    
+
     @Override
-    public void invalidate(){
+    public void invalidate() {
         needToRefresh = true;
         clearValidCaches();
     }
-    
+
     @Override
-    public void validate(){
-        if(!needToRefresh) {
+    public void validate() {
+        if (!needToRefresh) {
             return;
         }
-        if(!dataTaken){
+        if (!dataTaken) {
             needToRefresh = false;
             AwtImageBackdoorAccessor ba = AwtImageBackdoorAccessor.getInstance();
             ba.validate(raster.getDataBuffer());
         }
         releaseDurtyRegions();
-        
+
     }
-    
+
     @Override
-    public boolean invalidated(){
+    public boolean invalidated() {
         return needToRefresh | dataTaken;
     }
 }

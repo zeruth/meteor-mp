@@ -16,56 +16,233 @@
  */
 package javax.imageio;
 
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.event.IIOReadProgressListener;
 import javax.imageio.event.IIOReadUpdateListener;
 import javax.imageio.event.IIOReadWarningListener;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 
 public abstract class ImageReader {
 
     protected ImageReaderSpi originatingProvider;
 
-    protected Object                        input;
+    protected Object input;
 
-    protected boolean                       seekForwardOnly;
+    protected boolean seekForwardOnly;
 
-    protected boolean                       ignoreMetadata;
+    protected boolean ignoreMetadata;
 
-    protected int                           minIndex;
+    protected int minIndex;
 
-    protected Locale[]                      availableLocales;
+    protected Locale[] availableLocales;
 
-    protected Locale                        locale;
+    protected Locale locale;
 
-    protected List<IIOReadWarningListener>  warningListeners;
+    protected List<IIOReadWarningListener> warningListeners;
 
-    protected List<Locale>                  warningLocales;
+    protected List<Locale> warningLocales;
 
     protected List<IIOReadProgressListener> progressListeners;
 
-    protected List<IIOReadUpdateListener>   updateListeners;
+    protected List<IIOReadUpdateListener> updateListeners;
 
-    private boolean                         isAborted;
+    private boolean isAborted;
 
     protected ImageReader(final ImageReaderSpi originatingProvider) {
         this.originatingProvider = originatingProvider;
+    }
+
+    protected static Rectangle getSourceRegion(final ImageReadParam param,
+                                               final int srcWidth, final int srcHeight) {
+        final Rectangle r = new Rectangle(0, 0, srcWidth, srcHeight);
+
+        if (param != null) {
+            final int x;
+            final int y;
+            final Rectangle sr = param.getSourceRegion();
+
+            if (sr != null) {
+                r.setBounds(r.intersection(sr));
+            }
+
+            x = param.getSubsamplingXOffset();
+            y = param.getSubsamplingYOffset();
+            r.x += x;
+            r.y += y;
+            r.width -= x;
+            r.height -= y;
+        }
+
+        return r;
+    }
+
+    protected static void computeRegions(final ImageReadParam param,
+                                         final int srcWidth, final int srcHeight,
+                                         final BufferedImage image, final Rectangle srcRegion,
+                                         final Rectangle destRegion) {
+        int xCols = 1;
+        int yCols = 1;
+
+        iaeIfNull("srcRegion", srcRegion); //$NON-NLS-1$
+        iaeIfNull("destRegion", destRegion); //$NON-NLS-1$
+        iaeIfEmpty("srcRegion", srcRegion.isEmpty()); //$NON-NLS-1$
+        iaeIfEmpty("destRegion", destRegion.isEmpty()); //$NON-NLS-1$
+
+        srcRegion.setBounds(getSourceRegion(param, srcWidth, srcHeight));
+
+        if (param != null) {
+            destRegion.setLocation(param.getDestinationOffset());
+            xCols = param.getSourceXSubsampling();
+            yCols = param.getSourceYSubsampling();
+        }
+
+        if (destRegion.x < 0) {
+            final int shift = -destRegion.x * xCols;
+            srcRegion.x += shift;
+            srcRegion.width -= shift;
+            destRegion.x = 0;
+        }
+
+        if (destRegion.y < 0) {
+            final int shift = -destRegion.y * yCols;
+            srcRegion.y += shift;
+            srcRegion.height -= shift;
+            destRegion.y = 0;
+        }
+
+        destRegion.width = srcRegion.width / xCols;
+        destRegion.height = srcRegion.height / yCols;
+
+        if (image != null) {
+            destRegion.setBounds(destRegion.intersection(new Rectangle(0, 0,
+                    image.getWidth(), image.getHeight())));
+        }
+    }
+
+    protected static void checkReadParamBandSettings(
+            final ImageReadParam param, final int numSrcBands,
+            final int numDstBands) {
+        final int[] src = (param != null) ? param.getSourceBands() : null;
+        final int[] dst = (param != null) ? param.getDestinationBands() : null;
+        final int srcLen = (src != null) ? src.length : numSrcBands;
+        final int dstLen = (dst != null) ? dst.length : numDstBands;
+
+        if (srcLen != dstLen) {
+            throw new IllegalArgumentException("srcLen != dstLen"); //$NON-NLS-1$
+        }
+
+        if (src != null) {
+            for (int i = 0; i < srcLen; i++) {
+                if (src[i] >= numSrcBands) {
+                    throw new IllegalArgumentException("src[" + i //$NON-NLS-1$
+                            + "] >= numSrcBands"); //$NON-NLS-1$
+                }
+            }
+        }
+
+        if (dst != null) {
+            for (int i = 0; i < dstLen; i++) {
+                if (dst[i] >= numDstBands) {
+                    throw new IllegalArgumentException("dst[" + i //$NON-NLS-1$
+                            + "] >= numDstBands"); //$NON-NLS-1$
+                }
+            }
+        }
+    }
+
+    protected static BufferedImage getDestination(final ImageReadParam param,
+                                                  final Iterator<ImageTypeSpecifier> imageTypes,
+                                                  final int width, final int height) throws IIOException {
+        iaeIfNull("imageTypes", imageTypes); //$NON-NLS-1$
+        iaeIfEmpty("imageTypes", !imageTypes.hasNext()); //$NON-NLS-1$
+
+        if ((long) (width * height) > (long) Integer.MAX_VALUE) {
+            throw new IllegalArgumentException(
+                    "width * height > Integer.MAX_VALUE!"); //$NON-NLS-1$
+        }
+
+        final Rectangle dst;
+        ImageTypeSpecifier its = null;
+
+        if (param != null) {
+            final BufferedImage img = param.getDestination();
+
+            if (img != null) {
+                return img;
+            }
+
+            its = param.getDestinationType();
+        }
+
+        try {
+            isValid:
+            if (its != null) {
+                while (imageTypes.hasNext()) {
+                    if (its.equals((ImageTypeSpecifier) imageTypes.next())) {
+                        break isValid;
+                    }
+                }
+                throw new IIOException(Messages.getString("imageio.3", its)); //$NON-NLS-1$
+            } else {
+                its = imageTypes.next();
+            }
+        } catch (final ClassCastException ex) {
+            throw new IllegalArgumentException(ex);
+        }
+
+        dst = new Rectangle(0, 0, 0, 0);
+        computeRegions(param, width, height, null, new Rectangle(0, 0, 0, 0),
+                dst);
+        return its.createBufferedImage(dst.width, dst.height);
+    }
+
+    private static <T> List<T> addToList(List<T> list, final T value) {
+        if (list == null) {
+            list = new LinkedList<T>();
+        }
+
+        list.add(value);
+        return list;
+    }
+
+    private static void iaeIfNull(final String name, final Object value) {
+        if (value == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.2", //$NON-NLS-1$
+                    name));
+        }
+    }
+
+    private static void iaeIfEmpty(final String name, final boolean isEmpty) {
+        if (isEmpty) {
+            throw new IllegalArgumentException(Messages.getString("imageio.6", //$NON-NLS-1$
+                    name));
+        }
+    }
+
+    private static <T> boolean arrayContains(final T[] array, final Object value) {
+        for (T t : array) {
+            if ((t == value) || ((t != null) && t.equals(value))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private static boolean isSupportedFormat(final String formatName,
+                                             final IIOMetadata data) {
+        final String[] names;
+        return ((data != null) && ((names = data.getMetadataFormatNames()) != null))
+                ? arrayContains(names, formatName) : false;
     }
 
     public String getFormatName() throws IOException {
@@ -77,12 +254,12 @@ public abstract class ImageReader {
     }
 
     public void setInput(final Object input, final boolean seekForwardOnly,
-                    final boolean ignoreMetadata) {
+                         final boolean ignoreMetadata) {
         if (input != null) {
             if (!isSupported(input) && !(input instanceof ImageInputStream)) {
                 throw new IllegalArgumentException(Messages.getString(
-                    "imageio.2", //$NON-NLS-1$
-                    input));
+                        "imageio.2", //$NON-NLS-1$
+                        input));
             }
         }
         this.minIndex = 0;
@@ -109,12 +286,12 @@ public abstract class ImageReader {
         setInput(input, seekForwardOnly, false);
     }
 
-    public void setInput(final Object input) {
-        setInput(input, false, false);
-    }
-
     public Object getInput() {
         return input;
+    }
+
+    public void setInput(final Object input) {
+        setInput(input, false, false);
     }
 
     public boolean isSeekForwardOnly() {
@@ -133,26 +310,26 @@ public abstract class ImageReader {
         return availableLocales;
     }
 
+    public Locale getLocale() {
+        return locale;
+    }
+
     public void setLocale(final Locale locale) {
         if (locale != null) {
             final Locale[] locales = getAvailableLocales();
 
             if ((locales == null) || !arrayContains(locales, locale)) {
                 throw new IllegalArgumentException(Messages.getString(
-                    "imageio.3", //$NON-NLS-1$
-                    "Locale " + locale)); //$NON-NLS-1$
+                        "imageio.3", //$NON-NLS-1$
+                        "Locale " + locale)); //$NON-NLS-1$
             }
         }
 
         this.locale = locale;
     }
 
-    public Locale getLocale() {
-        return locale;
-    }
-
     public abstract int getNumImages(final boolean allowSearch)
-                    throws IOException;
+            throws IOException;
 
     public abstract int getWidth(final int imageIndex) throws IOException;
 
@@ -167,12 +344,12 @@ public abstract class ImageReader {
     }
 
     public ImageTypeSpecifier getRawImageType(final int imageIndex)
-                    throws IOException {
+            throws IOException {
         return getImageTypes(imageIndex).next();
     }
 
     public abstract Iterator<ImageTypeSpecifier> getImageTypes(
-                    final int imageIndex) throws IOException;
+            final int imageIndex) throws IOException;
 
     public ImageReadParam getDefaultReadParam() {
         return new ImageReadParam();
@@ -181,7 +358,7 @@ public abstract class ImageReader {
     public abstract IIOMetadata getStreamMetadata() throws IOException;
 
     public IIOMetadata getStreamMetadata(final String formatName,
-                    final Set<String> nodeNames) throws IOException {
+                                         final Set<String> nodeNames) throws IOException {
         iaeIfNull("formatName", formatName); //$NON-NLS-1$
         iaeIfNull("nodeNames", nodeNames); //$NON-NLS-1$
 
@@ -190,11 +367,11 @@ public abstract class ImageReader {
     }
 
     public abstract IIOMetadata getImageMetadata(final int imageIndex)
-                    throws IOException;
+            throws IOException;
 
     public IIOMetadata getImageMetadata(final int imageIndex,
-                    final String formatName, final Set<String> nodeNames)
-                    throws IOException {
+                                        final String formatName, final Set<String> nodeNames)
+            throws IOException {
         iaeIfNull("formatName", formatName); //$NON-NLS-1$
         iaeIfNull("nodeNames", nodeNames); //$NON-NLS-1$
 
@@ -207,10 +384,10 @@ public abstract class ImageReader {
     }
 
     public abstract BufferedImage read(final int imageIndex,
-                    final ImageReadParam param) throws IOException;
+                                       final ImageReadParam param) throws IOException;
 
     public IIOImage readAll(final int imageIndex, final ImageReadParam param)
-                    throws IOException {
+            throws IOException {
         List<BufferedImage> th = null;
         final BufferedImage img = read(imageIndex, param);
         final int num = getNumThumbnails(imageIndex);
@@ -227,8 +404,8 @@ public abstract class ImageReader {
     }
 
     public Iterator<IIOImage> readAll(
-                    final Iterator<? extends ImageReadParam> params)
-                    throws IOException {
+            final Iterator<? extends ImageReadParam> params)
+            throws IOException {
         final int index = getMinIndex();
         final List<IIOImage> list = new LinkedList<IIOImage>();
 
@@ -251,9 +428,9 @@ public abstract class ImageReader {
     }
 
     public Raster readRaster(final int imageIndex, final ImageReadParam param)
-                    throws IOException {
+            throws IOException {
         throw new UnsupportedOperationException(Messages.getString("imageio.7", //$NON-NLS-1$
-            "readRaster()")); //$NON-NLS-1$
+                "readRaster()")); //$NON-NLS-1$
     }
 
     public boolean isImageTiled(final int imageIndex) throws IOException {
@@ -277,32 +454,32 @@ public abstract class ImageReader {
     }
 
     public BufferedImage readTile(final int imageIndex, final int tileX,
-                    final int tileY) throws IOException {
+                                  final int tileY) throws IOException {
         if ((tileX != 0) || (tileY != 0)) {
             throw new IllegalArgumentException(Messages.getString("imageio.5", //$NON-NLS-1$
-                "0", "tileX & tileY")); //$NON-NLS-1$ //$NON-NLS-2$
+                    "0", "tileX & tileY")); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
         return read(imageIndex);
     }
 
     public Raster readTileRaster(final int imageIndex, final int tileX,
-                    final int tileY) throws IOException {
+                                 final int tileY) throws IOException {
         if (canReadRaster()) {
             if ((tileX != 0) || (tileY != 0)) {
                 throw new IllegalArgumentException(Messages.getString(
-                    "imageio.5", //$NON-NLS-1$
-                    "0", "tileX & tileY")); //$NON-NLS-1$ //$NON-NLS-2$
+                        "imageio.5", //$NON-NLS-1$
+                        "0", "tileX & tileY")); //$NON-NLS-1$ //$NON-NLS-2$
             }
             return readRaster(imageIndex, null);
         }
 
         throw new UnsupportedOperationException(Messages.getString("imageio.7", //$NON-NLS-1$
-            "readTileRaster()")); //$NON-NLS-1$
+                "readTileRaster()")); //$NON-NLS-1$
     }
 
     public RenderedImage readAsRenderedImage(final int imageIndex,
-                    final ImageReadParam param) throws IOException {
+                                             final ImageReadParam param) throws IOException {
         return read(imageIndex, param);
     }
 
@@ -319,19 +496,19 @@ public abstract class ImageReader {
     }
 
     public int getThumbnailWidth(final int imageIndex, final int thumbnailIndex)
-                    throws IOException {
+            throws IOException {
         return readThumbnail(imageIndex, thumbnailIndex).getWidth(); // def
     }
 
     public int getThumbnailHeight(final int imageIndex, final int thumbnailIndex)
-                    throws IOException {
+            throws IOException {
         return readThumbnail(imageIndex, thumbnailIndex).getHeight(); // def
     }
 
     public BufferedImage readThumbnail(final int imageIndex,
-                    final int thumbnailIndex) throws IOException {
+                                       final int thumbnailIndex) throws IOException {
         throw new UnsupportedOperationException(Messages.getString("imageio.7", //$NON-NLS-1$
-            "readThumbnail()")); //$NON-NLS-1$
+                "readThumbnail()")); //$NON-NLS-1$
     }
 
     public void abort() {
@@ -354,11 +531,11 @@ public abstract class ImageReader {
     }
 
     public void removeIIOReadWarningListener(
-                    final IIOReadWarningListener listener) {
+            final IIOReadWarningListener listener) {
         final int ind;
 
         if ((warningListeners != null) && (listener != null)
-            && ((ind = warningListeners.indexOf(listener)) != -1)) {
+                && ((ind = warningListeners.indexOf(listener)) != -1)) {
             warningListeners.remove(ind);
             warningLocales.remove(ind);
         }
@@ -370,14 +547,14 @@ public abstract class ImageReader {
     }
 
     public void addIIOReadProgressListener(
-                    final IIOReadProgressListener listener) {
+            final IIOReadProgressListener listener) {
         if (listener != null) {
             progressListeners = addToList(progressListeners, listener);
         }
     }
 
     public void removeIIOReadProgressListener(
-                    final IIOReadProgressListener listener) {
+            final IIOReadProgressListener listener) {
         if ((progressListeners != null) && (listener != null)) {
             progressListeners.remove(listener);
         }
@@ -444,7 +621,7 @@ public abstract class ImageReader {
     }
 
     protected void processThumbnailStarted(final int imageIndex,
-                    final int thumbnailIndex) {
+                                           final int thumbnailIndex) {
         if (progressListeners != null) {
             for (final IIOReadProgressListener listener : progressListeners) {
                 listener.thumbnailStarted(this, imageIndex, thumbnailIndex);
@@ -477,25 +654,25 @@ public abstract class ImageReader {
     }
 
     protected void processPassStarted(final BufferedImage theImage,
-                    final int pass, final int minPass, final int maxPass,
-                    final int minX, final int minY, final int periodX,
-                    final int periodY, final int[] bands) {
+                                      final int pass, final int minPass, final int maxPass,
+                                      final int minX, final int minY, final int periodX,
+                                      final int periodY, final int[] bands) {
         if (updateListeners != null) {
             for (final IIOReadUpdateListener listener : updateListeners) {
                 listener.passStarted(this, theImage, pass, minPass, maxPass,
-                    minX, minY, periodX, periodY, bands);
+                        minX, minY, periodX, periodY, bands);
             }
         }
     }
 
     protected void processImageUpdate(final BufferedImage theImage,
-                    final int minX, final int minY, final int width,
-                    final int height, final int periodX, final int periodY,
-                    final int[] bands) {
+                                      final int minX, final int minY, final int width,
+                                      final int height, final int periodX, final int periodY,
+                                      final int[] bands) {
         if (updateListeners != null) {
             for (final IIOReadUpdateListener listener : updateListeners) {
                 listener.imageUpdate(this, theImage, minX, minY, width, height,
-                    periodX, periodY, bands);
+                        periodX, periodY, bands);
             }
         }
     }
@@ -509,26 +686,26 @@ public abstract class ImageReader {
     }
 
     protected void processThumbnailPassStarted(
-                    final BufferedImage theThumbnail, final int pass,
-                    final int minPass, final int maxPass, final int minX,
-                    final int minY, final int periodX, final int periodY,
-                    final int[] bands) {
+            final BufferedImage theThumbnail, final int pass,
+            final int minPass, final int maxPass, final int minX,
+            final int minY, final int periodX, final int periodY,
+            final int[] bands) {
         if (updateListeners != null) {
             for (final IIOReadUpdateListener listener : updateListeners) {
                 listener.thumbnailPassStarted(this, theThumbnail, pass,
-                    minPass, maxPass, minX, minY, periodX, periodY, bands);
+                        minPass, maxPass, minX, minY, periodX, periodY, bands);
             }
         }
     }
 
     protected void processThumbnailUpdate(final BufferedImage theThumbnail,
-                    final int minX, final int minY, final int width,
-                    final int height, final int periodX, final int periodY,
-                    final int[] bands) {
+                                          final int minX, final int minY, final int width,
+                                          final int height, final int periodX, final int periodY,
+                                          final int[] bands) {
         if (updateListeners != null) {
             for (final IIOReadUpdateListener listener : updateListeners) {
                 listener.thumbnailUpdate(this, theThumbnail, minX, minY, width,
-                    height, periodX, periodY, bands);
+                        height, periodX, periodY, bands);
             }
         }
     }
@@ -551,7 +728,7 @@ public abstract class ImageReader {
     }
 
     protected void processWarningOccurred(final String baseName,
-                    final String keyword) {
+                                          final String keyword) {
         if (warningListeners != null) {
             int i = 0;
 
@@ -562,8 +739,8 @@ public abstract class ImageReader {
                 try {
                     final Locale locale = warningLocales.get(i);
                     final ResourceBundle bundle = (locale != null)
-                        ? ResourceBundle.getBundle(baseName, locale)
-                        : ResourceBundle.getBundle(baseName);
+                            ? ResourceBundle.getBundle(baseName, locale)
+                            : ResourceBundle.getBundle(baseName);
                     listener.warningOccurred(this, bundle.getString(keyword));
                 } catch (final RuntimeException ex) {
                     throw new IllegalArgumentException(ex.getMessage());
@@ -585,187 +762,5 @@ public abstract class ImageReader {
 
     public void dispose() {
         // do nothing by def
-    }
-
-    protected static Rectangle getSourceRegion(final ImageReadParam param,
-                    final int srcWidth, final int srcHeight) {
-        final Rectangle r = new Rectangle(0, 0, srcWidth, srcHeight);
-
-        if (param != null) {
-            final int x;
-            final int y;
-            final Rectangle sr = param.getSourceRegion();
-
-            if (sr != null) {
-                r.setBounds(r.intersection(sr));
-            }
-
-            x = param.getSubsamplingXOffset();
-            y = param.getSubsamplingYOffset();
-            r.x += x;
-            r.y += y;
-            r.width -= x;
-            r.height -= y;
-        }
-
-        return r;
-    }
-
-    protected static void computeRegions(final ImageReadParam param,
-                    final int srcWidth, final int srcHeight,
-                    final BufferedImage image, final Rectangle srcRegion,
-                    final Rectangle destRegion) {
-        int xCols = 1;
-        int yCols = 1;
-
-        iaeIfNull("srcRegion", srcRegion); //$NON-NLS-1$
-        iaeIfNull("destRegion", destRegion); //$NON-NLS-1$
-        iaeIfEmpty("srcRegion", srcRegion.isEmpty()); //$NON-NLS-1$
-        iaeIfEmpty("destRegion", destRegion.isEmpty()); //$NON-NLS-1$
-
-        srcRegion.setBounds(getSourceRegion(param, srcWidth, srcHeight));
-
-        if (param != null) {
-            destRegion.setLocation(param.getDestinationOffset());
-            xCols = param.getSourceXSubsampling();
-            yCols = param.getSourceYSubsampling();
-        }
-
-        if (destRegion.x < 0) {
-            final int shift = -destRegion.x * xCols;
-            srcRegion.x += shift;
-            srcRegion.width -= shift;
-            destRegion.x = 0;
-        }
-
-        if (destRegion.y < 0) {
-            final int shift = -destRegion.y * yCols;
-            srcRegion.y += shift;
-            srcRegion.height -= shift;
-            destRegion.y = 0;
-        }
-
-        destRegion.width = srcRegion.width / xCols;
-        destRegion.height = srcRegion.height / yCols;
-
-        if (image != null) {
-            destRegion.setBounds(destRegion.intersection(new Rectangle(0, 0,
-                            image.getWidth(), image.getHeight())));
-        }
-    }
-
-    protected static void checkReadParamBandSettings(
-                    final ImageReadParam param, final int numSrcBands,
-                    final int numDstBands) {
-        final int[] src = (param != null) ? param.getSourceBands() : null;
-        final int[] dst = (param != null) ? param.getDestinationBands() : null;
-        final int srcLen = (src != null) ? src.length : numSrcBands;
-        final int dstLen = (dst != null) ? dst.length : numDstBands;
-
-        if (srcLen != dstLen) {
-            throw new IllegalArgumentException("srcLen != dstLen"); //$NON-NLS-1$
-        }
-
-        if (src != null) {
-            for (int i = 0; i < srcLen; i++) {
-                if (src[i] >= numSrcBands) {
-                    throw new IllegalArgumentException("src[" + i //$NON-NLS-1$
-                        + "] >= numSrcBands"); //$NON-NLS-1$
-                }
-            }
-        }
-
-        if (dst != null) {
-            for (int i = 0; i < dstLen; i++) {
-                if (dst[i] >= numDstBands) {
-                    throw new IllegalArgumentException("dst[" + i //$NON-NLS-1$
-                        + "] >= numDstBands"); //$NON-NLS-1$
-                }
-            }
-        }
-    }
-
-    protected static BufferedImage getDestination(final ImageReadParam param,
-                    final Iterator<ImageTypeSpecifier> imageTypes,
-                    final int width, final int height) throws IIOException {
-        iaeIfNull("imageTypes", imageTypes); //$NON-NLS-1$
-        iaeIfEmpty("imageTypes", !imageTypes.hasNext()); //$NON-NLS-1$
-
-        if ((long) (width * height) > (long) Integer.MAX_VALUE) {
-            throw new IllegalArgumentException(
-                            "width * height > Integer.MAX_VALUE!"); //$NON-NLS-1$
-        }
-
-        final Rectangle dst;
-        ImageTypeSpecifier its = null;
-
-        if (param != null) {
-            final BufferedImage img = param.getDestination();
-
-            if (img != null) {
-                return img;
-            }
-
-            its = param.getDestinationType();
-        }
-
-        try {
-            isValid: if (its != null) {
-                while (imageTypes.hasNext()) {
-                    if (its.equals((ImageTypeSpecifier) imageTypes.next())) {
-                        break isValid;
-                    }
-                }
-                throw new IIOException(Messages.getString("imageio.3", its)); //$NON-NLS-1$
-            } else {
-                its = imageTypes.next();
-            }
-        } catch (final ClassCastException ex) {
-            throw new IllegalArgumentException(ex);
-        }
-
-        dst = new Rectangle(0, 0, 0, 0);
-        computeRegions(param, width, height, null, new Rectangle(0, 0, 0, 0),
-            dst);
-        return its.createBufferedImage(dst.width, dst.height);
-    }
-
-    private static <T> List<T> addToList(List<T> list, final T value) {
-        if (list == null) {
-            list = new LinkedList<T>();
-        }
-
-        list.add(value);
-        return list;
-    }
-
-    private static void iaeIfNull(final String name, final Object value) {
-        if (value == null) {
-            throw new IllegalArgumentException(Messages.getString("imageio.2", //$NON-NLS-1$
-                name));
-        }
-    }
-
-    private static void iaeIfEmpty(final String name, final boolean isEmpty) {
-        if (isEmpty) {
-            throw new IllegalArgumentException(Messages.getString("imageio.6", //$NON-NLS-1$
-                name));
-        }
-    }
-
-    private static <T> boolean arrayContains(final T[] array, final Object value) {
-        for (T t : array) {
-            if ((t == value) || ((t != null) && t.equals(value))) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    private static boolean isSupportedFormat(final String formatName,
-                    final IIOMetadata data) {
-        final String[] names;
-        return ((data != null) && ((names = data.getMetadataFormatNames()) != null))
-            ? arrayContains(names, formatName) : false;
     }
 }

@@ -19,24 +19,19 @@
  */
 package java.awt.image;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Image;
-import java.awt.ImageCapabilities;
-import java.awt.Transparency;
+import java.awt.*;
 
 /**
  * Volatile image implementation
  */
 public abstract class VolatileImage extends Image
-    // Volatile image implements Transparency since 1.5
-    implements Transparency {
+        // Volatile image implements Transparency since 1.5
+        implements Transparency {
     /***************************************************************************
-    *
-    *  Constants
-    *
-    ***************************************************************************/
+     *
+     *  Constants
+     *
+     ***************************************************************************/
 
     public static final int IMAGE_INCOMPATIBLE = 2;
 
@@ -47,22 +42,21 @@ public abstract class VolatileImage extends Image
     protected int transparency = OPAQUE;
 
     /***************************************************************************
-    *
-    *  Constructors
-    *
-    ***************************************************************************/
+     *
+     *  Constructors
+     *
+     ***************************************************************************/
 
     public VolatileImage() {
         super();
     }
 
 
-
     /***************************************************************************
-    *
-    *  Abstract methods
-    *
-    ***************************************************************************/
+     *
+     *  Abstract methods
+     *
+     ***************************************************************************/
 
     public abstract boolean contentsLost();
 
@@ -80,10 +74,10 @@ public abstract class VolatileImage extends Image
 
 
     /***************************************************************************
-    *
-    *  Public methods
-    *
-    ***************************************************************************/
+     *
+     *  Public methods
+     *
+     ***************************************************************************/
 
     @Override
     public void flush() {

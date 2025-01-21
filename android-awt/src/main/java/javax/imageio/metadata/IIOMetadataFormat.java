@@ -19,7 +19,6 @@ package javax.imageio.metadata;
 
 
 import javax.imageio.ImageTypeSpecifier;
-
 import java.util.Locale;
 
 public interface IIOMetadataFormat {
@@ -53,31 +52,51 @@ public interface IIOMetadataFormat {
     boolean canNodeAppear(String elementName, ImageTypeSpecifier imageType);
 
     int getAttributeDataType(String elementName, String attrName);
+
     String getAttributeDefaultValue(String elementName, String attrName);
+
     String getAttributeDescription(String elementName, String attrName, Locale locale);
+
     String[] getAttributeEnumerations(String elementName, String attrName);
+
     int getAttributeListMaxLength(String elementName, String attrName);
+
     int getAttributeListMinLength(String elementName, String attrName);
+
     String getAttributeMaxValue(String elementName, String attrName);
+
     String getAttributeMinValue(String elementName, String attrName);
+
     String[] getAttributeNames(String elementName);
+
     int getAttributeValueType(String elementName, String attrName);
+
     boolean isAttributeRequired(String elementName, String attrName);
 
     String[] getChildNames(String elementName);
+
     int getChildPolicy(String elementName);
 
     String getElementDescription(String elementName, Locale locale);
+
     int getElementMaxChildren(String elementName);
+
     int getElementMinChildren(String elementName);
 
     int getObjectArrayMaxLength(String elementName);
+
     int getObjectArrayMinLength(String elementName);
+
     Class<?> getObjectClass(String elementName);
+
     Object getObjectDefaultValue(String elementName);
+
     Object[] getObjectEnumerations(String elementName);
+
     Comparable<?> getObjectMaxValue(String elementName);
+
     Comparable<?> getObjectMinValue(String elementName);
+
     int getObjectValueType(String elementName);
 
     String getRootName();

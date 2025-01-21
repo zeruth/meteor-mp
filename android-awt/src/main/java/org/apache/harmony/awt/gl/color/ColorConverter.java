@@ -39,19 +39,20 @@ public class ColorConverter {
     /**
      * Translates pixels, stored in source buffered image and writes the data
      * to the destination image.
-     * @param t - ICC transform
+     *
+     * @param t   - ICC transform
      * @param src - source image
      * @param dst - destination image
      */
     public void translateColor(ICC_Transform t,
-            BufferedImage src, BufferedImage dst) {
-      NativeImageFormat srcIF = NativeImageFormat.createNativeImageFormat(src);
-      NativeImageFormat dstIF = NativeImageFormat.createNativeImageFormat(dst);
+                               BufferedImage src, BufferedImage dst) {
+        NativeImageFormat srcIF = NativeImageFormat.createNativeImageFormat(src);
+        NativeImageFormat dstIF = NativeImageFormat.createNativeImageFormat(dst);
 
-      if (srcIF != null && dstIF != null) {
-          t.translateColors(srcIF, dstIF);
-          return;
-      }
+        if (srcIF != null && dstIF != null) {
+            t.translateColors(srcIF, dstIF);
+            return;
+        }
 
         srcIF = createImageFormat(src);
         dstIF = createImageFormat(dst);
@@ -68,17 +69,17 @@ public class ColorConverter {
         float alpha[] = null;
         boolean saveAlpha = srcCM.hasAlpha() && dstCM.hasAlpha();
         if (saveAlpha) {
-            alpha = new float[src.getWidth()*src.getHeight()];
+            alpha = new float[src.getWidth() * src.getHeight()];
         }
 
         WritableRaster wr = src.getRaster();
         int srcDataPos = 0, alphaPos = 0;
         float normalizedVal[];
-        for (int row=0, nRows = srcIF.getNumRows(); row<nRows; row++) {
-            for (int col=0, nCols = srcIF.getNumCols(); col<nCols; col++) {
+        for (int row = 0, nRows = srcIF.getNumRows(); row < nRows; row++) {
+            for (int col = 0, nCols = srcIF.getNumCols(); col < nCols; col++) {
                 normalizedVal = srcCM.getNormalizedComponents(
-                    wr.getDataElements(col, row, null),
-                    null, 0);
+                        wr.getDataElements(col, row, null),
+                        null, 0);
                 // Save alpha channel
                 if (saveAlpha) {
                     // We need nColorChannels'th element cause it's nChannels - 1
@@ -99,8 +100,8 @@ public class ColorConverter {
         alphaPos = 0;
         wr = dst.getRaster();
 
-        for (int row=0, nRows = dstIF.getNumRows(); row<nRows; row++) {
-            for (int col=0, nCols = dstIF.getNumCols(); col<nCols; col++) {
+        for (int row = 0, nRows = dstIF.getNumRows(); row < nRows; row++) {
+            for (int col = 0, nCols = dstIF.getNumCols(); col < nCols; col++) {
                 scaler.unscale(dstPixel, dstChanData, dstDataPos);
                 dstDataPos += nColorChannels;
                 if (fillAlpha) {
@@ -111,7 +112,7 @@ public class ColorConverter {
                     }
                 }
                 wr.setDataElements(col, row,
-                        dstCM.getDataElements(dstPixel, 0 , null));
+                        dstCM.getDataElements(dstPixel, 0, null));
             }
         }
     }
@@ -120,25 +121,26 @@ public class ColorConverter {
      * Translates pixels, stored in the float data buffer.
      * Each pixel occupies separate array. Input pixels passed in the buffer
      * are replaced by output pixels and then the buffer is returned
-     * @param t - ICC transform
-     * @param buffer - data buffer
-     * @param srcCS - source color space
-     * @param dstCS - destination color space
+     *
+     * @param t       - ICC transform
+     * @param buffer  - data buffer
+     * @param srcCS   - source color space
+     * @param dstCS   - destination color space
      * @param nPixels - number of pixels
      * @return translated pixels
      */
     public float[][] translateColor(ICC_Transform t,
-            float buffer[][],
-            ColorSpace srcCS,
-            ColorSpace dstCS,
-            int nPixels) {
+                                    float buffer[][],
+                                    ColorSpace srcCS,
+                                    ColorSpace dstCS,
+                                    int nPixels) {
         // Scale source data
         if (srcCS != null) { // if it is null use old scaling data
             scaler.loadScalingData(srcCS);
         }
         int nSrcChannels = t.getNumInputChannels();
-        short srcShortData[] = new short[nPixels*nSrcChannels];
-        for (int i=0, srcDataPos = 0; i<nPixels; i++) {
+        short srcShortData[] = new short[nPixels * nSrcChannels];
+        for (int i = 0, srcDataPos = 0; i < nPixels; i++) {
             scaler.scale(buffer[i], srcShortData, srcDataPos);
             srcDataPos += nSrcChannels;
         }
@@ -149,7 +151,7 @@ public class ColorConverter {
         int nDstChannels = t.getNumOutputChannels();
         int bufferSize = buffer[0].length;
         if (bufferSize < nDstChannels + 1) { // Re-allocate buffer if needed
-            for (int i=0; i<nPixels; i++) {
+            for (int i = 0; i < nPixels; i++) {
                 // One extra element reserved for alpha
                 buffer[i] = new float[nDstChannels + 1];
             }
@@ -159,7 +161,7 @@ public class ColorConverter {
         if (dstCS != null) { // if it is null use old scaling data
             scaler.loadScalingData(dstCS);
         }
-        for (int i=0, dstDataPos = 0; i<nPixels; i++) {
+        for (int i = 0, dstDataPos = 0; i < nPixels; i++) {
             scaler.unscale(buffer[i], dstShortData, dstDataPos);
             dstDataPos += nDstChannels;
         }
@@ -170,21 +172,22 @@ public class ColorConverter {
     /**
      * Translates pixels stored in a raster.
      * All data types are supported
-     * @param t - ICC transform
+     *
+     * @param t   - ICC transform
      * @param src - source pixels
      * @param dst - destination pixels
      */
-   public void translateColor(ICC_Transform t, Raster src, WritableRaster dst) {
-        try{
+    public void translateColor(ICC_Transform t, Raster src, WritableRaster dst) {
+        try {
             NativeImageFormat srcFmt = NativeImageFormat.createNativeImageFormat(src);
             NativeImageFormat dstFmt = NativeImageFormat.createNativeImageFormat(dst);
 
-          if (srcFmt != null && dstFmt != null) {
-              t.translateColors(srcFmt, dstFmt);
-              return;
-          }
+            if (srcFmt != null && dstFmt != null) {
+                t.translateColors(srcFmt, dstFmt);
+                return;
+            }
         } catch (IllegalArgumentException e) {
-      }
+        }
 
         // Go ahead and rescale the source image
         scaler.loadScalingData(src, t.getSrc());
@@ -194,13 +197,14 @@ public class ColorConverter {
 
         scaler.loadScalingData(dst, t.getDst());
         scaler.unscale(dstData, dst);
-   }
+    }
 
     /**
      * Translates pixels stored in an array of shorts.
      * Samples are stored one-by-one, i.e. array structure is like following: RGBRGBRGB...
      * The number of pixels is (size of the array) / (number of components).
-     * @param t - ICC transform
+     *
+     * @param t   - ICC transform
      * @param src - source pixels
      * @param dst - destination pixels
      * @return destination pixels, stored in the array, passed in dst
@@ -217,6 +221,7 @@ public class ColorConverter {
 
     /**
      * Creates NativeImageFormat from buffered image.
+     *
      * @param bi - buffered image
      * @return created NativeImageFormat
      */
@@ -224,7 +229,7 @@ public class ColorConverter {
         int nRows = bi.getHeight();
         int nCols = bi.getWidth();
         int nComps = bi.getColorModel().getNumColorComponents();
-        short imgData[] = new short[nRows*nCols*nComps];
+        short imgData[] = new short[nRows * nCols * nComps];
         return new NativeImageFormat(
                 imgData, nComps, nRows, nCols);
     }
@@ -233,10 +238,10 @@ public class ColorConverter {
      * Creates one-row NativeImageFormat, using either nCols if it is positive,
      * or arr.length to determine the number of pixels
      *
-     * @param t - transform
-     * @param arr - short array or null if nCols is positive
+     * @param t     - transform
+     * @param arr   - short array or null if nCols is positive
      * @param nCols - number of pixels in the array or 0 if array is not null
-     * @param in - is it an input or output array
+     * @param in    - is it an input or output array
      * @return one-row NativeImageFormat
      */
     private NativeImageFormat createImageFormat(
@@ -244,8 +249,8 @@ public class ColorConverter {
     ) {
         int nComponents = in ? t.getNumInputChannels() : t.getNumOutputChannels();
 
-        if (arr == null || arr.length < nCols*nComponents) {
-            arr = new short[nCols*nComponents];
+        if (arr == null || arr.length < nCols * nComponents) {
+            arr = new short[nCols * nComponents];
         }
 
         if (nCols == 0)

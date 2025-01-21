@@ -19,8 +19,7 @@
  */
 package java.awt.image;
 
-import java.awt.BufferCapabilities;
-import java.awt.Graphics;
+import java.awt.*;
 
 public abstract class BufferStrategy {
 

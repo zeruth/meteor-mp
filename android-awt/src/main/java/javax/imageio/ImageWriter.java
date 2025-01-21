@@ -19,25 +19,20 @@
  */
 package javax.imageio;
 
-import java.awt.Dimension;
-import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.event.IIOWriteProgressListener;
 import javax.imageio.event.IIOWriteWarningListener;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageWriterSpi;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.Raster;
+import java.awt.image.RenderedImage;
 import java.io.IOException;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 
 public abstract class ImageWriter implements ImageTranscoder {
@@ -59,11 +54,11 @@ public abstract class ImageWriter implements ImageTranscoder {
     }
 
     public abstract IIOMetadata convertStreamMetadata(IIOMetadata iioMetadata,
-                                             ImageWriteParam imageWriteParam);
+                                                      ImageWriteParam imageWriteParam);
 
     public abstract IIOMetadata convertImageMetadata(IIOMetadata iioMetadata,
-                                            ImageTypeSpecifier imageTypeSpecifier,
-                                            ImageWriteParam imageWriteParam);
+                                                     ImageTypeSpecifier imageTypeSpecifier,
+                                                     ImageWriteParam imageWriteParam);
 
     public ImageWriterSpi getOriginatingProvider() {
         return originatingProvider;
@@ -122,11 +117,11 @@ public abstract class ImageWriter implements ImageTranscoder {
                     public ClassLoader run() {
                         return Thread.currentThread().getContextClassLoader();
                     }
-        });
+                });
 
         // Iterate through both listeners and locales
         int n = warningListeners.size();
-        for (int i=0; i < n; i++) {
+        for (int i = 0; i < n; i++) {
             IIOWriteWarningListener listener = warningListeners.get(i);
             Locale locale = warningLocales.get(i);
 
@@ -153,26 +148,6 @@ public abstract class ImageWriter implements ImageTranscoder {
         }
     }
 
-    public void setOutput(Object output) {
-        if (output != null) {
-            ImageWriterSpi spi = getOriginatingProvider();
-            if (null != spi) {
-                Class[] outTypes = spi.getOutputTypes();
-                boolean supported = false;
-                for (Class<?> element : outTypes) {
-                    if (element.isInstance(output)) {
-                        supported = true;
-                        break;
-                    }
-                }
-                if (!supported) {
-                    throw new IllegalArgumentException(Messages.getString("imageio.94", output));
-                }
-            }
-        }
-        this.output = output;
-    }
-
     public void write(IIOImage image) throws IOException {
         write(null, image, null);
     }
@@ -182,16 +157,15 @@ public abstract class ImageWriter implements ImageTranscoder {
     }
 
     /**
-     * @throws  IllegalStateException - if the output has not been set.
-     * @throws UnsupportedOperationException - if image contains a Raster and canWriteRasters returns false.
-     * @throws IllegalArgumentException - if image is null.
-     * @throws IOException - if an error occurs during writing.
-     *
-     * if !canWriteRaster() then Image must contain only RenderedImage
-
      * @param streamMetadata <code>null</code> for default stream metadata
      * @param image
-     * @param param <code>null</code> for default params
+     * @param param          <code>null</code> for default params
+     * @throws IllegalStateException         - if the output has not been set.
+     * @throws UnsupportedOperationException - if image contains a Raster and canWriteRasters returns false.
+     * @throws IllegalArgumentException      - if image is null.
+     * @throws IOException                   - if an error occurs during writing.
+     *                                       <p>
+     *                                       if !canWriteRaster() then Image must contain only RenderedImage
      */
     public abstract void write(IIOMetadata streamMetadata,
                                IIOImage image, ImageWriteParam param) throws IOException;
@@ -240,6 +214,26 @@ public abstract class ImageWriter implements ImageTranscoder {
 
     public Object getOutput() {
         return output;
+    }
+
+    public void setOutput(Object output) {
+        if (output != null) {
+            ImageWriterSpi spi = getOriginatingProvider();
+            if (null != spi) {
+                Class[] outTypes = spi.getOutputTypes();
+                boolean supported = false;
+                for (Class<?> element : outTypes) {
+                    if (element.isInstance(output)) {
+                        supported = true;
+                        break;
+                    }
+                }
+                if (!supported) {
+                    throw new IllegalArgumentException(Messages.getString("imageio.94", output));
+                }
+            }
+        }
+        this.output = output;
     }
 
     private final boolean checkOutputReturnFalse() {
@@ -326,6 +320,30 @@ public abstract class ImageWriter implements ImageTranscoder {
 
     public Locale getLocale() {
         return locale;
+    }
+
+    public void setLocale(Locale locale) {
+        if (locale == null) {
+            this.locale = null;
+            return;
+        }
+
+        Locale[] locales = getAvailableLocales();
+        boolean validLocale = false;
+        if (locales != null) {
+            for (int i = 0; i < locales.length; i++) {
+                if (locale.equals(locales[i])) {
+                    validLocale = true;
+                    break;
+                }
+            }
+        }
+
+        if (validLocale) {
+            this.locale = locale;
+        } else {
+            throw new IllegalArgumentException(Messages.getString("imageio.32"));
+        }
     }
 
     public ImageWriteParam getDefaultWriteParam() {
@@ -460,30 +478,6 @@ public abstract class ImageWriter implements ImageTranscoder {
 
     public void replaceStreamMetadata(IIOMetadata streamMetadata) throws IOException {
         unsupportedOperation();
-    }
-
-    public void setLocale(Locale locale) {
-        if (locale == null) {
-            this.locale = null;
-            return;
-        }
-
-        Locale[] locales = getAvailableLocales();
-        boolean validLocale = false;
-        if (locales != null) {
-            for (int i = 0; i < locales.length; i++) {
-                if (locale.equals(locales[i])) {
-                    validLocale = true;
-                    break;
-                }
-            }
-        }
-
-        if (validLocale) {
-            this.locale = locale;
-        } else {
-            throw new IllegalArgumentException(Messages.getString("imageio.32"));
-        }
     }
 
     public void reset() {

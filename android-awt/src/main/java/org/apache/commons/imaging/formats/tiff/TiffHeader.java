@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
+
+import java.nio.ByteOrder;
 
 public class TiffHeader extends TiffElement {
     public final ByteOrder byteOrder;

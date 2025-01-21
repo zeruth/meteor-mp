@@ -23,7 +23,7 @@ public interface PngConstants {
     public static final int COMPRESSION_DEFLATE_INFLATE = 0;
 
     public static final BinaryConstant PNG_SIGNATURE = new BinaryConstant(
-            new byte[] { (byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n', });
+            new byte[]{(byte) 0x89, 'P', 'N', 'G', '\r', '\n', 0x1A, '\n',});
 
     public static final String PARAM_KEY_PNG_BIT_DEPTH = "PNG_BIT_DEPTH";
     public static final String PARAM_KEY_PNG_FORCE_INDEXED_COLOR = "PNG_FORCE_INDEXED_COLOR";
@@ -61,7 +61,7 @@ public interface PngConstants {
 
     /**
      * Parameter key.
-     * 
+     * <p>
      * Only used when writing Png images.
      * <p>
      * Valid values: a list of WriteTexts.

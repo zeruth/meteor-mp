@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.common.ByteConversions;
 import org.apache.commons.imaging.common.RationalNumber;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
+import java.nio.ByteOrder;
 
 public class TagInfoRational extends TagInfo {
     public TagInfoRational(final String name, final int tag, final int length, final TiffDirectoryType directoryType) {
@@ -31,7 +31,7 @@ public class TagInfoRational extends TagInfo {
     public RationalNumber[] getValue(final ByteOrder byteOrder, final byte[] bytes) {
         return ByteConversions.toRationals(bytes, byteOrder);
     }
-    
+
     public byte[] encodeValue(final ByteOrder byteOrder, final RationalNumber... values) {
         return ByteConversions.toBytes(values, byteOrder);
     }

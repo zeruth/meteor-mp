@@ -24,37 +24,33 @@ import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public abstract class GraphicsDevice {
-    private DisplayMode displayMode;
-
-
-   /***************************************************************************
-    *
-    *  Constants
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Constants
+     *
+     ***************************************************************************/
 
     public static final int TYPE_IMAGE_BUFFER = 2;
-
     public static final int TYPE_PRINTER = 1;
-
     public static final int TYPE_RASTER_SCREEN = 0;
+    private DisplayMode displayMode;
 
-   /***************************************************************************
-    *
-    *  Constructors
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Constructors
+     *
+     ***************************************************************************/
 
     protected GraphicsDevice() {
         displayMode = new DisplayMode(0, 0, DisplayMode.BIT_DEPTH_MULTI, DisplayMode.REFRESH_RATE_UNKNOWN);
     }
 
 
-   /***************************************************************************
-    *
-    *  Abstract methods
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Abstract methods
+     *
+     ***************************************************************************/
 
     public abstract GraphicsConfiguration[] getConfigurations();
 
@@ -65,12 +61,11 @@ public abstract class GraphicsDevice {
     public abstract int getType();
 
 
-
-   /***************************************************************************
-    *
-    *  Public methods
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Public methods
+     *
+     ***************************************************************************/
 
     public int getAvailableAcceleratedMemory() {
         return 0;
@@ -84,27 +79,13 @@ public abstract class GraphicsDevice {
         return displayMode;
     }
 
-    public DisplayMode[] getDisplayModes() {
-        DisplayMode []dms = {displayMode};
-        return  dms;
-    }
-
-
-    public boolean isDisplayChangeSupported() {
-        return false;
-    }
-
-    public boolean isFullScreenSupported() {
-        return false;
-    }
-
     public void setDisplayMode(DisplayMode dm) {
         if (!isDisplayChangeSupported()) {
             // awt.122=Does not support display mode changes
             throw new UnsupportedOperationException(Messages.getString("awt.122")); //$NON-NLS-1$
         }
 
-        DisplayMode []dms = getDisplayModes();
+        DisplayMode[] dms = getDisplayModes();
         for (DisplayMode element : dms) {
             if (element.equals(dm)) {
                 displayMode = dm;
@@ -113,6 +94,19 @@ public abstract class GraphicsDevice {
         }
         // awt.123=Unsupported display mode: {0}
         throw new IllegalArgumentException(Messages.getString("awt.123", dm)); //$NON-NLS-1$
+    }
+
+    public DisplayMode[] getDisplayModes() {
+        DisplayMode[] dms = {displayMode};
+        return dms;
+    }
+
+    public boolean isDisplayChangeSupported() {
+        return false;
+    }
+
+    public boolean isFullScreenSupported() {
+        return false;
     }
 
 }

@@ -25,6 +25,74 @@ import org.apache.harmony.misc.HashCode;
 
 public abstract class Point2D implements Cloneable {
 
+    protected Point2D() {
+    }
+
+    public static double distanceSq(double x1, double y1, double x2, double y2) {
+        x2 -= x1;
+        y2 -= y1;
+        return x2 * x2 + y2 * y2;
+    }
+
+    public static double distance(double x1, double y1, double x2, double y2) {
+        return Math.sqrt(distanceSq(x1, y1, x2, y2));
+    }
+
+    public abstract double getX();
+
+    public abstract double getY();
+
+    public abstract void setLocation(double x, double y);
+
+    public void setLocation(Point2D p) {
+        setLocation(p.getX(), p.getY());
+    }
+
+    public double distanceSq(double px, double py) {
+        return Point2D.distanceSq(getX(), getY(), px, py);
+    }
+
+    public double distanceSq(Point2D p) {
+        return Point2D.distanceSq(getX(), getY(), p.getX(), p.getY());
+    }
+
+    public double distance(double px, double py) {
+        return Math.sqrt(distanceSq(px, py));
+    }
+
+    public double distance(Point2D p) {
+        return Math.sqrt(distanceSq(p));
+    }
+
+    @Override
+    public Object clone() {
+        try {
+            return super.clone();
+        } catch (CloneNotSupportedException e) {
+            throw new InternalError();
+        }
+    }
+
+    @Override
+    public int hashCode() {
+        HashCode hash = new HashCode();
+        hash.append(getX());
+        hash.append(getY());
+        return hash.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Point2D) {
+            Point2D p = (Point2D) obj;
+            return getX() == p.getX() && getY() == p.getY();
+        }
+        return false;
+    }
+
     public static class Float extends Point2D {
 
         public float x;
@@ -55,8 +123,8 @@ public abstract class Point2D implements Cloneable {
 
         @Override
         public void setLocation(double x, double y) {
-            this.x = (float)x;
-            this.y = (float)y;
+            this.x = (float) x;
+            this.y = (float) y;
         }
 
         @Override
@@ -98,74 +166,6 @@ public abstract class Point2D implements Cloneable {
         public String toString() {
             return getClass().getName() + "[x=" + x + ",y=" + y + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
-    }
-
-    protected Point2D() {
-    }
-
-    public abstract double getX();
-
-    public abstract double getY();
-
-    public abstract void setLocation(double x, double y);
-
-    public void setLocation(Point2D p) {
-        setLocation(p.getX(), p.getY());
-    }
-
-    public static double distanceSq(double x1, double y1, double x2, double y2) {
-        x2 -= x1;
-        y2 -= y1;
-        return x2 * x2 + y2 * y2;
-    }
-
-    public double distanceSq(double px, double py) {
-        return Point2D.distanceSq(getX(), getY(), px, py);
-    }
-
-    public double distanceSq(Point2D p) {
-        return Point2D.distanceSq(getX(), getY(), p.getX(), p.getY());
-    }
-
-    public static double distance(double x1, double y1, double x2, double y2) {
-        return Math.sqrt(distanceSq(x1, y1, x2, y2));
-    }
-
-    public double distance(double px, double py) {
-        return Math.sqrt(distanceSq(px, py));
-    }
-
-    public double distance(Point2D p) {
-        return Math.sqrt(distanceSq(p));
-    }
-
-    @Override
-    public Object clone() {
-        try {
-            return super.clone();
-        } catch (CloneNotSupportedException e) {
-            throw new InternalError();
-        }
-    }
-
-    @Override
-    public int hashCode() {
-        HashCode hash = new HashCode();
-        hash.append(getX());
-        hash.append(getY());
-        return hash.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof Point2D) {
-            Point2D p = (Point2D) obj;
-            return getX() == p.getX() && getY() == p.getY();
-        }
-        return false;
     }
 }
 

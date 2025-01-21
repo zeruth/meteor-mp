@@ -16,15 +16,16 @@
  */
 package org.apache.commons.imaging.formats.png.chunks;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.util.zip.InflaterInputStream;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.png.PngConstants;
 import org.apache.commons.imaging.formats.png.PngText;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.util.zip.InflaterInputStream;
+
+import static org.apache.commons.imaging.common.BinaryFunctions.findNull;
+import static org.apache.commons.imaging.common.BinaryFunctions.getStreamBytes;
 
 public class PngChunkItxt extends PngTextChunk {
     public final String keyword;

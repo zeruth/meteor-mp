@@ -19,10 +19,10 @@
  */
 package java.awt.image;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.util.Arrays;
 
 
@@ -35,8 +35,8 @@ public abstract class PackedColorModel extends ColorModel {
     float scales[];
 
     public PackedColorModel(ColorSpace space, int bits, int colorMaskArray[],
-            int alphaMask, boolean isAlphaPremultiplied, int trans,
-            int transferType) {
+                            int alphaMask, boolean isAlphaPremultiplied, int trans,
+                            int transferType) {
 
         super(bits, createBits(colorMaskArray, alphaMask), space,
                 (alphaMask == 0 ? false : true), isAlphaPremultiplied, trans,
@@ -63,8 +63,8 @@ public abstract class PackedColorModel extends ColorModel {
     }
 
     public PackedColorModel(ColorSpace space, int bits, int rmask, int gmask,
-            int bmask, int amask, boolean isAlphaPremultiplied, int trans,
-            int transferType) {
+                            int bmask, int amask, boolean isAlphaPremultiplied, int trans,
+                            int transferType) {
 
         super(bits, createBits(rmask, gmask, bmask, amask), space,
                 (amask == 0 ? false : true), isAlphaPremultiplied, trans,
@@ -101,72 +101,6 @@ public abstract class PackedColorModel extends ColorModel {
         parseComponents();
     }
 
-    @Override
-    public WritableRaster getAlphaRaster(WritableRaster raster) {
-        if(!hasAlpha) {
-            return null;
-        }
-
-        int x = raster.getMinX();
-        int y = raster.getMinY();
-        int w = raster.getWidth();
-        int h = raster.getHeight();
-        int band[] = new int[1];
-        band[0] = raster.getNumBands() - 1;
-        return raster.createWritableChild(x, y, w, h, x, y, band);
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == null) {
-            return false;
-        }
-        if (!(obj instanceof PackedColorModel)) {
-            return false;
-        }
-        PackedColorModel cm = (PackedColorModel) obj;
-
-        return (pixel_bits == cm.getPixelSize() &&
-                transferType == cm.getTransferType() &&
-                cs.getType() == cm.getColorSpace().getType() &&
-                hasAlpha == cm.hasAlpha() &&
-                isAlphaPremultiplied == cm.isAlphaPremultiplied() &&
-                transparency == cm.getTransparency() &&
-                numColorComponents == cm.getNumColorComponents()&&
-                numComponents == cm.getNumComponents() &&
-                Arrays.equals(bits, cm.getComponentSize()) &&
-                Arrays.equals(componentMasks, cm.getMasks()));
-    }
-
-    @Override
-    public boolean isCompatibleSampleModel(SampleModel sm) {
-        if (sm == null) {
-            return false;
-        }
-        if (!(sm instanceof SinglePixelPackedSampleModel)) {
-            return false;
-        }
-        SinglePixelPackedSampleModel esm = (SinglePixelPackedSampleModel) sm;
-
-        return ((esm.getNumBands() == numComponents) &&
-                (esm.getTransferType() == transferType) &&
-                Arrays.equals(esm.getBitMasks(), componentMasks));
-    }
-
-    @Override
-    public SampleModel createCompatibleSampleModel(int w, int h) {
-        return new SinglePixelPackedSampleModel(transferType, w, h,
-                componentMasks);
-    }
-
-    public final int getMask(int index) {
-        return componentMasks[index];
-    }
-
-    public final int[] getMasks() {
-        return (componentMasks.clone());
-    }
-
     private static int[] createBits(int colorMaskArray[], int alphaMask) {
         int bits[];
         int numComp;
@@ -199,7 +133,7 @@ public abstract class PackedColorModel extends ColorModel {
     }
 
     private static int[] createBits(int rmask, int gmask, int bmask,
-            int amask) {
+                                    int amask) {
 
         int numComp;
         if (amask == 0) {
@@ -268,6 +202,72 @@ public abstract class PackedColorModel extends ColorModel {
             throw new IllegalArgumentException(Messages.getString("awt.240")); //$NON-NLS-1$
         }
         return transferType;
+    }
+
+    @Override
+    public WritableRaster getAlphaRaster(WritableRaster raster) {
+        if (!hasAlpha) {
+            return null;
+        }
+
+        int x = raster.getMinX();
+        int y = raster.getMinY();
+        int w = raster.getWidth();
+        int h = raster.getHeight();
+        int band[] = new int[1];
+        band[0] = raster.getNumBands() - 1;
+        return raster.createWritableChild(x, y, w, h, x, y, band);
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (!(obj instanceof PackedColorModel)) {
+            return false;
+        }
+        PackedColorModel cm = (PackedColorModel) obj;
+
+        return (pixel_bits == cm.getPixelSize() &&
+                transferType == cm.getTransferType() &&
+                cs.getType() == cm.getColorSpace().getType() &&
+                hasAlpha == cm.hasAlpha() &&
+                isAlphaPremultiplied == cm.isAlphaPremultiplied() &&
+                transparency == cm.getTransparency() &&
+                numColorComponents == cm.getNumColorComponents() &&
+                numComponents == cm.getNumComponents() &&
+                Arrays.equals(bits, cm.getComponentSize()) &&
+                Arrays.equals(componentMasks, cm.getMasks()));
+    }
+
+    @Override
+    public boolean isCompatibleSampleModel(SampleModel sm) {
+        if (sm == null) {
+            return false;
+        }
+        if (!(sm instanceof SinglePixelPackedSampleModel)) {
+            return false;
+        }
+        SinglePixelPackedSampleModel esm = (SinglePixelPackedSampleModel) sm;
+
+        return ((esm.getNumBands() == numComponents) &&
+                (esm.getTransferType() == transferType) &&
+                Arrays.equals(esm.getBitMasks(), componentMasks));
+    }
+
+    @Override
+    public SampleModel createCompatibleSampleModel(int w, int h) {
+        return new SinglePixelPackedSampleModel(transferType, w, h,
+                componentMasks);
+    }
+
+    public final int getMask(int index) {
+        return componentMasks[index];
+    }
+
+    public final int[] getMasks() {
+        return (componentMasks.clone());
     }
 
     private void parseComponents() {

@@ -11,8 +11,7 @@
         android:label="@string/app_name"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/Theme.MeteorAndroid"
-        tools:targetApi="30">
+        android:theme="@style/Theme.MeteorAndroid">
         <activity
             android:name="meteor.MainActivity"
             android:exported="true"

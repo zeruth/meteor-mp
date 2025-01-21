@@ -20,63 +20,99 @@ import org.apache.commons.imaging.common.BinaryFunctions;
 
 /**
  * Type of a PNG chunk.
- * 
+ *
  * @see <a href="http://www.w3.org/TR/PNG/#11Chunks">Portable Network Graphics Specification - Chunk specifications</a>
  */
 public enum ChunkType {
 
-    /** Image header */
+    /**
+     * Image header
+     */
     IHDR,
 
-    /** Palette */
+    /**
+     * Palette
+     */
     PLTE,
 
-    /** Image data */
+    /**
+     * Image data
+     */
     IDAT,
 
-    /** Image trailer */
+    /**
+     * Image trailer
+     */
     IEND,
 
-    /** Transparency */
+    /**
+     * Transparency
+     */
     tRNS,
 
-    /** Primary chromaticities and white point */
+    /**
+     * Primary chromaticities and white point
+     */
     cHRM,
 
-    /** Image gamma */
+    /**
+     * Image gamma
+     */
     gAMA,
 
-    /** Embedded ICC profile */
+    /**
+     * Embedded ICC profile
+     */
     iCCP,
 
-    /** Significant bits*/
+    /**
+     * Significant bits
+     */
     sBIT,
 
-    /** Standard RGB colour space */
+    /**
+     * Standard RGB colour space
+     */
     sRGB,
 
-    /** Textual data */
+    /**
+     * Textual data
+     */
     tEXt,
 
-    /** Compressed textual data */
+    /**
+     * Compressed textual data
+     */
     zTXt,
 
-    /** International textual data */
+    /**
+     * International textual data
+     */
     iTXt,
 
-    /** Background colour */
+    /**
+     * Background colour
+     */
     bKGD,
 
-    /** Image histogram */
+    /**
+     * Image histogram
+     */
     hIST,
 
-    /** Physical pixel dimensions */
+    /**
+     * Physical pixel dimensions
+     */
     pHYs,
 
-    /** Suggested palette */
+    /**
+     * Suggested palette
+     */
     sPLT,
 
-    /** Image last-modification time */
+    /**
+     * Image last-modification time
+     */
     tIME;
 
     final byte[] array;

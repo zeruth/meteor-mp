@@ -18,21 +18,22 @@
 
 package org.apache.harmony.x.imageio.metadata;
 
-import javax.imageio.metadata.IIOMetadataFormat;
-import javax.imageio.metadata.IIOMetadataFormatImpl;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import javax.imageio.metadata.IIOMetadataFormat;
+import javax.imageio.metadata.IIOMetadataFormatImpl;
 import java.lang.reflect.Method;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
 
 public class IIOMetadataUtils {
-    private IIOMetadataUtils() {} 
+    private IIOMetadataUtils() {
+    }
 
     public static IIOMetadataFormat instantiateMetadataFormat(
             String formatName, boolean standardFormatSupported,
             String nativeMetadataFormatName, String nativeMetadataFormatClassName,
-            String [] extraMetadataFormatNames, String [] extraMetadataFormatClassNames
+            String[] extraMetadataFormatNames, String[] extraMetadataFormatClassNames
     ) {
         if (formatName == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.89"));
@@ -66,7 +67,7 @@ public class IIOMetadataUtils {
                     public ClassLoader run() {
                         return Thread.currentThread().getContextClassLoader();
                     }
-        });
+                });
 
         Class cls;
 
@@ -77,7 +78,7 @@ public class IIOMetadataUtils {
                 // Use current class loader
                 cls = Class.forName(className);
             } catch (ClassNotFoundException e1) {
-                throw new IllegalStateException (Messages.getString("imageio.8B"));
+                throw new IllegalStateException(Messages.getString("imageio.8B"));
             }
         }
 

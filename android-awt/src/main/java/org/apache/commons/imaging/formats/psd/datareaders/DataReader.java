@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.psd.datareaders;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
 import org.apache.commons.imaging.formats.psd.ImageContents;
 import org.apache.commons.imaging.formats.psd.dataparsers.DataParser;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -33,6 +33,6 @@ public abstract class DataReader {
     }
 
     public abstract void readData(InputStream is, BufferedImage bi,
-            ImageContents imageContents, BinaryFileParser bfp)
+                                  ImageContents imageContents, BinaryFileParser bfp)
             throws ImageReadException, IOException;
 }

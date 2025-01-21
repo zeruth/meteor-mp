@@ -25,6 +25,16 @@ import org.apache.harmony.awt.internal.nls.Messages;
 
 public final class BandedSampleModel extends ComponentSampleModel {
 
+    public BandedSampleModel(int dataType, int w, int h, int numBands) {
+        this(dataType, w, h, w, BandedSampleModel.createIndices(numBands),
+                BandedSampleModel.createOffsets(numBands));
+    }
+
+    public BandedSampleModel(int dataType, int w, int h, int scanlineStride,
+                             int bankIndices[], int bandOffsets[]) {
+        super(dataType, w, h, 1, scanlineStride, bankIndices, bandOffsets);
+    }
+
     private static int[] createIndices(int numBands) {
         int indices[] = new int[numBands];
         for (int i = 0; i < numBands; i++) {
@@ -41,16 +51,6 @@ public final class BandedSampleModel extends ComponentSampleModel {
         return offsets;
     }
 
-    public BandedSampleModel(int dataType, int w, int h, int numBands) {
-        this(dataType, w, h, w, BandedSampleModel.createIndices(numBands),
-                BandedSampleModel.createOffsets(numBands));
-    }
-
-    public BandedSampleModel(int dataType, int w, int h, int scanlineStride,
-            int bankIndices[], int bandOffsets[]) {
-        super(dataType, w, h, 1, scanlineStride, bankIndices, bandOffsets);
-    }
-
     @Override
     public SampleModel createCompatibleSampleModel(int w, int h) {
         return new BandedSampleModel(dataType, w, h, w, bankIndices,
@@ -63,22 +63,22 @@ public final class BandedSampleModel extends ComponentSampleModel {
         int size = scanlineStride * height;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(size, numBanks);
-            break;
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferShort(size, numBanks);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(size, numBanks);
-            break;
-        case DataBuffer.TYPE_FLOAT:
-            data = new DataBufferFloat(size, numBanks);
-            break;
-        case DataBuffer.TYPE_DOUBLE:
-            data = new DataBufferDouble(size, numBanks);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(size, numBanks);
+                break;
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferShort(size, numBanks);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(size, numBanks);
+                break;
+            case DataBuffer.TYPE_FLOAT:
+                data = new DataBufferFloat(size, numBanks);
+                break;
+            case DataBuffer.TYPE_DOUBLE:
+                data = new DataBufferDouble(size, numBanks);
+                break;
         }
 
         return data;
@@ -107,87 +107,87 @@ public final class BandedSampleModel extends ComponentSampleModel {
     @Override
     public Object getDataElements(int x, int y, Object obj, DataBuffer data) {
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE: {
-            byte bdata[];
+            case DataBuffer.TYPE_BYTE: {
+                byte bdata[];
 
-            if (obj == null) {
-                bdata = new byte[numBands];
-            } else {
-                bdata = (byte[]) obj;
+                if (obj == null) {
+                    bdata = new byte[numBands];
+                } else {
+                    bdata = (byte[]) obj;
+                }
+
+                for (int i = 0; i < numBands; i++) {
+                    bdata[i] = (byte) getSample(x, y, i, data);
+                }
+
+                obj = bdata;
+                break;
             }
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT: {
+                short sdata[];
 
-            for (int i = 0; i < numBands; i++) {
-                bdata[i] = (byte) getSample(x, y, i, data);
+                if (obj == null) {
+                    sdata = new short[numBands];
+                } else {
+                    sdata = (short[]) obj;
+                }
+
+                for (int i = 0; i < numBands; i++) {
+                    sdata[i] = (short) getSample(x, y, i, data);
+                }
+
+                obj = sdata;
+                break;
             }
+            case DataBuffer.TYPE_INT: {
+                int idata[];
 
-            obj = bdata;
-            break;
-        }
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT: {
-            short sdata[];
+                if (obj == null) {
+                    idata = new int[numBands];
+                } else {
+                    idata = (int[]) obj;
+                }
 
-            if (obj == null) {
-                sdata = new short[numBands];
-            } else {
-                sdata = (short[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    idata[i] = getSample(x, y, i, data);
+                }
+
+                obj = idata;
+                break;
             }
+            case DataBuffer.TYPE_FLOAT: {
+                float fdata[];
 
-            for (int i = 0; i < numBands; i++) {
-                sdata[i] = (short) getSample(x, y, i, data);
+                if (obj == null) {
+                    fdata = new float[numBands];
+                } else {
+                    fdata = (float[]) obj;
+                }
+
+                for (int i = 0; i < numBands; i++) {
+                    fdata[i] = getSampleFloat(x, y, i, data);
+                }
+
+                obj = fdata;
+                break;
             }
+            case DataBuffer.TYPE_DOUBLE: {
+                double ddata[];
 
-            obj = sdata;
-            break;
-        }
-        case DataBuffer.TYPE_INT: {
-            int idata[];
+                if (obj == null) {
+                    ddata = new double[numBands];
+                } else {
+                    ddata = (double[]) obj;
+                }
 
-            if (obj == null) {
-                idata = new int[numBands];
-            } else {
-                idata = (int[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    ddata[i] = getSampleDouble(x, y, i, data);
+                }
+
+                obj = ddata;
+                break;
             }
-
-            for (int i = 0; i < numBands; i++) {
-                idata[i] = getSample(x, y, i, data);
-            }
-
-            obj = idata;
-            break;
-        }
-        case DataBuffer.TYPE_FLOAT: {
-            float fdata[];
-
-            if (obj == null) {
-                fdata = new float[numBands];
-            } else {
-                fdata = (float[]) obj;
-            }
-
-            for (int i = 0; i < numBands; i++) {
-                fdata[i] = getSampleFloat(x, y, i, data);
-            }
-
-            obj = fdata;
-            break;
-        }
-        case DataBuffer.TYPE_DOUBLE: {
-            double ddata[];
-
-            if (obj == null) {
-                ddata = new double[numBands];
-            } else {
-                ddata = (double[]) obj;
-            }
-
-            for (int i = 0; i < numBands; i++) {
-                ddata[i] = getSampleDouble(x, y, i, data);
-            }
-
-            obj = ddata;
-            break;
-        }
         }
 
         return obj;
@@ -217,7 +217,7 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         return data.getElem(bankIndices[b], y * scanlineStride + x +
-               bandOffsets[b]);
+                bandOffsets[b]);
     }
 
     @Override
@@ -228,7 +228,7 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         return data.getElemDouble(bankIndices[b], y * scanlineStride + x +
-               bandOffsets[b]);
+                bandOffsets[b]);
     }
 
     @Override
@@ -239,12 +239,12 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         return data.getElemFloat(bankIndices[b], y * scanlineStride + x +
-               bandOffsets[b]);
+                bandOffsets[b]);
     }
 
     @Override
     public int[] getSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                            DataBuffer data) {
         int samples[];
         int idx = 0;
 
@@ -276,41 +276,41 @@ public final class BandedSampleModel extends ComponentSampleModel {
     @Override
     public void setDataElements(int x, int y, Object obj, DataBuffer data) {
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            byte bdata[] = (byte[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, bdata[i] & 0xff, data);
-            }
-            break;
+            case DataBuffer.TYPE_BYTE:
+                byte bdata[] = (byte[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, bdata[i] & 0xff, data);
+                }
+                break;
 
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            short sdata[] = (short[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, sdata[i] & 0xffff, data);
-            }
-            break;
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                short sdata[] = (short[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, sdata[i] & 0xffff, data);
+                }
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int idata[] = (int[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, idata[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_INT:
+                int idata[] = (int[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, idata[i], data);
+                }
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float fdata[] = (float[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, fdata[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_FLOAT:
+                float fdata[] = (float[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, fdata[i], data);
+                }
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double ddata[] = (double[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, ddata[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_DOUBLE:
+                double ddata[] = (double[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, ddata[i], data);
+                }
+                break;
         }
     }
 
@@ -323,7 +323,7 @@ public final class BandedSampleModel extends ComponentSampleModel {
 
     @Override
     public void setPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         int idx = 0;
 
         for (int i = y; i < y + h; i++) {
@@ -343,7 +343,7 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         data.setElemDouble(bankIndices[b], y * scanlineStride + x +
-               bandOffsets[b], s);
+                bandOffsets[b], s);
     }
 
     @Override
@@ -354,7 +354,7 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         data.setElemFloat(bankIndices[b], y * scanlineStride + x +
-               bandOffsets[b], s);
+                bandOffsets[b], s);
     }
 
     @Override
@@ -365,12 +365,12 @@ public final class BandedSampleModel extends ComponentSampleModel {
         }
 
         data.setElem(bankIndices[b], y * scanlineStride + x +
-                       bandOffsets[b], s);
+                bandOffsets[b], s);
     }
 
     @Override
     public void setSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         int idx = 0;
 
         for (int i = y; i < y + h; i++) {

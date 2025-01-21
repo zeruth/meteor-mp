@@ -18,17 +18,18 @@
 
 package org.apache.harmony.x.imageio.stream;
 
-import java.util.ArrayList;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
+import java.util.ArrayList;
 
 public final class RandomAccessMemoryCache {
     private static final int BLOCK_SHIFT = 9;
     private static final int BLOCK_SIZE = 1 << BLOCK_SHIFT;
     private static final int BLOCK_MASK = BLOCK_SIZE - 1;
-    
+
     private long length;
 
     private int firstUndisposed = 0;
@@ -48,8 +49,8 @@ public final class RandomAccessMemoryCache {
     }
 
     private void grow(long pos) {
-        int blocksNeeded = (int)(pos >> BLOCK_SHIFT) - blocks.size() + 1;
-        for (int i=0; i < blocksNeeded; i++) {
+        int blocksNeeded = (int) (pos >> BLOCK_SHIFT) - blocks.size() + 1;
+        for (int i = 0; i < blocksNeeded; i++) {
             blocks.add(new byte[BLOCK_SIZE]);
         }
 
@@ -61,15 +62,15 @@ public final class RandomAccessMemoryCache {
             grow(pos);
         }
 
-        byte[] block = blocks.get((int)(pos >> BLOCK_SHIFT));
-        block[(int)(pos & BLOCK_MASK)] = (byte) oneByte;
+        byte[] block = blocks.get((int) (pos >> BLOCK_SHIFT));
+        block[(int) (pos & BLOCK_MASK)] = (byte) oneByte;
     }
 
     public void putData(byte[] buffer, int offset, int count, long pos) {
         if (count > buffer.length - offset || count < 0 || offset < 0) {
             throw new IndexOutOfBoundsException();
         }
-        if (count == 0){
+        if (count == 0) {
             return;
         }
 
@@ -79,8 +80,8 @@ public final class RandomAccessMemoryCache {
         }
 
         while (count > 0) {
-            byte[] block = blocks.get((int)(pos >> BLOCK_SHIFT));
-            int blockOffset = (int)(pos & BLOCK_MASK);
+            byte[] block = blocks.get((int) (pos >> BLOCK_SHIFT));
+            int blockOffset = (int) (pos & BLOCK_MASK);
             int toCopy = Math.min(BLOCK_SIZE - blockOffset, count);
             System.arraycopy(buffer, offset, block, blockOffset, toCopy);
             pos += toCopy;
@@ -94,8 +95,8 @@ public final class RandomAccessMemoryCache {
             return -1;
         }
 
-        byte[] block = blocks.get((int)(pos >> BLOCK_SHIFT));
-        return block[(int)(pos & BLOCK_MASK)] & 0xFF;
+        byte[] block = blocks.get((int) (pos >> BLOCK_SHIFT));
+        return block[(int) (pos & BLOCK_MASK)] & 0xFF;
     }
 
     public int getData(byte[] buffer, int offset, int count, long pos) {
@@ -113,9 +114,9 @@ public final class RandomAccessMemoryCache {
             count = (int) (length - pos);
         }
 
-        byte[] block = blocks.get((int)(pos >> BLOCK_SHIFT));
-        int nbytes = Math.min(count, BLOCK_SIZE - (int)(pos & BLOCK_MASK));
-        System.arraycopy(block, (int)(pos & BLOCK_MASK), buffer, offset, nbytes);
+        byte[] block = blocks.get((int) (pos >> BLOCK_SHIFT));
+        int nbytes = Math.min(count, BLOCK_SIZE - (int) (pos & BLOCK_MASK));
+        System.arraycopy(block, (int) (pos & BLOCK_MASK), buffer, offset, nbytes);
 
         return nbytes;
     }
@@ -153,7 +154,7 @@ public final class RandomAccessMemoryCache {
 */
 
     public void freeBefore(long pos) {
-        int blockIdx = (int)(pos >> BLOCK_SHIFT);
+        int blockIdx = (int) (pos >> BLOCK_SHIFT);
         if (blockIdx <= firstUndisposed) { // Nothing to do
             return;
         }
@@ -174,7 +175,7 @@ public final class RandomAccessMemoryCache {
         long lastPos = length + count - 1;
         grow(lastPos); // Changes length
 
-        int blockIdx = (int)(startPos >> BLOCK_SHIFT);
+        int blockIdx = (int) (startPos >> BLOCK_SHIFT);
         int offset = (int) (startPos & BLOCK_MASK);
 
         int bytesAppended = 0;
@@ -208,7 +209,7 @@ public final class RandomAccessMemoryCache {
             throw new IndexOutOfBoundsException(Messages.getString("imageio.7D"));
         }
 
-        int blockIdx = (int)(pos >> BLOCK_SHIFT);
+        int blockIdx = (int) (pos >> BLOCK_SHIFT);
         int offset = (int) (pos & BLOCK_MASK);
         if (blockIdx < firstUndisposed) {
             throw new IndexOutOfBoundsException(Messages.getString("imageio.7E"));

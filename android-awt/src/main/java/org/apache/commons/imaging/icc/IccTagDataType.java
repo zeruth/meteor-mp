@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.icc;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
+
+import java.io.IOException;
 
 interface IccTagDataType {
 

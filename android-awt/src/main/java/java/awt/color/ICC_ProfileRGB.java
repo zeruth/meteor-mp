@@ -24,21 +24,17 @@ import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public class ICC_ProfileRGB extends ICC_Profile {
+    public static final int REDCOMPONENT = 0;
+    public static final int GREENCOMPONENT = 1;
+    public static final int BLUECOMPONENT = 2;
     private static final long serialVersionUID = 8505067385152579334L;
+    // awt.15E=Unknown component. Must be REDCOMPONENT, GREENCOMPONENT or BLUECOMPONENT.
+    private static final String UNKNOWN_COMPONENT_MSG = Messages
+            .getString("awt.15E"); //$NON-NLS-1$
 
     ICC_ProfileRGB(long profileHandle) {
         super(profileHandle);
     }
-
-    public static final int REDCOMPONENT = 0;
-
-    public static final int GREENCOMPONENT = 1;
-
-    public static final int BLUECOMPONENT = 2;
-
-    // awt.15E=Unknown component. Must be REDCOMPONENT, GREENCOMPONENT or BLUECOMPONENT.
-    private static final String UNKNOWN_COMPONENT_MSG = Messages
-            .getString("awt.15E"); //$NON-NLS-1$
 
     @Override
     public short[] getTRC(int component) {
@@ -71,7 +67,7 @@ public class ICC_ProfileRGB extends ICC_Profile {
     }
 
     public float[][] getMatrix() {
-        float [][] m = new float[3][3]; // The matrix
+        float[][] m = new float[3][3]; // The matrix
 
         float[] redXYZ = getXYZValue(icSigRedColorantTag);
         float[] greenXYZ = getXYZValue(icSigGreenColorantTag);

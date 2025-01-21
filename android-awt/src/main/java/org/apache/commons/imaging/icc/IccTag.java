@@ -16,18 +16,14 @@
  */
 package org.apache.commons.imaging.icc;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.util.Arrays;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.util.IoUtils;
+
+import java.io.*;
+import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.util.Arrays;
 
 public class IccTag {
     public final int signature;
@@ -54,9 +50,9 @@ public class IccTag {
         boolean canThrow = false;
         try {
             bis = new ByteArrayInputStream(bytes);
-            dataTypeSignature = BinaryFunctions.read4Bytes("data type signature", bis, 
+            dataTypeSignature = BinaryFunctions.read4Bytes("data type signature", bis,
                     "ICC: corrupt tag data", ByteOrder.BIG_ENDIAN);
-    
+
             itdt = getIccTagDataType(dataTypeSignature);
             // if (itdt != null)
             // {
@@ -92,11 +88,11 @@ public class IccTag {
                 + "tag signature: "
                 + Integer.toHexString(signature)
                 + " ("
-                + new String(new byte[] {
-                        (byte) (0xff & (signature >> 24)),
-                        (byte) (0xff & (signature >> 16)),
-                        (byte) (0xff & (signature >> 8)),
-                        (byte) (0xff & (signature >> 0)), }, "US-ASCII")
+                + new String(new byte[]{
+                (byte) (0xff & (signature >> 24)),
+                (byte) (0xff & (signature >> 16)),
+                (byte) (0xff & (signature >> 8)),
+                (byte) (0xff & (signature >> 0)),}, "US-ASCII")
                 + ")");
 
         if (data == null) {
@@ -108,11 +104,11 @@ public class IccTag {
                     + "data type signature: "
                     + Integer.toHexString(dataTypeSignature)
                     + " ("
-                    + new String(new byte[] {
-                            (byte) (0xff & (dataTypeSignature >> 24)),
-                            (byte) (0xff & (dataTypeSignature >> 16)),
-                            (byte) (0xff & (dataTypeSignature >> 8)),
-                            (byte) (0xff & (dataTypeSignature >> 0)), }, "US-ASCII")
+                    + new String(new byte[]{
+                    (byte) (0xff & (dataTypeSignature >> 24)),
+                    (byte) (0xff & (dataTypeSignature >> 16)),
+                    (byte) (0xff & (dataTypeSignature >> 8)),
+                    (byte) (0xff & (dataTypeSignature >> 0)),}, "US-ASCII")
                     + ")");
 
             if (itdt == null) {

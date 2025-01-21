@@ -23,33 +23,24 @@ import java.awt.geom.Rectangle2D;
 
 public final class GlyphMetrics {
 
+    public static final byte STANDARD = 0;
+    public static final byte LIGATURE = 1;
+    public static final byte COMBINING = 2;
+    public static final byte COMPONENT = 3;
+    public static final byte WHITESPACE = 4;
     // advance width of the glyph character cell
     private float advanceX;
-    
     // advance height of the glyph character cell
     private float advanceY;
-
     // flag if the glyph horizontal
     private boolean horizontal;
-
-    // glyph type code 
+    // glyph type code
     private byte glyphType;
-    
     // bounding box for outline of the glyph
     private Rectangle2D.Float bounds;
 
-    public static final byte STANDARD = 0;
-
-    public static final byte LIGATURE = 1;
-
-    public static final byte COMBINING = 2;
-
-    public static final byte COMPONENT = 3;
-
-    public static final byte WHITESPACE = 4;
-
-    public GlyphMetrics(boolean horizontal, float advanceX, float advanceY, 
-            Rectangle2D bounds, byte glyphType) {
+    public GlyphMetrics(boolean horizontal, float advanceX, float advanceY,
+                        Rectangle2D bounds, byte glyphType) {
         this.horizontal = horizontal;
         this.advanceX = advanceX;
         this.advanceY = advanceY;
@@ -102,9 +93,9 @@ public final class GlyphMetrics {
 
     public float getRSB() {
         if (this.horizontal) {
-            return this.advanceX - this.bounds.x - (float)this.bounds.getWidth();
+            return this.advanceX - this.bounds.x - (float) this.bounds.getWidth();
         }
-        return this.advanceY - this.bounds.y - (float)this.bounds.getHeight();
+        return this.advanceY - this.bounds.y - (float) this.bounds.getHeight();
     }
 
     public float getLSB() {

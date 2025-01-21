@@ -20,7 +20,6 @@
 package java.awt;
 
 import java.awt.geom.Rectangle2D;
-
 import java.io.Serializable;
 
 
@@ -90,26 +89,26 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
         return new Dimension(width, height);
     }
 
+    public void setSize(Dimension d) {
+        setSize(d.width, d.height);
+    }
+
     public void setSize(int width, int height) {
         this.width = width;
         this.height = height;
-    }
-
-    public void setSize(Dimension d) {
-        setSize(d.width, d.height);
     }
 
     public Point getLocation() {
         return new Point(x, y);
     }
 
+    public void setLocation(Point p) {
+        setLocation(p.x, p.y);
+    }
+
     public void setLocation(int x, int y) {
         this.x = x;
         this.y = y;
-    }
-
-    public void setLocation(Point p) {
-        setLocation(p.x, p.y);
     }
 
     /**
@@ -122,10 +121,10 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
     @Override
     public void setRect(double x, double y, double width, double height) {
-        int x1 = (int)Math.floor(x);
-        int y1 = (int)Math.floor(y);
-        int x2 = (int)Math.ceil(x + width);
-        int y2 = (int)Math.ceil(y + height);
+        int x1 = (int) Math.floor(x);
+        int y1 = (int) Math.floor(y);
+        int x2 = (int) Math.ceil(x + width);
+        int y2 = (int) Math.ceil(y + height);
         setBounds(x1, y1, x2 - x1, y2 - y1);
     }
 
@@ -150,6 +149,10 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
         return new Rectangle(x, y, width, height);
     }
 
+    public void setBounds(Rectangle r) {
+        setBounds(r.x, r.y, r.width, r.height);
+    }
+
     @Override
     public Rectangle2D getBounds2D() {
         return getBounds();
@@ -160,10 +163,6 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
         this.y = y;
         this.height = height;
         this.width = width;
-    }
-
-    public void setBounds(Rectangle r) {
-        setBounds(r.x, r.y, r.width, r.height);
     }
 
     public void grow(int dx, int dy) {
@@ -258,23 +257,19 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
 
         if (width <= 0) {
             code |= OUT_LEFT | OUT_RIGHT;
-        } else
-            if (px < x) {
-                code |= OUT_LEFT;
-            } else
-                if (px > x + width) {
-                    code |= OUT_RIGHT;
-                }
+        } else if (px < x) {
+            code |= OUT_LEFT;
+        } else if (px > x + width) {
+            code |= OUT_RIGHT;
+        }
 
         if (height <= 0) {
             code |= OUT_TOP | OUT_BOTTOM;
-        } else
-            if (py < y) {
-                code |= OUT_TOP;
-            } else
-                if (py > y + height) {
-                    code |= OUT_BOTTOM;
-                }
+        } else if (py < y) {
+            code |= OUT_TOP;
+        } else if (py > y + height) {
+            code |= OUT_BOTTOM;
+        }
 
         return code;
     }
@@ -282,7 +277,7 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
     @Override
     public Rectangle2D createUnion(Rectangle2D r) {
         if (r instanceof Rectangle) {
-            return union((Rectangle)r);
+            return union((Rectangle) r);
         }
         Rectangle2D dst = new Double();
         Rectangle2D.union(this, r, dst);
@@ -301,7 +296,7 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
             return true;
         }
         if (obj instanceof Rectangle) {
-            Rectangle r = (Rectangle)obj;
+            Rectangle r = (Rectangle) obj;
             return r.x == x && r.y == y && r.width == width && r.height == height;
         }
         return false;
@@ -312,7 +307,7 @@ public class Rectangle extends Rectangle2D implements Shape, Serializable {
         // The output format based on 1.5 release behaviour. It could be obtained in the following way
         // System.out.println(new Rectangle().toString())
         return getClass().getName() + "[x=" + x + ",y=" + y + //$NON-NLS-1$ //$NON-NLS-2$
-            ",width=" + width + ",height=" + height + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                ",width=" + width + ",height=" + height + "]"; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
 }

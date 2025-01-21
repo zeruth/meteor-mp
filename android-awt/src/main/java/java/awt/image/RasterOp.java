@@ -19,13 +19,12 @@
  */
 package java.awt.image;
 
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 
 /**
  * RasterOp
- *
  */
 public interface RasterOp {
     public WritableRaster createCompatibleDestRaster(Raster src);

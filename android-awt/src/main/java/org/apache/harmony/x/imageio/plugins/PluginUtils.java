@@ -17,14 +17,13 @@
 package org.apache.harmony.x.imageio.plugins;
 
 import javax.imageio.stream.ImageInputStream;
-
 import java.io.IOException;
 import java.io.InputStream;
 
 
 public class PluginUtils {
 
-    public static final String VENDOR_NAME     = "Apache Harmony"; //$NON-NLS-1$
+    public static final String VENDOR_NAME = "Apache Harmony"; //$NON-NLS-1$
     public static final String DEFAULT_VERSION = "1.0";           //$NON-NLS-1$
 
     /**
@@ -54,7 +53,7 @@ public class PluginUtils {
 
         @Override
         public int read(final byte[] b, final int off, final int len)
-                        throws IOException {
+                throws IOException {
             return input.read(b, off, len);
         }
 

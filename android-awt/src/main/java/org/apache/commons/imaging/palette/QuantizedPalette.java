@@ -16,8 +16,9 @@
  */
 package org.apache.commons.imaging.palette;
 
-import java.util.List;
 import org.apache.commons.imaging.ImageWriteException;
+
+import java.util.List;
 
 public class QuantizedPalette extends Palette {
     private final int precision;

@@ -25,51 +25,44 @@ import org.apache.harmony.awt.gl.color.ColorScaler;
 import org.apache.harmony.awt.gl.color.ICC_Transform;
 import org.apache.harmony.awt.internal.nls.Messages;
 
-import java.io.IOException;
-import java.io.ObjectInputStream;
-import java.io.ObjectOutputStream;
-import java.io.ObjectStreamException;
-import java.io.ObjectStreamField;
+import java.io.*;
 
 public class ICC_ColorSpace extends ColorSpace {
     private static final long serialVersionUID = 3455889114070431483L;
 
     // Need to keep compatibility with serialized form
     private static final ObjectStreamField[]
-      serialPersistentFields = {
-        new ObjectStreamField("thisProfile", ICC_Profile.class), //$NON-NLS-1$
-        new ObjectStreamField("minVal", float[].class), //$NON-NLS-1$
-        new ObjectStreamField("maxVal", float[].class), //$NON-NLS-1$
-        new ObjectStreamField("diffMinMax", float[].class), //$NON-NLS-1$
-        new ObjectStreamField("invDiffMinMax", float[].class), //$NON-NLS-1$
-        new ObjectStreamField("needScaleInit", Boolean.TYPE) //$NON-NLS-1$
+            serialPersistentFields = {
+            new ObjectStreamField("thisProfile", ICC_Profile.class), //$NON-NLS-1$
+            new ObjectStreamField("minVal", float[].class), //$NON-NLS-1$
+            new ObjectStreamField("maxVal", float[].class), //$NON-NLS-1$
+            new ObjectStreamField("diffMinMax", float[].class), //$NON-NLS-1$
+            new ObjectStreamField("invDiffMinMax", float[].class), //$NON-NLS-1$
+            new ObjectStreamField("needScaleInit", Boolean.TYPE) //$NON-NLS-1$
     };
 
 
-   /**
-    * According to ICC specification (from http://www.color.org)
-    * "For the CIEXYZ encoding, each component (X, Y, and Z)
-    * is encoded as a u1Fixed15Number".
-    * This means that max value for this encoding is 1 + (32767/32768)
-    */
-    private static final float MAX_XYZ = 1f + (32767f/32768f);
+    /**
+     * According to ICC specification (from http://www.color.org)
+     * "For the CIEXYZ encoding, each component (X, Y, and Z)
+     * is encoded as a u1Fixed15Number".
+     * This means that max value for this encoding is 1 + (32767/32768)
+     */
+    private static final float MAX_XYZ = 1f + (32767f / 32768f);
     private static final float MAX_SHORT = 65535f;
-    private static final float INV_MAX_SHORT = 1f/MAX_SHORT;
-    private static final float SHORT2XYZ_FACTOR = MAX_XYZ/MAX_SHORT;
-    private static final float XYZ2SHORT_FACTOR = MAX_SHORT/MAX_XYZ;
-
+    private static final float INV_MAX_SHORT = 1f / MAX_SHORT;
+    private static final float SHORT2XYZ_FACTOR = MAX_XYZ / MAX_SHORT;
+    private static final float XYZ2SHORT_FACTOR = MAX_SHORT / MAX_XYZ;
+    private final ColorConverter converter = new ColorConverter();
+    private final ColorScaler scaler = new ColorScaler();
     private ICC_Profile profile = null;
     private float minValues[] = null;
     private float maxValues[] = null;
-
     // cache transforms here - performance gain
     private ICC_Transform toRGBTransform = null;
     private ICC_Transform fromRGBTransform = null;
     private ICC_Transform toXYZTransform = null;
     private ICC_Transform fromXYZTransform = null;
-
-    private final ColorConverter converter = new ColorConverter();
-    private final ColorScaler scaler = new ColorScaler();
     private boolean scalingDataLoaded = false;
 
     private ICC_ColorSpace resolvedDeserializedInst;
@@ -106,7 +99,7 @@ public class ICC_ColorSpace extends ColorSpace {
     public float[] toRGB(float[] colorvalue) {
         if (toRGBTransform == null) {
             ICC_Profile sRGBProfile =
-                ((ICC_ColorSpace) ColorSpace.getInstance(CS_sRGB)).getProfile();
+                    ((ICC_ColorSpace) ColorSpace.getInstance(CS_sRGB)).getProfile();
             ICC_Profile[] profiles = {getProfile(), sRGBProfile};
             toRGBTransform = new ICC_Transform(profiles);
             if (!scalingDataLoaded) {
@@ -120,7 +113,7 @@ public class ICC_ColorSpace extends ColorSpace {
         scaler.scale(colorvalue, data, 0);
 
         short[] converted =
-            converter.translateColor(toRGBTransform, data, null);
+                converter.translateColor(toRGBTransform, data, null);
 
         // unscale to sRGB
         float[] res = new float[3];
@@ -136,7 +129,7 @@ public class ICC_ColorSpace extends ColorSpace {
     public float[] toCIEXYZ(float[] colorvalue) {
         if (toXYZTransform == null) {
             ICC_Profile xyzProfile =
-                ((ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ)).getProfile();
+                    ((ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ)).getProfile();
             ICC_Profile[] profiles = {getProfile(), xyzProfile};
             try {
                 int[] intents = {
@@ -158,7 +151,7 @@ public class ICC_ColorSpace extends ColorSpace {
         scaler.scale(colorvalue, data, 0);
 
         short[] converted =
-            converter.translateColor(toXYZTransform, data, null);
+                converter.translateColor(toXYZTransform, data, null);
 
         // unscale to XYZ
         float[] res = new float[3];
@@ -174,7 +167,7 @@ public class ICC_ColorSpace extends ColorSpace {
     public float[] fromRGB(float[] rgbvalue) {
         if (fromRGBTransform == null) {
             ICC_Profile sRGBProfile =
-                ((ICC_ColorSpace) ColorSpace.getInstance(CS_sRGB)).getProfile();
+                    ((ICC_ColorSpace) ColorSpace.getInstance(CS_sRGB)).getProfile();
             ICC_Profile[] profiles = {sRGBProfile, getProfile()};
             fromRGBTransform = new ICC_Transform(profiles);
             if (!scalingDataLoaded) {
@@ -185,12 +178,12 @@ public class ICC_ColorSpace extends ColorSpace {
 
         // scale rgb value to short
         short[] scaledRGBValue = new short[3];
-        scaledRGBValue[0] = (short)(rgbvalue[0] * MAX_SHORT + 0.5f);
-        scaledRGBValue[1] = (short)(rgbvalue[1] * MAX_SHORT + 0.5f);
-        scaledRGBValue[2] = (short)(rgbvalue[2] * MAX_SHORT + 0.5f);
+        scaledRGBValue[0] = (short) (rgbvalue[0] * MAX_SHORT + 0.5f);
+        scaledRGBValue[1] = (short) (rgbvalue[1] * MAX_SHORT + 0.5f);
+        scaledRGBValue[2] = (short) (rgbvalue[2] * MAX_SHORT + 0.5f);
 
         short[] converted =
-            converter.translateColor(fromRGBTransform, scaledRGBValue, null);
+                converter.translateColor(fromRGBTransform, scaledRGBValue, null);
 
         float[] res = new float[getNumComponents()];
 
@@ -203,7 +196,7 @@ public class ICC_ColorSpace extends ColorSpace {
     public float[] fromCIEXYZ(float[] xyzvalue) {
         if (fromXYZTransform == null) {
             ICC_Profile xyzProfile =
-                ((ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ)).getProfile();
+                    ((ICC_ColorSpace) ColorSpace.getInstance(CS_CIEXYZ)).getProfile();
             ICC_Profile[] profiles = {xyzProfile, getProfile()};
             try {
                 int[] intents = {
@@ -222,12 +215,12 @@ public class ICC_ColorSpace extends ColorSpace {
 
         // scale xyz value to short
         short[] scaledXYZValue = new short[3];
-        scaledXYZValue[0] = (short)(xyzvalue[0] * XYZ2SHORT_FACTOR + 0.5f);
-        scaledXYZValue[1] = (short)(xyzvalue[1] * XYZ2SHORT_FACTOR + 0.5f);
-        scaledXYZValue[2] = (short)(xyzvalue[2] * XYZ2SHORT_FACTOR + 0.5f);
+        scaledXYZValue[0] = (short) (xyzvalue[0] * XYZ2SHORT_FACTOR + 0.5f);
+        scaledXYZValue[1] = (short) (xyzvalue[1] * XYZ2SHORT_FACTOR + 0.5f);
+        scaledXYZValue[2] = (short) (xyzvalue[2] * XYZ2SHORT_FACTOR + 0.5f);
 
         short[] converted =
-            converter.translateColor(fromXYZTransform, scaledXYZValue, null);
+                converter.translateColor(fromXYZTransform, scaledXYZValue, null);
 
         float[] res = new float[getNumComponents()];
 
@@ -278,7 +271,7 @@ public class ICC_ColorSpace extends ColorSpace {
                 maxValues[2] = 127;
                 break;
             default:
-                for(int i=0; i<n; i++) {
+                for (int i = 0; i < n; i++) {
                     minValues[i] = 0;
                     maxValues[i] = 1;
                 }

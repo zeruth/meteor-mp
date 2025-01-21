@@ -16,13 +16,13 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
-
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 
 class TiffOutputSummary {
     public final ByteOrder byteOrder;
@@ -30,29 +30,17 @@ class TiffOutputSummary {
     public final Map<Integer, TiffOutputDirectory> directoryTypeMap;
     private final List<OffsetItem> offsetItems = new ArrayList<OffsetItem>();
     private final List<ImageDataOffsets> imageDataItems = new ArrayList<ImageDataOffsets>();
-    
+
     public TiffOutputSummary(final ByteOrder byteOrder,
-            final TiffOutputDirectory rootDirectory,
-            final Map<Integer, TiffOutputDirectory> directoryTypeMap) {
+                             final TiffOutputDirectory rootDirectory,
+                             final Map<Integer, TiffOutputDirectory> directoryTypeMap) {
         this.byteOrder = byteOrder;
         this.rootDirectory = rootDirectory;
         this.directoryTypeMap = directoryTypeMap;
     }
 
-    private static class OffsetItem {
-        public final TiffOutputItem item;
-        public final TiffOutputField itemOffsetField;
-
-        public OffsetItem(final TiffOutputItem item,
-                final TiffOutputField itemOffsetField) {
-            super();
-            this.itemOffsetField = itemOffsetField;
-            this.item = item;
-        }
-    }
-
     public void add(final TiffOutputItem item,
-            final TiffOutputField itemOffsetField) {
+                    final TiffOutputField itemOffsetField) {
         offsetItems.add(new OffsetItem(item, itemOffsetField));
     }
 
@@ -76,6 +64,18 @@ class TiffOutputSummary {
 
     public void addTiffImageData(final ImageDataOffsets imageDataInfo) {
         imageDataItems.add(imageDataInfo);
+    }
+
+    private static class OffsetItem {
+        public final TiffOutputItem item;
+        public final TiffOutputField itemOffsetField;
+
+        public OffsetItem(final TiffOutputItem item,
+                          final TiffOutputField itemOffsetField) {
+            super();
+            this.itemOffsetField = itemOffsetField;
+            this.item = item;
+        }
     }
 
 }

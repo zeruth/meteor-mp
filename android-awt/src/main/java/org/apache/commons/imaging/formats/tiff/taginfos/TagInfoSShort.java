@@ -16,21 +16,21 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.common.ByteConversions;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
+import java.nio.ByteOrder;
 
 public class TagInfoSShort extends TagInfo {
     public TagInfoSShort(final String name, final int tag, final int length, final TiffDirectoryType directoryType) {
         super(name, tag, FieldType.SSHORT, length, directoryType);
     }
-    
+
     public short[] getValue(final ByteOrder byteOrder, final byte[] bytes) {
         return ByteConversions.toShorts(bytes, byteOrder);
     }
-    
+
     public byte[] encodeValue(final ByteOrder byteOrder, final short... values) {
         return ByteConversions.toBytes(values, byteOrder);
     }

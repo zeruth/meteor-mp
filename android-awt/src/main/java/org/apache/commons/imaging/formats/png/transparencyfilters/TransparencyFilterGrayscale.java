@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.png.transparencyfilters;
 
+import org.apache.commons.imaging.ImageReadException;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 
-import org.apache.commons.imaging.ImageReadException;
-
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
 
 public class TransparencyFilterGrayscale extends TransparencyFilter {
     private final int transparentColor;

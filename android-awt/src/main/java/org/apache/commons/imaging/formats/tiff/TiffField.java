@@ -16,19 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.io.OutputStreamWriter;
-import java.io.PrintWriter;
-import java.nio.ByteOrder;
-import java.nio.charset.Charset;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Hashtable;
-import java.util.List;
-import java.util.Locale;
-import java.util.Map;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.formats.tiff.constants.AllTagConstants;
@@ -38,10 +25,19 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 
+import java.io.OutputStreamWriter;
+import java.io.PrintWriter;
+import java.nio.ByteOrder;
+import java.nio.charset.Charset;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import java.util.*;
+
 /**
  * A TIFF field in a TIFF directory. Immutable.
  */
 public class TiffField {
+    private static final Map<Object, List<TagInfo>> ALL_TAG_MAP = makeTagMap(AllTagConstants.ALL_TAGS);
     private final TagInfo tagInfo;
     private final int tag;
     private final int directoryType;
@@ -51,11 +47,10 @@ public class TiffField {
     private final byte[] value;
     private final ByteOrder byteOrder;
     private final int sortHint;
-    private static final Map<Object, List<TagInfo>> ALL_TAG_MAP = makeTagMap(AllTagConstants.ALL_TAGS);
 
     public TiffField(final int tag, final int directoryType, final FieldType fieldType,
-            final long count, final long offset, final byte[] value,
-            final ByteOrder byteOrder, final int sortHint) {
+                     final long count, final long offset, final byte[] value,
+                     final ByteOrder byteOrder, final int sortHint) {
 
         this.tag = tag;
         this.directoryType = directoryType;
@@ -67,107 +62,6 @@ public class TiffField {
         this.sortHint = sortHint;
 
         tagInfo = getTag(directoryType, tag);
-    }
-    
-    public int getDirectoryType() {
-        return directoryType;
-    }
-    
-    public TagInfo getTagInfo() {
-        return tagInfo;
-    }
-
-    /**
-     * Returns the field's tag, derived from bytes 0-1.
-     * @return the tag, as an <code>int</code> in which only the lowest 2 bytes are set 
-     */
-    public int getTag() {
-        return tag;
-    }
-    
-    /**
-     * Returns the field's type, derived from bytes 2-3.
-     * @return the field's type, as a {@code FieldType} object.
-     */
-    public FieldType getFieldType() {
-        return fieldType;
-    }
-
-    /**
-     * Returns the field's count, derived from bytes 4-7.
-     * @return the count
-     */
-    public long getCount() {
-        return count;
-    }
-
-    /**
-     * Returns the TIFF field's offset/value field, derived from bytes 8-11.
-     * @return the field's offset in a <code>long</code> of 4 packed bytes,
-     * or its inlined value <= 4 bytes long encoded in the field's byte order.
-     */
-    public int getOffset() {
-        return (int) offset;
-    }
-
-    /**
-     * Returns the field's byte order.
-     * @return the byte order
-     */
-    public ByteOrder getByteOrder() {
-        return byteOrder;
-    }
-
-    public int getSortHint() {
-        return sortHint;
-    }
-
-    /**
-     * Indicates whether the field's value is inlined into the offset field.
-     * @return true if the value is inlined
-     */
-    public boolean isLocalValue() {
-        return (count * fieldType.getSize()) <= TiffConstants.TIFF_ENTRY_MAX_VALUE_LENGTH;
-    }
-
-    /**
-     * The length of the field's value.
-     * @return the length, in bytes.
-     */
-    public int getBytesLength() {
-        return (int) count * fieldType.getSize();
-    }
-
-    /**
-     * Returns a copy of the raw value of the field. 
-     * @return the value of the field, in the byte order of the field.
-     */
-    public byte[] getByteArrayValue() {
-        return BinaryFunctions.head(value, getBytesLength());
-    }
-
-    public final class OversizeValueElement extends TiffElement {
-        public OversizeValueElement(final int offset, final int length) {
-            super(offset, length);
-        }
-
-        @Override
-        public String getElementDescription(final boolean verbose) {
-            if (verbose) {
-                return null;
-            }
-
-            return "OversizeValueElement, tag: " + getTagInfo().name
-                    + ", fieldType: " + getFieldType().getName();
-        }
-    }
-
-    public TiffElement getOversizeValueElement() {
-        if (isLocalValue()) {
-            return null;
-        }
-
-        return new OversizeValueElement(getOffset(), value.length);
     }
 
     private static TagInfo getTag(final int directoryType, final List<TagInfo> possibleMatches) {
@@ -304,6 +198,116 @@ public class TiffField {
         return getTag(directoryType, possibleMatches);
     }
 
+    private static Map<Object, List<TagInfo>> makeTagMap(
+            final List<TagInfo> tags) {
+        // make sure to use the thread-safe version; this is shared state.
+        final Map<Object, List<TagInfo>> map = new Hashtable<Object, List<TagInfo>>();
+
+        for (TagInfo tag : tags) {
+            List<TagInfo> tagList = map.get(tag.tag);
+            if (tagList == null) {
+                tagList = new ArrayList<TagInfo>();
+                map.put(tag.tag, tagList);
+            }
+            tagList.add(tag);
+        }
+
+        return map;
+    }
+
+    public int getDirectoryType() {
+        return directoryType;
+    }
+
+    public TagInfo getTagInfo() {
+        return tagInfo;
+    }
+
+    /**
+     * Returns the field's tag, derived from bytes 0-1.
+     *
+     * @return the tag, as an <code>int</code> in which only the lowest 2 bytes are set
+     */
+    public int getTag() {
+        return tag;
+    }
+
+    /**
+     * Returns the field's type, derived from bytes 2-3.
+     *
+     * @return the field's type, as a {@code FieldType} object.
+     */
+    public FieldType getFieldType() {
+        return fieldType;
+    }
+
+    /**
+     * Returns the field's count, derived from bytes 4-7.
+     *
+     * @return the count
+     */
+    public long getCount() {
+        return count;
+    }
+
+    /**
+     * Returns the TIFF field's offset/value field, derived from bytes 8-11.
+     *
+     * @return the field's offset in a <code>long</code> of 4 packed bytes,
+     * or its inlined value <= 4 bytes long encoded in the field's byte order.
+     */
+    public int getOffset() {
+        return (int) offset;
+    }
+
+    /**
+     * Returns the field's byte order.
+     *
+     * @return the byte order
+     */
+    public ByteOrder getByteOrder() {
+        return byteOrder;
+    }
+
+    public int getSortHint() {
+        return sortHint;
+    }
+
+    /**
+     * Indicates whether the field's value is inlined into the offset field.
+     *
+     * @return true if the value is inlined
+     */
+    public boolean isLocalValue() {
+        return (count * fieldType.getSize()) <= TiffConstants.TIFF_ENTRY_MAX_VALUE_LENGTH;
+    }
+
+    /**
+     * The length of the field's value.
+     *
+     * @return the length, in bytes.
+     */
+    public int getBytesLength() {
+        return (int) count * fieldType.getSize();
+    }
+
+    /**
+     * Returns a copy of the raw value of the field.
+     *
+     * @return the value of the field, in the byte order of the field.
+     */
+    public byte[] getByteArrayValue() {
+        return BinaryFunctions.head(value, getBytesLength());
+    }
+
+    public TiffElement getOversizeValueElement() {
+        if (isLocalValue()) {
+            return null;
+        }
+
+        return new OversizeValueElement(getOffset(), value.length);
+    }
+
     public String getValueDescription() {
         try {
             return getValueDescription(getValue());
@@ -341,21 +345,21 @@ public class TiffField {
                 result.append(object.toString());
             }
             return result.toString();
-        // } else if (o instanceof Number[])
-        // {
-        // Number numbers[] = (Number[]) o;
-        // StringBuilder result = new StringBuilder();
-        //
-        // for (int i = 0; i < numbers.length; i++)
-        // {
-        // Number number = numbers[i];
-        //
-        // if (i > 0)
-        // result.append(", ");
-        // result.append("" + number);
-        // }
-        // return result.toString();
-        // }
+            // } else if (o instanceof Number[])
+            // {
+            // Number numbers[] = (Number[]) o;
+            // StringBuilder result = new StringBuilder();
+            //
+            // for (int i = 0; i < numbers.length; i++)
+            // {
+            // Number number = numbers[i];
+            //
+            // if (i > 0)
+            // result.append(", ");
+            // result.append("" + number);
+            // }
+            // return result.toString();
+            // }
         } else if (o instanceof short[]) {
             final short[] values = (short[]) o;
             final StringBuilder result = new StringBuilder();
@@ -559,30 +563,13 @@ public class TiffField {
         return (String) o;
     }
 
-    private static Map<Object, List<TagInfo>> makeTagMap(
-            final List<TagInfo> tags) {
-        // make sure to use the thread-safe version; this is shared state.
-        final Map<Object, List<TagInfo>> map = new Hashtable<Object, List<TagInfo>>();
-
-        for (TagInfo tag : tags) {
-            List<TagInfo> tagList = map.get(tag.tag);
-            if (tagList == null) {
-                tagList = new ArrayList<TagInfo>();
-                map.put(tag.tag, tagList);
-            }
-            tagList.add(tag);
-        }
-
-        return map;
-    }
-
     public int[] getIntArrayValue() throws ImageReadException {
         final Object o = getValue();
         // if (o == null)
         // return null;
 
         if (o instanceof Number) {
-            return new int[] { ((Number) o).intValue() };
+            return new int[]{((Number) o).intValue()};
         } else if (o instanceof Number[]) {
             final Number[] numbers = (Number[]) o;
             final int[] result = new int[numbers.length];
@@ -615,7 +602,7 @@ public class TiffField {
         // return null;
 
         if (o instanceof Number) {
-            return new double[] { ((Number) o).doubleValue() };
+            return new double[]{((Number) o).doubleValue()};
         } else if (o instanceof Number[]) {
             final Number[] numbers = (Number[]) o;
             final double[] result = new double[numbers.length];
@@ -709,5 +696,21 @@ public class TiffField {
         }
 
         return ((Number) o).doubleValue();
+    }
+
+    public final class OversizeValueElement extends TiffElement {
+        public OversizeValueElement(final int offset, final int length) {
+            super(offset, length);
+        }
+
+        @Override
+        public String getElementDescription(final boolean verbose) {
+            if (verbose) {
+                return null;
+            }
+
+            return "OversizeValueElement, tag: " + getTagInfo().name
+                    + ", fieldType: " + getFieldType().getName();
+        }
     }
 }

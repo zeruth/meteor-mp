@@ -17,31 +17,27 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 21.11.2005
- *
  */
 package org.apache.harmony.awt.gl;
 
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.CompositeContext;
-import java.awt.RenderingHints;
+import java.awt.*;
 import java.awt.image.ColorModel;
 
 public class XORComposite implements Composite {
 
     Color xorcolor;
 
-    public XORComposite(Color xorcolor){
+    public XORComposite(Color xorcolor) {
         this.xorcolor = xorcolor;
     }
 
     public CompositeContext createContext(ColorModel srcCM, ColorModel dstCM,
-            RenderingHints hints) {
+                                          RenderingHints hints) {
 
         return new ICompositeContext(this, srcCM, dstCM);
     }
 
-    public Color getXORColor(){
+    public Color getXORColor() {
         return xorcolor;
     }
 }

@@ -16,13 +16,13 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.util.Debug;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 public class TiffContents {
     public final TiffHeader header;

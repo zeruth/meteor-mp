@@ -22,80 +22,79 @@ package org.apache.harmony.awt.gl.font;
 
 
 /**
- * Class containing font property information. This information can be found 
- * in font.property files. See API documentation, logical fonts description part. 
- *
+ * Class containing font property information. This information can be found
+ * in font.property files. See API documentation, logical fonts description part.
  */
 public class FontProperty {
 
     // font file name 
     String fileName = null;
-    
+
     // name of the encoding to be used 
     String encoding = null;
-    
+
     // array of exclusion ranges (pairs of low and high unicode exclusion bounds)
     int[] exclRange = null;
-    
+
     // font face name
     String name = null;
-    
+
     // font style
     int style = -1;
 
     /**
-     * Returns font style of this font property. 
+     * Returns font style of this font property.
      */
-    public int getStyle(){
+    public int getStyle() {
         return this.style;
     }
 
     /**
-     * Returns font name of this font property. 
+     * Returns font name of this font property.
      */
-    public String getName(){
+    public String getName() {
         return this.name;
     }
 
     /**
-     * Returns encoding used in this font property. 
+     * Returns encoding used in this font property.
      */
-    public String getEncoding(){
+    public String getEncoding() {
         return this.encoding;
     }
-    
+
     /**
-     * Returns an array of exclusion ranges. This array contain pairs of 
-     * low and high bounds of the intervals of characters to ignore in 
-     * total Unicode characters range.   
+     * Returns an array of exclusion ranges. This array contain pairs of
+     * low and high bounds of the intervals of characters to ignore in
+     * total Unicode characters range.
      */
-    public int[] getExclusionRange(){
+    public int[] getExclusionRange() {
         return this.exclRange;
     }
 
     /**
-     * Returns file name of the font that is described by this font property. 
+     * Returns file name of the font that is described by this font property.
      */
-    public String getFileName(){
+    public String getFileName() {
         return this.fileName;
     }
 
     /**
-     * Returns true if specified character covered by exclusion ranges of this 
+     * Returns true if specified character covered by exclusion ranges of this
      * font property, false otherwise.
-     * 
+     *
      * @param ch specified char to check
      */
-    public boolean isCharExcluded(char ch){
-        if (exclRange == null ){
+    public boolean isCharExcluded(char ch) {
+        if (exclRange == null) {
             return false;
         }
 
-        for (int i = 0; i < exclRange.length;){
+        for (int i = 0; i < exclRange.length; ) {
             int lb = exclRange[i++];
             int hb = exclRange[i++];
 
-            if (ch >= lb && ch <= hb){
+            if (ch >= lb && ch <= hb) {
                 return true;
             }
         }

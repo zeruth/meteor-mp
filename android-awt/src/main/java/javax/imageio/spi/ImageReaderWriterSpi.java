@@ -20,9 +20,10 @@
 package javax.imageio.spi;
 
 
-import javax.imageio.metadata.IIOMetadataFormat;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 import org.apache.harmony.x.imageio.metadata.IIOMetadataUtils;
+
+import javax.imageio.metadata.IIOMetadataFormat;
 
 public abstract class ImageReaderWriterSpi extends IIOServiceProvider
         implements RegisterableService {
@@ -78,11 +79,11 @@ public abstract class ImageReaderWriterSpi extends IIOServiceProvider
 
         this.extraStreamMetadataFormatNames =
                 extraStreamMetadataFormatNames == null ?
-                null : extraStreamMetadataFormatNames.clone();
+                        null : extraStreamMetadataFormatNames.clone();
 
         this.extraStreamMetadataFormatClassNames =
                 extraStreamMetadataFormatClassNames == null ?
-                null : extraStreamMetadataFormatClassNames.clone();
+                        null : extraStreamMetadataFormatClassNames.clone();
 
         this.supportsStandardImageMetadataFormat = supportsStandardImageMetadataFormat;
         this.nativeImageMetadataFormatName = nativeImageMetadataFormatName;
@@ -90,14 +91,15 @@ public abstract class ImageReaderWriterSpi extends IIOServiceProvider
 
         this.extraImageMetadataFormatNames =
                 extraImageMetadataFormatNames == null ?
-                null : extraImageMetadataFormatNames.clone();
+                        null : extraImageMetadataFormatNames.clone();
 
         this.extraImageMetadataFormatClassNames =
                 extraImageMetadataFormatClassNames == null ?
-                null : extraImageMetadataFormatClassNames.clone();
+                        null : extraImageMetadataFormatClassNames.clone();
     }
 
-    public ImageReaderWriterSpi() {}
+    public ImageReaderWriterSpi() {
+    }
 
     public String[] getFormatNames() {
         return names.clone();

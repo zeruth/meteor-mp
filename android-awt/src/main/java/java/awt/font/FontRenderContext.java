@@ -33,9 +33,9 @@ public class FontRenderContext {
     private boolean fFractionalMetrics;
 
 
-    public FontRenderContext(AffineTransform trans, boolean antiAliased, 
-            boolean usesFractionalMetrics) {
-        if (trans != null){
+    public FontRenderContext(AffineTransform trans, boolean antiAliased,
+                             boolean usesFractionalMetrics) {
+        if (trans != null) {
             transform = new AffineTransform(trans);
         }
         fAntiAliased = antiAliased;
@@ -63,24 +63,24 @@ public class FontRenderContext {
     }
 
     public AffineTransform getTransform() {
-        if (transform != null){
+        if (transform != null) {
             return new AffineTransform(transform);
         }
         return new AffineTransform();
     }
 
     public boolean equals(FontRenderContext frc) {
-        if (this == frc){
+        if (this == frc) {
             return true;
         }
 
-        if (frc == null){
+        if (frc == null) {
             return false;
         }
 
         if (!frc.getTransform().equals(this.getTransform()) &&
-            !frc.isAntiAliased() == this.fAntiAliased &&
-            !frc.usesFractionalMetrics() == this.fFractionalMetrics){
+                !frc.isAntiAliased() == this.fAntiAliased &&
+                !frc.usesFractionalMetrics() == this.fFractionalMetrics) {
             return false;
         }
         return true;
@@ -97,8 +97,8 @@ public class FontRenderContext {
     @Override
     public int hashCode() {
         return this.getTransform().hashCode() ^
-                new Boolean(this.fFractionalMetrics).hashCode() ^
-                new Boolean(this.fAntiAliased).hashCode();
+                Boolean.valueOf(this.fFractionalMetrics).hashCode() ^
+                Boolean.valueOf(this.fAntiAliased).hashCode();
     }
 
 }

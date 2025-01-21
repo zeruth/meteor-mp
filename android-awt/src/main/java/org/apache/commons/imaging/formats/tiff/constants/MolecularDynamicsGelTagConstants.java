@@ -16,19 +16,15 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-
 /**
  * Molecular Dynamics GEL file format
- * <BR>  
+ * <BR>
  * http://www.awaresystems.be/imaging/tiff/tifftags/docs/gel.html
  */
 public interface MolecularDynamicsGelTagConstants {

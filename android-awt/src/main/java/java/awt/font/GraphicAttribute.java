@@ -20,9 +20,10 @@
 package java.awt.font;
 
 
-import java.awt.Graphics2D;
-import java.awt.geom.Rectangle2D;
 import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 
 public abstract class GraphicAttribute {
@@ -70,12 +71,12 @@ public abstract class GraphicAttribute {
     public abstract float getDescent();
 
     public GlyphJustificationInfo getJustificationInfo() {
-        
+
         /* Default implementation.
          * Since documentation doesn't describe default values,
-         * they were calculated based on 1.5 release 
+         * they were calculated based on 1.5 release
          * behavior and can be obtained using next test sample:
-         * 
+         *
          *    // Create GraphicAttribute class implementation
          *    public class MyGraphicAttribute extends GraphicAttribute {
          *        protected MyGraphicAttribute(int align) {
@@ -112,15 +113,15 @@ public abstract class GraphicAttribute {
          */
         float advance = getAdvance();
         return new GlyphJustificationInfo(
-                                    advance,
-                                    false,
-                                    GlyphJustificationInfo.PRIORITY_INTERCHAR,
-                                    advance / 3,
-                                    advance / 3,
-                                    false,
-                                    GlyphJustificationInfo.PRIORITY_WHITESPACE,
-                                    0,
-                                    0);
+                advance,
+                false,
+                GlyphJustificationInfo.PRIORITY_INTERCHAR,
+                advance / 3,
+                advance / 3,
+                false,
+                GlyphJustificationInfo.PRIORITY_WHITESPACE,
+                0,
+                0);
     }
 
 }

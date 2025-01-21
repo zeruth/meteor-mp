@@ -16,31 +16,18 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDirectory;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUndefined;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUnknown;
 
 /**
  * References:
  * http://www.sno.phy.queensu.ca/~phil/exiftool/TagNames/EXIF.html
  * http://tiki-lounge.com/~raf/tiff/fields.html
  * http://www.awaresystems.be/imaging/tiff/tifftags.html
- * 
+ * <p>
  * "Stonits": http://www.anyhere.com/gward/pixformat/tiffluv.html
  */
 public interface ExifTagConstants {
@@ -613,8 +600,8 @@ public interface ExifTagConstants {
                     EXIF_TAG_SHADOWS, EXIF_TAG_BRIGHTNESS, EXIF_TAG_CONTRAST_2,
                     EXIF_TAG_SATURATION_2, EXIF_TAG_SHARPNESS_2, EXIF_TAG_SMOOTHNESS,
                     EXIF_TAG_MOIRE_FILTER,
-        
+
                     EXIF_TAG_USER_COMMENT, //
-        
+
                     EXIF_TAG_MAKER_NOTE));
 }

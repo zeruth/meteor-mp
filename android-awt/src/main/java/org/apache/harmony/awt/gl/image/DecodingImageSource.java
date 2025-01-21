@@ -24,7 +24,6 @@ package org.apache.harmony.awt.gl.image;
 
 import java.awt.image.ImageConsumer;
 import java.awt.image.ImageProducer;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -46,6 +45,43 @@ public abstract class DecodingImageSource implements ImageProducer {
 
     ImageDecoder decoder;
 
+    /**
+     * Static implementation of removeConsumer method
+     *
+     * @param consumersList - list of consumers
+     * @param ic            - consumer to be removed
+     */
+    private static void removeConsumer(List<ImageConsumer> consumersList, ImageConsumer ic) {
+        ImageConsumer cons = null;
+
+        for (Iterator<ImageConsumer> i = consumersList.iterator(); i.hasNext(); ) {
+            cons = i.next();
+            if (cons.equals(ic)) {
+                i.remove();
+            }
+        }
+    }
+
+    /**
+     * Checks if the consumer is in the list and returns it if it is there
+     *
+     * @param consumersList - list of consumers
+     * @param ic            - consumer
+     * @return consumer if found, null otherwise
+     */
+    private static ImageConsumer findConsumer(List<ImageConsumer> consumersList, ImageConsumer ic) {
+        ImageConsumer res = null;
+
+        for (Iterator<ImageConsumer> i = consumersList.iterator(); i.hasNext(); ) {
+            res = i.next();
+            if (res.equals(ic)) {
+                return res;
+            }
+        }
+
+        return null;
+    }
+
     protected abstract boolean checkConnection();
 
     protected abstract InputStream getInputStream();
@@ -62,7 +98,7 @@ public abstract class DecodingImageSource implements ImageProducer {
             ImageDecoder d = null;
 
             // Check for all existing decoders
-            for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext();) {
+            for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext(); ) {
                 d = i.next();
                 cons = findConsumer(d.consumers, ic);
                 if (cons != null) {
@@ -78,6 +114,7 @@ public abstract class DecodingImageSource implements ImageProducer {
 
     /**
      * This method stops sending data to the given consumer
+     *
      * @param ic - consumer
      */
     private void abortConsumer(ImageConsumer ic) {
@@ -87,6 +124,7 @@ public abstract class DecodingImageSource implements ImageProducer {
 
     /**
      * This method stops sending data to the list of consumers.
+     *
      * @param consumersList - list of consumers
      */
     private void abortAllConsumers(List<ImageConsumer> consumersList) {
@@ -99,7 +137,7 @@ public abstract class DecodingImageSource implements ImageProducer {
         ImageDecoder d = null;
 
         // Remove in all existing decoders
-        for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext();) {
+        for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext(); ) {
             d = i.next();
             removeConsumer(d.consumers, ic);
             if (d.consumers.size() <= 0) {
@@ -109,22 +147,6 @@ public abstract class DecodingImageSource implements ImageProducer {
 
         // Remove in the current queue of consumers
         removeConsumer(consumers, ic);
-    }
-
-    /**
-     * Static implementation of removeConsumer method
-     * @param consumersList - list of consumers
-     * @param ic - consumer to be removed
-     */
-    private static void removeConsumer(List<ImageConsumer> consumersList, ImageConsumer ic) {
-        ImageConsumer cons = null;
-
-        for (Iterator<ImageConsumer> i = consumersList.iterator(); i.hasNext();) {
-            cons = i.next();
-            if (cons.equals(ic)) {
-                i.remove();
-            }
-        }
     }
 
     public void requestTopDownLeftRightResend(ImageConsumer consumer) {
@@ -146,7 +168,7 @@ public abstract class DecodingImageSource implements ImageProducer {
         ImageDecoder d = null;
 
         // Check for all existing decoders
-        for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext();) {
+        for (Iterator<ImageDecoder> i = decoders.iterator(); i.hasNext(); ) {
             d = i.next();
             if (findConsumer(d.consumers, ic) != null) {
                 return true;
@@ -158,27 +180,9 @@ public abstract class DecodingImageSource implements ImageProducer {
     }
 
     /**
-     * Checks if the consumer is in the list and returns it if it is there
-     * @param consumersList - list of consumers
-     * @param ic - consumer
-     * @return consumer if found, null otherwise
-     */
-    private static ImageConsumer findConsumer(List<ImageConsumer> consumersList, ImageConsumer ic) {
-        ImageConsumer res = null;
-
-        for (Iterator<ImageConsumer> i = consumersList.iterator(); i.hasNext();) {
-            res = i.next();
-            if (res.equals(ic)) {
-                return res;
-            }
-        }
-
-        return null;
-    }
-
-    /**
      * Use this method to finish decoding or lock the list of consumers
      * for a particular decoder
+     *
      * @param d - decoder
      */
     synchronized void lockDecoder(ImageDecoder d) {
@@ -191,6 +195,7 @@ public abstract class DecodingImageSource implements ImageProducer {
     /**
      * Tries to find an appropriate decoder for the input stream and adds it
      * to the list of decoders
+     *
      * @return created decoder
      */
     private ImageDecoder createDecoder() {
@@ -228,6 +233,7 @@ public abstract class DecodingImageSource implements ImageProducer {
 
     /**
      * Stop the given decoder and remove it from the list
+     *
      * @param dr - decoder
      */
     private synchronized void removeDecoder(ImageDecoder dr) {

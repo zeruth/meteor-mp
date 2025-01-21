@@ -18,11 +18,11 @@ package org.apache.commons.imaging.palette;
 
 class ColorCount {
     public final int argb;
-    public int count;
     public final int alpha;
     public final int red;
     public final int green;
     public final int blue;
+    public int count;
 
     public ColorCount(final int argb) {
         this.argb = argb;

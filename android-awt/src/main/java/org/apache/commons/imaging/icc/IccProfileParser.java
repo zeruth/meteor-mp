@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.icc;
 
-import java.awt.color.ICC_Profile;
 import org.apache.commons.imaging.common.BinaryFileParser;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.common.bytesource.ByteSourceArray;
@@ -24,14 +23,13 @@ import org.apache.commons.imaging.common.bytesource.ByteSourceFile;
 import org.apache.commons.imaging.util.Debug;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.color.ICC_Profile;
 import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.ByteOrder;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.printCharQuad;
-import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.skipBytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
 public class IccProfileParser extends BinaryFileParser {
     public IccProfileParser() {
@@ -144,7 +142,7 @@ public class IccProfileParser extends BinaryFileParser {
 
             final int profileVersion = read4Bytes("ProfileVersion", is, "Not a Valid ICC Profile", getByteOrder());
 
-            final int profileDeviceClassSignature = read4Bytes("ProfileDeviceClassSignature", is, 
+            final int profileDeviceClassSignature = read4Bytes("ProfileDeviceClassSignature", is,
                     "Not a Valid ICC Profile", getByteOrder());
             if (getDebug()) {
                 printCharQuad("ProfileDeviceClassSignature", profileDeviceClassSignature);

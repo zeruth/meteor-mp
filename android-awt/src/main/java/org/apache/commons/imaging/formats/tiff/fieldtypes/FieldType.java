@@ -16,14 +16,14 @@
  */
 package org.apache.commons.imaging.formats.tiff.fieldtypes;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.formats.tiff.TiffField;
+
 import java.nio.ByteOrder;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.formats.tiff.TiffField;
 
 /**
  * TIFF field types.
@@ -42,11 +42,6 @@ public abstract class FieldType {
     public static final FieldTypeFloat FLOAT = new FieldTypeFloat(11, "Float");
     public static final FieldTypeDouble DOUBLE = new FieldTypeDouble(12, "Double");
     public static final FieldTypeLong IFD = new FieldTypeLong(13, "IFD");
-
-    private final int type;
-    private final String name;
-    private final int elementSize;
-    
     public static final List<FieldType> ANY =
             Collections.unmodifiableList(Arrays.asList(
                     BYTE, ASCII, SHORT,
@@ -54,58 +49,40 @@ public abstract class FieldType {
                     UNDEFINED, SSHORT, SLONG,
                     SRATIONAL, FLOAT, DOUBLE,
                     IFD));
-
     public static final List<FieldType> SHORT_OR_LONG =
             Collections.unmodifiableList(Arrays.asList(
                     SHORT, LONG));
-    
     public static final List<FieldType> SHORT_OR_RATIONAL =
             Collections.unmodifiableList(Arrays.asList(
                     SHORT, RATIONAL));
-    
     public static final List<FieldType> SHORT_OR_LONG_OR_RATIONAL =
             Collections.unmodifiableList(Arrays.asList(
                     SHORT, LONG, RATIONAL));
-    
     public static final List<FieldType> LONG_OR_SHORT =
             Collections.unmodifiableList(Arrays.asList(
                     SHORT, LONG));
-    
     public static final List<FieldType> BYTE_OR_SHORT =
             Collections.unmodifiableList(Arrays.asList(
                     SHORT, BYTE));
-    
     public static final List<FieldType> LONG_OR_IFD =
             Collections.unmodifiableList(Arrays.asList(
                     (FieldType) LONG, IFD));
-    
     public static final List<FieldType> ASCII_OR_RATIONAL =
             Collections.unmodifiableList(Arrays.asList(
                     ASCII, RATIONAL));
-    
     public static final List<FieldType> ASCII_OR_BYTE =
             Collections.unmodifiableList(Arrays.asList(
                     ASCII, BYTE));
+    private final int type;
+    private final String name;
+    private final int elementSize;
 
     protected FieldType(final int type, final String name, final int elementSize) {
         this.type = type;
         this.name = name;
         this.elementSize = elementSize;
     }
-    
-    
-    public int getType() {
-        return type;
-    }
-    
-    public String getName() {
-        return name;
-    }
-    
-    public int getSize() {
-        return elementSize;
-    }
-    
+
     public static FieldType getFieldType(final int type) throws ImageReadException {
         for (final FieldType fieldType : ANY) {
             if (fieldType.getType() == type) {
@@ -114,7 +91,20 @@ public abstract class FieldType {
         }
         throw new ImageReadException("Field type " + type + " is unsupported");
     }
-    
+
+    public int getType() {
+        return type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public int getSize() {
+        return elementSize;
+    }
+
     public abstract Object getValue(final TiffField entry);
+
     public abstract byte[] writeData(final Object o, final ByteOrder byteOrder) throws ImageWriteException;
 }

@@ -16,11 +16,11 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.io.IOException;
-import java.io.InputStream;
-
 import org.apache.commons.imaging.ImageFormat;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
+import java.io.InputStream;
 
 abstract class FileInfo {
     protected final int width;
@@ -33,8 +33,32 @@ abstract class FileInfo {
         this.rawbits = rawbits;
     }
 
+    protected static int readSample(final InputStream is, final int bytesPerSample) throws IOException {
+        int sample = 0;
+        for (int i = 0; i < bytesPerSample; i++) {
+            final int nextByte = is.read();
+            if (nextByte < 0) {
+                throw new IOException("PNM: Unexpected EOF");
+            }
+            sample <<= 8;
+            sample |= nextByte;
+        }
+        return sample;
+    }
+
+    protected static int scaleSample(int sample, final float scale, final int max) throws IOException {
+        if (sample < 0) {
+            // Even netpbm tools break for files like this
+            throw new IOException("Negative pixel values are invalid in PNM files");
+        } else if (sample > max) {
+            // invalid values -> black
+            sample = 0;
+        }
+        return (int) ((sample * scale / max) + 0.5f);
+    }
+
     public abstract boolean hasAlpha();
-    
+
     public abstract int getNumComponents();
 
     public abstract int getBitDepth();
@@ -53,30 +77,6 @@ abstract class FileInfo {
 
     protected void newline() {
         // do nothing by default.
-    }
-    
-    protected static int readSample(final InputStream is, final int bytesPerSample) throws IOException {
-        int sample = 0;
-        for (int i = 0; i < bytesPerSample; i++) {
-            final int nextByte = is.read();
-            if (nextByte < 0) {
-                throw new IOException("PNM: Unexpected EOF");
-            }
-            sample <<= 8;
-            sample |= nextByte;
-        }
-        return sample;
-    }
-    
-    protected static int scaleSample(int sample, final float scale, final int max) throws IOException {
-        if (sample < 0) {
-            // Even netpbm tools break for files like this
-            throw new IOException("Negative pixel values are invalid in PNM files");
-        } else if (sample > max) {
-            // invalid values -> black
-            sample = 0;
-        }
-        return (int) ((sample * scale / max) + 0.5f);
     }
 
     public void readImage(final ImageBuilder imageBuilder, final InputStream is)

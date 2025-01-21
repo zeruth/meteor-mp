@@ -16,8 +16,6 @@
  */
 package org.apache.commons.imaging.formats.jpeg;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.Imaging;
 import org.apache.commons.imaging.common.IImageMetadata;
@@ -28,17 +26,19 @@ import org.apache.commons.imaging.formats.tiff.TiffImageMetadata;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 import org.apache.commons.imaging.util.Debug;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 public class JpegImageMetadata implements IImageMetadata {
+    private static final String NEWLINE = System.getProperty("line.separator");
     private final JpegPhotoshopMetadata photoshop;
     private final TiffImageMetadata exif;
-    private static final String NEWLINE = System.getProperty("line.separator");
 
     public JpegImageMetadata(final JpegPhotoshopMetadata photoshop,
-            final TiffImageMetadata exif) {
+                             final TiffImageMetadata exif) {
         this.photoshop = photoshop;
         this.exif = exif;
     }
@@ -69,7 +69,7 @@ public class JpegImageMetadata implements IImageMetadata {
 
     /**
      * Returns the size of the first JPEG thumbnail found in the EXIF metadata.
-     * 
+     *
      * @return Thumbnail width and height or null if no thumbnail.
      * @throws ImageReadException
      * @throws IOException
@@ -86,7 +86,7 @@ public class JpegImageMetadata implements IImageMetadata {
 
     /**
      * Returns the data of the first JPEG thumbnail found in the EXIF metadata.
-     * 
+     *
      * @return JPEG data or null if no thumbnail.
      * @throws ImageReadException
      * @throws IOException
@@ -114,9 +114,9 @@ public class JpegImageMetadata implements IImageMetadata {
 
     /**
      * Get the thumbnail image if available.
-     * 
+     *
      * @return the thumbnail image. May be <code>null</code> if no image could
-     *         be found.
+     * be found.
      * @throws ImageReadException
      * @throws IOException
      */
@@ -142,7 +142,7 @@ public class JpegImageMetadata implements IImageMetadata {
                 //boolean imageSucceeded = false;
                 //try {
                 image = Imaging.getBufferedImage(jpegImageData.data);
-                    //imageSucceeded = true;
+                //imageSucceeded = true;
                 /*} catch (final ImagingException imagingException) { // NOPMD
                 } catch (final IOException ioException) { // NOPMD
                 } finally {

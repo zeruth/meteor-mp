@@ -19,7 +19,7 @@
  */
 package org.apache.harmony.awt.gl;
 
-import java.awt.Rectangle;
+import java.awt.*;
 
 public class MultiRectAreaOp {
 
@@ -27,9 +27,9 @@ public class MultiRectAreaOp {
      * Rectangle buffer capacity
      */
     public static final int RECT_CAPACITY = 16;
-    
+
     /**
-     * If number of rectangle in MultiRectArea object less than MAX_SIMPLE simple algorithm applies 
+     * If number of rectangle in MultiRectArea object less than MAX_SIMPLE simple algorithm applies
      */
     private static final int MAX_SIMPLE = 8;
 
@@ -46,7 +46,7 @@ public class MultiRectAreaOp {
     }
 
     /**
-     * Checks buffer size and reallocate if necessary  
+     * Checks buffer size and reallocate if necessary
      */
     public static int[] checkBufSize(int[] buf, int capacity) {
         if (buf[0] + capacity >= buf.length) {
@@ -60,7 +60,7 @@ public class MultiRectAreaOp {
     }
 
     /**
-     * Region class provides basic functionlity for MultiRectArea objects to make logical operations 
+     * Region class provides basic functionlity for MultiRectArea objects to make logical operations
      */
     static class Region {
 
@@ -78,112 +78,6 @@ public class MultiRectAreaOp {
             index = 1;
         }
 
-        void addActive(int index) {
-            int length = active[0];
-            active = checkBufSize(active, 4);
-            int i = 1;
-
-            while(i < length) {
-                if (region[index] < active[i]) {
-                    // Insert
-                    System.arraycopy(active, i, active, i + 4, length - i);
-                    length = i;
-                    break;
-                }
-                i += 4;
-            }
-            System.arraycopy(region, index, active, length, 4);
-
-        }
-
-        void findActive(int top, int bottom) {
-            while(index < region[0]) {
-                if (region[index + 1] > bottom) { // y1 > bottom
-                    return;
-                }
-                if (region[index + 3] >= top) { // y2 >= top
-                    addActive(index);
-                }
-                index += 4;
-            }
-        }
-
-        void deleteActive(int bottom) {
-            int length = active[0];
-            for(int i = 1; i < length;) {
-                if (active[i + 3] == bottom) {
-                    length -= 4;
-                    if (i < length) {
-                        System.arraycopy(active, i + 4, active, i, length - i);
-                    }
-                } else {
-                     i += 4;
-                }
-            }
-            active[0] = length;
-        }
-
-        void deleteActive() {
-            int length = active[0];
-            for(int i = length - 4; i > 0; i -= 4) {
-                if (active[i + 1] > active[i + 3]) {
-                    length -= 4;
-                    if (i < length) {
-                        System.arraycopy(active, i + 4, active, i, length - i);
-                    }
-                }
-            }
-            active[0] = length;
-        }
-
-        void createLevel(int[] level) {
-            int levelCount = 1;
-            int topIndex = 1;
-            int i = 1;
-            while(i < region[0]) {
-
-                int top = region[i + 1];
-                int bottom = region[i + 3] + 1;
-                int j = topIndex;
-
-                addTop: {
-                    while(j < levelCount) {
-                        if (level[j] == top) {
-                            break addTop;
-                        }
-                        if (level[j] > top) {
-                            System.arraycopy(level, j, level, j + 1, levelCount - j);
-                            break;
-                        }
-                        j++;
-                    }
-
-                    level[j] = top;
-                    levelCount++;
-                    topIndex = j;
-                }
-
-                addBottom: {
-                    while(j < levelCount) {
-                        if (level[j] == bottom) {
-                            break addBottom;
-                        }
-                        if (level[j] > bottom) {
-                            System.arraycopy(level, j, level, j + 1, levelCount - j);
-                            break;
-                        }
-                        j++;
-                    };
-
-                    level[j] = bottom;
-                    levelCount++;
-                }
-
-                i += 4;
-            }
-            level[0] = levelCount;
-        }
-
         static void sortOrdered(int[] src1, int[] src2, int[] dst) {
             int length1 = src1[0];
             int length2 = src2[0];
@@ -192,10 +86,11 @@ public class MultiRectAreaOp {
             int i2 = 1;
             int v1 = src1[1];
             int v2 = src2[1];
-            while(true) {
+            while (true) {
 
-                LEFT: {
-                    while(i1 < length1) {
+                LEFT:
+                {
+                    while (i1 < length1) {
                         v1 = src1[i1];
                         if (v1 >= v2) {
                             break LEFT;
@@ -203,15 +98,16 @@ public class MultiRectAreaOp {
                         dst[count++] = v1;
                         i1++;
                     }
-                    while(i2 < length2) {
+                    while (i2 < length2) {
                         dst[count++] = src2[i2++];
                     }
                     dst[0] = count;
                     return;
                 }
 
-                RIGHT: {
-                    while(i2 < length2) {
+                RIGHT:
+                {
+                    while (i2 < length2) {
                         v2 = src2[i2];
                         if (v2 >= v1) {
                             break RIGHT;
@@ -219,7 +115,7 @@ public class MultiRectAreaOp {
                         dst[count++] = v2;
                         i2++;
                     }
-                    while(i1 < length1) {
+                    while (i1 < length1) {
                         dst[count++] = src1[i1++];
                     }
                     dst[0] = count;
@@ -239,6 +135,115 @@ public class MultiRectAreaOp {
                 }
             }
             // UNREACHABLE
+        }
+
+        void addActive(int index) {
+            int length = active[0];
+            active = checkBufSize(active, 4);
+            int i = 1;
+
+            while (i < length) {
+                if (region[index] < active[i]) {
+                    // Insert
+                    System.arraycopy(active, i, active, i + 4, length - i);
+                    length = i;
+                    break;
+                }
+                i += 4;
+            }
+            System.arraycopy(region, index, active, length, 4);
+
+        }
+
+        void findActive(int top, int bottom) {
+            while (index < region[0]) {
+                if (region[index + 1] > bottom) { // y1 > bottom
+                    return;
+                }
+                if (region[index + 3] >= top) { // y2 >= top
+                    addActive(index);
+                }
+                index += 4;
+            }
+        }
+
+        void deleteActive(int bottom) {
+            int length = active[0];
+            for (int i = 1; i < length; ) {
+                if (active[i + 3] == bottom) {
+                    length -= 4;
+                    if (i < length) {
+                        System.arraycopy(active, i + 4, active, i, length - i);
+                    }
+                } else {
+                    i += 4;
+                }
+            }
+            active[0] = length;
+        }
+
+        void deleteActive() {
+            int length = active[0];
+            for (int i = length - 4; i > 0; i -= 4) {
+                if (active[i + 1] > active[i + 3]) {
+                    length -= 4;
+                    if (i < length) {
+                        System.arraycopy(active, i + 4, active, i, length - i);
+                    }
+                }
+            }
+            active[0] = length;
+        }
+
+        void createLevel(int[] level) {
+            int levelCount = 1;
+            int topIndex = 1;
+            int i = 1;
+            while (i < region[0]) {
+
+                int top = region[i + 1];
+                int bottom = region[i + 3] + 1;
+                int j = topIndex;
+
+                addTop:
+                {
+                    while (j < levelCount) {
+                        if (level[j] == top) {
+                            break addTop;
+                        }
+                        if (level[j] > top) {
+                            System.arraycopy(level, j, level, j + 1, levelCount - j);
+                            break;
+                        }
+                        j++;
+                    }
+
+                    level[j] = top;
+                    levelCount++;
+                    topIndex = j;
+                }
+
+                addBottom:
+                {
+                    while (j < levelCount) {
+                        if (level[j] == bottom) {
+                            break addBottom;
+                        }
+                        if (level[j] > bottom) {
+                            System.arraycopy(level, j, level, j + 1, levelCount - j);
+                            break;
+                        }
+                        j++;
+                    }
+                    ;
+
+                    level[j] = bottom;
+                    levelCount++;
+                }
+
+                i += 4;
+            }
+            level[0] = levelCount;
         }
 
     }
@@ -262,7 +267,7 @@ public class MultiRectAreaOp {
 
             int top;
             int bottom = level[1] - 1;
-            for(int i = 2; i < level[0]; i++) {
+            for (int i = 2; i < level[0]; i++) {
 
                 top = bottom + 1;
                 bottom = level[i] - 1;
@@ -273,7 +278,7 @@ public class MultiRectAreaOp {
                 int i1 = 1;
                 int i2 = 1;
 
-                while(i1 < d1.active[0] && i2 < d2.active[0]) {
+                while (i1 < d1.active[0] && i2 < d2.active[0]) {
 
                     int x11 = d1.active[i1];
                     int x12 = d1.active[i1 + 2];
@@ -318,14 +323,14 @@ public class MultiRectAreaOp {
             int[] rect = createBuf(0);
 
             int k = 1;
-            for(int i = 1; i < rect1[0];) {
+            for (int i = 1; i < rect1[0]; ) {
 
                 int x11 = rect1[i++];
                 int y11 = rect1[i++];
                 int x12 = rect1[i++];
                 int y12 = rect1[i++];
 
-                for(int j = 1; j < rect2[0];) {
+                for (int j = 1; j < rect2[0]; ) {
 
                     int x21 = rect2[j++];
                     int y21 = rect2[j++];
@@ -333,8 +338,7 @@ public class MultiRectAreaOp {
                     int y22 = rect2[j++];
 
                     if (x11 <= x22 && x12 >= x21 &&
-                        y11 <= y22 && y12 >= y21)
-                    {
+                            y11 <= y22 && y12 >= y21) {
                         rect = checkBufSize(rect, 4);
                         rect[k++] = x11 > x21 ? x11 : x21;
                         rect[k++] = y11 > y21 ? y11 : y21;
@@ -356,9 +360,8 @@ public class MultiRectAreaOp {
 
             MultiRectArea.RectCash dst = new MultiRectArea.RectCash();
 
-            if (!src1.sorted || !src2.sorted || 
-               src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) 
-            {
+            if (!src1.sorted || !src2.sorted ||
+                    src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) {
                 dst.setRect(simpleIntersect(src1, src2), false);
             } else {
                 Rectangle bounds1 = src1.getBounds();
@@ -383,6 +386,19 @@ public class MultiRectAreaOp {
         int top, bottom;
         MultiRectArea.RectCash dst;
 
+        static void simpleUnion(MultiRectArea src1, MultiRectArea src2, MultiRectArea dst) {
+            if (src1.getRectCount() < src2.getRectCount()) {
+                simpleUnion(src2, src1, dst);
+            } else {
+                Subtraction.simpleSubtract(src1, src2, dst);
+                int pos = dst.rect[0];
+                int size = src2.rect[0] - 1;
+                dst.rect = checkBufSize(dst.rect, size);
+                System.arraycopy(src2.rect, 1, dst.rect, pos, size);
+                dst.resort();
+            }
+        }
+
         boolean next(Region d, int index) {
             int x1 = d.active[index];
             int x2 = d.active[index + 2];
@@ -391,17 +407,16 @@ public class MultiRectAreaOp {
             if (x2 < rx1 - 1) {
                 res = true;
                 dst.addRectCashed(x1, top, x2, bottom);
-            } else
-                if (x1 > rx2 + 1) {
-                    res = false;
-                    dst.addRectCashed(rx1, top, rx2, bottom);
-                    rx1 = x1;
-                    rx2 = x2;
-                } else {
-                    res = x2 <= rx2;
-                    rx1 = Math.min(x1, rx1);
-                    rx2 = Math.max(x2, rx2);
-                }
+            } else if (x1 > rx2 + 1) {
+                res = false;
+                dst.addRectCashed(rx1, top, rx2, bottom);
+                rx1 = x1;
+                rx2 = x2;
+            } else {
+                res = x2 <= rx2;
+                rx1 = Math.min(x1, rx1);
+                rx2 = Math.max(x2, rx2);
+            }
 
             // Top
             if (d.active[index + 1] < top) {
@@ -442,7 +457,7 @@ public class MultiRectAreaOp {
             Region.sortOrdered(level1, level2, level);
 
             bottom = level[1] - 1;
-            for(int i = 2; i < level[0]; i++) {
+            for (int i = 2; i < level[0]; i++) {
 
                 top = bottom + 1;
                 bottom = level[i] - 1;
@@ -461,25 +476,24 @@ public class MultiRectAreaOp {
                     i1 += 4;
                     res1 = false;
                     res2 = true;
-                } else
-                    if (d2.active[0] > 1) {
-                        check(d2, 1, false);
-                        rx1 = d2.active[1];
-                        rx2 = d2.active[3];
-                        i2 += 4;
-                        res1 = true;
-                        res2 = false;
-                    } else {
-                        continue;
-                    }
+                } else if (d2.active[0] > 1) {
+                    check(d2, 1, false);
+                    rx1 = d2.active[1];
+                    rx2 = d2.active[3];
+                    i2 += 4;
+                    res1 = true;
+                    res2 = false;
+                } else {
+                    continue;
+                }
 
-            outer:
-                while(true) {
+                outer:
+                while (true) {
 
                     while (res1) {
                         if (i1 >= d1.active[0]) {
                             dst.addRectCashed(rx1, top, rx2, bottom);
-                            while(i2 < d2.active[0]) {
+                            while (i2 < d2.active[0]) {
                                 check(d2, i2, true);
                                 i2 += 4;
                             }
@@ -492,7 +506,7 @@ public class MultiRectAreaOp {
                     while (res2) {
                         if (i2 >= d2.active[0]) {
                             dst.addRectCashed(rx1, top, rx2, bottom);
-                            while(i1 < d1.active[0]) {
+                            while (i1 < d1.active[0]) {
                                 check(d1, i1, true);
                                 i1 += 4;
                             }
@@ -512,19 +526,6 @@ public class MultiRectAreaOp {
             }
         }
 
-        static void simpleUnion(MultiRectArea src1, MultiRectArea src2, MultiRectArea dst) {
-            if (src1.getRectCount() < src2.getRectCount()) {
-                simpleUnion(src2, src1, dst);
-            } else {
-                Subtraction.simpleSubtract(src1, src2, dst);
-                int pos = dst.rect[0];
-                int size = src2.rect[0] - 1;
-                dst.rect = checkBufSize(dst.rect, size);
-                System.arraycopy(src2.rect,1, dst.rect, pos, size);
-                dst.resort();
-            }
-        }
-
         MultiRectArea getResult(MultiRectArea src1, MultiRectArea src2) {
 
             if (src1 == null || src1.isEmpty()) {
@@ -538,8 +539,7 @@ public class MultiRectAreaOp {
             dst = new MultiRectArea.RectCash();
 
             if (!src1.sorted || !src2.sorted ||
-               src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) 
-            {
+                    src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) {
                 simpleUnion(src1, src2, dst);
             } else {
                 Rectangle bounds1 = src1.getBounds();
@@ -549,15 +549,13 @@ public class MultiRectAreaOp {
                 if (bounds3.width < 0 || bounds3.height < 0) {
                     if (bounds1.y + bounds1.height < bounds2.y) {
                         dst.setRect(addVerRegion(src1.rect, src2.rect), false);
-                    } else
-                        if (bounds2.y + bounds2.height < bounds1.y) {
-                            dst.setRect(addVerRegion(src2.rect, src1.rect), false);
-                        } else
-                            if (bounds1.x < bounds2.x) {
-                                dst.setRect(addHorRegion(src1.rect, src2.rect), false);
-                            } else {
-                                dst.setRect(addHorRegion(src2.rect, src1.rect), false);
-                            }
+                    } else if (bounds2.y + bounds2.height < bounds1.y) {
+                        dst.setRect(addVerRegion(src2.rect, src1.rect), false);
+                    } else if (bounds1.x < bounds2.x) {
+                        dst.setRect(addHorRegion(src1.rect, src2.rect), false);
+                    } else {
+                        dst.setRect(addHorRegion(src2.rect, src1.rect), false);
+                    }
                 } else {
                     unionRegions(src1.rect, src2.rect, bounds1.height + 2, bounds2.height + 2);
                 }
@@ -587,7 +585,7 @@ public class MultiRectAreaOp {
             int top2 = right[2];
             int pos1, pos2;
 
-            while(true) {
+            while (true) {
 
                 if (index1 >= count1) {
                     System.arraycopy(right, index2, dst, count, count2 - index2);
@@ -623,12 +621,12 @@ public class MultiRectAreaOp {
                 int top = top1;
                 pos1 = index1;
                 pos2 = index2;
-                do  {
+                do {
                     index1 += 4;
-                } while(index1 < count1 && (top1 = left[index1 + 1]) == top);
+                } while (index1 < count1 && (top1 = left[index1 + 1]) == top);
                 do {
                     index2 += 4;
-                } while(index2 < count2 && (top2 = right[index2 + 1]) == top);
+                } while (index2 < count2 && (top2 = right[index2 + 1]) == top);
 
                 System.arraycopy(left, pos1, dst, count, index1 - pos1);
                 count += index1 - pos1;
@@ -660,7 +658,7 @@ public class MultiRectAreaOp {
 
             int top;
             int bottom = level[1] - 1;
-            for(int i = 2; i < level[0]; i++) {
+            for (int i = 2; i < level[0]; i++) {
 
                 top = bottom + 1;
                 bottom = level[i] - 1;
@@ -681,7 +679,7 @@ public class MultiRectAreaOp {
 
                 boolean next = true;
 
-                while(true) {
+                while (true) {
 
                     if (next) {
                         next = false;
@@ -697,7 +695,7 @@ public class MultiRectAreaOp {
 
                     if (i2 >= d2.active[0]) {
                         dst.addRectCashed(rx1, top, rx2, bottom);
-                        for(int j = i1; j < d1.active[0]; j += 4) {
+                        for (int j = i1; j < d1.active[0]; j += 4) {
                             dst.addRectCashed(d1.active[j], top, d1.active[j + 2], bottom);
                             d1.active[j + 1] = bottom + 1;
                         }
@@ -754,7 +752,7 @@ public class MultiRectAreaOp {
 
         static void subtractRect(int x11, int y11, int x12, int y12, int[] rect, int index, MultiRectArea dst) {
 
-            for(int i = index; i < rect[0]; i += 4) {
+            for (int i = index; i < rect[0]; i += 4) {
                 int x21 = rect[i + 0];
                 int y21 = rect[i + 1];
                 int x22 = rect[i + 2];
@@ -787,7 +785,7 @@ public class MultiRectAreaOp {
         }
 
         static void simpleSubtract(MultiRectArea src1, MultiRectArea src2, MultiRectArea dst) {
-            for(int i = 1; i < src1.rect[0]; i += 4) {
+            for (int i = 1; i < src1.rect[0]; i += 4) {
                 subtractRect(
                         src1.rect[i + 0],
                         src1.rect[i + 1],
@@ -813,8 +811,7 @@ public class MultiRectAreaOp {
             MultiRectArea.RectCash dst = new MultiRectArea.RectCash();
 
             if (!src1.sorted || !src2.sorted ||
-               src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) 
-            {
+                    src1.getRectCount() <= MAX_SIMPLE || src2.getRectCount() <= MAX_SIMPLE) {
                 simpleSubtract(src1, src2, dst);
             } else {
                 Rectangle bounds1 = src1.getBounds();

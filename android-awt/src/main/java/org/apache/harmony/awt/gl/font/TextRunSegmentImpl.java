@@ -16,7 +16,6 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  */
 
 package org.apache.harmony.awt.gl.font;
@@ -24,21 +23,14 @@ package org.apache.harmony.awt.gl.font;
 // XXX - TODO - bidi not implemented yet
 //import java.text.Bidi;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphJustificationInfo;
-import java.awt.font.GlyphVector;
-import java.awt.font.GraphicAttribute;
-import java.awt.font.LineMetrics;
-import java.awt.font.TextHitInfo;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
+import java.awt.font.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.GeneralPath;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
-
 import java.util.Arrays;
 
 
@@ -128,14 +120,14 @@ public class TextRunSegmentImpl {
          * @return glyph vector
          */
         private GlyphVector getGlyphVector() {
-            if (gv==null) {
+            if (gv == null) {
                 gv = info.font.layoutGlyphVector(
                         info.frc,
                         info.text,
                         info.start,
                         info.end - info.start, // NOTE: This parameter violates
-                                               // spec, it is count,
-                                               // not limit as spec states
+                        // spec, it is count,
+                        // not limit as spec states
                         info.flags
                 );
             }
@@ -221,7 +213,7 @@ public class TextRunSegmentImpl {
             int charIndicies[] = gv.getGlyphCharIndices(0, gv.getNumGlyphs(), null);
             advanceIncrements = new float[info.length];
 
-            for (int i=0; i<charIndicies.length; i++) {
+            for (int i = 0; i < charIndicies.length; i++) {
                 advanceIncrements[charIndicies[i]] = gv.getGlyphMetrics(i).getAdvance();
             }
         }
@@ -250,7 +242,7 @@ public class TextRunSegmentImpl {
             }
 
             float sum = 0;
-            for (int i=start; i<end; i++) {
+            for (int i = start; i < end; i++) {
                 sum += advanceIncrements[i];
             }
 
@@ -282,7 +274,7 @@ public class TextRunSegmentImpl {
             }
 
             int i = start;
-            for (; i<info.length; i++) {
+            for (; i < info.length; i++) {
                 advance -= advanceIncrements[i];
                 if (advance < 0) {
                     break;
@@ -319,14 +311,14 @@ public class TextRunSegmentImpl {
 
                 // Fill glyph indicies for first characters corresponding to each glyph
                 int charIndicies[] = gv.getGlyphCharIndices(0, gv.getNumGlyphs(), null);
-                for (int i=0; i<charIndicies.length; i++) {
+                for (int i = 0; i < charIndicies.length; i++) {
                     char2glyph[charIndicies[i]] = i;
                 }
 
                 // If several characters corresponds to one glyph, create mapping for them
                 // Suppose that these characters are going all together
                 int currIndex = 0;
-                for (int i=0; i<char2glyph.length; i++) {
+                for (int i = 0; i < char2glyph.length; i++) {
                     if (char2glyph[i] < 0) {
                         char2glyph[i] = currIndex;
                     } else {
@@ -357,7 +349,7 @@ public class TextRunSegmentImpl {
 
             int glyphIndex = 0;
 
-            for (int i=start; i<limit; i++) {
+            for (int i = start; i < limit; i++) {
                 glyphIndex = getChar2Glyph()[i];
                 result.append(getGlyphVector().getGlyphVisualBounds(glyphIndex), false);
             }
@@ -447,15 +439,15 @@ public class TextRunSegmentImpl {
             hitX -= x;
 
             float glyphPositions[] =
-                    getGlyphVector().getGlyphPositions(0, info.length+1, null);
+                    getGlyphVector().getGlyphPositions(0, info.length + 1, null);
 
             int glyphIdx;
             boolean leading = false;
             for (glyphIdx = 1; glyphIdx <= info.length; glyphIdx++) {
-                if (glyphPositions[(glyphIdx)*2] >= hitX) {
+                if (glyphPositions[(glyphIdx) * 2] >= hitX) {
                     float advance =
-                            glyphPositions[(glyphIdx)*2] - glyphPositions[(glyphIdx-1)*2];
-                    leading = glyphPositions[(glyphIdx-1)*2] + advance/2 > hitX ? true : false;
+                            glyphPositions[(glyphIdx) * 2] - glyphPositions[(glyphIdx - 1) * 2];
+                    leading = glyphPositions[(glyphIdx - 1) * 2] + advance / 2 > hitX ? true : false;
                     glyphIdx--;
                     break;
                 }
@@ -467,7 +459,7 @@ public class TextRunSegmentImpl {
 
             int charIdx = getGlyphVector().getGlyphCharIndex(glyphIdx);
 
-            return (leading) ^ ((info.level & 0x1) == 0x1)?
+            return (leading) ^ ((info.level & 0x1) == 0x1) ?
                     TextHitInfo.leading(charIdx + info.start) :
                     TextHitInfo.trailing(charIdx + info.start);
         }
@@ -527,7 +519,7 @@ public class TextRunSegmentImpl {
             int currGlyphIdx;
 
             if (jInfo.grow) { // Check how much we can grow/shrink on current priority level
-                for (int i=0; i<lastChar; i++) {
+                for (int i = 0; i < lastChar; i++) {
                     currGlyphIdx = getChar2Glyph()[i];
 
                     if (currGlyphIdx == prevGlyphIdx) {
@@ -548,7 +540,7 @@ public class TextRunSegmentImpl {
                     }
                 }
             } else {
-                for (int i=0; i<lastChar; i++) {
+                for (int i = 0; i < lastChar; i++) {
                     currGlyphIdx = getChar2Glyph()[i];
                     if (currGlyphIdx == prevGlyphIdx) {
                         continue;
@@ -610,12 +602,12 @@ public class TextRunSegmentImpl {
         @Override
         float doJustification(TextRunBreaker.JustificationInfo jInfos[]) {
             int lastPriority =
-                    jInfos[jInfos.length-1] == null ?
-                    -1 : jInfos[jInfos.length-1].priority;
+                    jInfos[jInfos.length - 1] == null ?
+                            -1 : jInfos[jInfos.length - 1].priority;
 
             // Get the highest priority
             int highestPriority = 0;
-            for (; highestPriority<jInfos.length; highestPriority++) {
+            for (; highestPriority < jInfos.length; highestPriority++) {
                 if (jInfos[highestPriority] != null) {
                     break;
                 }
@@ -658,14 +650,14 @@ public class TextRunSegmentImpl {
                             glyphOffset += gji.weight * currInfo.absorbedGapPerUnit;
                         } else if (
                                 lastInfo != null &&
-                                lastInfo.priority == currInfo.priority
+                                        lastInfo.priority == currInfo.priority
                         ) {
                             glyphOffset += gji.weight * lastInfo.absorbedGapPerUnit;
                         }
                         glyphOffset +=
                                 firstInfo.grow ?
-                                gji.growRightLimit :
-                                -gji.shrinkRightLimit;
+                                        gji.growRightLimit :
+                                        -gji.shrinkRightLimit;
                     } else {
                         glyphOffset += gji.weight * currInfo.gapPerUnit;
                     }
@@ -675,7 +667,7 @@ public class TextRunSegmentImpl {
             }
 
             if (firstInfo.grow) {
-                for (int i=firstGlyph; i<=lastGlyph; i++) {
+                for (int i = firstGlyph; i <= lastGlyph; i++) {
                     GlyphJustificationInfo gji = getGlyphJustificationInfos()[i];
                     currInfo = jInfos[gji.growPriority];
                     if (currInfo == null) {
@@ -715,7 +707,7 @@ public class TextRunSegmentImpl {
                     getGlyphVector().setGlyphPosition(i, glyphPos);
                 }
             } else {
-                for (int i=firstGlyph; i<=lastGlyph; i++) {
+                for (int i = firstGlyph; i <= lastGlyph; i++) {
                     GlyphJustificationInfo gji = getGlyphJustificationInfos()[i];
                     currInfo = jInfos[gji.shrinkPriority];
                     if (currInfo == null) {
@@ -744,7 +736,7 @@ public class TextRunSegmentImpl {
                         }
                         glyphOffset -= gji.shrinkRightLimit;
                     } else {
-                        sideIncrement =  gji.weight * currInfo.gapPerUnit;
+                        sideIncrement = gji.weight * currInfo.gapPerUnit;
                         glyphOffset += sideIncrement;
                         positionIncrement = glyphOffset;
                         glyphOffset += sideIncrement;
@@ -777,16 +769,16 @@ public class TextRunSegmentImpl {
                 }
 
                 // Ajust positions of all glyphs after last glyph
-                for (int i=lastGlyph; i<getGlyphVector().getNumGlyphs()+1; i++) {
+                for (int i = lastGlyph; i < getGlyphVector().getNumGlyphs() + 1; i++) {
                     Point2D glyphPos = getGlyphVector().getGlyphPosition(i);
                     glyphPos.setLocation(glyphPos.getX() + glyphOffset, glyphPos.getY());
                     getGlyphVector().setGlyphPosition(i, glyphPos);
                 }
             } else { // Update position after last glyph in glyph vector -
                 // to get correct advance for it
-                Point2D glyphPos = getGlyphVector().getGlyphPosition(lastGlyph+1);
+                Point2D glyphPos = getGlyphVector().getGlyphPosition(lastGlyph + 1);
                 glyphPos.setLocation(glyphPos.getX() + glyphOffset, glyphPos.getY());
-                getGlyphVector().setGlyphPosition(lastGlyph+1, glyphPos);
+                getGlyphVector().setGlyphPosition(lastGlyph + 1, glyphPos);
             }
 
             gjis = null; // We don't need justification infos any more
@@ -827,7 +819,7 @@ public class TextRunSegmentImpl {
             float xPos = x + xOffset;
             float yPos = y + yOffset;
 
-            for (int i=0; i < length; i++) {
+            for (int i = 0; i < length; i++) {
                 ga.draw(g2d, xPos, yPos);
                 xPos += ga.getAdvance();
             }
@@ -889,7 +881,7 @@ public class TextRunSegmentImpl {
                 start = 0;
             }
 
-            int charOffset = (int) (advance/ga.getAdvance());
+            int charOffset = (int) (advance / ga.getAdvance());
 
             if (charOffset + start > length) {
                 return length + this.start;

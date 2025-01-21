@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.formats.png;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.ImagingConstants;
 import org.apache.commons.imaging.PixelDensity;
@@ -26,6 +25,7 @@ import org.apache.commons.imaging.palette.SimplePalette;
 import org.apache.commons.imaging.util.Debug;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -43,7 +43,7 @@ class PngWriter {
     }
 
     public PngWriter(final Map<String, Object> params) {
-        this.verbose =  params != null && Boolean.TRUE.equals(params.get(ImagingConstants.PARAM_KEY_VERBOSE));
+        this.verbose = params != null && Boolean.TRUE.equals(params.get(ImagingConstants.PARAM_KEY_VERBOSE));
     }
 
     /*
@@ -60,7 +60,7 @@ class PngWriter {
      4. Miscellaneous information: bKGD, hIST, pHYs, sPLT (see 11.3.5: Miscellaneous information).
      5. Time information: tIME (see 11.3.6: Time stamp information).
     */
-    
+
     private void writeInt(final OutputStream os, final int value) throws IOException {
         os.write(0xff & (value >> 24));
         os.write(0xff & (value >> 16));
@@ -69,7 +69,7 @@ class PngWriter {
     }
 
     private void writeChunk(final OutputStream os, final ChunkType chunkType,
-            final byte[] data) throws IOException {
+                            final byte[] data) throws IOException {
         final int dataLength = data == null ? 0 : data.length;
         writeInt(os, dataLength);
         os.write(chunkType.array);
@@ -85,29 +85,6 @@ class PngWriter {
         final int crc = (int) png_crc.finish_partial_crc(crc2);
 
         writeInt(os, crc);
-    }
-
-    private static class ImageHeader {
-        public final int width;
-        public final int height;
-        public final byte bitDepth;
-        public final ColorType colorType;
-        public final byte compressionMethod;
-        public final byte filterMethod;
-        public final InterlaceMethod interlaceMethod;
-
-        public ImageHeader(final int width, final int height, final byte bitDepth,
-                final ColorType colorType, final byte compressionMethod, final byte filterMethod,
-                InterlaceMethod interlaceMethod) {
-            this.width = width;
-            this.height = height;
-            this.bitDepth = bitDepth;
-            this.colorType = colorType;
-            this.compressionMethod = compressionMethod;
-            this.filterMethod = filterMethod;
-            this.interlaceMethod = interlaceMethod;
-        }
-
     }
 
     private void writeChunkIHDR(final OutputStream os, final ImageHeader value) throws IOException {
@@ -154,7 +131,7 @@ class PngWriter {
         writeChunk(os, ChunkType.iTXt, baos.toByteArray());
     }
 
-    private void writeChunkzTXt(final OutputStream os, final PngText.Ztxt text) 
+    private void writeChunkzTXt(final OutputStream os, final PngText.Ztxt text)
             throws IOException, ImageWriteException {
         if (!isValidISO_8859_1(text.keyword)) {
             throw new ImageWriteException("Png zTXt chunk keyword is not ISO-8859-1: " + text.keyword);
@@ -211,7 +188,7 @@ class PngWriter {
         }
         return baos.toByteArray();
     }
-    
+
     private boolean isValidISO_8859_1(final String s) {
         try {
             final String roundtrip = new String(s.getBytes("ISO-8859-1"), "ISO-8859-1");
@@ -221,7 +198,7 @@ class PngWriter {
             throw new RuntimeException("Error parsing string.", e);
         }
     }
-    
+
     private void writeChunkXmpiTXt(final OutputStream os, final String xmpXml)
             throws IOException {
 
@@ -265,11 +242,11 @@ class PngWriter {
 
     private void writeChunkTRNS(final OutputStream os, final Palette palette) throws IOException {
         final byte[] bytes = new byte[palette.length()];
-        
+
         for (int i = 0; i < bytes.length; i++) {
             bytes[i] = (byte) (0xff & (palette.getEntry(i) >> 24));
         }
-        
+
         writeChunk(os, ChunkType.tRNS, bytes);
     }
 
@@ -308,39 +285,6 @@ class PngWriter {
         return colorType.isBitDepthAllowed(depth) ? depth : 8;
     }
 
-    /// Wraps a palette by adding a single transparent entry at index 0.
-    private static class TransparentPalette extends Palette {
-        private final Palette palette;
-        
-        TransparentPalette(final Palette palette) {
-            this.palette = palette;
-        }
-        
-        @Override
-        public int getEntry(final int index) {
-            if (index == 0) {
-                return 0x00000000;
-            }
-            return palette.getEntry(index - 1);
-        }
-        
-        @Override
-        public int length() {
-            return 1 + palette.length();
-        }
-        
-        @Override
-        public int getPaletteIndex(final int rgb) throws ImageWriteException {
-            if (rgb == 0x00000000) {
-                return 0;
-            }
-            final int index = palette.getPaletteIndex(rgb);
-            if (index >= 0) {
-                return 1 + index;
-            }
-            return index;
-        }
-    }
     /*
      between two chunk types indicates alternatives.
      Table 5.3 - Chunk ordering rules
@@ -422,7 +366,7 @@ class PngWriter {
 
         ColorType colorType;
         {
-            final boolean forceIndexedColor =  Boolean.TRUE.equals(params.get(PngConstants.PARAM_KEY_PNG_FORCE_INDEXED_COLOR));
+            final boolean forceIndexedColor = Boolean.TRUE.equals(params.get(PngConstants.PARAM_KEY_PNG_FORCE_INDEXED_COLOR));
             final boolean forceTrueColor = Boolean.TRUE.equals(params.get(PngConstants.PARAM_KEY_PNG_FORCE_TRUE_COLOR));
 
             if (forceIndexedColor && forceTrueColor) {
@@ -473,10 +417,10 @@ class PngWriter {
         }
 
         //{
-            // sRGB No Before PLTE and IDAT. If the sRGB chunk is present, the
-            // iCCP chunk should not be present.
+        // sRGB No Before PLTE and IDAT. If the sRGB chunk is present, the
+        // iCCP chunk should not be present.
 
-            // charles
+        // charles
         //}
 
         Palette palette = null;
@@ -494,8 +438,8 @@ class PngWriter {
 
             if (hasAlpha) {
                 palette = new TransparentPalette(palette);
-                writeChunkPLTE(os, palette);                
-                writeChunkTRNS(os, new SimplePalette(new int[] { 0x00000000 }));
+                writeChunkPLTE(os, palette);
+                writeChunkTRNS(os, new SimplePalette(new int[]{0x00000000}));
             } else {
                 writeChunkPLTE(os, palette);
             }
@@ -506,12 +450,12 @@ class PngWriter {
             final PixelDensity pixelDensity = (PixelDensity) pixelDensityObj;
             if (pixelDensity.isUnitless()) {
                 writeChunkPHYS(os, (int) Math.round(pixelDensity
-                        .getRawHorizontalDensity()),
+                                .getRawHorizontalDensity()),
                         (int) Math.round(pixelDensity.getRawVerticalDensity()),
                         (byte) 0);
             } else {
                 writeChunkPHYS(os, (int) Math.round(pixelDensity
-                        .horizontalDensityMetres()),
+                                .horizontalDensityMetres()),
                         (int) Math.round(pixelDensity.verticalDensityMetres()),
                         (byte) 1);
             }
@@ -661,6 +605,63 @@ class PngWriter {
 
         os.close();
     } // todo: filter types
-      // proper colour types
-      // srgb, etc.
+
+    private static class ImageHeader {
+        public final int width;
+        public final int height;
+        public final byte bitDepth;
+        public final ColorType colorType;
+        public final byte compressionMethod;
+        public final byte filterMethod;
+        public final InterlaceMethod interlaceMethod;
+
+        public ImageHeader(final int width, final int height, final byte bitDepth,
+                           final ColorType colorType, final byte compressionMethod, final byte filterMethod,
+                           InterlaceMethod interlaceMethod) {
+            this.width = width;
+            this.height = height;
+            this.bitDepth = bitDepth;
+            this.colorType = colorType;
+            this.compressionMethod = compressionMethod;
+            this.filterMethod = filterMethod;
+            this.interlaceMethod = interlaceMethod;
+        }
+
+    }
+
+    /// Wraps a palette by adding a single transparent entry at index 0.
+    private static class TransparentPalette extends Palette {
+        private final Palette palette;
+
+        TransparentPalette(final Palette palette) {
+            this.palette = palette;
+        }
+
+        @Override
+        public int getEntry(final int index) {
+            if (index == 0) {
+                return 0x00000000;
+            }
+            return palette.getEntry(index - 1);
+        }
+
+        @Override
+        public int length() {
+            return 1 + palette.length();
+        }
+
+        @Override
+        public int getPaletteIndex(final int rgb) throws ImageWriteException {
+            if (rgb == 0x00000000) {
+                return 0;
+            }
+            final int index = palette.getPaletteIndex(rgb);
+            if (index >= 0) {
+                return 1 + index;
+            }
+            return index;
+        }
+    }
+    // proper colour types
+    // srgb, etc.
 }

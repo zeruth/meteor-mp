@@ -18,25 +18,21 @@
 package java.awt;
 
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Rectangle2D;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DataBufferUShort;
-import org.apache.harmony.awt.internal.nls.Messages;
+import java.awt.image.*;
 
 
 public class TexturePaint implements Paint {
     /**
-     * The BufferedImage object used as texture  
+     * The BufferedImage object used as texture
      */
     BufferedImage img;
 
     /**
-     * The Rectangle2D bounds of texture piece to be painted  
+     * The Rectangle2D bounds of texture piece to be painted
      */
     Rectangle2D anchor;
 
@@ -58,7 +54,7 @@ public class TexturePaint implements Paint {
     }
 
     public PaintContext createContext(ColorModel cm, Rectangle device, Rectangle2D user,
-            AffineTransform t, RenderingHints hints) {
+                                      AffineTransform t, RenderingHints hints) {
         Object value = hints.get(RenderingHints.KEY_INTERPOLATION);
         boolean bilinear = (value != null)
                 && (value != RenderingHints.VALUE_INTERPOLATION_NEAREST_NEIGHBOR);

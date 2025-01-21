@@ -16,13 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.commons.imaging.FormatCompliance;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
@@ -36,6 +29,13 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
 import org.apache.commons.imaging.util.IoUtils;
+
+import java.io.IOException;
+import java.io.InputStream;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 import static org.apache.commons.imaging.common.BinaryFunctions.*;
 import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
@@ -60,7 +60,7 @@ public class TiffReader extends BinaryFileParser {
             IoUtils.closeQuietly(canThrow, is);
         }
     }
-    
+
     private ByteOrder getTiffByteOrder(final int byteOrderByte) throws ImageReadException {
         if (byteOrderByte == 'I') {
             return ByteOrder.LITTLE_ENDIAN; // Intel
@@ -86,7 +86,7 @@ public class TiffReader extends BinaryFileParser {
             throw new ImageReadException("Unknown Tiff Version: " + tiffVersion);
         }
 
-        final long offsetToFirstIFD = 
+        final long offsetToFirstIFD =
                 0xFFFFffffL & read4Bytes("offsetToFirstIFD", is, "Not a Valid TIFF File", getByteOrder());
 
         skipBytes(is, offsetToFirstIFD - 8, "Not a Valid TIFF File: couldn't find IFDs");
@@ -99,7 +99,7 @@ public class TiffReader extends BinaryFileParser {
     }
 
     private void readDirectories(final ByteSource byteSource,
-            final FormatCompliance formatCompliance, final Listener listener)
+                                 final FormatCompliance formatCompliance, final Listener listener)
             throws ImageReadException, IOException {
         final TiffHeader tiffHeader = readTiffHeader(byteSource);
         if (!listener.setTiffHeader(tiffHeader)) {
@@ -114,16 +114,16 @@ public class TiffReader extends BinaryFileParser {
     }
 
     private boolean readDirectory(final ByteSource byteSource, final long offset,
-            final int dirType, final FormatCompliance formatCompliance, final Listener listener,
-            final List<Number> visited) throws ImageReadException, IOException {
+                                  final int dirType, final FormatCompliance formatCompliance, final Listener listener,
+                                  final List<Number> visited) throws ImageReadException, IOException {
         final boolean ignoreNextDirectory = false;
         return readDirectory(byteSource, offset, dirType, formatCompliance,
                 listener, ignoreNextDirectory, visited);
     }
 
     private boolean readDirectory(final ByteSource byteSource, final long directoryOffset,
-            final int dirType, final FormatCompliance formatCompliance, final Listener listener,
-            final boolean ignoreNextDirectory, final List<Number> visited)
+                                  final int dirType, final FormatCompliance formatCompliance, final Listener listener,
+                                  final boolean ignoreNextDirectory, final List<Number> visited)
             throws ImageReadException, IOException {
 
         if (visited.contains(directoryOffset)) {
@@ -170,7 +170,7 @@ public class TiffReader extends BinaryFileParser {
                     // which can cause OOM problems.
                     continue;
                 }
-                
+
                 final FieldType fieldType;
                 try {
                     fieldType = FieldType.getFieldType(type);
@@ -259,7 +259,7 @@ public class TiffReader extends BinaryFileParser {
                             subDirectoryRead = readDirectory(byteSource,
                                     subDirectoryOffset, subDirectoryType,
                                     formatCompliance, listener, true, visited);
-    
+
                         } catch (final ImageReadException imageReadException) {
                             if (strict) {
                                 throw imageReadException;
@@ -285,6 +285,153 @@ public class TiffReader extends BinaryFileParser {
         }
     }
 
+    public TiffContents readFirstDirectory(final ByteSource byteSource, final Map<String, Object> params,
+                                           final boolean readImageData, final FormatCompliance formatCompliance)
+            throws ImageReadException, IOException {
+        final Collector collector = new FirstDirectoryCollector(readImageData);
+        read(byteSource, params, formatCompliance, collector);
+        final TiffContents contents = collector.getContents();
+        if (contents.directories.size() < 1) {
+            throw new ImageReadException(
+                    "Image did not contain any directories.");
+        }
+        return contents;
+    }
+
+    public TiffContents readDirectories(final ByteSource byteSource,
+                                        final boolean readImageData, final FormatCompliance formatCompliance)
+            throws ImageReadException, IOException {
+        final Collector collector = new Collector(null);
+        readDirectories(byteSource, formatCompliance, collector);
+        final TiffContents contents = collector.getContents();
+        if (contents.directories.size() < 1) {
+            throw new ImageReadException(
+                    "Image did not contain any directories.");
+        }
+        return contents;
+    }
+
+    public TiffContents readContents(final ByteSource byteSource, final Map<String, Object> params,
+                                     final FormatCompliance formatCompliance) throws ImageReadException,
+            IOException {
+
+        final Collector collector = new Collector(params);
+        read(byteSource, params, formatCompliance, collector);
+        return collector.getContents();
+    }
+
+//    NOT USED
+//    private static class DirectoryCollector extends Collector {
+//        private final boolean readImageData;
+//
+//        public DirectoryCollector(final boolean readImageData) {
+//            this.readImageData = readImageData;
+//        }
+//
+//        @Override
+//        public boolean addDirectory(final TiffDirectory directory) {
+//            super.addDirectory(directory);
+//            return false;
+//        }
+//
+//        @Override
+//        public boolean readImageData() {
+//            return readImageData;
+//        }
+//    }
+
+    public void read(final ByteSource byteSource, final Map<String, Object> params,
+                     final FormatCompliance formatCompliance, final Listener listener)
+            throws ImageReadException, IOException {
+        // TiffContents contents =
+        readDirectories(byteSource, formatCompliance, listener);
+    }
+
+    private TiffImageData getTiffRawImageData(final ByteSource byteSource,
+                                              final TiffDirectory directory) throws ImageReadException, IOException {
+
+        final List<ImageDataElement> elements = directory
+                .getTiffRawImageDataElements();
+        final TiffImageData.Data[] data = new TiffImageData.Data[elements.size()];
+
+        if (byteSource instanceof ByteSourceFile) {
+            final ByteSourceFile bsf = (ByteSourceFile) byteSource;
+            for (int i = 0; i < elements.size(); i++) {
+                final ImageDataElement element = elements.get(i);
+                data[i] = new TiffImageData.ByteSourceData(element.offset,
+                        element.length, bsf);
+            }
+        } else {
+            for (int i = 0; i < elements.size(); i++) {
+                final ImageDataElement element = elements.get(i);
+                final byte[] bytes = byteSource.getBlock(element.offset, element.length);
+                data[i] = new TiffImageData.Data(element.offset, element.length, bytes);
+            }
+        }
+
+        if (directory.imageDataInStrips()) {
+            final TiffField rowsPerStripField = directory
+                    .findField(TiffTagConstants.TIFF_TAG_ROWS_PER_STRIP);
+            /*
+             * Default value of rowsperstrip is assumed to be infinity
+             * http://www.awaresystems.be/imaging/tiff/tifftags/rowsperstrip.html
+             */
+            int rowsPerStrip = Integer.MAX_VALUE;
+
+            if (null != rowsPerStripField) {
+                rowsPerStrip = rowsPerStripField.getIntValue();
+            } else {
+                final TiffField imageHeight = directory
+                        .findField(TiffTagConstants.TIFF_TAG_IMAGE_LENGTH);
+                /**
+                 * if rows per strip not present then rowsPerStrip is equal to
+                 * imageLength or an infinity value;
+                 */
+                if (imageHeight != null) {
+                    rowsPerStrip = imageHeight.getIntValue();
+                }
+
+            }
+
+            return new TiffImageData.Strips(data, rowsPerStrip);
+        } else {
+            final TiffField tileWidthField = directory
+                    .findField(TiffTagConstants.TIFF_TAG_TILE_WIDTH);
+            if (null == tileWidthField) {
+                throw new ImageReadException("Can't find tile width field.");
+            }
+            final int tileWidth = tileWidthField.getIntValue();
+
+            final TiffField tileLengthField = directory
+                    .findField(TiffTagConstants.TIFF_TAG_TILE_LENGTH);
+            if (null == tileLengthField) {
+                throw new ImageReadException("Can't find tile length field.");
+            }
+            final int tileLength = tileLengthField.getIntValue();
+
+            return new TiffImageData.Tiles(data, tileWidth, tileLength);
+        }
+    }
+
+    private JpegImageData getJpegRawImageData(final ByteSource byteSource,
+                                              final TiffDirectory directory) throws ImageReadException, IOException {
+        final ImageDataElement element = directory.getJpegRawImageDataElement();
+        final long offset = element.offset;
+        int length = element.length;
+        // In case the length is not correct, adjust it and check if the last read byte actually is the end of the image
+        if (offset + length > byteSource.getLength()) {
+            length = (int) (byteSource.getLength() - offset);
+        }
+        final byte[] data = byteSource.getBlock(offset, length);
+        // check if the last read byte is actually the end of the image data
+        if (strict &&
+                (length < 2 ||
+                        (((data[data.length - 2] & 0xff) << 8) | (data[data.length - 1] & 0xff)) != JpegConstants.EOI_MARKER)) {
+            throw new ImageReadException("JPEG EOI marker could not be found at expected location");
+        }
+        return new JpegImageData(offset, length, data);
+    }
+
     public interface Listener {
         boolean setTiffHeader(TiffHeader tiffHeader);
 
@@ -298,10 +445,10 @@ public class TiffReader extends BinaryFileParser {
     }
 
     private static class Collector implements Listener {
-        private TiffHeader tiffHeader;
         private final List<TiffDirectory> directories = new ArrayList<TiffDirectory>();
         private final List<TiffField> fields = new ArrayList<TiffField>();
         private final boolean readThumbnails;
+        private TiffHeader tiffHeader;
 
         public Collector() {
             this(null);
@@ -361,153 +508,6 @@ public class TiffReader extends BinaryFileParser {
         public boolean readImageData() {
             return readImageData;
         }
-    }
-
-//    NOT USED
-//    private static class DirectoryCollector extends Collector {
-//        private final boolean readImageData;
-//
-//        public DirectoryCollector(final boolean readImageData) {
-//            this.readImageData = readImageData;
-//        }
-//
-//        @Override
-//        public boolean addDirectory(final TiffDirectory directory) {
-//            super.addDirectory(directory);
-//            return false;
-//        }
-//
-//        @Override
-//        public boolean readImageData() {
-//            return readImageData;
-//        }
-//    }
-
-    public TiffContents readFirstDirectory(final ByteSource byteSource, final Map<String, Object> params,
-            final boolean readImageData, final FormatCompliance formatCompliance)
-            throws ImageReadException, IOException {
-        final Collector collector = new FirstDirectoryCollector(readImageData);
-        read(byteSource, params, formatCompliance, collector);
-        final TiffContents contents = collector.getContents();
-        if (contents.directories.size() < 1) {
-            throw new ImageReadException(
-                    "Image did not contain any directories.");
-        }
-        return contents;
-    }
-
-    public TiffContents readDirectories(final ByteSource byteSource,
-            final boolean readImageData, final FormatCompliance formatCompliance)
-            throws ImageReadException, IOException {
-        final Collector collector = new Collector(null);
-        readDirectories(byteSource, formatCompliance, collector);
-        final TiffContents contents = collector.getContents();
-        if (contents.directories.size() < 1) {
-            throw new ImageReadException(
-                    "Image did not contain any directories.");
-        }
-        return contents;
-    }
-
-    public TiffContents readContents(final ByteSource byteSource, final Map<String, Object> params,
-            final FormatCompliance formatCompliance) throws ImageReadException,
-            IOException {
-
-        final Collector collector = new Collector(params);
-        read(byteSource, params, formatCompliance, collector);
-        return collector.getContents();
-    }
-
-    public void read(final ByteSource byteSource, final Map<String, Object> params,
-            final FormatCompliance formatCompliance, final Listener listener)
-            throws ImageReadException, IOException {
-        // TiffContents contents =
-        readDirectories(byteSource, formatCompliance, listener);
-    }
-
-    private TiffImageData getTiffRawImageData(final ByteSource byteSource,
-            final TiffDirectory directory) throws ImageReadException, IOException {
-
-        final List<ImageDataElement> elements = directory
-                .getTiffRawImageDataElements();
-        final TiffImageData.Data[] data = new TiffImageData.Data[elements.size()];
-
-        if (byteSource instanceof ByteSourceFile) {
-            final ByteSourceFile bsf = (ByteSourceFile) byteSource;
-            for (int i = 0; i < elements.size(); i++) {
-                final ImageDataElement element = elements.get(i);
-                data[i] = new TiffImageData.ByteSourceData(element.offset,
-                        element.length, bsf);
-            }
-        } else {
-            for (int i = 0; i < elements.size(); i++) {
-                final ImageDataElement element = elements.get(i);
-                final byte[] bytes = byteSource.getBlock(element.offset, element.length);
-                data[i] = new TiffImageData.Data(element.offset, element.length, bytes);
-            }
-        }
-
-        if (directory.imageDataInStrips()) {
-            final TiffField rowsPerStripField = directory
-                    .findField(TiffTagConstants.TIFF_TAG_ROWS_PER_STRIP);
-            /*
-             * Default value of rowsperstrip is assumed to be infinity
-             * http://www.awaresystems.be/imaging/tiff/tifftags/rowsperstrip.html
-             */
-            int rowsPerStrip = Integer.MAX_VALUE;
-
-            if (null != rowsPerStripField) {
-                rowsPerStrip = rowsPerStripField.getIntValue();
-            } else {
-                final TiffField imageHeight = directory
-                        .findField(TiffTagConstants.TIFF_TAG_IMAGE_LENGTH);
-                /**
-                 * if rows per strip not present then rowsPerStrip is equal to
-                 * imageLength or an infinity value;
-                 */
-                if (imageHeight != null) {
-                    rowsPerStrip = imageHeight.getIntValue();
-                }
-                
-            }
-
-            return new TiffImageData.Strips(data, rowsPerStrip);
-        } else {
-            final TiffField tileWidthField = directory
-                    .findField(TiffTagConstants.TIFF_TAG_TILE_WIDTH);
-            if (null == tileWidthField) {
-                throw new ImageReadException("Can't find tile width field.");
-            }
-            final int tileWidth = tileWidthField.getIntValue();
-
-            final TiffField tileLengthField = directory
-                    .findField(TiffTagConstants.TIFF_TAG_TILE_LENGTH);
-            if (null == tileLengthField) {
-                throw new ImageReadException("Can't find tile length field.");
-            }
-            final int tileLength = tileLengthField.getIntValue();
-
-            return new TiffImageData.Tiles(data, tileWidth, tileLength);
-        }
-    }
-
-    private JpegImageData getJpegRawImageData(final ByteSource byteSource,
-            final TiffDirectory directory) throws ImageReadException, IOException {
-        final ImageDataElement element = directory.getJpegRawImageDataElement();
-        final long offset = element.offset;
-        int length = element.length;
-        // In case the length is not correct, adjust it and check if the last read byte actually is the end of the image
-        if (offset + length > byteSource.getLength()) {
-            length = (int) (byteSource.getLength() - offset);
-        }
-        final byte[] data = byteSource.getBlock(offset, length);
-        // check if the last read byte is actually the end of the image data
-        if (strict &&
-                (length < 2 ||
-                (((data[data.length - 2] & 0xff) << 8) | (data[data.length - 1] & 0xff)) != JpegConstants.EOI_MARKER)) {
-            throw new ImageReadException("JPEG EOI marker could not be found at expected location");
-        }
-        return new JpegImageData(offset, length, data);
     }
 
 }

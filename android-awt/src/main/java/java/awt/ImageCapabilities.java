@@ -21,7 +21,6 @@ package java.awt;
 
 /**
  * ImageCapabilities
- *
  */
 public class ImageCapabilities implements Cloneable {
     private final boolean accelerated;

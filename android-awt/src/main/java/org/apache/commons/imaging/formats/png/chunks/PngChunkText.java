@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.png.chunks;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.png.PngText;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import java.io.IOException;
+
+import static org.apache.commons.imaging.common.BinaryFunctions.findNull;
 
 public class PngChunkText extends PngTextChunk {
     public final String keyword;

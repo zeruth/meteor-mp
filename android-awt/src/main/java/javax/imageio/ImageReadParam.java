@@ -20,9 +20,10 @@
 package javax.imageio;
 
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
+
+import java.awt.*;
+import java.awt.image.BufferedImage;
 
 
 /**
@@ -45,8 +46,16 @@ public class ImageReadParam extends IIOParam {
         return destination;
     }
 
+    public void setDestination(BufferedImage destination) {
+        this.destination = destination;
+    }
+
     public int[] getDestinationBands() {
         return destinationBands;
+    }
+
+    public void setDestinationBands(int[] destinationBands) {
+        this.destinationBands = destinationBands;
     }
 
     public int getSourceMaxProgressivePass() {
@@ -68,12 +77,11 @@ public class ImageReadParam extends IIOParam {
         return sourceRenderSize;
     }
 
-    public void setDestination(BufferedImage destination) {
-        this.destination = destination;
-    }
-
-    public void setDestinationBands(int[] destinationBands) {
-        this.destinationBands = destinationBands;
+    public void setSourceRenderSize(Dimension size) throws UnsupportedOperationException {
+        if (!canSetSourceRenderSize) {
+            throw new UnsupportedOperationException(Messages.getString("imageio.29"));
+        }
+        sourceRenderSize = size;
     }
 
     @Override
@@ -84,13 +92,6 @@ public class ImageReadParam extends IIOParam {
     public void setSourceProgressivePasses(int minPass, int numPasses) {
         minProgressivePass = minPass;
         numProgressivePasses = numPasses;
-    }
-
-    public void setSourceRenderSize(Dimension size) throws UnsupportedOperationException {
-        if (!canSetSourceRenderSize) {
-            throw new UnsupportedOperationException(Messages.getString("imageio.29"));
-        }
-        sourceRenderSize = size;        
     }
 }
 

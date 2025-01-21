@@ -21,17 +21,17 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.startsWith;
 
 /**
  * http://www.aiim.org/documents/standards/PDF-Ref/References/Adobe/5116.DCT_Filter.pdf
  */
 public class App14Segment extends AppnSegment {
-    private static final byte[] ADOBE_PREFIX;
     public static final int ADOBE_COLOR_TRANSFORM_UNKNOWN = 0;
     public static final int ADOBE_COLOR_TRANSFORM_YCbCr = 1;
     public static final int ADOBE_COLOR_TRANSFORM_YCCK = 2;
-    
+    private static final byte[] ADOBE_PREFIX;
+
     static {
         byte[] adobe = null;
         try {
@@ -44,7 +44,7 @@ public class App14Segment extends AppnSegment {
     public App14Segment(int marker, byte[] segmentData) throws IOException {
         this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
     }
-    
+
     public App14Segment(int marker, int markerLength, InputStream is) throws IOException {
         super(marker, markerLength, is);
     }

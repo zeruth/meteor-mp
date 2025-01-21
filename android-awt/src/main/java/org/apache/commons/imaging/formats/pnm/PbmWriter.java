@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.pnm;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.Map;
@@ -71,8 +71,8 @@ class PbmWriter extends PnmWriter {
                     }
                 } else {
                     os.write(Integer.toString(sample).getBytes("US-ASCII")); // max
-                                                                  // component
-                                                                  // value
+                    // component
+                    // value
                     os.write(PnmConstants.PNM_SEPARATOR);
                 }
             }

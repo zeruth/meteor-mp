@@ -20,7 +20,6 @@
 package java.awt.image.renderable;
 
 import java.awt.image.RenderedImage;
-
 import java.io.Serializable;
 import java.util.Vector;
 
@@ -43,10 +42,11 @@ public class ParameterBlock implements Cloneable, Serializable {
         setSources(sources);
     }
 
-    public ParameterBlock() {}
+    public ParameterBlock() {
+    }
 
     public ParameterBlock setSource(Object source, int index) {
-        if(sources.size() < index + 1){
+        if (sources.size() < index + 1) {
             sources.setSize(index + 1);
         }
         sources.setElementAt(source, index);
@@ -54,7 +54,7 @@ public class ParameterBlock implements Cloneable, Serializable {
     }
 
     public ParameterBlock set(Object obj, int index) {
-        if(parameters.size() < index + 1){
+        if (parameters.size() < index + 1) {
             parameters.setSize(index + 1);
         }
         parameters.setElementAt(obj, index);
@@ -71,20 +71,20 @@ public class ParameterBlock implements Cloneable, Serializable {
         return this;
     }
 
-    public void setSources(Vector<Object> sources) {
-        this.sources = sources;
-    }
-
-    public void setParameters(Vector<Object> parameters) {
-        this.parameters = parameters;
-    }
-
     public Vector<Object> getSources() {
         return sources;
     }
 
+    public void setSources(Vector<Object> sources) {
+        this.sources = sources;
+    }
+
     public Vector<Object> getParameters() {
         return parameters;
+    }
+
+    public void setParameters(Vector<Object> parameters) {
+        this.parameters = parameters;
     }
 
     public Object getSource(int index) {
@@ -96,9 +96,9 @@ public class ParameterBlock implements Cloneable, Serializable {
     }
 
     public Object shallowClone() {
-        try{
+        try {
             return super.clone();
-        }catch(Exception e){
+        } catch (Exception e) {
             return null;
         }
     }
@@ -107,16 +107,16 @@ public class ParameterBlock implements Cloneable, Serializable {
     @Override
     public Object clone() {
         ParameterBlock replica;
-        try{
-            replica = (ParameterBlock)super.clone();
-        }catch(Exception e){
+        try {
+            replica = (ParameterBlock) super.clone();
+        } catch (Exception e) {
             return null;
         }
-        if(sources != null){
-            replica.setSources((Vector<Object>)(sources.clone()));
+        if (sources != null) {
+            replica.setSources((Vector<Object>) (sources.clone()));
         }
-        if(parameters != null){
-            replica.setParameters((Vector<Object>)(parameters.clone()));
+        if (parameters != null) {
+            replica.setParameters((Vector<Object>) (parameters.clone()));
         }
         return replica;
     }
@@ -126,14 +126,14 @@ public class ParameterBlock implements Cloneable, Serializable {
         int count = parameters.size();
         Class paramClasses[] = new Class[count];
 
-        for(int i = 0; i < count; i++){
+        for (int i = 0; i < count; i++) {
             paramClasses[i] = parameters.elementAt(i).getClass();
         }
         return paramClasses;
     }
 
     public RenderableImage getRenderableSource(int index) {
-        return (RenderableImage)sources.elementAt(index);
+        return (RenderableImage) sources.elementAt(index);
     }
 
     public ParameterBlock set(short s, int index) {
@@ -193,35 +193,35 @@ public class ParameterBlock implements Cloneable, Serializable {
     }
 
     public RenderedImage getRenderedSource(int index) {
-        return (RenderedImage)sources.elementAt(index);
+        return (RenderedImage) sources.elementAt(index);
     }
 
     public short getShortParameter(int index) {
-        return ((Short)parameters.elementAt(index)).shortValue();
+        return ((Short) parameters.elementAt(index)).shortValue();
     }
 
     public long getLongParameter(int index) {
-        return ((Long)parameters.elementAt(index)).longValue();
+        return ((Long) parameters.elementAt(index)).longValue();
     }
 
     public int getIntParameter(int index) {
-        return ((Integer)parameters.elementAt(index)).intValue();
+        return ((Integer) parameters.elementAt(index)).intValue();
     }
 
     public float getFloatParameter(int index) {
-        return ((Float)parameters.elementAt(index)).floatValue();
+        return ((Float) parameters.elementAt(index)).floatValue();
     }
 
     public double getDoubleParameter(int index) {
-        return ((Double)parameters.elementAt(index)).doubleValue();
+        return ((Double) parameters.elementAt(index)).doubleValue();
     }
 
     public char getCharParameter(int index) {
-        return ((Character)parameters.elementAt(index)).charValue();
+        return ((Character) parameters.elementAt(index)).charValue();
     }
 
     public byte getByteParameter(int index) {
-        return ((Byte)parameters.elementAt(index)).byteValue();
+        return ((Byte) parameters.elementAt(index)).byteValue();
     }
 
     public void removeSources() {

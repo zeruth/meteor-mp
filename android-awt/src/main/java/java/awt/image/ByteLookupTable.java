@@ -16,7 +16,6 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Oct 14, 2005
  */
 
@@ -28,6 +27,7 @@ import org.apache.harmony.awt.internal.nls.Messages;
 
 public class ByteLookupTable extends LookupTable {
     private byte data[][];
+
     public ByteLookupTable(int offset, byte[] data) {
         super(offset, 1);
         if (data.length < 1)
@@ -60,11 +60,11 @@ public class ByteLookupTable extends LookupTable {
         int offset = getOffset();
         if (getNumComponents() == 1) {
             for (int i = 0; i < src.length; i++) {
-                dst[i] = data[0][src[i]-offset];
+                dst[i] = data[0][src[i] - offset];
             }
         } else {
             for (int i = 0; i < getNumComponents(); i++) {
-                dst[i] = data[i][src[i]-offset];
+                dst[i] = data[i][src[i] - offset];
             }
         }
 
@@ -79,11 +79,11 @@ public class ByteLookupTable extends LookupTable {
         int offset = getOffset();
         if (getNumComponents() == 1) {
             for (int i = 0; i < src.length; i++) {
-                dst[i] = data[0][src[i]-offset];
+                dst[i] = data[0][src[i] - offset];
             }
         } else {
             for (int i = 0; i < getNumComponents(); i++) {
-                dst[i] = data[i][src[i]-offset];
+                dst[i] = data[i][src[i] - offset];
             }
         }
 

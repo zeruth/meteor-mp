@@ -19,16 +19,15 @@
  */
 package java.awt;
 
+import org.apache.harmony.awt.gl.Crossing;
+import org.apache.harmony.awt.internal.nls.Messages;
+
 import java.awt.geom.AffineTransform;
 import java.awt.geom.PathIterator;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.gl.Crossing;
-import org.apache.harmony.awt.internal.nls.Messages;
-
 import java.io.Serializable;
 import java.util.NoSuchElementException;
-
 
 
 public class Polygon implements Shape, Serializable {
@@ -39,89 +38,11 @@ public class Polygon implements Shape, Serializable {
      * The points buffer capacity
      */
     private static final int BUFFER_CAPACITY = 4;
-    
+
     public int npoints;
     public int[] xpoints;
     public int[] ypoints;
     protected Rectangle bounds;
-
-    /*
-     * Polygon path iterator  
-     */
-    class Iterator implements PathIterator {
-
-        /**
-         * The source Polygon object
-         */
-        public Polygon p;
-        
-        /**
-         * The path iterator transformation
-         */
-        public AffineTransform t;
-        
-        /**
-         * The current segmenet index
-         */
-        public int index;
-
-        /**
-         * Constructs a new Polygon.Iterator for given polygon and transformation
-         * @param p - the source Line2D object
-         * @param at - the AffineTransform object to apply rectangle path
-         */
-        public Iterator(AffineTransform at, Polygon p) {
-            this.p = p;
-            this.t = at;
-            if (p.npoints == 0) {
-                index = 1;
-            }
-        }
-
-        public int getWindingRule() {
-            return WIND_EVEN_ODD;
-        }
-
-        public boolean isDone() {
-            return index > p.npoints;
-        }
-
-        public void next() {
-            index++;
-        }
-
-        public int currentSegment(double[] coords) {
-            if (isDone()) {
-                // awt.110=Iterator out of bounds
-                throw new NoSuchElementException(Messages.getString("awt.110")); //$NON-NLS-1$
-            }
-            if (index == p.npoints) {
-                return SEG_CLOSE;
-            }
-            coords[0] = p.xpoints[index];
-            coords[1] = p.ypoints[index];
-            if (t != null) {
-                t.transform(coords, 0, coords, 0, 1);
-            }
-            return index == 0 ? SEG_MOVETO : SEG_LINETO;
-        }
-
-        public int currentSegment(float[] coords) {
-            if (isDone()) {
-                // awt.110=Iterator out of bounds
-                throw new NoSuchElementException(Messages.getString("awt.110")); //$NON-NLS-1$
-            }
-            if (index == p.npoints) {
-                return SEG_CLOSE;
-            }
-            coords[0] = p.xpoints[index];
-            coords[1] = p.ypoints[index];
-            if (t != null) {
-                t.transform(coords, 0, coords, 0, 1);
-            }
-            return index == 0 ? SEG_MOVETO : SEG_LINETO;
-        }
-    }
 
     public Polygon() {
         xpoints = new int[BUFFER_CAPACITY];
@@ -280,6 +201,85 @@ public class Polygon implements Shape, Serializable {
 
     public PathIterator getPathIterator(AffineTransform t, double flatness) {
         return new Iterator(t, this);
+    }
+
+    /*
+     * Polygon path iterator
+     */
+    class Iterator implements PathIterator {
+
+        /**
+         * The source Polygon object
+         */
+        public Polygon p;
+
+        /**
+         * The path iterator transformation
+         */
+        public AffineTransform t;
+
+        /**
+         * The current segmenet index
+         */
+        public int index;
+
+        /**
+         * Constructs a new Polygon.Iterator for given polygon and transformation
+         *
+         * @param p  - the source Line2D object
+         * @param at - the AffineTransform object to apply rectangle path
+         */
+        public Iterator(AffineTransform at, Polygon p) {
+            this.p = p;
+            this.t = at;
+            if (p.npoints == 0) {
+                index = 1;
+            }
+        }
+
+        public int getWindingRule() {
+            return WIND_EVEN_ODD;
+        }
+
+        public boolean isDone() {
+            return index > p.npoints;
+        }
+
+        public void next() {
+            index++;
+        }
+
+        public int currentSegment(double[] coords) {
+            if (isDone()) {
+                // awt.110=Iterator out of bounds
+                throw new NoSuchElementException(Messages.getString("awt.110")); //$NON-NLS-1$
+            }
+            if (index == p.npoints) {
+                return SEG_CLOSE;
+            }
+            coords[0] = p.xpoints[index];
+            coords[1] = p.ypoints[index];
+            if (t != null) {
+                t.transform(coords, 0, coords, 0, 1);
+            }
+            return index == 0 ? SEG_MOVETO : SEG_LINETO;
+        }
+
+        public int currentSegment(float[] coords) {
+            if (isDone()) {
+                // awt.110=Iterator out of bounds
+                throw new NoSuchElementException(Messages.getString("awt.110")); //$NON-NLS-1$
+            }
+            if (index == p.npoints) {
+                return SEG_CLOSE;
+            }
+            coords[0] = p.xpoints[index];
+            coords[1] = p.ypoints[index];
+            if (t != null) {
+                t.transform(coords, 0, coords, 0, 1);
+            }
+            return index == 0 ? SEG_MOVETO : SEG_LINETO;
+        }
     }
 
 }

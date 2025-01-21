@@ -1,38 +1,33 @@
 /*
-*  Licensed to the Apache Software Foundation (ASF) under one or more
-*  contributor license agreements.  See the NOTICE file distributed with
-*  this work for additional information regarding copyright ownership.
-*  The ASF licenses this file to You under the Apache License, Version 2.0
-*  (the "License"); you may not use this file except in compliance with
-*  the License.  You may obtain a copy of the License at
-*
-*     http://www.apache.org/licenses/LICENSE-2.0
-*
-*  Unless required by applicable law or agreed to in writing, software
-*  distributed under the License is distributed on an "AS IS" BASIS,
-*  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-*  See the License for the specific language governing permissions and
-*  limitations under the License.
-*/
+ *  Licensed to the Apache Software Foundation (ASF) under one or more
+ *  contributor license agreements.  See the NOTICE file distributed with
+ *  this work for additional information regarding copyright ownership.
+ *  The ASF licenses this file to You under the Apache License, Version 2.0
+ *  (the "License"); you may not use this file except in compliance with
+ *  the License.  You may obtain a copy of the License at
+ *
+ *     http://www.apache.org/licenses/LICENSE-2.0
+ *
+ *  Unless required by applicable law or agreed to in writing, software
+ *  distributed under the License is distributed on an "AS IS" BASIS,
+ *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ *  See the License for the specific language governing permissions and
+ *  limitations under the License.
+ */
 /**
  * @author Oleg V. Khaschansky
  */
 package org.apache.harmony.awt.gl.image;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
 import org.apache.harmony.awt.internal.nls.Messages;
+import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
-
-import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
 
 public class JpegDecoder extends ImageDecoder {
     // Only 2 output colorspaces expected. Others are converted into
@@ -45,43 +40,19 @@ public class JpegDecoder extends ImageDecoder {
     // Flags for the consumer, progressive JPEG
     private static final int hintflagsProgressive =
             ImageConsumer.SINGLEFRAME | // JPEG is a static image
-            ImageConsumer.TOPDOWNLEFTRIGHT | // This order is only one possible
-            ImageConsumer.COMPLETESCANLINES; // Don't deliver incomplete scanlines
+                    ImageConsumer.TOPDOWNLEFTRIGHT | // This order is only one possible
+                    ImageConsumer.COMPLETESCANLINES; // Don't deliver incomplete scanlines
     // Flags for the consumer, singlepass JPEG
     private static final int hintflagsSingle =
             ImageConsumer.SINGLEPASS |
-            hintflagsProgressive;
+                    hintflagsProgressive;
 
     // Buffer for the stream
     private static final int MIN_BUFFER_SIZE = 1024;
     private static final int MAX_BUFFER_SIZE = 2097152;
-    private int buffer_size;
-    private byte buffer[];
-
     // 3 possible color models only
     private static ColorModel cmRGB;
     private static ColorModel cmGray;
-
-    // Pointer to native structure which store decoding state
-    // between subsequent decoding/IO-suspension cycles
-    private long hNativeDecoder = 0; // NULL initially
-
-    private boolean headerDone = false;
-
-    // Next 4 members are filled by the native method (decompress).
-    // We can simply check if imageWidth is still negative to find
-    // out if they are already filled.
-    private int imageWidth = -1;
-    private int imageHeight = -1;
-    private boolean progressive = false;
-    private int jpegColorSpace = 0;
-
-    // Stores number of bytes consumed by the native decoder
-    private int bytesConsumed = 0;
-    // Stores current scanline returned by the decoder
-    private int currScanline = 0;
-
-    private ColorModel cm = null;
 
     static {
         cmGray = new ComponentColorModel(
@@ -93,6 +64,25 @@ public class JpegDecoder extends ImageDecoder {
         // Create RGB color model
         cmRGB = new DirectColorModel(24, 0xFF0000, 0xFF00, 0xFF);
     }
+
+    private int buffer_size;
+    private byte buffer[];
+    // Pointer to native structure which store decoding state
+    // between subsequent decoding/IO-suspension cycles
+    private long hNativeDecoder = 0; // NULL initially
+    private boolean headerDone = false;
+    // Next 4 members are filled by the native method (decompress).
+    // We can simply check if imageWidth is still negative to find
+    // out if they are already filled.
+    private int imageWidth = -1;
+    private int imageHeight = -1;
+    private boolean progressive = false;
+    private int jpegColorSpace = 0;
+    // Stores number of bytes consumed by the native decoder
+    private int bytesConsumed = 0;
+    // Stores current scanline returned by the decoder
+    private int currScanline = 0;
+    private ColorModel cm = null;
 
     public JpegDecoder(DecodingImageSource src, InputStream is) {
         super(src, is);
@@ -118,6 +108,10 @@ public class JpegDecoder extends ImageDecoder {
     }
     */
 
+    private static void releaseNativeDecoder(long hDecoder) {
+        AwtCompatNativeComponents.jpegDecoder_releaseNativeDecoder(hDecoder);
+    }
+
     /**
      * @return - not NULL if call is successful
      */
@@ -126,10 +120,6 @@ public class JpegDecoder extends ImageDecoder {
         Object result = AwtCompatNativeComponents.jpegDecoder_decode(input, bytesInBuffer, hDecoder, hDecoderContainer);
         this.hNativeDecoder = hDecoderContainer.pointer;
         return result;
-    }
-
-    private static void releaseNativeDecoder(long hDecoder) {
-        AwtCompatNativeComponents.jpegDecoder_releaseNativeDecoder(hDecoder);
     }
 
     @Override
@@ -141,7 +131,7 @@ public class JpegDecoder extends ImageDecoder {
             byte byteOut[] = null;
             int intOut[] = null;
             // Read from the input stream
-            for (;;) {
+            for (; ; ) {
                 needBytes = buffer_size - bytesInBuffer;
                 offset = bytesInBuffer;
 
@@ -209,9 +199,13 @@ public class JpegDecoder extends ImageDecoder {
         setDimensions(imageWidth, imageHeight);
 
         switch (jpegColorSpace) {
-            case JCS_GRAYSCALE: cm = cmGray; break;
-            case JCS_RGB: cm = cmRGB; break;
-            default: 
+            case JCS_GRAYSCALE:
+                cm = cmGray;
+                break;
+            case JCS_RGB:
+                cm = cmRGB;
+                break;
+            default:
                 // awt.3D=Unknown colorspace
                 throw new IllegalArgumentException(Messages.getString("awt.3D")); //$NON-NLS-1$
         }

@@ -19,13 +19,13 @@
  */
 package org.apache.harmony.x.imageio.plugins.jpeg;
 
-import java.awt.color.ColorSpace;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
+import org.apache.commons.imaging.ImageFormats;
+import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.Imaging;
+import org.apache.harmony.luni.util.NotImplementedException;
+import org.apache.harmony.x.imageio.internal.OutputStreamWrapper;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.IIOImage;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.ImageWriteParam;
@@ -34,13 +34,8 @@ import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.plugins.jpeg.JPEGImageWriteParam;
 import javax.imageio.spi.ImageWriterSpi;
 import javax.imageio.stream.ImageOutputStream;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
-import org.apache.harmony.luni.util.NotImplementedException;
-import org.apache.harmony.x.imageio.internal.OutputStreamWrapper;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.util.HashMap;
@@ -92,27 +87,27 @@ public class JPEGImageWriter extends ImageWriter {
 
         Map params = new HashMap();
         try {
-        	
-			Imaging.writeImage((BufferedImage)img,
-					wrapOutput(ios),//(OutputStream)ios,
-					ImageFormats.JPEG,
-					params);
-		} catch (ImageWriteException e) {
-			// TODO Auto-generated catch block
-			e.printStackTrace();
-		}
+
+            Imaging.writeImage((BufferedImage) img,
+                    wrapOutput(ios),//(OutputStream)ios,
+                    ImageFormats.JPEG,
+                    params);
+        } catch (ImageWriteException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
     }
-    
+
     private OutputStream wrapOutput(Object output) {
-		if(output instanceof OutputStream) {
-			return (OutputStream)output;
-		} else if(output instanceof ImageOutputStream){
-			return new OutputStreamWrapper((ImageOutputStream) output);
-		} else {
-			throw new UnsupportedOperationException(output.getClass().getName());
-		}
-	}
-    
+        if (output instanceof OutputStream) {
+            return (OutputStream) output;
+        } else if (output instanceof ImageOutputStream) {
+            return new OutputStreamWrapper((ImageOutputStream) output);
+        } else {
+            throw new UnsupportedOperationException(output.getClass().getName());
+        }
+    }
+
 
     @Override
     public void dispose() {
@@ -158,6 +153,7 @@ public class JPEGImageWriter extends ImageWriter {
 
     /**
      * Callback for getting a next scanline
+     *
      * @param scanline scan line number
      */
     @SuppressWarnings("unused")
@@ -172,6 +168,7 @@ public class JPEGImageWriter extends ImageWriter {
 
     /**
      * Maps color space types to IJG color spaces
+     *
      * @param image
      * @return
      */
@@ -190,22 +187,22 @@ public class JPEGImageWriter extends ImageWriter {
 
         boolean hasAlpha = cm.hasAlpha();
         ColorSpace cs = cm.getColorSpace();
-        switch(cs.getType()) {
+        switch (cs.getType()) {
             case ColorSpace.TYPE_GRAY:
                 type = JPEGConsts.JCS_GRAYSCALE;
                 break;
-           case ColorSpace.TYPE_RGB:
+            case ColorSpace.TYPE_RGB:
                 type = hasAlpha ? JPEGConsts.JCS_RGBA : JPEGConsts.JCS_RGB;
                 break;
-           case ColorSpace.TYPE_YCbCr:
+            case ColorSpace.TYPE_YCbCr:
                 type = hasAlpha ? JPEGConsts.JCS_YCbCrA : JPEGConsts.JCS_YCbCr;
                 break;
-           case ColorSpace.TYPE_3CLR:
-                 type = hasAlpha ? JPEGConsts.JCS_YCCA : JPEGConsts.JCS_YCC;
-                 break;
-           case ColorSpace.TYPE_CMYK:
-                  type = JPEGConsts.JCS_CMYK;
-                  break;
+            case ColorSpace.TYPE_3CLR:
+                type = hasAlpha ? JPEGConsts.JCS_YCCA : JPEGConsts.JCS_YCC;
+                break;
+            case ColorSpace.TYPE_CMYK:
+                type = JPEGConsts.JCS_CMYK;
+                break;
         }
         return type;
     }
@@ -224,22 +221,22 @@ public class JPEGImageWriter extends ImageWriter {
             boolean hasAlpha = cm.hasAlpha();
             ColorSpace cs = cm.getColorSpace();
 
-            switch(cs.getType()) {
+            switch (cs.getType()) {
                 case ColorSpace.TYPE_GRAY:
                     type = JPEGConsts.JCS_GRAYSCALE;
                     break;
-               case ColorSpace.TYPE_RGB:
+                case ColorSpace.TYPE_RGB:
                     type = hasAlpha ? JPEGConsts.JCS_YCbCrA : JPEGConsts.JCS_YCbCr;
                     break;
-               case ColorSpace.TYPE_YCbCr:
+                case ColorSpace.TYPE_YCbCr:
                     type = hasAlpha ? JPEGConsts.JCS_YCbCrA : JPEGConsts.JCS_YCbCr;
                     break;
-               case ColorSpace.TYPE_3CLR:
-                     type = hasAlpha ? JPEGConsts.JCS_YCCA : JPEGConsts.JCS_YCC;
-                     break;
-               case ColorSpace.TYPE_CMYK:
-                      type = JPEGConsts.JCS_CMYK;
-                      break;
+                case ColorSpace.TYPE_3CLR:
+                    type = hasAlpha ? JPEGConsts.JCS_YCCA : JPEGConsts.JCS_YCC;
+                    break;
+                case ColorSpace.TYPE_CMYK:
+                    type = JPEGConsts.JCS_CMYK;
+                    break;
             }
         }
         return type;

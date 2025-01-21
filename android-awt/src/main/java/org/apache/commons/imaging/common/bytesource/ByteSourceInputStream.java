@@ -16,46 +16,23 @@
  */
 package org.apache.commons.imaging.common.bytesource;
 
+import org.apache.commons.imaging.common.BinaryFunctions;
+
 import java.io.BufferedInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 
-import org.apache.commons.imaging.common.BinaryFunctions;
-
 public class ByteSourceInputStream extends ByteSource {
+    private static final int BLOCK_SIZE = 1024;
     private final InputStream is;
     private CacheBlock cacheHead;
-    private static final int BLOCK_SIZE = 1024;
     private byte[] readBuffer;
     private long streamLength = -1;
 
     public ByteSourceInputStream(final InputStream is, final String filename) {
         super(filename);
         this.is = new BufferedInputStream(is);
-    }
-
-    private class CacheBlock {
-        public final byte[] bytes;
-        private CacheBlock next;
-        private boolean triedNext;
-
-        public CacheBlock(final byte[] bytes) {
-            this.bytes = bytes;
-        }
-
-        public CacheBlock getNext() throws IOException {
-            if (null != next) {
-                return next;
-            }
-            if (triedNext) {
-                return null;
-            }
-            triedNext = true;
-            next = readBlock();
-            return next;
-        }
-
     }
 
     private CacheBlock readBlock() throws IOException {
@@ -84,122 +61,6 @@ public class ByteSourceInputStream extends ByteSource {
             cacheHead = readBlock();
         }
         return cacheHead;
-    }
-
-    private class CacheReadingInputStream extends InputStream {
-        private CacheBlock block;
-        private boolean readFirst;
-        private int blockIndex;
-        
-        @Override
-        public int read() throws IOException {
-            if (null == block) {
-                if (readFirst) {
-                    return -1;
-                }
-                block = getFirstBlock();
-                readFirst = true;
-            }
-
-            if (block != null && blockIndex >= block.bytes.length) {
-                block = block.getNext();
-                blockIndex = 0;
-            }
-
-            if (null == block) {
-                return -1;
-            }
-
-            if (blockIndex >= block.bytes.length) {
-                return -1;
-            }
-
-            return 0xff & block.bytes[blockIndex++];
-        }
-
-        @Override
-        public int read(final byte[] b, final int off, final int len) throws IOException {
-            // first section copied verbatim from InputStream
-            if (b == null) {
-                throw new NullPointerException();
-            } else if ((off < 0) || (off > b.length) || (len < 0)
-                    || ((off + len) > b.length) || ((off + len) < 0)) {
-                throw new IndexOutOfBoundsException();
-            } else if (len == 0) {
-                return 0;
-            }
-
-            // optimized block read
-
-            if (null == block) {
-                if (readFirst) {
-                    return -1;
-                }
-                block = getFirstBlock();
-                readFirst = true;
-            }
-
-            if (block != null && blockIndex >= block.bytes.length) {
-                block = block.getNext();
-                blockIndex = 0;
-            }
-
-            if (null == block) {
-                return -1;
-            }
-
-            if (blockIndex >= block.bytes.length) {
-                return -1;
-            }
-
-            final int readSize = Math.min(len, block.bytes.length - blockIndex);
-            System.arraycopy(block.bytes, blockIndex, b, off, readSize);
-            blockIndex += readSize;
-            return readSize;
-        }
-        
-        @Override
-        public long skip(final long n) throws IOException {
-
-            long remaining = n;
-
-            if (n <= 0) {
-                return 0;
-            }
-
-            while (remaining > 0) {
-                // read the first block
-                if (null == block) {
-                    if (readFirst) {
-                        return -1;
-                    }
-                    block = getFirstBlock();
-                    readFirst = true;
-                }
-
-                // get next block
-                if (block != null && blockIndex >= block.bytes.length) {
-                    block = block.getNext();
-                    blockIndex = 0;
-                }
-
-                if (null == block) {
-                    break;
-                }
-
-                if (blockIndex >= block.bytes.length) {
-                    break;
-                }
-
-                final int readSize = Math.min((int) Math.min(BLOCK_SIZE, remaining), block.bytes.length - blockIndex);
-
-                blockIndex += readSize;
-                remaining -= readSize;
-            }
-
-            return n - remaining;
-        }
-
     }
 
     @Override
@@ -266,6 +127,145 @@ public class ByteSourceInputStream extends ByteSource {
     @Override
     public String getDescription() {
         return "Inputstream: '" + filename + "'";
+    }
+
+    private class CacheBlock {
+        public final byte[] bytes;
+        private CacheBlock next;
+        private boolean triedNext;
+
+        public CacheBlock(final byte[] bytes) {
+            this.bytes = bytes;
+        }
+
+        public CacheBlock getNext() throws IOException {
+            if (null != next) {
+                return next;
+            }
+            if (triedNext) {
+                return null;
+            }
+            triedNext = true;
+            next = readBlock();
+            return next;
+        }
+
+    }
+
+    private class CacheReadingInputStream extends InputStream {
+        private CacheBlock block;
+        private boolean readFirst;
+        private int blockIndex;
+
+        @Override
+        public int read() throws IOException {
+            if (null == block) {
+                if (readFirst) {
+                    return -1;
+                }
+                block = getFirstBlock();
+                readFirst = true;
+            }
+
+            if (block != null && blockIndex >= block.bytes.length) {
+                block = block.getNext();
+                blockIndex = 0;
+            }
+
+            if (null == block) {
+                return -1;
+            }
+
+            if (blockIndex >= block.bytes.length) {
+                return -1;
+            }
+
+            return 0xff & block.bytes[blockIndex++];
+        }
+
+        @Override
+        public int read(final byte[] b, final int off, final int len) throws IOException {
+            // first section copied verbatim from InputStream
+            if (b == null) {
+                throw new NullPointerException();
+            } else if ((off < 0) || (off > b.length) || (len < 0)
+                    || ((off + len) > b.length) || ((off + len) < 0)) {
+                throw new IndexOutOfBoundsException();
+            } else if (len == 0) {
+                return 0;
+            }
+
+            // optimized block read
+
+            if (null == block) {
+                if (readFirst) {
+                    return -1;
+                }
+                block = getFirstBlock();
+                readFirst = true;
+            }
+
+            if (block != null && blockIndex >= block.bytes.length) {
+                block = block.getNext();
+                blockIndex = 0;
+            }
+
+            if (null == block) {
+                return -1;
+            }
+
+            if (blockIndex >= block.bytes.length) {
+                return -1;
+            }
+
+            final int readSize = Math.min(len, block.bytes.length - blockIndex);
+            System.arraycopy(block.bytes, blockIndex, b, off, readSize);
+            blockIndex += readSize;
+            return readSize;
+        }
+
+        @Override
+        public long skip(final long n) throws IOException {
+
+            long remaining = n;
+
+            if (n <= 0) {
+                return 0;
+            }
+
+            while (remaining > 0) {
+                // read the first block
+                if (null == block) {
+                    if (readFirst) {
+                        return -1;
+                    }
+                    block = getFirstBlock();
+                    readFirst = true;
+                }
+
+                // get next block
+                if (block != null && blockIndex >= block.bytes.length) {
+                    block = block.getNext();
+                    blockIndex = 0;
+                }
+
+                if (null == block) {
+                    break;
+                }
+
+                if (blockIndex >= block.bytes.length) {
+                    break;
+                }
+
+                final int readSize = Math.min((int) Math.min(BLOCK_SIZE, remaining), block.bytes.length - blockIndex);
+
+                blockIndex += readSize;
+                remaining -= readSize;
+            }
+
+            return n - remaining;
+        }
+
     }
 
 }

@@ -21,7 +21,7 @@ final class Dct {
      * Mitchell, Chapter 4, discusses a number of approaches to the fast DCT.
      * Here's the cost, exluding modified (de)quantization, for transforming an
      * 8x8 block:
-     * 
+     *
      * Algorithm                     Adds Multiplies RightShifts Total
      * Naive                          896       1024           0  1920
      * "Symmetries"                   448        224           0   672
@@ -29,22 +29,22 @@ final class Dct {
      * Arai, Agui and Nakajima (AA&N) 464         80           0   544
      * Feig 8x8                       462         54           6   522
      * Fused mul/add (a pipe dream)                                416
-     * 
+     *
      * IJG's libjpeg, FFmpeg, and a number of others use AA&N.
-     * 
+     *
      * It would appear that Feig does 4-5% less operations, and multiplications
      * are reduced from 80 in AA&N to only 54. But in practice:
-     * 
+     *
      * Benchmarks, Intel Core i3 @ 2.93 GHz in long mode, 4 GB RAM Time taken to
      * do 100 million IDCTs (less is better):
      * Rene' Stöckel's Feig, int: 45.07 seconds
      * My Feig, floating point: 36.252 seconds
      * AA&N, unrolled loops, double[][] -> double[][]: 25.167 seconds
-     * 
+     *
      * Clearly Feig is hopeless. I suspect the performance killer is simply the
      * weight of the algorithm: massive number of local variables, large code
      * size, and lots of random array accesses.
-     * 
+     *
      * Also, AA&N can be optimized a lot:
      * AA&N, rolled loops, double[][] -> double[][]: 21.162 seconds
      * AA&N, rolled loops, float[][] -> float[][]: no improvement,
@@ -56,10 +56,10 @@ final class Dct {
      * AA&N, previous version rewritten in C and compiled with "gcc -O3"
      * takes: 8.5 seconds
      * (probably due to heavy use of SIMD)
-     * 
+     *
      * Other brave attempts: AA&N, best float version converted to 16:16 fixed
      * point: 23.923 seconds
-     * 
+     *
      * Anyway the best float version stays. 18.5 seconds = 5.4 million
      * transforms per second per core :-)
      */
@@ -72,7 +72,7 @@ final class Dct {
             (float) (0.25 / Math.cos(4.0 * Math.PI / 16.0)),
             (float) (0.25 / Math.cos(5.0 * Math.PI / 16.0)),
             (float) (0.25 / Math.cos(6.0 * Math.PI / 16.0)),
-            (float) (0.25 / Math.cos(7.0 * Math.PI / 16.0)), };
+            (float) (0.25 / Math.cos(7.0 * Math.PI / 16.0)),};
 
     private static final float[] IDCT_SCALING_FACTORS = {
             (float) (2.0 * 4.0 / Math.sqrt(2.0) * 0.0625),
@@ -82,7 +82,7 @@ final class Dct {
             (float) (4.0 * Math.cos(4.0 * Math.PI / 16.0) * 0.125),
             (float) (4.0 * Math.cos(5.0 * Math.PI / 16.0) * 0.125),
             (float) (4.0 * Math.cos(6.0 * Math.PI / 16.0) * 0.125),
-            (float) (4.0 * Math.cos(7.0 * Math.PI / 16.0) * 0.125), };
+            (float) (4.0 * Math.cos(7.0 * Math.PI / 16.0) * 0.125),};
 
     private static final float A1 = (float) (Math.cos(2.0 * Math.PI / 8.0));
     private static final float A2 = (float) (Math.cos(Math.PI / 8.0) - Math
@@ -100,7 +100,7 @@ final class Dct {
 
     private Dct() {
     }
-    
+
     public static void scaleQuantizationVector(final float[] vector) {
         for (int x = 0; x < 8; x++) {
             vector[x] *= DCT_SCALING_FACTORS[x];

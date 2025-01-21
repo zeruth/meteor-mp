@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.png.scanlinefilters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
+
+import java.io.IOException;
 
 public class ScanlineFilterUp extends ScanlineFilter {
     @Override

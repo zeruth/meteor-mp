@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ByteConversions;
 import org.apache.commons.imaging.common.RationalNumber;
@@ -24,22 +23,9 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString;
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
@@ -63,7 +49,28 @@ public class TiffDirectory extends TiffElement {
         this.entries = Collections.unmodifiableList(entries);
         this.nextDirectoryOffset = nextDirectoryOffset;
     }
-    
+
+    public static String description(final int type) {
+        switch (type) {
+            case TiffDirectoryConstants.DIRECTORY_TYPE_UNKNOWN:
+                return "Unknown";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_ROOT:
+                return "Root";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_SUB:
+                return "Sub";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_THUMBNAIL:
+                return "Thumbnail";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_EXIF:
+                return "Exif";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_GPS:
+                return "Gps";
+            case TiffDirectoryConstants.DIRECTORY_TYPE_INTEROPERABILITY:
+                return "Interoperability";
+            default:
+                return "Bad Type";
+        }
+    }
+
     public String description() {
         return TiffDirectory.description(type);
     }
@@ -88,28 +95,6 @@ public class TiffDirectory extends TiffElement {
         }
         return result.toString();
     }
-
-    public static String description(final int type) {
-        switch (type) {
-        case TiffDirectoryConstants.DIRECTORY_TYPE_UNKNOWN:
-            return "Unknown";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_ROOT:
-            return "Root";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_SUB:
-            return "Sub";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_THUMBNAIL:
-            return "Thumbnail";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_EXIF:
-            return "Exif";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_GPS:
-            return "Gps";
-        case TiffDirectoryConstants.DIRECTORY_TYPE_INTEROPERABILITY:
-            return "Interoperability";
-        default:
-            return "Bad Type";
-        }
-    }
-
 
     public List<TiffField> getDirectoryEntries() {
         return new ArrayList<TiffField>(entries);
@@ -227,7 +212,7 @@ public class TiffDirectory extends TiffElement {
         }
         return result[0];
     }
-    
+
     public int getSingleFieldValue(final TagInfoShortOrLong tag) throws ImageReadException {
         final int[] result = getFieldValue(tag, true);
         if (result.length != 1) {
@@ -395,7 +380,7 @@ public class TiffDirectory extends TiffElement {
         final byte[] bytes = field.getByteArrayValue();
         return tag.getValue(field.getByteOrder(), bytes);
     }
-    
+
     public int[] getFieldValue(final TagInfoShortOrLong tag, final boolean mustExist)
             throws ImageReadException {
         final TiffField field = findField(tag);
@@ -515,7 +500,7 @@ public class TiffDirectory extends TiffElement {
     }
 
     public RationalNumber[] getFieldValue(final TagInfoSRational tag,
-            final boolean mustExist) throws ImageReadException {
+                                          final boolean mustExist) throws ImageReadException {
         final TiffField field = findField(tag);
         if (field == null) {
             if (mustExist) {
@@ -611,20 +596,6 @@ public class TiffDirectory extends TiffElement {
         return tag.getValue(field);
     }
 
-    public static final class ImageDataElement extends TiffElement {
-        public ImageDataElement(final long offset, final int length) {
-            super(offset, length);
-        }
-
-        @Override
-        public String getElementDescription(final boolean verbose) {
-            if (verbose) {
-                return null;
-            }
-            return "ImageDataElement";
-        }
-    }
-
     private List<ImageDataElement> getRawImageDataElements(
             final TiffField offsetsField, final TiffField byteCountsField)
             throws ImageReadException {
@@ -688,20 +659,34 @@ public class TiffDirectory extends TiffElement {
         }
     }
 
+    public TiffImageData getTiffImageData() {
+        return tiffImageData;
+    }
+
     public void setTiffImageData(final TiffImageData rawImageData) {
         this.tiffImageData = rawImageData;
     }
 
-    public TiffImageData getTiffImageData() {
-        return tiffImageData;
+    public JpegImageData getJpegImageData() {
+        return jpegImageData;
     }
 
     public void setJpegImageData(final JpegImageData value) {
         this.jpegImageData = value;
     }
 
-    public JpegImageData getJpegImageData() {
-        return jpegImageData;
+    public static final class ImageDataElement extends TiffElement {
+        public ImageDataElement(final long offset, final int length) {
+            super(offset, length);
+        }
+
+        @Override
+        public String getElementDescription(final boolean verbose) {
+            if (verbose) {
+                return null;
+            }
+            return "ImageDataElement";
+        }
     }
 
 }

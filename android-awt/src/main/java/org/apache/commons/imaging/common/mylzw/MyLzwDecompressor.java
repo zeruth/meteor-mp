@@ -25,28 +25,22 @@ import java.nio.ByteOrder;
 public final class MyLzwDecompressor {
     private static final int MAX_TABLE_SIZE = 1 << 12;
     private final byte[][] table;
-    private int codeSize;
     private final int initialCodeSize;
-    private int codes = -1;
     private final ByteOrder byteOrder;
     private final Listener listener;
     private final int clearCode;
     private final int eoiCode;
+    private int codeSize;
+    private int codes = -1;
     private int written;
     private boolean tiffLZWMode;
-
-    public interface Listener {
-        void code(int code);
-
-        void init(int clearCode, int eoiCode);
-    }
 
     public MyLzwDecompressor(final int initialCodeSize, final ByteOrder byteOrder) {
         this(initialCodeSize, byteOrder, null);
     }
 
     public MyLzwDecompressor(final int initialCodeSize, final ByteOrder byteOrder,
-            final Listener listener) {
+                             final Listener listener) {
         this.listener = listener;
         this.byteOrder = byteOrder;
 
@@ -69,7 +63,7 @@ public final class MyLzwDecompressor {
         final int intialEntriesCount = 1 << codeSize + 2;
 
         for (int i = 0; i < intialEntriesCount; i++) {
-            table[i] = new byte[] { (byte) i, };
+            table[i] = new byte[]{(byte) i,};
         }
     }
 
@@ -200,5 +194,11 @@ public final class MyLzwDecompressor {
         if (codeSize != 12) {
             codeSize++;
         }
+    }
+
+    public interface Listener {
+        void code(int code);
+
+        void init(int clearCode, int eoiCode);
     }
 }

@@ -16,12 +16,13 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
+import org.apache.commons.imaging.ImageReadException;
+
 import java.io.IOException;
 import java.nio.ByteOrder;
 
-import org.apache.commons.imaging.ImageReadException;
-
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 class PixelParserRgb extends PixelParserSimple {
     private int bytecount;
@@ -38,7 +39,7 @@ class PixelParserRgb extends PixelParserSimple {
     public int getNextRGB() throws ImageReadException, IOException {
         pixelCount++;
 
-        if ((bhi.bitsPerPixel == 1) 
+        if ((bhi.bitsPerPixel == 1)
                 || (bhi.bitsPerPixel == 4)) { // always grayscale?
             if (cachedBitCount < bhi.bitsPerPixel) {
                 if (cachedBitCount != 0) {

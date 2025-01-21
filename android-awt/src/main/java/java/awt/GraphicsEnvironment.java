@@ -21,27 +21,26 @@
 package java.awt;
 
 import java.awt.image.BufferedImage;
-
 import java.util.Locale;
-
 
 
 public abstract class GraphicsEnvironment {
 
     static Boolean isHeadless;
 
-    protected GraphicsEnvironment() {}
-
-    public static GraphicsEnvironment getLocalGraphicsEnvironment() {
-    	return new HeadlessGraphicsEnvironment();
+    protected GraphicsEnvironment() {
     }
 
-    public boolean isHeadlessInstance() {
-        return false;
+    public static GraphicsEnvironment getLocalGraphicsEnvironment() {
+        return new HeadlessGraphicsEnvironment();
     }
 
     public static boolean isHeadless() {
         return true;
+    }
+
+    public boolean isHeadlessInstance() {
+        return false;
     }
 
     public void preferLocaleFonts() {

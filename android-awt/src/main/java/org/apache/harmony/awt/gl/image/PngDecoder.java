@@ -16,34 +16,27 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Jul 22, 2005
  */
 
 package org.apache.harmony.awt.gl.image;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
-import java.awt.image.IndexColorModel;
 import org.apache.harmony.awt.internal.nls.Messages;
+import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
+import java.awt.image.*;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Hashtable;
-
-import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
 
 public class PngDecoder extends ImageDecoder {
 
     private static final int hintflags =
             ImageConsumer.SINGLEFRAME | // PNG is a static image
-            ImageConsumer.TOPDOWNLEFTRIGHT | // This order is only one possible
-            ImageConsumer.COMPLETESCANLINES; // Don't deliver incomplete scanlines
+                    ImageConsumer.TOPDOWNLEFTRIGHT | // This order is only one possible
+                    ImageConsumer.COMPLETESCANLINES; // Don't deliver incomplete scanlines
 
     // Each pixel is a grayscale sample.
     private static final int PNG_COLOR_TYPE_GRAY = 0;
@@ -58,36 +51,22 @@ public class PngDecoder extends ImageDecoder {
 
     private static final int MIN_BUFFER_SIZE = 4096;
     private static final int MAX_BUFFER_SIZE = 2097152;
-    private int buffer_size;
-    private byte buffer[];
-
     // Buffers for decoded image data
     byte byteOut[];
     int intOut[];
-
-    // Native pointer to png decoder data
-    private long hNativeDecoder;
-
     int imageWidth, imageHeight;
     int colorType;
     int bitDepth;
     byte cmap[];
-
     boolean transferInts; // Is transfer type int?.. or byte?
     int dataElementsPerPixel = 1;
-
     ColorModel cm;
-
     int updateFromScanline; // First scanline to update
     int numScanlines; // Number of scanlines to update
-
-    private static long decode(byte[] input, int bytesInBuffer, long hDecoder) {
-        return AwtCompatNativeComponents.pngDecoder_decode(input, bytesInBuffer, hDecoder);
-    }
-
-    private static void releaseNativeDecoder(long hDecoder) {
-        AwtCompatNativeComponents.pngDecoder_releaseNativeDecoder(hDecoder);
-    }
+    private int buffer_size;
+    private byte buffer[];
+    // Native pointer to png decoder data
+    private long hNativeDecoder;
 
     public PngDecoder(DecodingImageSource src, InputStream is) {
         super(src, is);
@@ -106,12 +85,20 @@ public class PngDecoder extends ImageDecoder {
         buffer = new byte[buffer_size];
     }
 
+    private static long decode(byte[] input, int bytesInBuffer, long hDecoder) {
+        return AwtCompatNativeComponents.pngDecoder_decode(input, bytesInBuffer, hDecoder);
+    }
+
+    private static void releaseNativeDecoder(long hDecoder) {
+        AwtCompatNativeComponents.pngDecoder_releaseNativeDecoder(hDecoder);
+    }
+
     @Override
     public void decodeImage() throws IOException {
         try {
             int bytesRead = 0;
             // Read from the input stream
-            for (;;) {
+            for (; ; ) {
                 bytesRead = inputStream.read(buffer, 0, buffer_size);
 
                 if (bytesRead < 0) {
@@ -154,7 +141,7 @@ public class PngDecoder extends ImageDecoder {
 
                 // Create gray color model
                 int numEntries = 1 << bitDepth;
-                int scaleFactor = 255 / (numEntries-1);
+                int scaleFactor = 255 / (numEntries - 1);
                 byte comps[] = new byte[numEntries];
                 for (int i = 0; i < numEntries; i++) {
                     comps[i] = (byte) (i * scaleFactor);

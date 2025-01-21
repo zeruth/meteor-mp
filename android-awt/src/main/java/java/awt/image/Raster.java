@@ -20,11 +20,10 @@
 package java.awt.image;
 
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.apache.harmony.awt.gl.image.OrdinaryWritableRaster;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
 
 
 public class Raster {
@@ -51,9 +50,63 @@ public class Raster {
 
     protected int width;
 
+    protected Raster(SampleModel sampleModel, DataBuffer dataBuffer,
+                     Point origin) {
+
+        this(sampleModel, dataBuffer, new Rectangle(origin.x, origin.y,
+                sampleModel.getWidth(), sampleModel.getHeight()), origin, null);
+    }
+
+    protected Raster(SampleModel sampleModel, DataBuffer dataBuffer,
+                     Rectangle aRegion, Point sampleModelTranslate, Raster parent) {
+
+        if (sampleModel == null || dataBuffer == null || aRegion == null
+                || sampleModelTranslate == null) {
+            // awt.281=sampleModel, dataBuffer, aRegion or sampleModelTranslate is null
+            throw new NullPointerException(Messages.getString("awt.281")); //$NON-NLS-1$
+        }
+
+        if (aRegion.width <= 0 || aRegion.height <= 0) {
+            // awt.282=aRegion has width or height less than or equal to zero
+            throw new RasterFormatException(Messages.getString("awt.282")); //$NON-NLS-1$
+        }
+
+        if ((long) aRegion.x + (long) aRegion.width > Integer.MAX_VALUE) {
+            // awt.283=Overflow X coordinate of Raster
+            throw new RasterFormatException(Messages.getString("awt.283")); //$NON-NLS-1$
+        }
+
+        if ((long) aRegion.y + (long) aRegion.height > Integer.MAX_VALUE) {
+            // awt.284=Overflow Y coordinate of Raster
+            throw new RasterFormatException(Messages.getString("awt.284")); //$NON-NLS-1$
+        }
+
+        validateDataBuffer(dataBuffer, aRegion.width, aRegion.height,
+                sampleModel);
+
+        this.sampleModel = sampleModel;
+        this.dataBuffer = dataBuffer;
+        this.minX = aRegion.x;
+        this.minY = aRegion.y;
+        this.width = aRegion.width;
+        this.height = aRegion.height;
+        this.sampleModelTranslateX = sampleModelTranslate.x;
+        this.sampleModelTranslateY = sampleModelTranslate.y;
+        this.parent = parent;
+        this.numBands = sampleModel.getNumBands();
+        this.numDataElements = sampleModel.getNumDataElements();
+
+    }
+
+    protected Raster(SampleModel sampleModel, Point origin) {
+        this(sampleModel, sampleModel.createDataBuffer(), new Rectangle(
+                origin.x, origin.y, sampleModel.getWidth(), sampleModel
+                .getHeight()), origin, null);
+    }
+
     public static WritableRaster createBandedRaster(DataBuffer dataBuffer,
-            int w, int h, int scanlineStride, int bankIndices[],
-            int bandOffsets[], Point location) {
+                                                    int w, int h, int scanlineStride, int bankIndices[],
+                                                    int bandOffsets[], Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -96,8 +149,8 @@ public class Raster {
     }
 
     public static WritableRaster createBandedRaster(int dataType, int w, int h,
-            int scanlineStride, int bankIndices[], int bandOffsets[],
-            Point location) {
+                                                    int scanlineStride, int bankIndices[], int bandOffsets[],
+                                                    Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -144,22 +197,22 @@ public class Raster {
         DataBuffer data = null;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(dataSize, numBanks);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(dataSize, numBanks);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(dataSize, numBanks);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(dataSize, numBanks);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(dataSize, numBanks);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(dataSize, numBanks);
+                break;
         }
         return createBandedRaster(data, w, h, scanlineStride, bankIndices,
                 bandOffsets, location);
     }
 
     public static WritableRaster createBandedRaster(int dataType, int w, int h,
-            int bands, Point location) {
+                                                    int bands, Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -193,8 +246,8 @@ public class Raster {
     }
 
     public static WritableRaster createInterleavedRaster(DataBuffer dataBuffer,
-            int w, int h, int scanlineStride, int pixelStride,
-            int bandOffsets[], Point location) {
+                                                         int w, int h, int scanlineStride, int pixelStride,
+                                                         int bandOffsets[], Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -233,16 +286,16 @@ public class Raster {
             throw new NullPointerException(Messages.getString("awt.27B")); //$NON-NLS-1$
         }
 
-        PixelInterleavedSampleModel sampleModel = 
-            new PixelInterleavedSampleModel(dataType, w, h, 
-                    pixelStride, scanlineStride, bandOffsets);
+        PixelInterleavedSampleModel sampleModel =
+                new PixelInterleavedSampleModel(dataType, w, h,
+                        pixelStride, scanlineStride, bandOffsets);
 
         return new OrdinaryWritableRaster(sampleModel, dataBuffer, location);
     }
 
     public static WritableRaster createInterleavedRaster(int dataType, int w,
-            int h, int scanlineStride, int pixelStride, int bandOffsets[],
-            Point location) {
+                                                         int h, int scanlineStride, int pixelStride, int bandOffsets[],
+                                                         Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -280,12 +333,12 @@ public class Raster {
         DataBuffer data = null;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(size);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(size);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(size);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(size);
+                break;
         }
 
         return createInterleavedRaster(data, w, h, scanlineStride, pixelStride,
@@ -293,7 +346,7 @@ public class Raster {
     }
 
     public static WritableRaster createInterleavedRaster(int dataType, int w,
-            int h, int bands, Point location) {
+                                                         int h, int bands, Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -326,7 +379,7 @@ public class Raster {
     }
 
     public static WritableRaster createPackedRaster(DataBuffer dataBuffer,
-            int w, int h, int scanlineStride, int bandMasks[], Point location) {
+                                                    int w, int h, int scanlineStride, int bandMasks[], Point location) {
         if (dataBuffer == null) {
             // awt.278=dataBuffer is null
             throw new NullPointerException(Messages.getString("awt.278")); //$NON-NLS-1$
@@ -365,15 +418,15 @@ public class Raster {
             throw new IllegalArgumentException(Messages.getString("awt.230")); //$NON-NLS-1$
         }
 
-        SinglePixelPackedSampleModel sampleModel = 
-            new SinglePixelPackedSampleModel(dataType, w, h, 
-                    scanlineStride, bandMasks);
+        SinglePixelPackedSampleModel sampleModel =
+                new SinglePixelPackedSampleModel(dataType, w, h,
+                        scanlineStride, bandMasks);
 
         return new OrdinaryWritableRaster(sampleModel, dataBuffer, location);
     }
 
     public static WritableRaster createPackedRaster(DataBuffer dataBuffer,
-            int w, int h, int bitsPerPixel, Point location) {
+                                                    int w, int h, int bitsPerPixel, Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -408,14 +461,14 @@ public class Raster {
             throw new IllegalArgumentException(Messages.getString("awt.230")); //$NON-NLS-1$
         }
 
-        MultiPixelPackedSampleModel sampleModel = 
-            new MultiPixelPackedSampleModel(dataType, w, h, bitsPerPixel);
+        MultiPixelPackedSampleModel sampleModel =
+                new MultiPixelPackedSampleModel(dataType, w, h, bitsPerPixel);
 
         return new OrdinaryWritableRaster(sampleModel, dataBuffer, location);
     }
 
     public static WritableRaster createPackedRaster(int dataType, int w, int h,
-            int bands, int bitsPerBand, Point location) {
+                                                    int bands, int bitsPerBand, Point location) {
 
         if (w <= 0 || h <= 0) {
             // awt.22E=w or h is less than or equal to zero
@@ -461,27 +514,27 @@ public class Raster {
             return createPackedRaster(dataType, w, h, bandMasks, location);
         }
         DataBuffer data = null;
-        int size = ((bitsPerBand * w + 
-                DataBuffer.getDataTypeSize(dataType) - 1) / 
+        int size = ((bitsPerBand * w +
+                DataBuffer.getDataTypeSize(dataType) - 1) /
                 DataBuffer.getDataTypeSize(dataType)) * h;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(size);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(size);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(size);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(size);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(size);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(size);
+                break;
         }
         return createPackedRaster(data, w, h, bitsPerBand, location);
     }
 
     public static WritableRaster createPackedRaster(int dataType, int w, int h,
-            int bandMasks[], Point location) {
-        
+                                                    int bandMasks[], Point location) {
+
         if (dataType != DataBuffer.TYPE_BYTE
                 && dataType != DataBuffer.TYPE_USHORT
                 && dataType != DataBuffer.TYPE_INT) {
@@ -512,22 +565,22 @@ public class Raster {
         DataBuffer data = null;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(w * h);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(w * h);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(w * h);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(w * h);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(w * h);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(w * h);
+                break;
         }
 
         return createPackedRaster(data, w, h, w, bandMasks, location);
     }
 
     public static Raster createRaster(SampleModel sm, DataBuffer db,
-            Point location) {
+                                      Point location) {
 
         if (sm == null || db == null) {
             // awt.27F=SampleModel or DataBuffer is null
@@ -542,7 +595,7 @@ public class Raster {
     }
 
     public static WritableRaster createWritableRaster(SampleModel sm,
-            DataBuffer db, Point location) {
+                                                      DataBuffer db, Point location) {
 
         if (sm == null || db == null) {
             // awt.27F=SampleModel or DataBuffer is null
@@ -557,7 +610,7 @@ public class Raster {
     }
 
     public static WritableRaster createWritableRaster(SampleModel sm,
-            Point location) {
+                                                      Point location) {
 
         if (sm == null) {
             // awt.280=SampleModel is null
@@ -571,62 +624,62 @@ public class Raster {
         return createWritableRaster(sm, sm.createDataBuffer(), location);
     }
 
-    protected Raster(SampleModel sampleModel, DataBuffer dataBuffer,
-            Point origin) {
+    private static void validateDataBuffer(final DataBuffer dataBuffer, final int w,
+                                           final int h, final SampleModel sampleModel) {
 
-        this(sampleModel, dataBuffer, new Rectangle(origin.x, origin.y,
-                sampleModel.getWidth(), sampleModel.getHeight()), origin, null);
-    }
+        int size = 0;
 
-    protected Raster(SampleModel sampleModel, DataBuffer dataBuffer,
-            Rectangle aRegion, Point sampleModelTranslate, Raster parent) {
+        if (sampleModel instanceof ComponentSampleModel) {
+            ComponentSampleModel csm = (ComponentSampleModel) sampleModel;
+            int offsets[] = csm.getBandOffsets();
+            int maxOffset = offsets[0];
+            for (int i = 1; i < offsets.length; i++) {
+                if (offsets[i] > maxOffset) {
+                    maxOffset = offsets[i];
+                }
+            }
+            int scanlineStride = csm.getScanlineStride();
+            int pixelStride = csm.getPixelStride();
 
-        if (sampleModel == null || dataBuffer == null || aRegion == null
-                || sampleModelTranslate == null) {
-            // awt.281=sampleModel, dataBuffer, aRegion or sampleModelTranslate is null
-            throw new NullPointerException(Messages.getString("awt.281")); //$NON-NLS-1$
+            size = (h - 1) * scanlineStride +
+                    (w - 1) * pixelStride + maxOffset + 1;
+
+        } else if (sampleModel instanceof MultiPixelPackedSampleModel) {
+            MultiPixelPackedSampleModel mppsm =
+                    (MultiPixelPackedSampleModel) sampleModel;
+
+            int scanlineStride = mppsm.getScanlineStride();
+            int dataBitOffset = mppsm.getDataBitOffset();
+            int dataType = dataBuffer.getDataType();
+
+            size = scanlineStride * h;
+
+            switch (dataType) {
+                case DataBuffer.TYPE_BYTE:
+                    size += (dataBitOffset + 7) / 8;
+                    break;
+                case DataBuffer.TYPE_USHORT:
+                    size += (dataBitOffset + 15) / 16;
+                    break;
+                case DataBuffer.TYPE_INT:
+                    size += (dataBitOffset + 31) / 32;
+                    break;
+            }
+        } else if (sampleModel instanceof SinglePixelPackedSampleModel) {
+            SinglePixelPackedSampleModel sppsm =
+                    (SinglePixelPackedSampleModel) sampleModel;
+
+            int scanlineStride = sppsm.getScanlineStride();
+            size = (h - 1) * scanlineStride + w;
         }
-
-        if (aRegion.width <= 0 || aRegion.height <= 0) {
-            // awt.282=aRegion has width or height less than or equal to zero
-            throw new RasterFormatException(Messages.getString("awt.282")); //$NON-NLS-1$
+        if (dataBuffer.getSize() < size) {
+            // awt.298=dataBuffer is too small
+            throw new RasterFormatException(Messages.getString("awt.298")); //$NON-NLS-1$
         }
-
-        if ((long) aRegion.x + (long) aRegion.width > Integer.MAX_VALUE) {
-            // awt.283=Overflow X coordinate of Raster
-            throw new RasterFormatException(Messages.getString("awt.283")); //$NON-NLS-1$
-        }
-
-        if ((long) aRegion.y + (long) aRegion.height > Integer.MAX_VALUE) {
-            // awt.284=Overflow Y coordinate of Raster
-            throw new RasterFormatException(Messages.getString("awt.284")); //$NON-NLS-1$
-        }
-        
-        validateDataBuffer(dataBuffer, aRegion.width, aRegion.height,
-                sampleModel);
-
-        this.sampleModel = sampleModel;
-        this.dataBuffer = dataBuffer;
-        this.minX = aRegion.x;
-        this.minY = aRegion.y;
-        this.width = aRegion.width;
-        this.height = aRegion.height;
-        this.sampleModelTranslateX = sampleModelTranslate.x;
-        this.sampleModelTranslateY = sampleModelTranslate.y;
-        this.parent = parent;
-        this.numBands = sampleModel.getNumBands();
-        this.numDataElements = sampleModel.getNumDataElements();
-
-    }
-
-    protected Raster(SampleModel sampleModel, Point origin) {
-        this(sampleModel, sampleModel.createDataBuffer(), new Rectangle(
-                origin.x, origin.y, sampleModel.getWidth(), sampleModel
-                        .getHeight()), origin, null);
     }
 
     public Raster createChild(int parentX, int parentY, int width, int height,
-            int childMinX, int childMinY, int bandList[]) {
+                              int childMinX, int childMinY, int bandList[]) {
         if (width <= 0 || height <= 0) {
             // awt.285=Width or Height of child Raster is less than or equal to zero
             throw new RasterFormatException(Messages.getString("awt.285")); //$NON-NLS-1$
@@ -695,7 +748,7 @@ public class Raster {
     }
 
     public WritableRaster createCompatibleWritableRaster(int x, int y, int w,
-            int h) {
+                                                         int h) {
 
         WritableRaster raster = createCompatibleWritableRaster(w, h);
 
@@ -817,7 +870,7 @@ public class Raster {
     }
 
     public double[] getSamples(int x, int y, int w, int h, int b,
-            double dArray[]) {
+                               double dArray[]) {
 
         return sampleModel.getSamples(x - sampleModelTranslateX, y
                 - sampleModelTranslateY, w, h, b, dArray, dataBuffer);
@@ -840,60 +893,6 @@ public class Raster {
 
     public final int getWidth() {
         return width;
-    }
-
-    private static void validateDataBuffer(final DataBuffer dataBuffer, final int w,
-            final int h, final SampleModel sampleModel) {
-
-        int size = 0;
-        
-        if (sampleModel instanceof ComponentSampleModel) {
-            ComponentSampleModel csm = (ComponentSampleModel) sampleModel;
-            int offsets[] = csm.getBandOffsets();
-            int maxOffset = offsets[0];
-            for (int i = 1; i < offsets.length; i++) {
-                if (offsets[i] > maxOffset) {
-                    maxOffset = offsets[i];
-                }
-            }
-            int scanlineStride = csm.getScanlineStride();
-            int pixelStride = csm.getPixelStride();
-            
-            size = (h - 1) * scanlineStride +
-            (w - 1) * pixelStride + maxOffset + 1;
-
-        } else if (sampleModel instanceof MultiPixelPackedSampleModel) {
-            MultiPixelPackedSampleModel mppsm = 
-                (MultiPixelPackedSampleModel) sampleModel;
-            
-            int scanlineStride = mppsm.getScanlineStride();
-            int dataBitOffset = mppsm.getDataBitOffset();
-            int dataType = dataBuffer.getDataType();
-            
-            size = scanlineStride * h;
-
-            switch (dataType) {
-            case DataBuffer.TYPE_BYTE:
-                size += (dataBitOffset + 7) / 8;
-                break;
-            case DataBuffer.TYPE_USHORT:
-                size += (dataBitOffset + 15) / 16;
-                break;
-            case DataBuffer.TYPE_INT:
-                size += (dataBitOffset + 31) / 32;
-                break;
-            }
-        } else if (sampleModel instanceof SinglePixelPackedSampleModel) {
-            SinglePixelPackedSampleModel sppsm = 
-                (SinglePixelPackedSampleModel) sampleModel;
-            
-            int scanlineStride = sppsm.getScanlineStride();
-            size = (h - 1) * scanlineStride + w;
-        }
-        if (dataBuffer.getSize() < size) {
-            // awt.298=dataBuffer is too small
-            throw new RasterFormatException(Messages.getString("awt.298")); //$NON-NLS-1$
-        }
     }
 }
 

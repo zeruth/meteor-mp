@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
 
 /**
  * Wang/Eastman Software/Kodac/eiStream/Imaging for Windows tags,
@@ -33,6 +33,6 @@ public interface WangTagConstants {
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
 
     List<TagInfo> ALL_WANG_TAGS =
-            Collections.unmodifiableList(Arrays.asList(new TagInfo[] {
-                    EXIF_TAG_WANG_ANNOTATION }));
+            Collections.unmodifiableList(Arrays.asList(new TagInfo[]{
+                    EXIF_TAG_WANG_ANNOTATION}));
 }

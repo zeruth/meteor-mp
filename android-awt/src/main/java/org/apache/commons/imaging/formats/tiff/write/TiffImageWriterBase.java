@@ -16,7 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.PixelDensity;
 import org.apache.commons.imaging.common.BinaryOutputStream;
@@ -29,36 +28,13 @@ import org.apache.commons.imaging.formats.tiff.TiffImageData;
 import org.apache.commons.imaging.formats.tiff.constants.ExifTagConstants;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.DEFAULT_TIFF_BYTE_ORDER;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.DIRECTORY_TYPE_EXIF;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.DIRECTORY_TYPE_GPS;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.DIRECTORY_TYPE_INTEROPERABILITY;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.DIRECTORY_TYPE_ROOT;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_COMPRESSION;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_EXIF;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_FORMAT;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_PIXEL_DENSITY;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_T4_OPTIONS;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_T6_OPTIONS;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.PARAM_KEY_XMP_XML;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_CCITT_1D;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_CCITT_GROUP_3;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_CCITT_GROUP_4;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_LZW;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_PACKBITS;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_COMPRESSION_UNCOMPRESSED;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_FLAG_T6_OPTIONS_UNCOMPRESSED_MODE;
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_HEADER_SIZE;
+import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
 
 public abstract class TiffImageWriterBase {
 
@@ -83,7 +59,7 @@ public abstract class TiffImageWriterBase {
             throws ImageWriteException {
         final List<TiffOutputDirectory> directories = outputSet.getDirectories();
 
-        if (directories.isEmpty()) { 
+        if (directories.isEmpty()) {
             throw new ImageWriteException("No directories.");
         }
 
@@ -454,7 +430,7 @@ public abstract class TiffImageWriterBase {
                         (short) 0);
                 directory.add(TiffTagConstants.TIFF_TAG_XRESOLUTION,
                         RationalNumber.valueOf(pixelDensity.getRawHorizontalDensity()));
-                directory.add(TiffTagConstants.TIFF_TAG_YRESOLUTION, 
+                directory.add(TiffTagConstants.TIFF_TAG_YRESOLUTION,
                         RationalNumber.valueOf(pixelDensity.getRawVerticalDensity()));
             } else if (pixelDensity.isInInches()) {
                 directory.add(TiffTagConstants.TIFF_TAG_RESOLUTION_UNIT,
@@ -497,7 +473,7 @@ public abstract class TiffImageWriterBase {
     }
 
     private void combineUserExifIntoFinalExif(final TiffOutputSet userExif,
-            final TiffOutputSet outputSet) throws ImageWriteException {
+                                              final TiffOutputSet outputSet) throws ImageWriteException {
         final List<TiffOutputDirectory> outputDirectories = outputSet
                 .getDirectories();
         Collections.sort(outputDirectories, TiffOutputDirectory.COMPARATOR);
@@ -519,7 +495,7 @@ public abstract class TiffImageWriterBase {
     }
 
     private byte[][] getStrips(final BufferedImage src, final int samplesPerPixel,
-            final int bitsPerSample, final int rowsPerStrip) {
+                               final int bitsPerSample, final int rowsPerStrip) {
         final int width = src.getWidth();
         final int height = src.getHeight();
 
@@ -597,7 +573,7 @@ public abstract class TiffImageWriterBase {
     }
 
     protected void writeImageFileHeader(final BinaryOutputStream bos,
-            final long offsetToFirstIFD) throws IOException {
+                                        final long offsetToFirstIFD) throws IOException {
         if (byteOrder == ByteOrder.LITTLE_ENDIAN) {
             bos.write('I');
             bos.write('I');

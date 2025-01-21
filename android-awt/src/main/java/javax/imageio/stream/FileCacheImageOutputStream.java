@@ -75,7 +75,7 @@ public class FileCacheImageOutputStream extends ImageOutputStreamImpl {
     @Override
     public void write(int b) throws IOException {
         flushBits(); // See the flushBits method description
-        
+
         raf.write(b);
         streamPos++;
     }
@@ -121,7 +121,7 @@ public class FileCacheImageOutputStream extends ImageOutputStreamImpl {
         raf.seek(readFromPos);
 
         if (bytesToRead < MAX_BUFFER_LEN) {
-            byte buffer[] = new byte[(int)bytesToRead];
+            byte buffer[] = new byte[(int) bytesToRead];
             raf.readFully(buffer);
             os.write(buffer);
         } else {
@@ -148,7 +148,7 @@ public class FileCacheImageOutputStream extends ImageOutputStreamImpl {
         }
 
         raf.seek(pos);
-        streamPos = raf.getFilePointer();        
+        streamPos = raf.getFilePointer();
         bitOffset = 0;
     }
 
@@ -156,7 +156,7 @@ public class FileCacheImageOutputStream extends ImageOutputStreamImpl {
     public long length() {
         try {
             return raf.length();
-        } catch(IOException e) {
+        } catch (IOException e) {
             return -1L;
         }
     }

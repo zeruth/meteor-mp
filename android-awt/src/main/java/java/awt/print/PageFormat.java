@@ -27,16 +27,16 @@ public class PageFormat implements Cloneable {
     public static final int REVERSE_LANDSCAPE = 2;
 
     private Paper pagePaper;
-    private int   pageOrientation;
+    private int pageOrientation;
 
     public PageFormat() {
         super();
         pageOrientation = PORTRAIT;
-        pagePaper= new Paper();
+        pagePaper = new Paper();
     }
 
     @Override
-    public Object clone(){
+    public Object clone() {
         PageFormat clonedPage;
         try {
             clonedPage = (PageFormat) super.clone();
@@ -48,7 +48,7 @@ public class PageFormat implements Cloneable {
         return clonedPage;
     }
 
-    public double getHeight(){
+    public double getHeight() {
         if (pageOrientation == PORTRAIT) {
             return pagePaper.getHeight();
         }
@@ -69,17 +69,17 @@ public class PageFormat implements Cloneable {
         return pagePaper.getImageableHeight();
     }
 
-    public double getImageableX(){
+    public double getImageableX() {
         double x = 0;
-        switch(getOrientation()){
+        switch (getOrientation()) {
             case PORTRAIT:
                 x = pagePaper.getImageableX();
                 break;
 
             case LANDSCAPE:
                 x = pagePaper.getHeight()
-                    - (pagePaper.getImageableY()
-                    +  pagePaper.getImageableHeight());
+                        - (pagePaper.getImageableY()
+                        + pagePaper.getImageableHeight());
                 break;
 
             case REVERSE_LANDSCAPE:
@@ -89,9 +89,9 @@ public class PageFormat implements Cloneable {
         return x;
     }
 
-    public double getImageableY(){
+    public double getImageableY() {
         double y = 0;
-        switch(getOrientation()){
+        switch (getOrientation()) {
             case PORTRAIT:
                 y = pagePaper.getImageableY();
                 break;
@@ -102,55 +102,44 @@ public class PageFormat implements Cloneable {
 
             case REVERSE_LANDSCAPE:
                 y = pagePaper.getWidth()
-                    - (pagePaper.getImageableX()
-                    +  pagePaper.getImageableWidth());
+                        - (pagePaper.getImageableX()
+                        + pagePaper.getImageableWidth());
                 break;
         }
         return y;
     }
 
-    public double[] getMatrix(){
-        double matrix[] = {0d,0d,0d,0d,0d,0d};
+    public double[] getMatrix() {
+        double matrix[] = {0d, 0d, 0d, 0d, 0d, 0d};
 
-        switch(pageOrientation){
+        switch (pageOrientation) {
 
             case PORTRAIT:
-                 matrix[0] = 1.0d;
-                 matrix[3] = 1.0d;
-                 break;
+                matrix[0] = 1.0d;
+                matrix[3] = 1.0d;
+                break;
 
             case LANDSCAPE:
-                 matrix[1] = -1.0d;
-                 matrix[2] = 1.0d;
-                 matrix[5] = pagePaper.getHeight();
-                 break;
+                matrix[1] = -1.0d;
+                matrix[2] = 1.0d;
+                matrix[5] = pagePaper.getHeight();
+                break;
 
             case REVERSE_LANDSCAPE:
-                  matrix[1] = 1.0d;
-                  matrix[2] = -1.0d;
-                  matrix[4] = pagePaper.getWidth();
-                  break;
+                matrix[1] = 1.0d;
+                matrix[2] = -1.0d;
+                matrix[4] = pagePaper.getWidth();
+                break;
         }
         return matrix;
     }
 
-    public int getOrientation(){
+    public int getOrientation() {
         return pageOrientation;
     }
 
-    public Paper getPaper(){
-        return pagePaper;
-    }
-
-    public double getWidth(){
-        if (pageOrientation == PORTRAIT) {
-            return pagePaper.getWidth();
-        }
-        return pagePaper.getHeight();
-    }
-
     public void setOrientation(int orientation)
-                throws IllegalArgumentException {
+            throws IllegalArgumentException {
         if (orientation == PORTRAIT
                 || orientation == LANDSCAPE
                 || orientation == REVERSE_LANDSCAPE) {
@@ -161,7 +150,18 @@ public class PageFormat implements Cloneable {
         }
     }
 
-    public void setPaper(Paper paper){
+    public Paper getPaper() {
+        return pagePaper;
+    }
+
+    public void setPaper(Paper paper) {
         this.pagePaper = paper;
+    }
+
+    public double getWidth() {
+        if (pageOrientation == PORTRAIT) {
+            return pagePaper.getWidth();
+        }
+        return pagePaper.getHeight();
     }
 }

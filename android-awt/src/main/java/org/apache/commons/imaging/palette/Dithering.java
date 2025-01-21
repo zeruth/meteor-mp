@@ -16,8 +16,9 @@
  */
 package org.apache.commons.imaging.palette;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageWriteException;
+
+import java.awt.image.BufferedImage;
 
 /**
  * Dithering algorithms to use when quantizing an image to paletted form.
@@ -25,7 +26,7 @@ import org.apache.commons.imaging.ImageWriteException;
 public final class Dithering {
     private Dithering() {
     }
-    
+
     /**
      * Changes the given image to only use colors from the given palette,
      * applying Floyd-Steinberg dithering in the process. Ensure that
@@ -42,12 +43,12 @@ public final class Dithering {
                 final int index = palette.getPaletteIndex(argb);
                 final int nextArgb = palette.getEntry(index);
                 image.setRGB(x, y, nextArgb);
-                
+
                 final int a = (argb >> 24) & 0xff;
                 final int r = (argb >> 16) & 0xff;
                 final int g = (argb >> 8) & 0xff;
                 final int b = argb & 0xff;
-                
+
                 final int na = (nextArgb >> 24) & 0xff;
                 final int nr = (nextArgb >> 16) & 0xff;
                 final int ng = (nextArgb >> 8) & 0xff;
@@ -57,7 +58,7 @@ public final class Dithering {
                 final int errR = r - nr;
                 final int errG = g - ng;
                 final int errB = b - nb;
-                
+
                 if (x + 1 < image.getWidth()) {
                     int update = adjustPixel(image.getRGB(x + 1, y), errA, errR, errG, errB, 7);
                     image.setRGB(x + 1, y, update);
@@ -78,7 +79,7 @@ public final class Dithering {
             }
         }
     }
-    
+
     private static int adjustPixel(final int argb, final int errA, final int errR, final int errG, final int errB, final int mul) {
         int a = (argb >> 24) & 0xff;
         int r = (argb >> 16) & 0xff;

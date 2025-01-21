@@ -20,28 +20,28 @@
 package java.awt.image;
 
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 
 
 public class WritableRaster extends Raster {
 
     protected WritableRaster(SampleModel sampleModel, DataBuffer dataBuffer,
-            Rectangle aRegion, Point sampleModelTranslate,
-            WritableRaster parent) {
+                             Rectangle aRegion, Point sampleModelTranslate,
+                             WritableRaster parent) {
         super(sampleModel, dataBuffer, aRegion, sampleModelTranslate, parent);
     }
 
     protected WritableRaster(SampleModel sampleModel, DataBuffer dataBuffer,
-            Point origin) {
+                             Point origin) {
         this(sampleModel, dataBuffer, new Rectangle(origin.x, origin.y,
                 sampleModel.width, sampleModel.height), origin, null);
     }
 
     protected WritableRaster(SampleModel sampleModel, Point origin) {
         this(sampleModel, sampleModel.createDataBuffer(), new Rectangle(
-                origin.x, origin.y, sampleModel.width, sampleModel.height),
+                        origin.x, origin.y, sampleModel.width, sampleModel.height),
                 origin, null);
     }
 
@@ -56,7 +56,7 @@ public class WritableRaster extends Raster {
     }
 
     public WritableRaster createWritableChild(int parentX, int parentY, int w,
-            int h, int childMinX, int childMinY, int bandList[]) {
+                                              int h, int childMinX, int childMinY, int bandList[]) {
         if (w <= 0 || h <= 0) {
             // awt.244=Width or Height of child Raster is less than or equal to zero
             throw new RasterFormatException(Messages.getString("awt.244")); //$NON-NLS-1$
@@ -111,7 +111,7 @@ public class WritableRaster extends Raster {
     }
 
     public WritableRaster createWritableTranslatedChild(int childMinX,
-            int childMinY) {
+                                                        int childMinY) {
         return createWritableChild(minX, minY, width, height, childMinX,
                 childMinY, null);
     }
@@ -163,35 +163,35 @@ public class WritableRaster extends Raster {
         }
 
         switch (sampleModel.getDataType()) {
-        case DataBuffer.TYPE_BYTE:
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-        case DataBuffer.TYPE_INT:
-            int iPixelsLine[] = null;
-            for (int i = 0; i < h; i++) {
-                iPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
-                        iPixelsLine);
-                setPixels(dstX, dstY + i, w, 1, iPixelsLine);
-            }
-            break;
+            case DataBuffer.TYPE_BYTE:
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+            case DataBuffer.TYPE_INT:
+                int iPixelsLine[] = null;
+                for (int i = 0; i < h; i++) {
+                    iPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
+                            iPixelsLine);
+                    setPixels(dstX, dstY + i, w, 1, iPixelsLine);
+                }
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float fPixelsLine[] = null;
-            for (int i = 0; i < h; i++) {
-                fPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
-                        fPixelsLine);
-                setPixels(dstX, dstY + i, w, 1, fPixelsLine);
-            }
-            break;
+            case DataBuffer.TYPE_FLOAT:
+                float fPixelsLine[] = null;
+                for (int i = 0; i < h; i++) {
+                    fPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
+                            fPixelsLine);
+                    setPixels(dstX, dstY + i, w, 1, fPixelsLine);
+                }
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double dPixelsLine[] = null;
-            for (int i = 0; i < h; i++) {
-                dPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
-                        dPixelsLine);
-                setPixels(dstX, dstY + i, w, 1, dPixelsLine);
-            }
-            break;
+            case DataBuffer.TYPE_DOUBLE:
+                double dPixelsLine[] = null;
+                for (int i = 0; i < h; i++) {
+                    dPixelsLine = srcRaster.getPixels(srcX, srcY + i, w, 1,
+                            dPixelsLine);
+                    setPixels(dstX, dstY + i, w, 1, dPixelsLine);
+                }
+                break;
         }
     }
 

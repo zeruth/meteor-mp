@@ -16,19 +16,19 @@
  */
 package org.apache.harmony.x.imageio.plugins;
 
-import javax.imageio.stream.ImageInputStream;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import javax.imageio.stream.ImageInputStream;
 import java.io.IOException;
 import java.util.Arrays;
 
 public enum ImageSignature {
-        JPEG(new byte[] { (byte) 0xFF, (byte) 0xD8, (byte) 0xFF }),
-        BMP(new byte[] { 'B', 'M' }),
-        GIF87a(new byte[] { 'G', 'I', 'F', '8', '7', 'a' }),
-        GIF89a(new byte[] { 'G', 'I', 'F', '8', '9', 'a' }),
-        PNG(new byte[] { (byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47,
-                        (byte) 0x0D, (byte) 0x0A, (byte) 0x1A, (byte) 0x0A });
+    JPEG(new byte[]{(byte) 0xFF, (byte) 0xD8, (byte) 0xFF}),
+    BMP(new byte[]{'B', 'M'}),
+    GIF87a(new byte[]{'G', 'I', 'F', '8', '7', 'a'}),
+    GIF89a(new byte[]{'G', 'I', 'F', '8', '9', 'a'}),
+    PNG(new byte[]{(byte) 0x89, (byte) 0x50, (byte) 0x4E, (byte) 0x47,
+            (byte) 0x0D, (byte) 0x0A, (byte) 0x1A, (byte) 0x0A});
 
     private final byte[] sig;
 
@@ -37,10 +37,10 @@ public enum ImageSignature {
     }
 
     public static byte[] readSignature(final Object source, final int len)
-                    throws IOException {
+            throws IOException {
         if (source == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.2", //$NON-NLS-1$
-                "source")); //$NON-NLS-1$
+                    "source")); //$NON-NLS-1$
         }
 
         if (!(source instanceof ImageInputStream)) {

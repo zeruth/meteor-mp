@@ -20,47 +20,15 @@
 package org.apache.harmony.awt.gl;
 
 
-import java.awt.AlphaComposite;
-import java.awt.BasicStroke;
-import java.awt.Color;
-import java.awt.Composite;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsConfiguration;
-import java.awt.Image;
-import java.awt.Paint;
-import java.awt.PaintContext;
-import java.awt.Point;
-import java.awt.Polygon;
-import java.awt.Rectangle;
-import java.awt.RenderingHints;
-import java.awt.Shape;
-import java.awt.Stroke;
-import java.awt.Toolkit;
+import org.apache.harmony.awt.gl.image.OffscreenImage;
+import org.apache.harmony.awt.gl.render.*;
+
+import java.awt.*;
 import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
-import java.awt.geom.AffineTransform;
-import java.awt.geom.Arc2D;
-import java.awt.geom.Ellipse2D;
-import java.awt.geom.Line2D;
-import java.awt.geom.PathIterator;
-import java.awt.geom.RoundRectangle2D;
-import java.awt.image.AffineTransformOp;
-import java.awt.image.BufferedImage;
-import java.awt.image.BufferedImageOp;
-import java.awt.image.ImageObserver;
-import java.awt.image.Raster;
-import java.awt.image.RenderedImage;
-import java.awt.image.WritableRaster;
+import java.awt.geom.*;
+import java.awt.image.*;
 import java.awt.image.renderable.RenderableImage;
-import org.apache.harmony.awt.gl.image.OffscreenImage;
-import org.apache.harmony.awt.gl.render.Blitter;
-import org.apache.harmony.awt.gl.render.JavaArcRasterizer;
-import org.apache.harmony.awt.gl.render.JavaLineRasterizer;
-import org.apache.harmony.awt.gl.render.JavaShapeRasterizer;
-import org.apache.harmony.awt.gl.render.NullBlitter;
-
 import java.text.AttributedCharacterIterator;
 import java.util.Collections;
 import java.util.HashMap;
@@ -83,98 +51,86 @@ import java.util.Map;
  * <h2>CommonGraphics2D Class Internals</h2>
  * <h3>Line and Shape Rasterizers</h3>
  * <p>
- * The CommonGraphics2D class splits all shapes into a set of rectangles 
- * to unify the drawing process for different operating systems and architectures. 
- * For this purpose Java 2D* uses the JavaShapeRasterizer and the JavaLineRasterizer 
- * classes from the org.apache.harmony.awt.gl.render package. The JavaShapeRasterizer 
- * class splits an object implementing a Shape interface into a set of rectangles and 
- * produces a MultiRectArea object. The JavaLineRasterizer class makes line drawing 
- * more accurate and processes lines with strokes, which are instances of the BasicStroke 
+ * The CommonGraphics2D class splits all shapes into a set of rectangles
+ * to unify the drawing process for different operating systems and architectures.
+ * For this purpose Java 2D* uses the JavaShapeRasterizer and the JavaLineRasterizer
+ * classes from the org.apache.harmony.awt.gl.render package. The JavaShapeRasterizer
+ * class splits an object implementing a Shape interface into a set of rectangles and
+ * produces a MultiRectArea object. The JavaLineRasterizer class makes line drawing
+ * more accurate and processes lines with strokes, which are instances of the BasicStroke
  * class.
  * </p>
  * <p>
- * To port the shape drawing to another platform you just need to override 
- * rectangle-drawing methods. However, if your operating system has functions to draw 
- * particular shapes, you can optimize your subclass of the CommonGraphics2D class by 
+ * To port the shape drawing to another platform you just need to override
+ * rectangle-drawing methods. However, if your operating system has functions to draw
+ * particular shapes, you can optimize your subclass of the CommonGraphics2D class by
  * using this functionality in overridden methods.
  * </p>
-
+ *
  * <h3>Blitters</h3>
  * <p>
- * Blitter classes draw images on the display or buffered images. All blitters inherit 
+ * Blitter classes draw images on the display or buffered images. All blitters inherit
  * the org.apache.harmony.awt.gl.render.Blitter interface.
  * </p>
  * <p>Blitters are divided into:
  * <ul>
- * <li>Native blitters for simple types of images, which the underlying native library 
- * can draw.</li> 
- * <li>Java* blitters for those types of images, which the underlying native library 
+ * <li>Native blitters for simple types of images, which the underlying native library
+ * can draw.</li>
+ * <li>Java* blitters for those types of images, which the underlying native library
  * cannot handle.</li>
  * </ul></p>
  * <p>
- * DRL Java 2D* also uses blitters to fill the shapes and the user-defined subclasses 
+ * DRL Java 2D* also uses blitters to fill the shapes and the user-defined subclasses
  * of the java.awt.Paint class with paints, which the system does not support.
  * </p>
  *
- *<h3>Text Renderers</h3>
- *<p>
- *Text renderers draw strings and glyph vectors. All text renderers are subclasses 
- *of the org.apache.harmony.awt.gl.TextRenderer class.
- *</p>
- *
+ * <h3>Text Renderers</h3>
+ * <p>
+ * Text renderers draw strings and glyph vectors. All text renderers are subclasses
+ * of the org.apache.harmony.awt.gl.TextRenderer class.
+ * </p>
  */
 public abstract class CommonGraphics2D extends Graphics2D {
-	
-	private static final Map<RenderingHints.Key, Object> DEFAULT_RENDERING_HINTS;
 
-	static {
-		final Map<RenderingHints.Key, Object> m = new HashMap<RenderingHints.Key, Object>();
+    // Print debug output or not
+    protected static final boolean debugOutput = "1".equals(org.apache.harmony.awt.Utils.getSystemProperty("g2d.debug")); //$NON-NLS-1$ //$NON-NLS-2$
+    private static final Map<RenderingHints.Key, Object> DEFAULT_RENDERING_HINTS;
 
-		m.put(RenderingHints.KEY_TEXT_ANTIALIASING,
-				RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
-		m.put(RenderingHints.KEY_ANTIALIASING,
-				RenderingHints.VALUE_ANTIALIAS_OFF);
-		m.put(RenderingHints.KEY_STROKE_CONTROL,
-				RenderingHints.VALUE_STROKE_DEFAULT);
+    static {
+        final Map<RenderingHints.Key, Object> m = new HashMap<RenderingHints.Key, Object>();
 
-		DEFAULT_RENDERING_HINTS = Collections.unmodifiableMap(m);
-	}
-	
-    protected Surface dstSurf = null;
-    protected Blitter blitter = NullBlitter.getInstance();
-    protected RenderingHints hints = new RenderingHints(DEFAULT_RENDERING_HINTS);
+        m.put(RenderingHints.KEY_TEXT_ANTIALIASING,
+                RenderingHints.VALUE_TEXT_ANTIALIAS_DEFAULT);
+        m.put(RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_OFF);
+        m.put(RenderingHints.KEY_STROKE_CONTROL,
+                RenderingHints.VALUE_STROKE_DEFAULT);
 
-    // Clipping things
-    protected MultiRectArea clip = null;
-
-    protected Paint paint = Color.WHITE;
-    protected Color fgColor = Color.WHITE;
-    protected Color bgColor = Color.BLACK;
-
-    protected Composite composite = AlphaComposite.SrcOver;
-
-    protected Stroke stroke = new BasicStroke();
-
-    //TODO: Think more about FontRenderContext
-    protected FontRenderContext frc = null;
-
-    protected JavaShapeRasterizer jsr = new JavaShapeRasterizer();
-
-    protected Font font = new Font("Dialog", Font.PLAIN, 12);; //$NON-NLS-1$
-
-    protected TextRenderer jtr = new NullTextRenderer();
-
-    // Current graphics transform
-    protected AffineTransform transform = new AffineTransform();
-    protected double[] matrix = new double[6];
+        DEFAULT_RENDERING_HINTS = Collections.unmodifiableMap(m);
+    }
 
     // Original user->device translation as transform and point
     //public AffineTransform origTransform = new AffineTransform();
     public Point origPoint = new Point(0, 0);
-
-
-    // Print debug output or not
-    protected static final boolean debugOutput = "1".equals(org.apache.harmony.awt.Utils.getSystemProperty("g2d.debug")); //$NON-NLS-1$ //$NON-NLS-2$
+    protected Surface dstSurf = null;
+    protected Blitter blitter = NullBlitter.getInstance();
+    protected RenderingHints hints = new RenderingHints(DEFAULT_RENDERING_HINTS);
+    // Clipping things
+    protected MultiRectArea clip = null;
+    protected Paint paint = Color.WHITE;
+    protected Color fgColor = Color.WHITE;
+    protected Color bgColor = Color.BLACK;
+    protected Composite composite = AlphaComposite.SrcOver;
+    protected Stroke stroke = new BasicStroke();
+    //TODO: Think more about FontRenderContext
+    protected FontRenderContext frc = null;
+    ; //$NON-NLS-1$
+    protected JavaShapeRasterizer jsr = new JavaShapeRasterizer();
+    protected Font font = new Font("Dialog", Font.PLAIN, 12);
+    protected TextRenderer jtr = new NullTextRenderer();
+    // Current graphics transform
+    protected AffineTransform transform = new AffineTransform();
+    protected double[] matrix = new double[6];
 
     // Constructors
     protected CommonGraphics2D() {
@@ -193,7 +149,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     // Public methods
     @Override
-    public void addRenderingHints(Map<?,?> hints) {
+    public void addRenderingHints(Map<?, ?> hints) {
         this.hints.putAll(hints);
     }
 
@@ -206,7 +162,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
         setColor(c);
         setPaint(p);
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.clearRect("+x+", "+y+", "+width+", "+height+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            System.err.println("CommonGraphics2D.clearRect(" + x + ", " + y + ", " + width + ", " + height + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
     }
 
@@ -225,16 +181,16 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
         MultiRectArea mra = null;
         if (s instanceof MultiRectArea) {
-            mra = new MultiRectArea((MultiRectArea)s);
-            mra.translate((int)transform.getTranslateX(), (int)transform.getTranslateY());
+            mra = new MultiRectArea((MultiRectArea) s);
+            mra.translate((int) transform.getTranslateX(), (int) transform.getTranslateY());
         } else {
             int type = transform.getType();
-            if(s instanceof Rectangle && (type == AffineTransform.TYPE_IDENTITY ||
-                type == AffineTransform.TYPE_TRANSLATION )) {
-                    mra = new MultiRectArea((Rectangle)s);
-                    if(type == AffineTransform.TYPE_TRANSLATION){
-                        mra.translate((int)transform.getTranslateX(), (int)transform.getTranslateY());
-                    }
+            if (s instanceof Rectangle && (type == AffineTransform.TYPE_IDENTITY ||
+                    type == AffineTransform.TYPE_TRANSLATION)) {
+                mra = new MultiRectArea((Rectangle) s);
+                if (type == AffineTransform.TYPE_TRANSLATION) {
+                    mra.translate((int) transform.getTranslateX(), (int) transform.getTranslateY());
+                }
             } else {
                 s = transform.createTransformedShape(s);
                 mra = jsr.rasterize(s, 0.5);
@@ -255,8 +211,6 @@ public abstract class CommonGraphics2D extends Graphics2D {
     }
 
 
-
-
     /***************************************************************************
      *
      *  Draw methods
@@ -265,12 +219,12 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public void draw(Shape s) {
-        if (stroke instanceof BasicStroke && ((BasicStroke)stroke).getLineWidth() <= 1) {
+        if (stroke instanceof BasicStroke && ((BasicStroke) stroke).getLineWidth() <= 1) {
             //TODO: Think about drawing the shape in one fillMultiRectArea call
-            BasicStroke bstroke = (BasicStroke)stroke;
-            JavaLineRasterizer.LineDasher ld = (bstroke.getDashArray() == null)?null:new JavaLineRasterizer.LineDasher(bstroke.getDashArray(), bstroke.getDashPhase());
+            BasicStroke bstroke = (BasicStroke) stroke;
+            JavaLineRasterizer.LineDasher ld = (bstroke.getDashArray() == null) ? null : new JavaLineRasterizer.LineDasher(bstroke.getDashArray(), bstroke.getDashPhase());
             PathIterator pi = s.getPathIterator(transform, 0.5);
-            float []points = new float[6];
+            float[] points = new float[6];
             int x1 = Integer.MIN_VALUE;
             int y1 = Integer.MIN_VALUE;
             int cx1 = Integer.MIN_VALUE;
@@ -278,14 +232,14 @@ public abstract class CommonGraphics2D extends Graphics2D {
             while (!pi.isDone()) {
                 switch (pi.currentSegment(points)) {
                     case PathIterator.SEG_MOVETO:
-                        x1 = (int)Math.floor(points[0]);
-                        y1 = (int)Math.floor(points[1]);
+                        x1 = (int) Math.floor(points[0]);
+                        y1 = (int) Math.floor(points[1]);
                         cx1 = x1;
                         cy1 = y1;
                         break;
                     case PathIterator.SEG_LINETO:
-                        int x2 = (int)Math.floor(points[0]);
-                        int y2 = (int)Math.floor(points[1]);
+                        int x2 = (int) Math.floor(points[0]);
+                        int y2 = (int) Math.floor(points[1]);
                         fillMultiRectArea(JavaLineRasterizer.rasterize(x1, y1, x2, y2, null, ld, false));
                         x1 = x2;
                         y1 = y2;
@@ -309,8 +263,8 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public void drawArc(int x, int y, int width, int height, int sa, int ea) {
-        if (stroke instanceof BasicStroke && ((BasicStroke)stroke).getLineWidth() <= 1 &&
-                ((BasicStroke)stroke).getDashArray() == null && 
+        if (stroke instanceof BasicStroke && ((BasicStroke) stroke).getLineWidth() <= 1 &&
+                ((BasicStroke) stroke).getDashArray() == null &&
                 (transform.isIdentity() || transform.getType() == AffineTransform.TYPE_TRANSLATION)) {
             Point p = new Point(x, y);
             transform.transform(p, p);
@@ -324,29 +278,29 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image image, int x, int y, Color bgcolor,
-            ImageObserver imageObserver) {
+                             ImageObserver imageObserver) {
 
-        if(image == null) {
+        if (image == null) {
             return true;
         }
 
         boolean done = false;
         boolean somebits = false;
         Surface srcSurf = null;
-        if(image instanceof OffscreenImage){
+        if (image instanceof OffscreenImage) {
             OffscreenImage oi = (OffscreenImage) image;
-            if((oi.getState() & ImageObserver.ERROR) != 0) {
+            if ((oi.getState() & ImageObserver.ERROR) != 0) {
                 return false;
             }
             done = oi.prepareImage(imageObserver);
             somebits = (oi.getState() & ImageObserver.SOMEBITS) != 0;
             srcSurf = oi.getImageSurface();
-        }else{
+        } else {
             done = true;
             srcSurf = Surface.getImageSurface(image);
         }
 
-        if(done || somebits) {
+        if (done || somebits) {
             int w = srcSurf.getWidth();
             int h = srcSurf.getHeight();
             blitter.blit(0, 0, srcSurf, x, y, dstSurf, w, h, (AffineTransform) transform.clone(),
@@ -362,12 +316,12 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image image, int x, int y, int width, int height,
-            Color bgcolor, ImageObserver imageObserver) {
+                             Color bgcolor, ImageObserver imageObserver) {
 
-        if(image == null) {
+        if (image == null) {
             return true;
         }
-        if(width == 0 || height == 0) {
+        if (width == 0 || height == 0) {
             return true;
         }
 
@@ -375,29 +329,29 @@ public abstract class CommonGraphics2D extends Graphics2D {
         boolean somebits = false;
         Surface srcSurf = null;
 
-        if(image instanceof OffscreenImage){
+        if (image instanceof OffscreenImage) {
             OffscreenImage oi = (OffscreenImage) image;
-            if((oi.getState() & ImageObserver.ERROR) != 0) {
+            if ((oi.getState() & ImageObserver.ERROR) != 0) {
                 return false;
             }
             done = oi.prepareImage(imageObserver);
             somebits = (oi.getState() & ImageObserver.SOMEBITS) != 0;
             srcSurf = oi.getImageSurface();
-        }else{
+        } else {
             done = true;
             srcSurf = Surface.getImageSurface(image);
         }
 
-        if(done || somebits) {
+        if (done || somebits) {
             int w = srcSurf.getWidth();
             int h = srcSurf.getHeight();
-            if(w == width && h == height){
+            if (w == width && h == height) {
                 blitter.blit(0, 0, srcSurf, x, y, dstSurf, w, h,
                         (AffineTransform) transform.clone(),
                         composite, bgcolor, clip);
-            }else{
+            } else {
                 AffineTransform xform = new AffineTransform();
-                xform.setToScale((float)width / w, (float)height / h);
+                xform.setToScale((float) width / w, (float) height / h);
                 blitter.blit(0, 0, srcSurf, x, y, dstSurf, w, h,
                         (AffineTransform) transform.clone(),
                         xform, composite, bgcolor, clip);
@@ -408,39 +362,39 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image image, int x, int y, int width, int height,
-            ImageObserver imageObserver) {
+                             ImageObserver imageObserver) {
         return drawImage(image, x, y, width, height, null, imageObserver);
     }
 
     @Override
     public boolean drawImage(Image image, int dx1, int dy1, int dx2, int dy2,
-            int sx1, int sy1, int sx2, int sy2, Color bgcolor,
-            ImageObserver imageObserver) {
+                             int sx1, int sy1, int sx2, int sy2, Color bgcolor,
+                             ImageObserver imageObserver) {
 
-        if(image == null) {
+        if (image == null) {
             return true;
         }
-        if(dx1 == dx2 || dy1 == dy2 || sx1 == sx2 || sy1 == sy2) {
+        if (dx1 == dx2 || dy1 == dy2 || sx1 == sx2 || sy1 == sy2) {
             return true;
         }
 
         boolean done = false;
         boolean somebits = false;
         Surface srcSurf = null;
-        if(image instanceof OffscreenImage){
+        if (image instanceof OffscreenImage) {
             OffscreenImage oi = (OffscreenImage) image;
-            if((oi.getState() & ImageObserver.ERROR) != 0) {
+            if ((oi.getState() & ImageObserver.ERROR) != 0) {
                 return false;
             }
             done = oi.prepareImage(imageObserver);
             somebits = (oi.getState() & ImageObserver.SOMEBITS) != 0;
             srcSurf = oi.getImageSurface();
-        }else{
+        } else {
             done = true;
             srcSurf = Surface.getImageSurface(image);
         }
 
-        if(done || somebits) {
+        if (done || somebits) {
 
             int dstX = dx1;
             int dstY = dy1;
@@ -452,13 +406,13 @@ public abstract class CommonGraphics2D extends Graphics2D {
             int srcW = sx2 - sx1;
             int srcH = sy2 - sy1;
 
-            if(srcW == dstW && srcH == dstH){
+            if (srcW == dstW && srcH == dstH) {
                 blitter.blit(srcX, srcY, srcSurf, dstX, dstY, dstSurf, srcW, srcH,
                         (AffineTransform) transform.clone(),
                         composite, bgcolor, clip);
-            }else{
+            } else {
                 AffineTransform xform = new AffineTransform();
-                xform.setToScale((float)dstW / srcW, (float)dstH / srcH);
+                xform.setToScale((float) dstW / srcW, (float) dstH / srcH);
                 blitter.blit(srcX, srcY, srcSurf, dstX, dstY, dstSurf, srcW, srcH,
                         (AffineTransform) transform.clone(),
                         xform, composite, bgcolor, clip);
@@ -469,23 +423,23 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image image, int dx1, int dy1, int dx2, int dy2,
-            int sx1, int sy1, int sx2, int sy2, ImageObserver imageObserver) {
+                             int sx1, int sy1, int sx2, int sy2, ImageObserver imageObserver) {
 
         return drawImage(image, dx1, dy1, dx2, dy2, sx1, sy1, sx2, sy2, null,
                 imageObserver);
-     }
+    }
 
     @Override
     public void drawImage(BufferedImage bufImage, BufferedImageOp op,
-            int x, int y) {
+                          int x, int y) {
 
-        if(bufImage == null) {
+        if (bufImage == null) {
             return;
         }
 
-        if(op == null) {
+        if (op == null) {
             drawImage(bufImage, x, y, null);
-        } else if(op instanceof AffineTransformOp){
+        } else if (op instanceof AffineTransformOp) {
             AffineTransformOp atop = (AffineTransformOp) op;
             AffineTransform xform = atop.getTransform();
             Surface srcSurf = Surface.getImageSurface(bufImage);
@@ -507,32 +461,32 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public boolean drawImage(Image image, AffineTransform trans,
-            ImageObserver imageObserver) {
+                             ImageObserver imageObserver) {
 
-        if(image == null) {
+        if (image == null) {
             return true;
         }
-        if(trans == null || trans.isIdentity()) {
+        if (trans == null || trans.isIdentity()) {
             return drawImage(image, 0, 0, imageObserver);
         }
 
         boolean done = false;
         boolean somebits = false;
         Surface srcSurf = null;
-        if(image instanceof OffscreenImage){
+        if (image instanceof OffscreenImage) {
             OffscreenImage oi = (OffscreenImage) image;
-            if((oi.getState() & ImageObserver.ERROR) != 0) {
+            if ((oi.getState() & ImageObserver.ERROR) != 0) {
                 return false;
             }
             done = oi.prepareImage(imageObserver);
             somebits = (oi.getState() & ImageObserver.SOMEBITS) != 0;
             srcSurf = oi.getImageSurface();
-        }else{
+        } else {
             done = true;
             srcSurf = Surface.getImageSurface(image);
         }
 
-        if(done || somebits) {
+        if (done || somebits) {
             int w = srcSurf.getWidth();
             int h = srcSurf.getHeight();
             AffineTransform xform = (AffineTransform) transform.clone();
@@ -546,16 +500,16 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void drawLine(int x1, int y1, int x2, int y2) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.drawLine("+x1+", "+y1+", "+x2+", "+y2+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            System.err.println("CommonGraphics2D.drawLine(" + x1 + ", " + y1 + ", " + x2 + ", " + y2 + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 
-        if (stroke instanceof BasicStroke && ((BasicStroke)stroke).getLineWidth() <= 1) {
-            BasicStroke bstroke = (BasicStroke)stroke;
+        if (stroke instanceof BasicStroke && ((BasicStroke) stroke).getLineWidth() <= 1) {
+            BasicStroke bstroke = (BasicStroke) stroke;
             Point p1 = new Point(x1, y1);
             Point p2 = new Point(x2, y2);
             transform.transform(p1, p1);
             transform.transform(p2, p2);
-            JavaLineRasterizer.LineDasher ld = (bstroke.getDashArray() == null)?null:new JavaLineRasterizer.LineDasher(bstroke.getDashArray(), bstroke.getDashPhase());
+            JavaLineRasterizer.LineDasher ld = (bstroke.getDashArray() == null) ? null : new JavaLineRasterizer.LineDasher(bstroke.getDashArray(), bstroke.getDashPhase());
             MultiRectArea mra = JavaLineRasterizer.rasterize(p1.x, p1.y, p2.x, p2.y, null, ld, false);
             fillMultiRectArea(mra);
             return;
@@ -565,8 +519,8 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public void drawOval(int x, int y, int width, int height) {
-        if (stroke instanceof BasicStroke && ((BasicStroke)stroke).getLineWidth() <= 1 &&
-                ((BasicStroke)stroke).getDashArray() == null && 
+        if (stroke instanceof BasicStroke && ((BasicStroke) stroke).getLineWidth() <= 1 &&
+                ((BasicStroke) stroke).getDashArray() == null &&
                 (transform.isIdentity() || transform.getType() == AffineTransform.TYPE_TRANSLATION)) {
             Point p = new Point(x, y);
             transform.transform(p, p);
@@ -589,8 +543,8 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public void drawPolyline(int[] xpoints, int[] ypoints, int npoints) {
-        for (int i = 0; i < npoints-1; i++) {
-            drawLine(xpoints[i], ypoints[i], xpoints[i+1], ypoints[i+1]);
+        for (int i = 0; i < npoints - 1; i++) {
+            drawLine(xpoints[i], ypoints[i], xpoints[i + 1], ypoints[i + 1]);
         }
     }
 
@@ -605,9 +559,9 @@ public abstract class CommonGraphics2D extends Graphics2D {
         if (scaleX == 1 && scaleY == 1) {
             drawRenderedImage(img.createDefaultRendering(), xform);
         } else {
-            int width = (int)Math.round(img.getWidth()*scaleX);
-            int height = (int)Math.round(img.getHeight()*scaleY);
-            xform = (AffineTransform)xform.clone();
+            int width = (int) Math.round(img.getWidth() * scaleX);
+            int height = (int) Math.round(img.getHeight() * scaleY);
+            xform = (AffineTransform) xform.clone();
             xform.scale(1, 1);
             drawRenderedImage(img.createScaledRendering(width, height, null), xform);
         }
@@ -622,7 +576,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
         Image img = null;
 
         if (rimg instanceof Image) {
-            img = (Image)rimg;
+            img = (Image) rimg;
         } else {
             //TODO: Create new class to provide Image interface for RenderedImage or rewrite this method
             img = new BufferedImage(rimg.getColorModel(), rimg.copyData(null), false, null);
@@ -634,14 +588,11 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void drawRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.drawRoundRect("+x+", "+y+", "+width+", "+height+","+arcWidth+", "+arcHeight+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            System.err.println("CommonGraphics2D.drawRoundRect(" + x + ", " + y + ", " + width + ", " + height + "," + arcWidth + ", " + arcHeight + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         }
 
         draw(new RoundRectangle2D.Float(x, y, width, height, arcWidth, arcHeight));
     }
-
-
-
 
 
     /***************************************************************************
@@ -658,12 +609,12 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     @Override
     public void drawString(AttributedCharacterIterator iterator, int x, int y) {
-        drawString(iterator, (float)x, (float)y);
+        drawString(iterator, (float) x, (float) y);
     }
 
     @Override
     public void drawString(String str, int x, int y) {
-        drawString(str, (float)x, (float)y);
+        drawString(str, (float) x, (float) y);
     }
 
 
@@ -703,7 +654,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void fillRect(int x, int y, int width, int height) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.fillRect("+x+", "+y+", "+width+", "+height+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
+            System.err.println("CommonGraphics2D.fillRect(" + x + ", " + y + ", " + width + ", " + height + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$
         }
 
         fill(new Rectangle(x, y, width, height));
@@ -712,13 +663,11 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void fillRoundRect(int x, int y, int width, int height, int arcWidth, int arcHeight) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.fillRoundRect("+x+", "+y+", "+width+", "+height+","+arcWidth+", "+arcHeight+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
+            System.err.println("CommonGraphics2D.fillRoundRect(" + x + ", " + y + ", " + width + ", " + height + "," + arcWidth + ", " + arcHeight + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$ //$NON-NLS-4$ //$NON-NLS-5$ //$NON-NLS-6$ //$NON-NLS-7$
         }
 
         fill(new RoundRectangle2D.Float(x, y, width, height, arcWidth, arcHeight));
     }
-
-
 
 
     /***************************************************************************
@@ -732,6 +681,17 @@ public abstract class CommonGraphics2D extends Graphics2D {
         return bgColor;
     }
 
+    /***************************************************************************
+     *
+     *  Set methods
+     *
+     ***************************************************************************/
+
+    @Override
+    public void setBackground(Color color) {
+        bgColor = color;
+    }
+
     @Override
     public Shape getClip() {
         if (clip == null) {
@@ -739,8 +699,42 @@ public abstract class CommonGraphics2D extends Graphics2D {
         }
 
         MultiRectArea res = new MultiRectArea(clip);
-        res.translate(-Math.round((float)transform.getTranslateX()), -Math.round((float)transform.getTranslateY()));
+        res.translate(-Math.round((float) transform.getTranslateX()), -Math.round((float) transform.getTranslateY()));
         return res;
+    }
+
+    @Override
+    public void setClip(Shape s) {
+        if (s == null) {
+            setTransformedClip(null);
+            if (debugOutput) {
+                System.err.println("CommonGraphics2D.setClip(null)"); //$NON-NLS-1$
+            }
+            return;
+        }
+
+        if (debugOutput) {
+            System.err.println("CommonGraphics2D.setClip(" + s.getBounds() + ")"); //$NON-NLS-1$ //$NON-NLS-2$
+        }
+
+        if (s instanceof MultiRectArea) {
+            MultiRectArea nclip = new MultiRectArea((MultiRectArea) s);
+            nclip.translate(Math.round((float) transform.getTranslateX()), Math.round((float) transform.getTranslateY()));
+            setTransformedClip(nclip);
+        } else {
+            int type = transform.getType();
+            if (s instanceof Rectangle && (type == AffineTransform.TYPE_IDENTITY ||
+                    type == AffineTransform.TYPE_TRANSLATION)) {
+                MultiRectArea nclip = new MultiRectArea((Rectangle) s);
+                if (type == AffineTransform.TYPE_TRANSLATION) {
+                    nclip.translate((int) transform.getTranslateX(), (int) transform.getTranslateY());
+                }
+                setTransformedClip(nclip);
+            } else {
+                s = transform.createTransformedShape(s);
+                setTransformedClip(jsr.rasterize(s, 0.5));
+            }
+        }
     }
 
     @Override
@@ -750,7 +744,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
         }
 
         Rectangle res = (Rectangle) clip.getBounds().clone();
-        res.translate(-Math.round((float)transform.getTranslateX()), -Math.round((float)transform.getTranslateY()));
+        res.translate(-Math.round((float) transform.getTranslateX()), -Math.round((float) transform.getTranslateY()));
         return res;
     }
 
@@ -760,13 +754,31 @@ public abstract class CommonGraphics2D extends Graphics2D {
     }
 
     @Override
+    public void setColor(Color color) {
+        if (color != null) {
+            fgColor = color;
+            paint = color;
+        }
+    }
+
+    @Override
     public Composite getComposite() {
         return composite;
     }
 
     @Override
+    public void setComposite(Composite composite) {
+        this.composite = composite;
+    }
+
+    @Override
     public Font getFont() {
         return font;
+    }
+
+    @Override
+    public void setFont(Font font) {
+        this.font = font;
     }
 
     @SuppressWarnings("deprecation")
@@ -778,20 +790,19 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public FontRenderContext getFontRenderContext() {
         AffineTransform at;
-        if (frc == null){
+        if (frc == null) {
             GraphicsConfiguration gc = getDeviceConfiguration();
-            if (gc != null){
+            if (gc != null) {
                 at = gc.getDefaultTransform();
                 at.concatenate(gc.getNormalizingTransform());
-            }
-            else 
+            } else
                 at = null;
 
-            boolean isAa = (hints.get(RenderingHints.KEY_TEXT_ANTIALIASING) == 
-                RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
-            boolean isFm = (hints.get(RenderingHints.KEY_FRACTIONALMETRICS) == 
-                RenderingHints.VALUE_FRACTIONALMETRICS_ON);
-            frc = new FontRenderContext(at,isAa,isFm);
+            boolean isAa = (hints.get(RenderingHints.KEY_TEXT_ANTIALIASING) ==
+                    RenderingHints.VALUE_TEXT_ANTIALIAS_ON);
+            boolean isFm = (hints.get(RenderingHints.KEY_FRACTIONALMETRICS) ==
+                    RenderingHints.VALUE_FRACTIONALMETRICS_ON);
+            frc = new FontRenderContext(at, isAa, isFm);
         }
         return frc;
     }
@@ -799,6 +810,17 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public Paint getPaint() {
         return paint;
+    }
+
+    @Override
+    public void setPaint(Paint paint) {
+        if (paint == null)
+            return;
+
+        this.paint = paint;
+        if (paint instanceof Color) {
+            fgColor = (Color) paint;
+        }
     }
 
     @Override
@@ -812,13 +834,32 @@ public abstract class CommonGraphics2D extends Graphics2D {
     }
 
     @Override
+    public void setRenderingHints(Map<?, ?> hints) {
+        this.hints.clear();
+        this.hints.putAll(DEFAULT_RENDERING_HINTS);
+        this.hints.putAll(hints);
+    }
+
+    @Override
     public Stroke getStroke() {
         return stroke;
     }
 
     @Override
+    public void setStroke(Stroke stroke) {
+        this.stroke = stroke;
+    }
+
+    @Override
     public AffineTransform getTransform() {
-        return (AffineTransform)transform.clone();
+        return (AffineTransform) transform.clone();
+    }
+
+    @Override
+    public void setTransform(AffineTransform transform) {
+        this.transform = transform;
+
+        transform.getMatrix(matrix);
     }
 
     @Override
@@ -826,9 +867,6 @@ public abstract class CommonGraphics2D extends Graphics2D {
         //TODO: Implement method....
         return false;
     }
-
-
-
 
     /***************************************************************************
      *
@@ -869,7 +907,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void translate(double tx, double ty) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.translate("+tx+", "+ty+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            System.err.println("CommonGraphics2D.translate(" + tx + ", " + ty + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
         transform.translate(tx, ty);
@@ -879,93 +917,16 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void translate(int tx, int ty) {
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.translate("+tx+", "+ty+")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+            System.err.println("CommonGraphics2D.translate(" + tx + ", " + ty + ")"); //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         }
 
         transform.translate(tx, ty);
         transform.getMatrix(matrix);
     }
 
-
-
-
-    /***************************************************************************
-     *
-     *  Set methods
-     *
-     ***************************************************************************/
-
-    @Override
-    public void setBackground(Color color) {
-        bgColor = color;
-    }
-
     @Override
     public void setClip(int x, int y, int width, int height) {
         setClip(new Rectangle(x, y, width, height));
-    }
-
-    @Override
-    public void setClip(Shape s) {
-        if (s == null) {
-            setTransformedClip(null);
-            if (debugOutput) {
-                System.err.println("CommonGraphics2D.setClip(null)"); //$NON-NLS-1$
-            }
-            return;
-        }
-
-        if (debugOutput) {
-            System.err.println("CommonGraphics2D.setClip("+s.getBounds()+")"); //$NON-NLS-1$ //$NON-NLS-2$
-        }
-
-        if (s instanceof MultiRectArea) {
-            MultiRectArea nclip = new MultiRectArea((MultiRectArea)s);
-            nclip.translate(Math.round((float)transform.getTranslateX()), Math.round((float)transform.getTranslateY()));
-            setTransformedClip(nclip);
-        } else {
-            int type = transform.getType();
-            if(s instanceof Rectangle && (type == AffineTransform.TYPE_IDENTITY ||
-                type == AffineTransform.TYPE_TRANSLATION )) {
-                    MultiRectArea nclip = new MultiRectArea((Rectangle)s);
-                    if(type == AffineTransform.TYPE_TRANSLATION){
-                        nclip.translate((int)transform.getTranslateX(), (int)transform.getTranslateY());
-                    }
-                    setTransformedClip(nclip);
-            } else {
-                s = transform.createTransformedShape(s);
-                setTransformedClip(jsr.rasterize(s, 0.5));
-            }
-        }
-    }
-
-    @Override
-    public void setColor(Color color) {
-        if (color != null) {
-            fgColor = color;
-            paint = color;
-        }
-    }
-
-    @Override
-    public void setComposite(Composite composite) {
-        this.composite = composite;
-    }
-
-    @Override
-    public void setFont(Font font) {
-        this.font = font;
-    }
-
-    @Override
-    public void setPaint(Paint paint) {
-        if (paint == null)
-            return;
-            
-        this.paint = paint;
-        if (paint instanceof Color) {
-            fgColor = (Color)paint;
-        }
     }
 
     @Override
@@ -976,25 +937,6 @@ public abstract class CommonGraphics2D extends Graphics2D {
     @Override
     public void setRenderingHint(RenderingHints.Key key, Object value) {
         hints.put(key, value);
-    }
-
-    @Override
-    public void setRenderingHints(Map<?,?> hints) {
-        this.hints.clear();
-        this.hints.putAll(DEFAULT_RENDERING_HINTS);
-        this.hints.putAll(hints);
-    }
-
-    @Override
-    public void setStroke(Stroke stroke) {
-        this.stroke = stroke;
-    }
-
-    @Override
-    public void setTransform(AffineTransform transform) {
-        this.transform = transform;
-
-        transform.getMatrix(matrix);
     }
 
     @Override
@@ -1010,8 +952,9 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     /**
      * This method fills the given MultiRectArea with current paint.
-     * It calls fillMultiRectAreaColor and fillMultiRectAreaPaint 
+     * It calls fillMultiRectAreaColor and fillMultiRectAreaPaint
      * methods depending on the type of current paint.
+     *
      * @param mra MultiRectArea to fill
      */
     protected void fillMultiRectArea(MultiRectArea mra) {
@@ -1025,18 +968,19 @@ public abstract class CommonGraphics2D extends Graphics2D {
         }
 
         if (debugOutput) {
-            System.err.println("CommonGraphics2D.fillMultiRectArea("+mra+")"); //$NON-NLS-1$ //$NON-NLS-2$
+            System.err.println("CommonGraphics2D.fillMultiRectArea(" + mra + ")"); //$NON-NLS-1$ //$NON-NLS-2$
         }
 
-        if (paint instanceof Color){
+        if (paint instanceof Color) {
             fillMultiRectAreaColor(mra);
-        }else{
+        } else {
             fillMultiRectAreaPaint(mra);
         }
     }
 
     /**
      * This method fills the given MultiRectArea with solid color.
+     *
      * @param mra MultiRectArea to fill
      */
     protected void fillMultiRectAreaColor(MultiRectArea mra) {
@@ -1045,6 +989,7 @@ public abstract class CommonGraphics2D extends Graphics2D {
 
     /**
      * This method fills the given MultiRectArea with any paint.
+     *
      * @param mra MultiRectArea to fill
      */
     protected void fillMultiRectAreaPaint(MultiRectArea mra) {
@@ -1053,15 +998,15 @@ public abstract class CommonGraphics2D extends Graphics2D {
         int y = rec.y;
         int w = rec.width;
         int h = rec.height;
-        if(w <= 0 || h <= 0) {
+        if (w <= 0 || h <= 0) {
             return;
         }
         PaintContext pc = paint.createContext(null, rec, rec, transform, hints);
         Raster r = pc.getRaster(x, y, w, h);
         WritableRaster wr;
-        if(r instanceof WritableRaster){
+        if (r instanceof WritableRaster) {
             wr = (WritableRaster) r;
-        }else{
+        } else {
             wr = r.createCompatibleWritableRaster();
             wr.setRect(r);
         }
@@ -1072,9 +1017,9 @@ public abstract class CommonGraphics2D extends Graphics2D {
     }
 
     /**
-     * Copies graphics class fields. 
+     * Copies graphics class fields.
      * Used in create method
-     * 
+     *
      * @param copy Graphics class to copy
      */
     protected void copyInternalFields(CommonGraphics2D copy) {
@@ -1094,5 +1039,6 @@ public abstract class CommonGraphics2D extends Graphics2D {
         copy.origPoint = new Point(origPoint);
     }
 
-    public void flush(){}
+    public void flush() {
+    }
 }

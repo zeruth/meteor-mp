@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -22,10 +22,49 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
 
 public class DhtSegment extends Segment {
     public final List<HuffmanTable> huffmanTables;
+
+    public DhtSegment(final int marker, final byte[] segmentData) throws IOException {
+        this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
+    }
+
+    public DhtSegment(final int marker, int length, final InputStream is)
+            throws IOException {
+        super(marker, length);
+
+        final ArrayList<HuffmanTable> huffmanTables = new ArrayList<HuffmanTable>();
+        while (length > 0) {
+            final int tableClassAndDestinationId = 0xff & readByte(
+                    "TableClassAndDestinationId", is, "Not a Valid JPEG File");
+            length--;
+            final int tableClass = (tableClassAndDestinationId >> 4) & 0xf;
+            final int destinationIdentifier = tableClassAndDestinationId & 0xf;
+            final int[] bits = new int[1 + 16];
+            int bitsSum = 0;
+            for (int i = 1; i < bits.length; i++) {
+                bits[i] = 0xff & readByte("Li", is, "Not a Valid JPEG File");
+                length--;
+                bitsSum += bits[i];
+            }
+            final int[] huffVal = new int[bitsSum];
+            for (int i = 0; i < bitsSum; i++) {
+                huffVal[i] = 0xff & readByte("Vij", is, "Not a Valid JPEG File");
+                length--;
+            }
+
+            huffmanTables.add(new HuffmanTable(tableClass,
+                    destinationIdentifier, bits, huffVal));
+        }
+        this.huffmanTables = Collections.unmodifiableList(huffmanTables);
+    }
+
+    @Override
+    public String getDescription() {
+        return "DHT (" + getSegmentType() + ")";
+    }
 
     public static class HuffmanTable {
         // some arrays are better off one-based
@@ -43,7 +82,7 @@ public class DhtSegment extends Segment {
         private final int[] valPtr = new int[1 + 16]; // 1-based
 
         public HuffmanTable(final int tableClass, final int destinationIdentifier,
-                final int[] bits, final int[] huffVal) {
+                            final int[] bits, final int[] huffVal) {
             this.tableClass = tableClass;
             this.destinationIdentifier = destinationIdentifier;
             this.bits = bits;
@@ -142,44 +181,5 @@ public class DhtSegment extends Segment {
         public int[] getValPtr() {
             return valPtr;
         }
-    }
-
-    public DhtSegment(final int marker, final byte[] segmentData) throws IOException {
-        this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
-    }
-
-    public DhtSegment(final int marker, int length, final InputStream is)
-            throws IOException {
-        super(marker, length);
-
-        final ArrayList<HuffmanTable> huffmanTables = new ArrayList<HuffmanTable>();
-        while (length > 0) {
-            final int tableClassAndDestinationId = 0xff & readByte(
-                    "TableClassAndDestinationId", is, "Not a Valid JPEG File");
-            length--;
-            final int tableClass = (tableClassAndDestinationId >> 4) & 0xf;
-            final int destinationIdentifier = tableClassAndDestinationId & 0xf;
-            final int[] bits = new int[1 + 16];
-            int bitsSum = 0;
-            for (int i = 1; i < bits.length; i++) {
-                bits[i] = 0xff & readByte("Li", is, "Not a Valid JPEG File");
-                length--;
-                bitsSum += bits[i];
-            }
-            final int[] huffVal = new int[bitsSum];
-            for (int i = 0; i < bitsSum; i++) {
-                huffVal[i] = 0xff & readByte("Vij", is, "Not a Valid JPEG File");
-                length--;
-            }
-
-            huffmanTables.add(new HuffmanTable(tableClass,
-                    destinationIdentifier, bits, huffVal));
-        }
-        this.huffmanTables = Collections.unmodifiableList(huffmanTables);
-    }
-
-    @Override
-    public String getDescription() {
-        return "DHT (" + getSegmentType() + ")";
     }
 }

@@ -24,37 +24,41 @@ import org.apache.harmony.x.imageio.plugins.jpeg.JPEGImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.jpeg.JPEGImageWriterSpi;
 import org.apache.harmony.x.imageio.plugins.png.PNGImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.png.PNGImageWriterSpi;
-import org.apache.harmony.x.imageio.spi.FileIISSpi;
-import org.apache.harmony.x.imageio.spi.FileIOSSpi;
-import org.apache.harmony.x.imageio.spi.InputStreamIISSpi;
-import org.apache.harmony.x.imageio.spi.OutputStreamIOSSpi;
-import org.apache.harmony.x.imageio.spi.RAFIISSpi;
-import org.apache.harmony.x.imageio.spi.RAFIOSSpi;
+import org.apache.harmony.x.imageio.spi.*;
 
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.IdentityHashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 public final class IIORegistry extends ServiceRegistry {
 
-    private static Map<ThreadGroup, IIORegistry> instances = 
-    	Collections.synchronizedMap(new IdentityHashMap<ThreadGroup, IIORegistry>());
-
-    private static final Class[] CATEGORIES = new Class[] {
-                    ImageWriterSpi.class,
-                    ImageReaderSpi.class,
-                    ImageInputStreamSpi.class,
-                    // javax.imageio.spi.ImageTranscoderSpi.class,
-                    ImageOutputStreamSpi.class };
+    private static final Class[] CATEGORIES = new Class[]{
+            ImageWriterSpi.class,
+            ImageReaderSpi.class,
+            ImageInputStreamSpi.class,
+            // javax.imageio.spi.ImageTranscoderSpi.class,
+            ImageOutputStreamSpi.class};
+    private static Map<ThreadGroup, IIORegistry> instances =
+            Collections.synchronizedMap(new IdentityHashMap<ThreadGroup, IIORegistry>());
 
     private IIORegistry() {
-        super(Arrays.<Class<?>> asList(CATEGORIES).iterator());
+        super(Arrays.<Class<?>>asList(CATEGORIES).iterator());
         registerBuiltinSpis();
         registerApplicationClasspathSpis();
+    }
+
+    public static IIORegistry getDefaultInstance() {
+        ThreadGroup tg = Thread.currentThread().getThreadGroup();
+        synchronized (instances) {
+            IIORegistry instance = instances.get(tg);
+            if (instance == null) {
+                synchronized (IIORegistry.class) {
+                    instance = new IIORegistry();
+                }
+                instances.put(tg, instance);
+            }
+            return instance;
+        }
     }
 
     private void registerBuiltinSpis() {
@@ -71,31 +75,17 @@ public final class IIORegistry extends ServiceRegistry {
         registerServiceProvider(new InputStreamIISSpi());
     }
 
-    public static IIORegistry getDefaultInstance() {
-        ThreadGroup tg = Thread.currentThread().getThreadGroup();
-        synchronized (instances) {
-        	IIORegistry instance = instances.get(tg);
-        	if (instance == null) {
-        		synchronized(IIORegistry.class) {
-        			instance = new IIORegistry();
-        		}
-            	instances.put(tg, instance);
-        	}
-        	return instance;
-        }    
-    }
-
     @SuppressWarnings("unchecked")
-	public void registerApplicationClasspathSpis() {
+    public void registerApplicationClasspathSpis() {
         AccessController.doPrivileged(new PrivilegedAction() {
-			public Object run() {
-				Iterator<Class<?>> categories = getCategories();
-				while (categories.hasNext()) {
-					Iterator providers = lookupProviders(categories.next());
-					registerServiceProviders(providers);
-				}
-				return this;
-			}
+            public Object run() {
+                Iterator<Class<?>> categories = getCategories();
+                while (categories.hasNext()) {
+                    Iterator providers = lookupProviders(categories.next());
+                    registerServiceProviders(providers);
+                }
+                return this;
+            }
         });
     }
 }

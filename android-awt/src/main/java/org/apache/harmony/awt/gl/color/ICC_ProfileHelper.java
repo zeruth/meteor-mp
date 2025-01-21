@@ -30,45 +30,49 @@ public class ICC_ProfileHelper {
     /**
      * Utility method.
      * Gets integer value from the byte array
+     *
      * @param byteArray - byte array
-     * @param idx - byte offset
+     * @param idx       - byte offset
      * @return integer value
      */
     public static int getIntFromByteArray(byte[] byteArray, int idx) {
-        return (byteArray[idx] & 0xFF)|
-               ((byteArray[idx+1] & 0xFF) << 8) |
-               ((byteArray[idx+2] & 0xFF) << 16)|
-               ((byteArray[idx+3] & 0xFF) << 24);
+        return (byteArray[idx] & 0xFF) |
+                ((byteArray[idx + 1] & 0xFF) << 8) |
+                ((byteArray[idx + 2] & 0xFF) << 16) |
+                ((byteArray[idx + 3] & 0xFF) << 24);
     }
 
     /**
      * Utility method.
      * Gets big endian integer value from the byte array
+     *
      * @param byteArray - byte array
-     * @param idx - byte offset
+     * @param idx       - byte offset
      * @return integer value
      */
     public static int getBigEndianFromByteArray(byte[] byteArray, int idx) {
-        return ((byteArray[idx] & 0xFF) << 24)   |
-               ((byteArray[idx+1] & 0xFF) << 16) |
-               ((byteArray[idx+2] & 0xFF) << 8)  |
-               ( byteArray[idx+3] & 0xFF);
+        return ((byteArray[idx] & 0xFF) << 24) |
+                ((byteArray[idx + 1] & 0xFF) << 16) |
+                ((byteArray[idx + 2] & 0xFF) << 8) |
+                (byteArray[idx + 3] & 0xFF);
     }
 
     /**
      * Utility method.
      * Gets short value from the byte array
+     *
      * @param byteArray - byte array
-     * @param idx - byte offset
+     * @param idx       - byte offset
      * @return short value
      */
     public static short getShortFromByteArray(byte[] byteArray, int idx) {
         return (short) ((byteArray[idx] & 0xFF) |
-                       ((byteArray[idx+1] & 0xFF) << 8));
+                ((byteArray[idx + 1] & 0xFF) << 8));
     }
 
     /**
      * Used in ICC_Transform class to check the rendering intent of the profile
+     *
      * @param profile - ICC profile
      * @return rendering intent
      */
@@ -76,6 +80,6 @@ public class ICC_ProfileHelper {
         return getIntFromByteArray(
                 profile.getData(ICC_Profile.icSigHead), // pf header
                 ICC_Profile.icHdrRenderingIntent
-            );
+        );
     }
 }

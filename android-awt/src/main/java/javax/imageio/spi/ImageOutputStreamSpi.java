@@ -21,7 +21,6 @@ package javax.imageio.spi;
 
 
 import javax.imageio.stream.ImageOutputStream;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -55,5 +54,5 @@ public abstract class ImageOutputStreamSpi extends IIOServiceProvider implements
     }
 
     public abstract ImageOutputStream createOutputStreamInstance(Object output,
-            boolean useCache, File cacheDir) throws IOException;
+                                                                 boolean useCache, File cacheDir) throws IOException;
 }

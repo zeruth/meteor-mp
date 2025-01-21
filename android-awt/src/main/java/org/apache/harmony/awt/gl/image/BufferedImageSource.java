@@ -20,18 +20,7 @@
 
 package org.apache.harmony.awt.gl.image;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.DataBufferInt;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImageConsumer;
-import java.awt.image.ImageProducer;
-import java.awt.image.IndexColorModel;
-import java.awt.image.WritableRaster;
-
+import java.awt.image.*;
 import java.util.Hashtable;
 
 
@@ -45,8 +34,8 @@ public class BufferedImageSource implements ImageProducer {
 
     private ImageConsumer ic;
 
-    public BufferedImageSource(BufferedImage image, Hashtable<?, ?> properties){
-        if(properties == null) {
+    public BufferedImageSource(BufferedImage image, Hashtable<?, ?> properties) {
+        if (properties == null) {
             this.properties = new Hashtable<Object, Object>();
         } else {
             this.properties = properties;
@@ -58,7 +47,7 @@ public class BufferedImageSource implements ImageProducer {
         raster = image.getRaster();
     }
 
-    public BufferedImageSource(BufferedImage image){
+    public BufferedImageSource(BufferedImage image) {
         this(image, null);
     }
 
@@ -84,7 +73,7 @@ public class BufferedImageSource implements ImageProducer {
         startProduction();
     }
 
-    private void startProduction(){
+    private void startProduction() {
         try {
             ic.setDimensions(width, height);
             ic.setProperties(properties);
@@ -93,33 +82,33 @@ public class BufferedImageSource implements ImageProducer {
                     ImageConsumer.COMPLETESCANLINES |
                     ImageConsumer.SINGLEFRAME |
                     ImageConsumer.SINGLEPASS);
-            if(cm instanceof IndexColorModel &&
+            if (cm instanceof IndexColorModel &&
                     raster.getTransferType() == DataBuffer.TYPE_BYTE ||
                     cm instanceof ComponentColorModel &&
-                    raster.getTransferType() == DataBuffer.TYPE_BYTE &&
-                    raster.getNumDataElements() == 1){
+                            raster.getTransferType() == DataBuffer.TYPE_BYTE &&
+                            raster.getNumDataElements() == 1) {
                 DataBufferByte dbb = (DataBufferByte) raster.getDataBuffer();
                 byte data[] = dbb.getData();
                 int off = dbb.getOffset();
                 ic.setPixels(0, 0, width, height, cm, data, off, width);
-            }else if(cm instanceof DirectColorModel &&
-                    raster.getTransferType() == DataBuffer.TYPE_INT){
+            } else if (cm instanceof DirectColorModel &&
+                    raster.getTransferType() == DataBuffer.TYPE_INT) {
                 DataBufferInt dbi = (DataBufferInt) raster.getDataBuffer();
                 int data[] = dbi.getData();
                 int off = dbi.getOffset();
                 ic.setPixels(0, 0, width, height, cm, data, off, width);
-            }else if(cm instanceof DirectColorModel &&
-                    raster.getTransferType() == DataBuffer.TYPE_BYTE){
+            } else if (cm instanceof DirectColorModel &&
+                    raster.getTransferType() == DataBuffer.TYPE_BYTE) {
                 DataBufferByte dbb = (DataBufferByte) raster.getDataBuffer();
                 byte data[] = dbb.getData();
                 int off = dbb.getOffset();
                 ic.setPixels(0, 0, width, height, cm, data, off, width);
-            }else{
+            } else {
                 ColorModel rgbCM = ColorModel.getRGBdefault();
                 int pixels[] = new int[width];
                 Object pix = null;
-                for(int y = 0; y < height; y++){
-                    for(int x = 0 ; x < width; x++){
+                for (int y = 0; y < height; y++) {
+                    for (int x = 0; x < width; x++) {
                         pix = raster.getDataElements(x, y, pix);
                         pixels[x] = cm.getRGB(pix);
                     }
@@ -127,7 +116,7 @@ public class BufferedImageSource implements ImageProducer {
                 }
             }
             ic.imageComplete(ImageConsumer.STATICIMAGEDONE);
-        }catch (NullPointerException e){
+        } catch (NullPointerException e) {
             if (ic != null) {
                 ic.imageComplete(ImageConsumer.IMAGEERROR);
             }

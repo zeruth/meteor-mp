@@ -72,7 +72,7 @@ public class FileImageInputStream extends ImageInputStreamImpl {
     public long length() {
         try {
             return raf.length();
-        } catch(IOException e) {
+        } catch (IOException e) {
             return -1L;
         }
     }

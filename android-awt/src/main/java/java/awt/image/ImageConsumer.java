@@ -47,10 +47,10 @@ public interface ImageConsumer {
     public void setColorModel(ColorModel model);
 
     public void setPixels(int x, int y, int w, int h, ColorModel model,
-            int[] pixels, int off, int scansize);
+                          int[] pixels, int off, int scansize);
 
     public void setPixels(int x, int y, int w, int h, ColorModel model,
-            byte[] pixels, int off, int scansize);
+                          byte[] pixels, int off, int scansize);
 
     public void setDimensions(int width, int height);
 

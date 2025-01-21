@@ -20,7 +20,6 @@
 package javax.imageio.spi;
 
 import javax.imageio.stream.ImageInputStream;
-
 import java.io.File;
 import java.io.IOException;
 
@@ -51,7 +50,7 @@ public abstract class ImageInputStreamSpi extends IIOServiceProvider implements
     }
 
     public abstract ImageInputStream createInputStreamInstance(Object input, boolean useCache,
-            File cacheDir) throws IOException;
+                                                               File cacheDir) throws IOException;
 
     public ImageInputStream createInputStreamInstance(Object input) throws IOException {
         return createInputStreamInstance(input, true, null);

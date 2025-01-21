@@ -24,7 +24,6 @@ package java.awt.font;
 import org.apache.harmony.misc.HashCode;
 
 
-
 public final class TextHitInfo {
     private int charIdx; // Represents character index in the line
     private boolean isTrailing;
@@ -34,11 +33,27 @@ public final class TextHitInfo {
         this.isTrailing = isTrailing;
     }
 
+    public static TextHitInfo trailing(int charIndex) {
+        return new TextHitInfo(charIndex, true);
+    }
+
+    public static TextHitInfo leading(int charIndex) {
+        return new TextHitInfo(charIndex, false);
+    }
+
+    public static TextHitInfo beforeOffset(int offset) {
+        return new TextHitInfo(offset - 1, true);
+    }
+
+    public static TextHitInfo afterOffset(int offset) {
+        return new TextHitInfo(offset, false);
+    }
+
     @Override
     public String toString() {
         return new String(
                 "TextHitInfo[" + charIdx + ", " + //$NON-NLS-1$ //$NON-NLS-2$
-                (isTrailing?"Trailing":"Leading") + "]" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                        (isTrailing ? "Trailing" : "Leading") + "]" //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
         );
     }
 
@@ -53,8 +68,8 @@ public final class TextHitInfo {
     public boolean equals(TextHitInfo thi) {
         return
                 thi != null &&
-                thi.charIdx == charIdx &&
-                thi.isTrailing == isTrailing;
+                        thi.charIdx == charIdx &&
+                        thi.isTrailing == isTrailing;
     }
 
     public TextHitInfo getOffsetHit(int offset) {
@@ -63,8 +78,8 @@ public final class TextHitInfo {
 
     public TextHitInfo getOtherHit() {
         return isTrailing ?
-                new TextHitInfo(charIdx+1, false) :
-                new TextHitInfo(charIdx-1, true);
+                new TextHitInfo(charIdx + 1, false) :
+                new TextHitInfo(charIdx - 1, true);
     }
 
     public boolean isLeadingEdge() {
@@ -77,26 +92,10 @@ public final class TextHitInfo {
     }
 
     public int getInsertionIndex() {
-        return isTrailing ? charIdx+1 : charIdx;
+        return isTrailing ? charIdx + 1 : charIdx;
     }
 
     public int getCharIndex() {
         return charIdx;
-    }
-
-    public static TextHitInfo trailing(int charIndex) {
-        return new TextHitInfo(charIndex, true);
-    }
-
-    public static TextHitInfo leading(int charIndex) {
-        return new TextHitInfo(charIndex, false);
-    }
-
-    public static TextHitInfo beforeOffset(int offset) {
-        return new TextHitInfo(offset-1, true);
-    }
-
-    public static TextHitInfo afterOffset(int offset) {
-        return new TextHitInfo(offset, false);
     }
 }

@@ -20,6 +20,12 @@ import java.io.Closeable;
 import java.io.IOException;
 
 public final class IoUtils {
+    /**
+     * This class should never be instantiated.
+     */
+    private IoUtils() {
+    }
+
     public static void closeQuietly(final boolean mayThrow, final Closeable... closeables)
             throws IOException {
         IOException firstException = null;
@@ -37,12 +43,6 @@ public final class IoUtils {
         if (firstException != null) {
             throw firstException;
         }
-    }
-
-    /**
-     * This class should never be instantiated.
-     */
-    private IoUtils() {
     }
 
 }

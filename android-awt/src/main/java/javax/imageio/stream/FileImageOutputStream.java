@@ -86,7 +86,7 @@ public class FileImageOutputStream extends ImageOutputStreamImpl {
         try {
             checkClosed();
             return file.length();
-        } catch(IOException e) {
+        } catch (IOException e) {
             return super.length(); // -1L
         }
     }

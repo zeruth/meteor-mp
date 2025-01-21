@@ -16,11 +16,11 @@
  */
 package org.apache.commons.imaging.formats.tiff.fieldtypes;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.ByteConversions;
 import org.apache.commons.imaging.formats.tiff.TiffField;
+
+import java.nio.ByteOrder;
 
 public class FieldTypeDouble extends FieldType {
     public FieldTypeDouble(final int type, final String name) {

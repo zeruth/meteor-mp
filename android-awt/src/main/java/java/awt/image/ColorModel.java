@@ -19,43 +19,32 @@
  */
 package java.awt.image;
 
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.util.Arrays;
 
 
 public abstract class ColorModel implements Transparency {
 
+    private static ColorModel RGBdefault;
     protected int pixel_bits;  // Pixel length in bits
-
     protected int transferType;
-
     ColorSpace cs;
-
     boolean hasAlpha;
-
     boolean isAlphaPremultiplied;
-
     int transparency;
-
     int numColorComponents;
-
     int numComponents;
-
-    int[] bits;             // Array of components masks 
-
+    int[] bits;             // Array of components masks
+    // components
     int[] maxValues = null; // Max values that may be represent by color
-                            // components
-
     int maxBitLength;       // Max length color components in bits
 
-    private static ColorModel RGBdefault;
-
     protected ColorModel(int pixel_bits, int[] bits, ColorSpace cspace,
-            boolean hasAlpha, boolean isAlphaPremultiplied, int transparency,
-            int transferType) {
+                         boolean hasAlpha, boolean isAlphaPremultiplied, int transparency,
+                         int transferType) {
 
         if (pixel_bits < 1) {
             // awt.26B=The number of bits in the pixel values is less than 1
@@ -87,7 +76,7 @@ public abstract class ColorModel implements Transparency {
         }
 
         if (transparency < Transparency.OPAQUE ||
-               transparency > Transparency.TRANSLUCENT) {
+                transparency > Transparency.TRANSLUCENT) {
             // awt.270=The transparency is not a valid value
             throw new IllegalArgumentException(Messages.getString("awt.270")); //$NON-NLS-1$
         }
@@ -140,13 +129,33 @@ public abstract class ColorModel implements Transparency {
         this.bits = null;
     }
 
+    public static ColorModel getRGBdefault() {
+        if (RGBdefault == null) {
+            RGBdefault = new DirectColorModel(32, 0x00ff0000, 0x0000ff00,
+                    0x000000ff, 0xff000000);
+        }
+        return RGBdefault;
+    }
+
+    static int getTransferType(int bits) {
+        if (bits <= 8) {
+            return DataBuffer.TYPE_BYTE;
+        } else if (bits <= 16) {
+            return DataBuffer.TYPE_USHORT;
+        } else if (bits <= 32) {
+            return DataBuffer.TYPE_INT;
+        } else {
+            return DataBuffer.TYPE_UNDEFINED;
+        }
+    }
+
     public Object getDataElements(int[] components, int offset, Object obj) {
         throw new UnsupportedOperationException("This method is not " + //$NON-NLS-1$
                 "supported by this ColorModel"); //$NON-NLS-1$
     }
 
     public Object getDataElements(float[] normComponents, int normOffset,
-            Object obj) {
+                                  Object obj) {
         int unnormComponents[] = getUnnormalizedComponents(normComponents,
                 normOffset, null, 0);
         return getDataElements(unnormComponents, 0, obj);
@@ -162,14 +171,14 @@ public abstract class ColorModel implements Transparency {
     }
 
     public ColorModel coerceData(WritableRaster raster,
-            boolean isAlphaPremultiplied) {
+                                 boolean isAlphaPremultiplied) {
         throw new UnsupportedOperationException("This method is not " + //$NON-NLS-1$
                 "supported by this ColorModel"); //$NON-NLS-1$
     }
 
     @Override
     public String toString() {
-        // The output format based on 1.5 release behaviour. 
+        // The output format based on 1.5 release behaviour.
         // It could be reveled such way:
         // ColorModel cm = new ComponentColorModel(ColorSpace.getInstance(ColorSpace.CS_sRGB,
         // false, false, Transparency.OPAQUE, DataBuffer.TYPE_BYTE);
@@ -188,7 +197,7 @@ public abstract class ColorModel implements Transparency {
     }
 
     public float[] getNormalizedComponents(Object pixel,
-            float[] normComponents, int normOffset) {
+                                           float[] normComponents, int normOffset) {
 
         if (pixel == null) {
             // awt.294=pixel is null
@@ -208,14 +217,14 @@ public abstract class ColorModel implements Transparency {
         ColorModel cm = (ColorModel) obj;
 
         return (pixel_bits == cm.getPixelSize() &&
-               transferType == cm.getTransferType() &&
-               cs.getType() == cm.getColorSpace().getType() &&
-               hasAlpha == cm.hasAlpha() &&
-               isAlphaPremultiplied == cm.isAlphaPremultiplied() &&
-               transparency == cm.getTransparency() &&
-               numColorComponents == cm.getNumColorComponents() &&
-               numComponents == cm.getNumComponents() &&
-               Arrays.equals(bits, cm.getComponentSize()));
+                transferType == cm.getTransferType() &&
+                cs.getType() == cm.getColorSpace().getType() &&
+                hasAlpha == cm.hasAlpha() &&
+                isAlphaPremultiplied == cm.isAlphaPremultiplied() &&
+                transparency == cm.getTransparency() &&
+                numColorComponents == cm.getNumColorComponents() &&
+                numComponents == cm.getNumComponents() &&
+                Arrays.equals(bits, cm.getComponentSize()));
     }
 
     public int getRed(Object inData) {
@@ -224,7 +233,7 @@ public abstract class ColorModel implements Transparency {
 
     public int getRGB(Object inData) {
         return (getAlpha(inData) << 24 | getRed(inData) << 16 |
-               getGreen(inData) << 8 | getBlue(inData));
+                getGreen(inData) << 8 | getBlue(inData));
     }
 
     public int getGreen(Object inData) {
@@ -264,7 +273,7 @@ public abstract class ColorModel implements Transparency {
     }
 
     public float[] getNormalizedComponents(int[] components, int offset,
-            float normComponents[], int normOffset) {
+                                           float normComponents[], int normOffset) {
         if (bits == null) {
             // awt.26C=bits is null
             throw new UnsupportedOperationException(Messages.getString("awt.26C")); //$NON-NLS-1$
@@ -276,13 +285,13 @@ public abstract class ColorModel implements Transparency {
 
         if (hasAlpha && isAlphaPremultiplied) {
             float normAlpha =
-                (float) components[offset + numColorComponents] /
-                    maxValues[numColorComponents];
+                    (float) components[offset + numColorComponents] /
+                            maxValues[numColorComponents];
             if (normAlpha != 0.0f) {
                 for (int i = 0; i < numColorComponents; i++) {
                     normComponents[normOffset + i] =
-                        components[offset + i] /
-                            (normAlpha * maxValues[i]);
+                            components[offset + i] /
+                                    (normAlpha * maxValues[i]);
                 }
                 normComponents[normOffset + numColorComponents] = normAlpha;
             } else {
@@ -293,8 +302,8 @@ public abstract class ColorModel implements Transparency {
         } else {
             for (int i = 0; i < numComponents; i++) {
                 normComponents[normOffset + i] =
-                    (float) components[offset + i] /
-                        maxValues[i];
+                        (float) components[offset + i] /
+                                maxValues[i];
             }
         }
 
@@ -307,7 +316,7 @@ public abstract class ColorModel implements Transparency {
     }
 
     public int[] getUnnormalizedComponents(float normComponents[],
-            int normOffset, int components[], int offset) {
+                                           int normOffset, int components[], int offset) {
 
         if (bits == null) {
             // awt.26C=bits is null
@@ -335,13 +344,13 @@ public abstract class ColorModel implements Transparency {
                         * maxValues[i] * alpha + 0.5f);
             }
             components[offset + numColorComponents] =
-                (int) (normComponents[normOffset + numColorComponents] *
-                        maxValues[numColorComponents] + 0.5f);
+                    (int) (normComponents[normOffset + numColorComponents] *
+                            maxValues[numColorComponents] + 0.5f);
         } else {
             for (int i = 0; i < numComponents; i++) {
                 components[offset + i] =
-                    (int) (normComponents[normOffset + i] *
-                            maxValues[i] + 0.5f);
+                        (int) (normComponents[normOffset + i] *
+                                maxValues[i] + 0.5f);
             }
         }
 
@@ -474,14 +483,6 @@ public abstract class ColorModel implements Transparency {
         return numColorComponents;
     }
 
-    public static ColorModel getRGBdefault() {
-        if (RGBdefault == null) {
-            RGBdefault = new DirectColorModel(32, 0x00ff0000, 0x0000ff00,
-                    0x000000ff, 0xff000000);
-        }
-        return RGBdefault;
-    }
-
     /*
      * Construct INT pixel representation from Object
      * @param obj
@@ -493,52 +494,40 @@ public abstract class ColorModel implements Transparency {
 
         switch (getTransferType()) {
 
-        case DataBuffer.TYPE_BYTE:
-            byte[] bPixel = (byte[]) obj;
-            if(bPixel.length > 1) {
-                // awt.275=This pixel representation is not suuported by tis Color Model
-                throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
-            }
-            pixel = bPixel[0] & 0xff;
-            break;
+            case DataBuffer.TYPE_BYTE:
+                byte[] bPixel = (byte[]) obj;
+                if (bPixel.length > 1) {
+                    // awt.275=This pixel representation is not suuported by tis Color Model
+                    throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
+                }
+                pixel = bPixel[0] & 0xff;
+                break;
 
-        case DataBuffer.TYPE_USHORT:
-            short[] sPixel = (short[]) obj;
-            if(sPixel.length > 1) {
-                // awt.275=This pixel representation is not suuported by tis Color Model
-                throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
-            }
-            pixel = sPixel[0] & 0xffff;
-            break;
+            case DataBuffer.TYPE_USHORT:
+                short[] sPixel = (short[]) obj;
+                if (sPixel.length > 1) {
+                    // awt.275=This pixel representation is not suuported by tis Color Model
+                    throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
+                }
+                pixel = sPixel[0] & 0xffff;
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int[] iPixel = (int[]) obj;
-            if(iPixel.length > 1) {
-                // awt.275=This pixel representation is not suuported by tis Color Model
-                throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
-            }
-            pixel = iPixel[0];
-            break;
+            case DataBuffer.TYPE_INT:
+                int[] iPixel = (int[]) obj;
+                if (iPixel.length > 1) {
+                    // awt.275=This pixel representation is not suuported by tis Color Model
+                    throw new UnsupportedOperationException(Messages.getString("awt.275")); //$NON-NLS-1$
+                }
+                pixel = iPixel[0];
+                break;
 
-        default:
-            // awt.22D=This transferType ( {0} ) is not supported by this color model
-            throw new UnsupportedOperationException(Messages.getString("awt.22D", //$NON-NLS-1$
-                   transferType));
+            default:
+                // awt.22D=This transferType ( {0} ) is not supported by this color model
+                throw new UnsupportedOperationException(Messages.getString("awt.22D", //$NON-NLS-1$
+                        transferType));
 
         }
         return pixel;
-    }
-
-    static int getTransferType(int bits) {
-        if (bits <= 8) {
-            return DataBuffer.TYPE_BYTE;
-        } else if (bits <= 16) {
-            return DataBuffer.TYPE_USHORT;
-        } else if (bits <= 32) {
-            return DataBuffer.TYPE_INT;
-        } else {
-            return DataBuffer.TYPE_UNDEFINED;
-        }
     }
 
     @Override

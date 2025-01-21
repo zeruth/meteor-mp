@@ -19,10 +19,10 @@
  */
 package java.awt;
 
+import org.apache.harmony.luni.util.NotImplementedException;
+
 import java.awt.image.BufferStrategy;
 import java.awt.image.ImageProducer;
-
-import org.apache.harmony.luni.util.NotImplementedException;
 
 public class Canvas extends Component {
     public Canvas() {
@@ -80,7 +80,7 @@ public class Canvas extends Component {
 //            toolkit.unlockAWT();
 //        }
     }
-    
+
     Dimension getDefaultMinimumSize() {
         return new Dimension(0, 0);
     }
@@ -90,8 +90,7 @@ public class Canvas extends Component {
 //        return ("canvas" + toolkit.autoNumber.nextCanvas++); //$NON-NLS-1$
     }
 
-    public Image createImage(ImageProducer imageProducer)
-    {
+    public Image createImage(ImageProducer imageProducer) {
         return null;
     }
 }

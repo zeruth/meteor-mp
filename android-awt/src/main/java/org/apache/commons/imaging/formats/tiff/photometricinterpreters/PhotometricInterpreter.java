@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.photometricinterpreters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
 
 public abstract class PhotometricInterpreter {
     protected final int samplesPerPixel;
@@ -29,7 +29,7 @@ public abstract class PhotometricInterpreter {
     protected final int height;
 
     public PhotometricInterpreter(final int samplesPerPixel, final int[] bitsPerSample,
-            final int predictor, final int width, final int height) {
+                                  final int predictor, final int width, final int height) {
         this.samplesPerPixel = samplesPerPixel;
         this.bitsPerSample = bitsPerSample;
         this.predictor = predictor;
@@ -38,5 +38,5 @@ public abstract class PhotometricInterpreter {
     }
 
     public abstract void interpretPixel(ImageBuilder imageBuilder,
-            int[] samples, int x, int y) throws ImageReadException, IOException;
+                                        int[] samples, int x, int y) throws ImageReadException, IOException;
 }

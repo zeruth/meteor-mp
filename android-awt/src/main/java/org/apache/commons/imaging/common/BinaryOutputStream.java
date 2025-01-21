@@ -27,14 +27,6 @@ public class BinaryOutputStream extends OutputStream {
     private boolean debug;
     private int count;
 
-    public final void setDebug(final boolean b) {
-        debug = b;
-    }
-
-    public final boolean getDebug() {
-        return debug;
-    }
-
     public BinaryOutputStream(final OutputStream os, final ByteOrder byteOrder) {
         this.byteOrder = byteOrder;
         this.os = os;
@@ -44,12 +36,20 @@ public class BinaryOutputStream extends OutputStream {
         this.os = os;
     }
 
-    protected void setByteOrder(final ByteOrder byteOrder) {
-        this.byteOrder = byteOrder;
+    public final boolean getDebug() {
+        return debug;
+    }
+
+    public final void setDebug(final boolean b) {
+        debug = b;
     }
 
     public ByteOrder getByteOrder() {
         return byteOrder;
+    }
+
+    protected void setByteOrder(final ByteOrder byteOrder) {
+        this.byteOrder = byteOrder;
     }
 
     @Override
@@ -63,23 +63,23 @@ public class BinaryOutputStream extends OutputStream {
         os.write(bytes, 0, bytes.length);
         count += bytes.length;
     }
-    
+
     @Override
     public final void write(final byte[] bytes, final int offset, final int length) throws IOException {
         os.write(bytes, offset, length);
         count += length;
     }
-    
+
     @Override
     public void flush() throws IOException {
         os.flush();
     }
-    
+
     @Override
     public void close() throws IOException {
         os.close();
     }
-    
+
     public int getByteCount() {
         return count;
     }

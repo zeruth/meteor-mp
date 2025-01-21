@@ -76,12 +76,12 @@ public class ImageFilter implements ImageConsumer, Cloneable {
     }
 
     public void setPixels(int x, int y, int w, int h, ColorModel model, int[] pixels, int off,
-            int scansize) {
+                          int scansize) {
         consumer.setPixels(x, y, w, h, model, pixels, off, scansize);
     }
 
     public void setPixels(int x, int y, int w, int h, ColorModel model, byte[] pixels, int off,
-            int scansize) {
+                          int scansize) {
         consumer.setPixels(x, y, w, h, model, pixels, off, scansize);
     }
 

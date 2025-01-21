@@ -79,7 +79,7 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
     @Override
     public void setPixels(
             int x, int y, int
-            w, int h,
+                    w, int h,
             ColorModel model, byte[] pixels,
             int off, int scansize
     ) {
@@ -170,7 +170,7 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
 
         boolean canArraycopy;
         // Process pixels
-        switch(transferType) {
+        switch (transferType) {
             case DataBuffer.TYPE_UNDEFINED: {
                 if (isByteData) {
                     transferType = DataBuffer.TYPE_BYTE;
@@ -204,7 +204,8 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
                 // RGB conversion
                 canArraycopy = false;
                 break;
-            } default: {
+            }
+            default: {
                 throw new IllegalStateException(Messages.getString("awt.06")); //$NON-NLS-1$
             }
         }
@@ -227,8 +228,8 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
                 for (; dstPos < maxDstPos; dstPos++, srcPos++) {
                     iData[dstPos] = model.getRGB(
                             isByteData ?
-                            ((byte[])pixels)[srcPos] :
-                            ((int[])pixels)[srcPos]
+                                    ((byte[]) pixels)[srcPos] :
+                                    ((int[]) pixels)[srcPos]
                     );
                 }
             }
@@ -238,22 +239,22 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
     private void forceRGB() {
         if (!forcedRGB) {
             forcedRGB = true;
-            int size = width*height;
+            int size = width * height;
             int rgbData[] = new int[size];
 
             if (bData != null) {
-                for (int i=0; i<size; i++) {
+                for (int i = 0; i < size; i++) {
                     rgbData[i] = cm.getRGB(bData[i]);
                 }
             } else if (iData != null) {
-                for (int i=0; i<size; i++) {
+                for (int i = 0; i < size; i++) {
                     rgbData[i] = cm.getRGB(iData[i]);
                 }
             }
 
             cm = ColorModel.getRGBdefault();
             DataBufferInt db = new DataBufferInt(rgbData, size);
-            int masks[] = new int[] {0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000};
+            int masks[] = new int[]{0x00ff0000, 0x0000ff00, 0x000000ff, 0xff000000};
             raster = Raster.createPackedRaster(db, width, height, width, masks, null);
             iData = accessor.getDataInt(db);
             bData = null;
@@ -274,7 +275,7 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
 
     private void createRaster(int dataType) {
         boolean createdValidBuffer = false;
-        try{
+        try {
             raster = cm.createCompatibleWritableRaster(width, height);
             int rasterType = raster.getDataBuffer().getDataType();
             if (rasterType == dataType) {
@@ -297,13 +298,13 @@ public class BufferedImageFilter extends ImageFilter implements Cloneable {
                         createdValidBuffer = false;
                 }
 
-                if(cm == ColorModel.getRGBdefault()){
+                if (cm == ColorModel.getRGBdefault()) {
                     forcedRGB = true;
                 }
             } else {
                 createdValidBuffer = false;
             }
-        } catch(Exception e) {
+        } catch (Exception e) {
             createdValidBuffer = false;
         }
 

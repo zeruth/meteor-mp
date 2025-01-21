@@ -16,7 +16,6 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Oct 5, 2005
  */
 

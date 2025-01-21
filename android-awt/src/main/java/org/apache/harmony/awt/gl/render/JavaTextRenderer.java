@@ -20,19 +20,19 @@
 package org.apache.harmony.awt.gl.render;
 
 
-import java.awt.Graphics2D;
-import java.awt.Rectangle;
+import org.apache.harmony.awt.gl.TextRenderer;
+import org.apache.harmony.awt.gl.font.CommonGlyphVector;
+import org.apache.harmony.awt.gl.font.FontPeerImpl;
+import org.apache.harmony.awt.gl.font.Glyph;
+import org.apache.harmony.awt.gl.image.BufferedImageGraphics2D;
+
+import java.awt.*;
 import java.awt.font.GlyphMetrics;
 import java.awt.font.GlyphVector;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.image.ColorModel;
 import java.awt.image.WritableRaster;
-import org.apache.harmony.awt.gl.TextRenderer;
-import org.apache.harmony.awt.gl.font.CommonGlyphVector;
-import org.apache.harmony.awt.gl.font.FontPeerImpl;
-import org.apache.harmony.awt.gl.font.Glyph;
-import org.apache.harmony.awt.gl.image.BufferedImageGraphics2D;
 
 
 public class JavaTextRenderer extends TextRenderer {
@@ -41,29 +41,29 @@ public class JavaTextRenderer extends TextRenderer {
 
     @Override
     public void drawGlyphVector(Graphics2D g, GlyphVector glyphVector,
-            float x, float y) {
+                                float x, float y) {
 
         AffineTransform at = g.getTransform();
         Rectangle c = g.getClipBounds();
-        if (at != null){
+        if (at != null) {
             int atType = at.getType();
             if (atType == AffineTransform.TYPE_TRANSLATION) {
-                c.translate((int)Math.round(at.getTranslateX()), (int)Math.round(at.getTranslateY()));
+                c.translate((int) Math.round(at.getTranslateX()), (int) Math.round(at.getTranslateY()));
             }
         }
 
-        WritableRaster wr = ((BufferedImageGraphics2D)g).getWritableRaster();
-        ColorModel cm = ((BufferedImageGraphics2D)g).getColorModel();
+        WritableRaster wr = ((BufferedImageGraphics2D) g).getWritableRaster();
+        ColorModel cm = ((BufferedImageGraphics2D) g).getColorModel();
 
         Rectangle rBounds = wr.getBounds();
 
         Object color = cm.getDataElements(g.getColor().getRGB(), null);
 
-        drawClipGlyphVector(wr, color, glyphVector, (int)Math.round(x + at.getTranslateX()), (int)Math.round(y + at.getTranslateY()),
-        Math.max(c.x,rBounds.x),
-        Math.max(c.y,rBounds.y),
-        Math.min((int)Math.round(c.getMaxX()), (int)Math.round(rBounds.getMaxX())),
-        Math.min((int)Math.round(c.getMaxY()), (int)Math.round(rBounds.getMaxY())));
+        drawClipGlyphVector(wr, color, glyphVector, (int) Math.round(x + at.getTranslateX()), (int) Math.round(y + at.getTranslateY()),
+                Math.max(c.x, rBounds.x),
+                Math.max(c.y, rBounds.y),
+                Math.min((int) Math.round(c.getMaxX()), (int) Math.round(rBounds.getMaxX())),
+                Math.min((int) Math.round(c.getMaxY()), (int) Math.round(rBounds.getMaxY())));
 
     }
 
@@ -72,44 +72,43 @@ public class JavaTextRenderer extends TextRenderer {
     public void drawString(Graphics2D g, String str, float x, float y) {
         AffineTransform at = g.getTransform();
         Rectangle c = g.getClipBounds();
-        if (at != null){
+        if (at != null) {
             int atType = at.getType();
             if (atType == AffineTransform.TYPE_TRANSLATION) {
-                c.translate((int)Math.round(at.getTranslateX()), (int)Math.round(at.getTranslateY()));
+                c.translate((int) Math.round(at.getTranslateX()), (int) Math.round(at.getTranslateY()));
             }
         }
-        WritableRaster wr = ((BufferedImageGraphics2D)g).getWritableRaster();
-        ColorModel cm = ((BufferedImageGraphics2D)g).getColorModel();
+        WritableRaster wr = ((BufferedImageGraphics2D) g).getWritableRaster();
+        ColorModel cm = ((BufferedImageGraphics2D) g).getColorModel();
         Rectangle rBounds = wr.getBounds();
 
         Object color = cm.getDataElements(g.getColor().getRGB(), null);
 
         drawClipString(wr, color, str, (FontPeerImpl) (g.getFont().getPeer()),
-                (int)Math.round(x + at.getTranslateX()), (int)Math.round(y + at.getTranslateY()),
-                Math.max(c.x,rBounds.x),
-                Math.max(c.y,rBounds.y),
-                Math.min((int)Math.round(c.getMaxX()), (int)Math.round(rBounds.getMaxX())),
-                Math.min((int)Math.round(c.getMaxY()), (int)Math.round(rBounds.getMaxY())));
+                (int) Math.round(x + at.getTranslateX()), (int) Math.round(y + at.getTranslateY()),
+                Math.max(c.x, rBounds.x),
+                Math.max(c.y, rBounds.y),
+                Math.min((int) Math.round(c.getMaxX()), (int) Math.round(rBounds.getMaxX())),
+                Math.min((int) Math.round(c.getMaxY()), (int) Math.round(rBounds.getMaxY())));
 
     }
 
     /**
-     * 
      * Draws string on specified raster at desired position.
-     *  
-     * @param raster specified WritableRaster to draw at
-     * @param color color of the text
+     *
+     * @param raster      specified WritableRaster to draw at
+     * @param color       color of the text
      * @param glyphVector GlyphVector object to draw
-     * @param x start X position to draw
-     * @param y start Y position to draw
-     * @param cMinX minimum x of the raster area to draw
-     * @param cMinY minimum y of the raster area to draw
-     * @param cMaxX maximum x of the raster area to draw
-     * @param cMaxY maximum y of the raster area to draw
+     * @param x           start X position to draw
+     * @param y           start Y position to draw
+     * @param cMinX       minimum x of the raster area to draw
+     * @param cMinY       minimum y of the raster area to draw
+     * @param cMaxX       maximum x of the raster area to draw
+     * @param cMaxY       maximum y of the raster area to draw
      */
     public void drawClipGlyphVector(WritableRaster raster, Object color,
-            GlyphVector glyphVector, int x, int y,
-            int cMinX, int cMinY, int cMaxX, int cMaxY) {
+                                    GlyphVector glyphVector, int x, int y,
+                                    int cMinX, int cMinY, int cMaxX, int cMaxY) {
         // TODO: implement complex clipping
 
         int xSrcSurf, ySrcSurf; // Start point in String rectangle
@@ -130,8 +129,8 @@ public class JavaTextRenderer extends TextRenderer {
                 xSrcSurf = 0;//gl.bmp_left;
                 ySrcSurf = 0;//gl.bmp_rows - gl.bmp_top;
 
-                xDstSurf = x + (int)pos.getX() + (int) gl.getGlyphPointMetrics().getLSB();// + gl.bmp_left;
-                yDstSurf = y - gl.bmp_top/*getPointHeight()*/  + (int) pos.getY();// - (gl.bmp_rows-gl.bmp_top);
+                xDstSurf = x + (int) pos.getX() + (int) gl.getGlyphPointMetrics().getLSB();// + gl.bmp_left;
+                yDstSurf = y - gl.bmp_top/*getPointHeight()*/ + (int) pos.getY();// - (gl.bmp_rows-gl.bmp_top);
 
                 int textWidth = gl.bmp_width;
                 int textHeight = gl.getPointHeight();
@@ -156,12 +155,12 @@ public class JavaTextRenderer extends TextRenderer {
                         yDstSurf = cMinY;
                     }
                     //     Drawing on the Raster
-                    for (int h=0; h<clHeight; h++){
-                        for (int w=0; w < clWidth ; w++) {
-                            byte currByte = data[(ySrcSurf + h)*gl.bmp_pitch + (xSrcSurf+w)/8];
-                            boolean emptyByte = ((currByte & (1 << (7 - ((xSrcSurf+w) % 8)))) != 0);
+                    for (int h = 0; h < clHeight; h++) {
+                        for (int w = 0; w < clWidth; w++) {
+                            byte currByte = data[(ySrcSurf + h) * gl.bmp_pitch + (xSrcSurf + w) / 8];
+                            boolean emptyByte = ((currByte & (1 << (7 - ((xSrcSurf + w) % 8)))) != 0);
                             if (emptyByte) {
-                                raster.setDataElements(xDstSurf+w, yDstSurf+h, color);
+                                raster.setDataElements(xDstSurf + w, yDstSurf + h, color);
                             } else {
                                 // Nothing to do
                             }
@@ -171,24 +170,24 @@ public class JavaTextRenderer extends TextRenderer {
             }
         }
     }
-    
+
     /**
      * Draws string on specified raster at desired position.
-     *  
+     *
      * @param raster specified WritableRaster to draw at
-     * @param color color of the text
-     * @param str text to draw
-     * @param font font peer to use for drawing text
-     * @param x start X position to draw
-     * @param y start Y position to draw
-     * @param cMinX minimum x of the raster area to draw
-     * @param cMinY minimum y of the raster area to draw
-     * @param cMaxX maximum x of the raster area to draw
-     * @param cMaxY maximum y of the raster area to draw
-     */    
+     * @param color  color of the text
+     * @param str    text to draw
+     * @param font   font peer to use for drawing text
+     * @param x      start X position to draw
+     * @param y      start Y position to draw
+     * @param cMinX  minimum x of the raster area to draw
+     * @param cMinY  minimum y of the raster area to draw
+     * @param cMaxX  maximum x of the raster area to draw
+     * @param cMaxY  maximum y of the raster area to draw
+     */
     public void drawClipString(WritableRaster raster, Object color, String str,
-            FontPeerImpl font, int x, int y, int cMinX, int cMinY, int cMaxX,
-            int cMaxY) {
+                               FontPeerImpl font, int x, int y, int cMinX, int cMinY, int cMaxX,
+                               int cMaxY) {
         // TODO: implement complex clipping
 
         int xSrcSurf, ySrcSurf; // Start point in String rectangle
@@ -243,12 +242,12 @@ public class JavaTextRenderer extends TextRenderer {
                     }
 
                     // Drawing on the Raster
-                    for (int h=0; h<clHeight; h++){
-                        for (int w=0; w < clWidth ; w++) {
-                            byte currByte = data[(ySrcSurf + h)*gl.bmp_pitch + (xSrcSurf+w)/8];
-                            boolean emptyByte = ((currByte & (1 << (7 - ((xSrcSurf+w) % 8)))) != 0);
+                    for (int h = 0; h < clHeight; h++) {
+                        for (int w = 0; w < clWidth; w++) {
+                            byte currByte = data[(ySrcSurf + h) * gl.bmp_pitch + (xSrcSurf + w) / 8];
+                            boolean emptyByte = ((currByte & (1 << (7 - ((xSrcSurf + w) % 8)))) != 0);
                             if (emptyByte) {
-                                raster.setDataElements(xDstSurf+w, yDstSurf+h, color);
+                                raster.setDataElements(xDstSurf + w, yDstSurf + h, color);
                             } else {
                                 // Nothing to do
                             }

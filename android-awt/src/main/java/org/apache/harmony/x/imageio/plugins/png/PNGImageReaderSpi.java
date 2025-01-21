@@ -17,12 +17,12 @@
 
 package org.apache.harmony.x.imageio.plugins.png;
 
-import javax.imageio.ImageReader;
-import javax.imageio.spi.ImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.ImageSignature;
 import org.apache.harmony.x.imageio.plugins.ImageType;
 import org.apache.harmony.x.imageio.plugins.PluginUtils;
 
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -30,12 +30,12 @@ public class PNGImageReaderSpi extends ImageReaderSpi {
 
     public PNGImageReaderSpi() {
         super(PluginUtils.VENDOR_NAME, PluginUtils.DEFAULT_VERSION,
-                        ImageType.PNG.getNames(), ImageType.PNG.getSuffixes(),
-                        ImageType.PNG.getMimeTypes(),
-                        PNGImageReader.class.getName(), STANDARD_INPUT_TYPE,
-                        new String[] { PNGImageWriterSpi.class.getName() },
-                        false, null, null, null, null, false, null, null, null,
-                        null);
+                ImageType.PNG.getNames(), ImageType.PNG.getSuffixes(),
+                ImageType.PNG.getMimeTypes(),
+                PNGImageReader.class.getName(), STANDARD_INPUT_TYPE,
+                new String[]{PNGImageWriterSpi.class.getName()},
+                false, null, null, null, null, false, null, null, null,
+                null);
     }
 
     @Override
@@ -45,7 +45,7 @@ public class PNGImageReaderSpi extends ImageReaderSpi {
 
     @Override
     public ImageReader createReaderInstance(Object extension)
-                    throws IOException {
+            throws IOException {
         return new PNGImageReader(this);
     }
 

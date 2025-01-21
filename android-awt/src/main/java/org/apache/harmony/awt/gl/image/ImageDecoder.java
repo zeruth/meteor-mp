@@ -24,7 +24,6 @@ package org.apache.harmony.awt.gl.image;
 
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
-
 import java.io.BufferedInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -46,12 +45,19 @@ abstract class ImageDecoder {
 
     boolean terminated;
 
+    ImageDecoder(DecodingImageSource _src, InputStream is) {
+        src = _src;
+        consumers = src.consumers;
+        inputStream = is;
+    }
+
     /**
      * Chooses appropriate image decoder by looking into input stream and checking
      * the image signature.
+     *
      * @param src - image producer, required for passing data to it from the
-     * created decoder via callbacks
-     * @param is - stream
+     *            created decoder via callbacks
+     * @param is  - stream
      * @return decoder
      */
     static ImageDecoder createDecoder(DecodingImageSource src, InputStream is) {
@@ -94,12 +100,6 @@ abstract class ImageDecoder {
         }
 
         return null;
-    }
-
-    ImageDecoder(DecodingImageSource _src, InputStream is) {
-        src = _src;
-        consumers = src.consumers;
-        inputStream = is;
     }
 
     public abstract void decodeImage() throws IOException;
@@ -169,7 +169,7 @@ abstract class ImageDecoder {
             ColorModel model,
             byte pix[],
             int off, int scansize
-            ) {
+    ) {
         if (terminated) {
             return;
         }
@@ -187,7 +187,7 @@ abstract class ImageDecoder {
             ColorModel model,
             int pix[],
             int off, int scansize
-            ) {
+    ) {
         if (terminated) {
             return;
         }
@@ -208,7 +208,7 @@ abstract class ImageDecoder {
 
         ImageConsumer ic = null;
 
-        for (Iterator<ImageConsumer> i = consumers.iterator(); i.hasNext();) {
+        for (Iterator<ImageConsumer> i = consumers.iterator(); i.hasNext(); ) {
             try {
                 ic = i.next();
             } catch (ConcurrentModificationException e) {

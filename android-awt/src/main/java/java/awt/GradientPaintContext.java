@@ -32,14 +32,14 @@ class GradientPaintContext implements PaintContext {
      * The size of noncyclic part of color lookup table
      */
     static int LOOKUP_SIZE = 256;
-    
+
     /**
      * The index mask to lookup color in the table
      */
     static int LOOKUP_MASK = 0x1FF;
-    
+
     /**
-     * The min value equivalent to zero. If absolute value less then ZERO it considered as zero.  
+     * The min value equivalent to zero. If absolute value less then ZERO it considered as zero.
      */
     static double ZERO = 1E-10;
 
@@ -47,48 +47,49 @@ class GradientPaintContext implements PaintContext {
      * The ColorModel user defined for PaintContext
      */
     ColorModel cm;
-    
+
     /**
      * The indicator of cycle filling.
      */
     boolean cyclic;
-    
+
     /**
      * The integer color value of the start point
      */
     int c1;
-    
+
     /**
      * The integer color value of the end point
      */
     int c2;
-    
+
     /**
-     * The lookup gradient color table 
+     * The lookup gradient color table
      */
     int[] table;
 
     /**
-     * The tempopary pre-calculated value to evalutae color index 
+     * The tempopary pre-calculated value to evalutae color index
      */
     int dx;
-    
+
     /**
-     * The tempopary pre-calculated value to evalutae color index 
+     * The tempopary pre-calculated value to evalutae color index
      */
     int dy;
-    
+
     /**
-     * The tempopary pre-calculated value to evalutae color index 
+     * The tempopary pre-calculated value to evalutae color index
      */
     int delta;
-    
+
     /**
      * Constructs a new GradientPaintcontext
-     * @param cm - not used
-     * @param t - the fill transformation
+     *
+     * @param cm     - not used
+     * @param t      - the fill transformation
      * @param point1 - the start fill point
-     * @param color1 - color of the start point 
+     * @param color1 - color of the start point
      * @param point2 - the end fill point
      * @param color2 - color of the end point
      * @param cyclic - the indicator of cycle filling
@@ -118,16 +119,16 @@ class GradientPaintContext implements PaintContext {
             table[0] = c1;
         } else {
             double mult = LOOKUP_SIZE * 256 / vec;
-            dx = (int)(by.getX() * mult);
-            dy = (int)(by.getY() * mult);
-            delta = (int)((p.getX() * by.getY() - p.getY() * by.getX()) * mult);
+            dx = (int) (by.getX() * mult);
+            dy = (int) (by.getY() * mult);
+            delta = (int) ((p.getX() * by.getY() - p.getY() * by.getX()) * mult);
             createTable();
         }
     }
 
     /**
-     * Create color index lookup table. Calculate 256 step trasformation from 
-     * the start point color to the end point color. Colors multiplied by 256 to do integer calculations. 
+     * Create color index lookup table. Calculate 256 step trasformation from
+     * the start point color to the end point color. Colors multiplied by 256 to do integer calculations.
      */
     void createTable() {
         double ca = (c1 >> 24) & 0xFF;
@@ -142,19 +143,19 @@ class GradientPaintContext implements PaintContext {
         double db = ((c2 & 0xFF) - cb) * k;
 
         table = new int[cyclic ? LOOKUP_SIZE + LOOKUP_SIZE : LOOKUP_SIZE];
-        for(int i = 0; i < LOOKUP_SIZE; i++) {
+        for (int i = 0; i < LOOKUP_SIZE; i++) {
             table[i] =
-                (int)ca << 24 |
-                (int)cr << 16 |
-                (int)cg << 8 |
-                (int)cb;
+                    (int) ca << 24 |
+                            (int) cr << 16 |
+                            (int) cg << 8 |
+                            (int) cb;
             ca += da;
             cr += dr;
             cg += dg;
             cb += db;
         }
         if (cyclic) {
-            for(int i = 0; i < LOOKUP_SIZE; i++) {
+            for (int i = 0; i < LOOKUP_SIZE; i++) {
                 table[LOOKUP_SIZE + LOOKUP_SIZE - 1 - i] = table[i];
             }
         }
@@ -170,24 +171,24 @@ class GradientPaintContext implements PaintContext {
     public Raster getRaster(int x, int y, int w, int h) {
         WritableRaster rast = cm.createCompatibleWritableRaster(w, h);
 
-        int[] buf = ((DataBufferInt)rast.getDataBuffer()).getData();
+        int[] buf = ((DataBufferInt) rast.getDataBuffer()).getData();
 
         int c = x * dy - y * dx - delta;
         int cx = dy;
-        int cy = - w * dy - dx;
+        int cy = -w * dy - dx;
         int k = 0;
 
         if (cyclic) {
-            for(int j = 0; j < h; j++) {
-                for(int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
                     buf[k++] = table[(c >> 8) & LOOKUP_MASK];
                     c += cx;
                 }
                 c += cy;
             }
         } else {
-            for(int j = 0; j < h; j++) {
-                for(int i = 0; i < w; i++) {
+            for (int j = 0; j < h; j++) {
+                for (int i = 0; i < w; i++) {
                     int index = c >> 8;
                     buf[k++] = index < 0 ? c1 : index >= LOOKUP_SIZE ? c2 : table[index];
                     c += cx;

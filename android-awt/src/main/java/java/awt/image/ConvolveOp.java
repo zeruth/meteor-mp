@@ -16,19 +16,17 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Sep 29, 2005
  */
 
 package java.awt.image;
 
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public class ConvolveOp implements BufferedImageOp, RasterOp {
@@ -96,8 +94,8 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
 
         WritableRaster r =
                 dstCM.isCompatibleSampleModel(src.getSampleModel()) ?
-                src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
-                dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
+                        src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
+                        dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
 
         return new BufferedImage(
                 dstCM,
@@ -113,7 +111,7 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
             throw new NullPointerException(Messages.getString("awt.256")); //$NON-NLS-1$
         }
 
-        if (src == dst){
+        if (src == dst) {
             // awt.257=Source raster is equal to destination
             throw new IllegalArgumentException(Messages.getString("awt.257")); //$NON-NLS-1$
         }
@@ -123,15 +121,15 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
         } else if (src.getNumBands() != dst.getNumBands()) {
             // awt.258=Number of source bands ({0}) is not equal to number of destination bands ({1})
             throw new IllegalArgumentException(
-                Messages.getString("awt.258", src.getNumBands(), dst.getNumBands())); //$NON-NLS-1$
+                    Messages.getString("awt.258", src.getNumBands(), dst.getNumBands())); //$NON-NLS-1$
         }
 
         // TODO
         //if (ippFilter(src, dst, BufferedImage.TYPE_CUSTOM) != 0)
-            if (slowFilter(src, dst) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src, dst) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         return dst;
     }
@@ -162,7 +160,7 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
             int[] masks = new int[numBands];
             int[] sampleSizes = sm.getSampleSize();
 
-            for (int i=0; i < numBands; i++){
+            for (int i = 0; i < numBands; i++) {
                 maxValues[i] = (1 << sampleSizes[i]) - 1;
                 masks[i] = ~(maxValues[i]);
             }
@@ -171,33 +169,33 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
             float[] pixels = null;
             pixels = src.getPixels(srcMinX, srcMinY, srcWidth, srcHeight, pixels);
             float[] newPixels = new float[pixels.length];
-            int rowLength = srcWidth*numBands;
-            if (this.edgeCond == ConvolveOp.EDGE_NO_OP){
+            int rowLength = srcWidth * numBands;
+            if (this.edgeCond == ConvolveOp.EDGE_NO_OP) {
                 // top
                 int start = 0;
-                int length = yOrigin*rowLength;
+                int length = yOrigin * rowLength;
                 System.arraycopy(pixels, start, newPixels, start, length);
                 // bottom
-                start = (srcHeight - (kHeight - yOrigin - 1))*rowLength;
-                length = (kHeight - yOrigin - 1)*rowLength;
+                start = (srcHeight - (kHeight - yOrigin - 1)) * rowLength;
+                length = (kHeight - yOrigin - 1) * rowLength;
                 System.arraycopy(pixels, start, newPixels, start, length);
                 // middle
-                length = xOrigin*numBands;
-                int length1 = (kWidth - xOrigin - 1)*numBands;
-                start = yOrigin*rowLength;
-                int start1 = (yOrigin+1)*rowLength - length1;
-                for (int i = yOrigin; i < (srcHeight - (kHeight - yOrigin - 1)); i ++) {
+                length = xOrigin * numBands;
+                int length1 = (kWidth - xOrigin - 1) * numBands;
+                start = yOrigin * rowLength;
+                int start1 = (yOrigin + 1) * rowLength - length1;
+                for (int i = yOrigin; i < (srcHeight - (kHeight - yOrigin - 1)); i++) {
                     System.arraycopy(pixels, start, newPixels, start, length);
                     System.arraycopy(pixels, start1, newPixels, start1, length1);
-                    start +=rowLength;
-                    start1 +=rowLength;
+                    start += rowLength;
+                    start1 += rowLength;
                 }
 
             }
 
             // Cycle over pixels to be calculated
-            for (int i = yOrigin; i < srcConvMaxY; i++){
-                for (int j = xOrigin; j < srcConvMaxX; j++){
+            for (int i = yOrigin; i < srcConvMaxY; i++) {
+                for (int j = xOrigin; j < srcConvMaxX; j++) {
 
                     // Take kernel data in backward direction, convolution
                     int kernelIdx = data.length - 1;
@@ -206,26 +204,26 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
                     for (int hIdx = 0, rasterHIdx = i - yOrigin;
                          hIdx < kHeight;
                          hIdx++, rasterHIdx++
-                            ){
+                    ) {
                         for (int wIdx = 0, rasterWIdx = j - xOrigin;
                              wIdx < kWidth;
                              wIdx++, rasterWIdx++
-                                ){
+                        ) {
                             int curIndex = rasterHIdx * rowLength + rasterWIdx * numBands;
-                            for (int idx=0; idx < numBands; idx++){
-                                newPixels[pixelIndex+idx] += data[kernelIdx] * pixels[curIndex+idx];
+                            for (int idx = 0; idx < numBands; idx++) {
+                                newPixels[pixelIndex + idx] += data[kernelIdx] * pixels[curIndex + idx];
                             }
                             kernelIdx--;
                         }
                     }
 
                     // Check for overflow now
-                    for (int idx=0; idx < numBands; idx++){
-                        if (((int)newPixels[pixelIndex+idx] & masks[idx]) != 0) {
-                            if (newPixels[pixelIndex+idx] < 0) {
-                                newPixels[pixelIndex+idx] = 0;
+                    for (int idx = 0; idx < numBands; idx++) {
+                        if (((int) newPixels[pixelIndex + idx] & masks[idx]) != 0) {
+                            if (newPixels[pixelIndex + idx] < 0) {
+                                newPixels[pixelIndex + idx] = 0;
                             } else {
-                                newPixels[pixelIndex+idx] = maxValues[idx];
+                                newPixels[pixelIndex + idx] = maxValues[idx];
                             }
                         }
                     }
@@ -245,7 +243,7 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
             throw new NullPointerException(Messages.getString("awt.259")); //$NON-NLS-1$
         }
 
-        if (src == dst){
+        if (src == dst) {
             // awt.25A=Source equals to destination
             throw new IllegalArgumentException(Messages.getString("awt.25A")); //$NON-NLS-1$
         }
@@ -254,7 +252,7 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
         BufferedImage finalDst = null;
 
         if (srcCM instanceof IndexColorModel) {
-            src = ((IndexColorModel)srcCM).convertToIntDiscrete(src.getRaster(), true);
+            src = ((IndexColorModel) srcCM).convertToIntDiscrete(src.getRaster(), true);
             srcCM = src.getColorModel();
         }
 
@@ -265,9 +263,9 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
                 // Treat BufferedImage.TYPE_INT_RGB and BufferedImage.TYPE_INT_ARGB as same
                 if (
                         !((src.getType() == BufferedImage.TYPE_INT_RGB ||
-                           src.getType() == BufferedImage.TYPE_INT_ARGB) &&
-                          (dst.getType() == BufferedImage.TYPE_INT_RGB ||
-                           dst.getType() == BufferedImage.TYPE_INT_ARGB))
+                                src.getType() == BufferedImage.TYPE_INT_ARGB) &&
+                                (dst.getType() == BufferedImage.TYPE_INT_RGB ||
+                                        dst.getType() == BufferedImage.TYPE_INT_ARGB))
                 ) {
                     finalDst = dst;
                     dst = createCompatibleDestImage(src, srcCM);
@@ -278,10 +276,10 @@ public class ConvolveOp implements BufferedImageOp, RasterOp {
         // Skip alpha channel for TYPE_INT_RGB images
         // TODO
         //if (ippFilter(src.getRaster(), dst.getRaster(), src.getType()) != 0)
-            if (slowFilter(src.getRaster(), dst.getRaster()) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src.getRaster(), dst.getRaster()) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         if (finalDst != null) {
             Graphics2D g = finalDst.createGraphics();

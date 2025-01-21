@@ -17,10 +17,11 @@
 package org.apache.harmony.x.imageio.plugins.jpeg;
 
 
+import org.apache.harmony.x.imageio.plugins.AwtImageReader;
+
 import javax.imageio.ImageReadParam;
 import javax.imageio.plugins.jpeg.JPEGImageReadParam;
 import javax.imageio.spi.ImageReaderSpi;
-import org.apache.harmony.x.imageio.plugins.AwtImageReader;
 
 public class JPEGImageReader extends AwtImageReader {
 

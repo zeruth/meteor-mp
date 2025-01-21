@@ -21,14 +21,14 @@ import org.apache.commons.imaging.formats.psd.ImageContents;
 public class DataParserGrayscale extends DataParser {
     @Override
     protected int getRGB(final int[][][] data, final int x, final int y,
-            final ImageContents imageContents) {
+                         final ImageContents imageContents) {
         final int sample = 0xff & data[0][y][x];
         final int alpha = 0xff;
 
-        return ((0xff & alpha)   << 24)
-              | ((0xff & sample) << 16)
-              | ((0xff & sample) << 8)
-              | ((0xff & sample) << 0);
+        return ((0xff & alpha) << 24)
+                | ((0xff & sample) << 16)
+                | ((0xff & sample) << 8)
+                | ((0xff & sample) << 0);
     }
 
     @Override

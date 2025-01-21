@@ -20,7 +20,6 @@
 package javax.imageio.event;
 
 import javax.imageio.ImageReader;
-
 import java.util.EventListener;
 
 
@@ -30,13 +29,21 @@ import java.util.EventListener;
 public interface IIOReadProgressListener extends EventListener {
 
     void imageComplete(ImageReader source);
+
     void imageProgress(ImageReader source, float percentageDone);
+
     void imageStarted(ImageReader source, int imageIndex);
+
     void readAborted(ImageReader source);
+
     void sequenceComplete(ImageReader source);
+
     void sequenceStarted(ImageReader source, int minIndex);
+
     void thumbnailComplete(ImageReader source);
+
     void thumbnailProgress(ImageReader source, float percentageDone);
+
     void thumbnailStarted(ImageReader source, int imageIndex, int thumbnailIndex);
 }
 

@@ -16,9 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.BinaryFunctions;
@@ -27,27 +24,30 @@ import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.apache.commons.imaging.util.Debug;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
+
 /**
  * Used by some GPS tags and the EXIF user comment tag,
  * this badly documented value is meant to contain
  * the text encoding in the first 8 bytes followed by
- * the non-null-terminated text in an unknown byte order.  
+ * the non-null-terminated text in an unknown byte order.
  */
 public final class TagInfoGpsText extends TagInfo {
     private static final TextEncoding TEXT_ENCODING_ASCII = new TextEncoding(
-            new byte[] { 0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00, },
+            new byte[]{0x41, 0x53, 0x43, 0x49, 0x49, 0x00, 0x00, 0x00,},
             "US-ASCII"); // ITU-T T.50 IA5
     private static final TextEncoding TEXT_ENCODING_JIS = new TextEncoding(
-            new byte[] { 0x4A, 0x49, 0x53, 0x00, 0x00, 0x00, 0x00, 0x00, },
+            new byte[]{0x4A, 0x49, 0x53, 0x00, 0x00, 0x00, 0x00, 0x00,},
             "JIS"); // JIS X208-1990
     private static final TextEncoding TEXT_ENCODING_UNICODE_LE = new TextEncoding(
-            new byte[] { 0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00},
+            new byte[]{0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00},
             "UTF-16LE"); // Unicode Standard
     private static final TextEncoding TEXT_ENCODING_UNICODE_BE = new TextEncoding(
-            new byte[] { 0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00},
+            new byte[]{0x55, 0x4E, 0x49, 0x43, 0x4F, 0x44, 0x45, 0x00},
             "UTF-16BE"); // Unicode Standard
     private static final TextEncoding TEXT_ENCODING_UNDEFINED = new TextEncoding(
-            new byte[] { 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
+            new byte[]{0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00, 0x00},
             // Try to interpret an undefined text as ISO-8859-1 (Latin)
             "ISO-8859-1"); // Undefined
     private static final TextEncoding[] TEXT_ENCODINGS = {
@@ -59,23 +59,13 @@ public final class TagInfoGpsText extends TagInfo {
     };
 
     public TagInfoGpsText(final String name, final int tag, final int length,
-            final TiffDirectoryType exifDirectory) {
+                          final TiffDirectoryType exifDirectory) {
         super(name, tag, FieldType.UNDEFINED, length, exifDirectory);
     }
 
     @Override
     public boolean isText() {
         return true;
-    }
-
-    private static final class TextEncoding {
-        public final byte[] prefix;
-        public final String encodingName;
-
-        public TextEncoding(final byte[] prefix, final String encodingName) {
-            this.prefix = prefix;
-            this.encodingName = encodingName;
-        }
     }
 
     @Override
@@ -183,5 +173,15 @@ public final class TagInfoGpsText extends TagInfo {
             throw new ImageReadException("Unknown GPS text encoding prefix.", e);
         }
 
+    }
+
+    private static final class TextEncoding {
+        public final byte[] prefix;
+        public final String encodingName;
+
+        public TextEncoding(final byte[] prefix, final String encodingName) {
+            this.prefix = prefix;
+            this.encodingName = encodingName;
+        }
     }
 }

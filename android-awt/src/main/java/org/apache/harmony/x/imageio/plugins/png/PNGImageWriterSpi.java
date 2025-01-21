@@ -19,14 +19,14 @@
  */
 package org.apache.harmony.x.imageio.plugins.png;
 
-import java.awt.image.ColorModel;
-import java.awt.image.IndexColorModel;
-import javax.imageio.ImageTypeSpecifier;
-import javax.imageio.ImageWriter;
-import javax.imageio.spi.ImageWriterSpi;
 import org.apache.harmony.x.imageio.plugins.ImageType;
 import org.apache.harmony.x.imageio.plugins.PluginUtils;
 
+import javax.imageio.ImageTypeSpecifier;
+import javax.imageio.ImageWriter;
+import javax.imageio.spi.ImageWriterSpi;
+import java.awt.image.ColorModel;
+import java.awt.image.IndexColorModel;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -35,20 +35,20 @@ public class PNGImageWriterSpi extends ImageWriterSpi {
 
     public PNGImageWriterSpi() {
         super(PluginUtils.VENDOR_NAME, PluginUtils.DEFAULT_VERSION,
-                        ImageType.PNG.getNames(), ImageType.PNG.getSuffixes(),
-                        ImageType.PNG.getMimeTypes(),
-                        PNGImageWriter.class.getName(), STANDARD_OUTPUT_TYPE,
-                        new String[] { PNGImageReaderSpi.class.getName() },
-                        false,// supportsStandardStreamMetadataFormat
-                        null,// nativeStreamMetadataFormatName
-                        null,// nativeStreamMetadataFormatClassName
-                        null,// extraStreamMetadataFormatNames
-                        null,// extraStreamMetadataFormatClassNames
-                        false,// supportsStandardImageMetadataFormat
-                        null,// nativeImageMetadataFormatName
-                        null,// nativeImageMetadataFormatClassName
-                        null,// extraImageMetadataFormatNames
-                        null// extraImageMetadataFormatClassNames
+                ImageType.PNG.getNames(), ImageType.PNG.getSuffixes(),
+                ImageType.PNG.getMimeTypes(),
+                PNGImageWriter.class.getName(), STANDARD_OUTPUT_TYPE,
+                new String[]{PNGImageReaderSpi.class.getName()},
+                false,// supportsStandardStreamMetadataFormat
+                null,// nativeStreamMetadataFormatName
+                null,// nativeStreamMetadataFormatClassName
+                null,// extraStreamMetadataFormatNames
+                null,// extraStreamMetadataFormatClassNames
+                false,// supportsStandardImageMetadataFormat
+                null,// nativeImageMetadataFormatName
+                null,// nativeImageMetadataFormatClassName
+                null,// extraImageMetadataFormatNames
+                null// extraImageMetadataFormatClassNames
         );
     }
 
@@ -64,7 +64,7 @@ public class PNGImageWriterSpi extends ImageWriterSpi {
 
         if (colorModel instanceof IndexColorModel) {
             if (bitDepth != 1 && bitDepth != 2 && bitDepth != 4
-                && bitDepth != 8) {
+                    && bitDepth != 8) {
                 canEncode = false;
             }
             if (numBands != 1) {
@@ -72,7 +72,7 @@ public class PNGImageWriterSpi extends ImageWriterSpi {
             }
         } else if (numBands == 1) {
             if (bitDepth != 1 && bitDepth != 2 && bitDepth != 4
-                && bitDepth != 8 && bitDepth != 16) {
+                    && bitDepth != 8 && bitDepth != 16) {
                 canEncode = false;
             }
         } else if (numBands == 2) {

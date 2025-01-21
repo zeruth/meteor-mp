@@ -16,22 +16,20 @@
  */
 package org.apache.commons.imaging.formats.png;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.png.chunks.PngChunkPlte;
 import org.apache.commons.imaging.formats.png.transparencyfilters.TransparencyFilter;
 
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 
 class ScanExpediterSimple extends ScanExpediter {
     public ScanExpediterSimple(final int width, final int height, final InputStream is,
-            final BufferedImage bi, final ColorType colorType, final int bitDepth, final int bitsPerPixel,
-            final PngChunkPlte pngChunkPLTE, final GammaCorrection gammaCorrection,
-            final TransparencyFilter transparencyFilter)
-
-    {
-        super(width, height, is, bi, colorType, bitDepth, bitsPerPixel, 
+                               final BufferedImage bi, final ColorType colorType, final int bitDepth, final int bitsPerPixel,
+                               final PngChunkPlte pngChunkPLTE, final GammaCorrection gammaCorrection,
+                               final TransparencyFilter transparencyFilter) {
+        super(width, height, is, bi, colorType, bitDepth, bitsPerPixel,
                 pngChunkPLTE, gammaCorrection, transparencyFilter);
     }
 

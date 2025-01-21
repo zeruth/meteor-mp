@@ -4,12 +4,11 @@ import android.annotation.SuppressLint;
 import android.graphics.Paint;
 import android.graphics.Typeface;
 
-import java.awt.Font;
-import java.awt.FontMetrics;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
-import java.awt.peer.FontPeer;
 
 public class FontMetricsImpl extends FontMetrics {
+    private final Paint paint;
     private int ascent;
     private int descent;
     private int leading;
@@ -19,7 +18,6 @@ public class FontMetricsImpl extends FontMetrics {
     private int[] widths = new int[256];
     private float scaleX = 1;
     private float scaleY = 1;
-    private final Paint paint;
     private FontPeerImpl peer;
 
     public FontMetricsImpl(java.awt.Font fnt) {
@@ -120,6 +118,7 @@ public class FontMetricsImpl extends FontMetrics {
     public int charWidth(char ch) {
         return (int) (paint.measureText(Character.toString(ch)) * scaleX);
     }
+
     /**
      * Returns the total advance width of the specified string in the metrics
      * of the Font describing this FontMetricsImpl object.
@@ -153,9 +152,9 @@ public class FontMetricsImpl extends FontMetrics {
      * implementation for the Font describing this FontMetricsImpl object.
      */
     @SuppressWarnings("deprecation")
-    public FontPeerImpl getFontPeer(){
-        if (peer == null){
-            peer = (FontPeerImpl)font.getPeer();
+    public FontPeerImpl getFontPeer() {
+        if (peer == null) {
+            peer = (FontPeerImpl) font.getPeer();
         }
         return peer;
     }

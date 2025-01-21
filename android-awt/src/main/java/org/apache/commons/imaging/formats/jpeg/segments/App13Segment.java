@@ -16,15 +16,15 @@
  */
 package org.apache.commons.imaging.formats.jpeg.segments;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.util.Map;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.formats.jpeg.JpegImageParser;
 import org.apache.commons.imaging.formats.jpeg.iptc.IptcParser;
 import org.apache.commons.imaging.formats.jpeg.iptc.PhotoshopApp13Data;
+
+import java.io.ByteArrayInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.Map;
 
 public class App13Segment extends AppnSegment {
     protected final JpegImageParser parser;
@@ -39,7 +39,7 @@ public class App13Segment extends AppnSegment {
     }
 
     public App13Segment(final JpegImageParser parser, final int marker, final int markerLength,
-            final InputStream is) throws IOException {
+                        final InputStream is) throws IOException {
         super(marker, markerLength, is);
         this.parser = parser;
 

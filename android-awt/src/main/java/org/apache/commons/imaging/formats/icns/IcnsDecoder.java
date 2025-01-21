@@ -16,21 +16,21 @@
  */
 package org.apache.commons.imaging.formats.icns;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
 import org.apache.commons.imaging.formats.icns.IcnsImageParser.IcnsElement;
 
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.List;
 
 final class IcnsDecoder {
-    private static final int[] PALETTE_4BPP = { 0xffffffff, 0xfffcf305,
+    private static final int[] PALETTE_4BPP = {0xffffffff, 0xfffcf305,
             0xffff6402, 0xffdd0806, 0xfff20884, 0xff4600a5, 0xff0000d4,
             0xff02abea, 0xff1fb714, 0xff006411, 0xff562c05, 0xff90713a,
-            0xffc0c0c0, 0xff808080, 0xff404040, 0xff000000 };
+            0xffc0c0c0, 0xff808080, 0xff404040, 0xff000000};
 
-    private static final int[] PALETTE_8BPP = { 0xFFFFFFFF, 0xFFFFFFCC,
+    private static final int[] PALETTE_8BPP = {0xFFFFFFFF, 0xFFFFFFCC,
             0xFFFFFF99, 0xFFFFFF66, 0xFFFFFF33, 0xFFFFFF00, 0xFFFFCCFF,
             0xFFFFCCCC, 0xFFFFCC99, 0xFFFFCC66, 0xFFFFCC33, 0xFFFFCC00,
             0xFFFF99FF, 0xFFFF99CC, 0xFFFF9999, 0xFFFF9966, 0xFFFF9933,
@@ -81,7 +81,7 @@ final class IcnsDecoder {
             0xFF0000BB, 0xFF0000AA, 0xFF000088, 0xFF000077, 0xFF000055,
             0xFF000044, 0xFF000022, 0xFF000011, 0xFFEEEEEE, 0xFFDDDDDD,
             0xFFBBBBBB, 0xFFAAAAAA, 0xFF888888, 0xFF777777, 0xFF555555,
-            0xFF444444, 0xFF222222, 0xFF111111, 0xFF000000 };
+            0xFF444444, 0xFF222222, 0xFF111111, 0xFF000000};
 
     private IcnsDecoder() {
     }
@@ -251,20 +251,20 @@ final class IcnsDecoder {
             final ImageBuilder imageBuilder = new ImageBuilder(imageType.getWidth(),
                     imageType.getHeight(), true);
             switch (imageType.getBitsPerPixel()) {
-            case 1:
-                decode1BPPImage(imageType, imageData, imageBuilder);
-                break;
-            case 4:
-                decode4BPPImage(imageType, imageData, imageBuilder);
-                break;
-            case 8:
-                decode8BPPImage(imageType, imageData, imageBuilder);
-                break;
-            case 32:
-                decode32BPPImage(imageType, imageData, imageBuilder);
-                break;
-            default:
-                throw new ImageReadException("Unsupported bit depth " + imageType.getBitsPerPixel());
+                case 1:
+                    decode1BPPImage(imageType, imageData, imageBuilder);
+                    break;
+                case 4:
+                    decode4BPPImage(imageType, imageData, imageBuilder);
+                    break;
+                case 8:
+                    decode8BPPImage(imageType, imageData, imageBuilder);
+                    break;
+                case 32:
+                    decode32BPPImage(imageType, imageData, imageBuilder);
+                    break;
+                default:
+                    throw new ImageReadException("Unsupported bit depth " + imageType.getBitsPerPixel());
             }
 
             if (maskElement != null) {

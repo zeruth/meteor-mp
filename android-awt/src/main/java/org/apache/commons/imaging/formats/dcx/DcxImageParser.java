@@ -16,15 +16,7 @@
  */
 package org.apache.commons.imaging.formats.dcx;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.PixelDensity;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
@@ -33,6 +25,8 @@ import org.apache.commons.imaging.formats.pcx.PcxConstants;
 import org.apache.commons.imaging.formats.pcx.PcxImageParser;
 import org.apache.commons.imaging.util.IoUtils;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -50,7 +44,7 @@ import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
 public class DcxImageParser extends ImageParser {
     // See http://www.fileformat.info/format/pcx/egff.htm for documentation
     private static final String DEFAULT_EXTENSION = ".dcx";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".dcx", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".dcx",};
 
     public DcxImageParser() {
         super.setByteOrder(ByteOrder.LITTLE_ENDIAN);
@@ -73,7 +67,7 @@ public class DcxImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] {
+        return new ImageFormat[]{
                 ImageFormats.DCX, //
         };
     }
@@ -100,25 +94,6 @@ public class DcxImageParser extends ImageParser {
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
-    }
-
-    private static class DcxHeader {
-
-        public static final int DCX_ID = 0x3ADE68B1;
-        public final int id;
-        public final long[] pageTable;
-
-        public DcxHeader(final int id, final long[] pageTable) {
-            this.id = id;
-            this.pageTable = pageTable;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("DcxHeader");
-            pw.println("Id: 0x" + Integer.toHexString(id));
-            pw.println("Pages: " + pageTable.length);
-            pw.println();
-        }
     }
 
     private DcxHeader readDcxHeader(final ByteSource byteSource)
@@ -170,7 +145,7 @@ public class DcxImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         final List<BufferedImage> list = getAllBufferedImages(byteSource);
         if (list.isEmpty()) {
             return null;
@@ -220,7 +195,7 @@ public class DcxImageParser extends ImageParser {
                     .remove(PcxConstants.PARAM_KEY_PCX_COMPRESSION);
             pcxParams.put(PcxConstants.PARAM_KEY_PCX_COMPRESSION, value);
         }
-        
+
         if (params.containsKey(PARAM_KEY_PIXEL_DENSITY)) {
             final Object value = params.remove(PARAM_KEY_PIXEL_DENSITY);
             if (value != null) {
@@ -255,16 +230,33 @@ public class DcxImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    private static class DcxHeader {
+
+        public static final int DCX_ID = 0x3ADE68B1;
+        public final int id;
+        public final long[] pageTable;
+
+        public DcxHeader(final int id, final long[] pageTable) {
+            this.id = id;
+            this.pageTable = pageTable;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("DcxHeader");
+            pw.println("Id: 0x" + Integer.toHexString(id));
+            pw.println("Pages: " + pageTable.length);
+            pw.println();
+        }
     }
 }

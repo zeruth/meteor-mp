@@ -20,9 +20,9 @@
 package javax.imageio;
 
 
-import java.awt.Point;
-import java.awt.Rectangle;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
+
+import java.awt.*;
 
 
 public abstract class IIOParam {
@@ -37,7 +37,16 @@ public abstract class IIOParam {
     protected IIOParamController defaultController;
     protected IIOParamController controller;
 
-    protected IIOParam() {}
+    protected IIOParam() {
+    }
+
+    public Rectangle getSourceRegion() {
+        if (sourceRegion == null) {
+            return null;
+        }
+        //-- clone it to avoid unexpected modifications
+        return (Rectangle) sourceRegion.clone();
+    }
 
     public void setSourceRegion(Rectangle sourceRegion) {
         if (sourceRegion != null) {
@@ -68,18 +77,10 @@ public abstract class IIOParam {
         }
     }
 
-    public Rectangle getSourceRegion() {
-        if (sourceRegion == null) {
-            return null;
-        }
-        //-- clone it to avoid unexpected modifications
-        return (Rectangle) sourceRegion.clone();
-    }
-
     public void setSourceSubsampling(int sourceXSubsampling,
-                                 int sourceYSubsampling,
-                                 int subsamplingXOffset,
-                                 int subsamplingYOffset) {
+                                     int sourceYSubsampling,
+                                     int subsamplingXOffset,
+                                     int subsamplingYOffset) {
 
         if (sourceXSubsampling <= 0) {
             throw new IllegalArgumentException(Messages.getString("imageio.1B"));
@@ -126,6 +127,10 @@ public abstract class IIOParam {
         return subsamplingYOffset;
     }
 
+    public int[] getSourceBands() {
+        return (sourceBands != null) ? sourceBands.clone() : null;
+    }
+
     public void setSourceBands(final int[] sourceBands) {
         if (sourceBands == null) {
             this.sourceBands = null;
@@ -134,48 +139,44 @@ public abstract class IIOParam {
                 if (sourceBands[i] < 0) {
                     throw new IllegalArgumentException(Messages.getString("imageio.20"));
                 }
-                
+
                 for (int j = i + 1; j < sourceBands.length; j++) {
                     if (sourceBands[i] == sourceBands[j]) {
                         throw new IllegalArgumentException(Messages.getString("imageio.21"));
                     }
                 }
             }
-            
+
             this.sourceBands = sourceBands.clone();
         }
-    }
-
-    public int[] getSourceBands() {
-        return (sourceBands != null) ? sourceBands.clone() : null;
-    }
-
-    public void setDestinationType(final ImageTypeSpecifier destinationType) {
-        this.destinationType = destinationType;
     }
 
     public ImageTypeSpecifier getDestinationType() {
         return destinationType;
     }
 
+    public void setDestinationType(final ImageTypeSpecifier destinationType) {
+        this.destinationType = destinationType;
+    }
+
+    public Point getDestinationOffset() {
+        return (Point) destinationOffset.clone();
+    }
+
     public void setDestinationOffset(Point destinationOffset) {
         if (destinationOffset == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.22"));
         }
-        
+
         this.destinationOffset = (Point) destinationOffset.clone();
     }
 
-    public Point getDestinationOffset() {
-        return (Point) destinationOffset.clone();        
+    public IIOParamController getController() {
+        return controller;
     }
 
     public void setController(final IIOParamController controller) {
         this.controller = controller;
-    }
-
-    public IIOParamController getController(){
-        return controller;
     }
 
     public IIOParamController getDefaultController() {
@@ -188,11 +189,11 @@ public abstract class IIOParam {
 
     public boolean activateController() {
         final IIOParamController controller = getController();
-        
+
         if (controller == null) {
             throw new IllegalStateException(Messages.getString("imageio.23"));
         }
-        
+
         return controller.activate(this);
     }
 }

@@ -17,27 +17,20 @@
 
 package org.apache.commons.imaging;
 
-import java.awt.RenderingHints;
-import java.awt.Transparency;
+import java.awt.*;
 import java.awt.color.ColorSpace;
 import java.awt.color.ICC_ColorSpace;
 import java.awt.color.ICC_Profile;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorConvertOp;
-import java.awt.image.ColorModel;
-import java.awt.image.ComponentColorModel;
-import java.awt.image.DirectColorModel;
-import java.awt.image.ImagingOpException;
-
+import java.awt.image.*;
 import java.io.File;
 import java.io.IOException;
 
 /**
  * A selection of tools for evaluating and manipulating color
  * spaces, color values, etc.
- * <p>The Javadoc provided in the original code gave the 
+ * <p>The Javadoc provided in the original code gave the
  * following notation:<br><br>
- *
+ * <p>
  * &nbsp;&nbsp;&nbsp; "This class is a mess and needs to be cleaned up."
  */
 public class ColorTools {
@@ -93,12 +86,12 @@ public class ColorTools {
     }
 
     public ColorModel deriveColorModel(final BufferedImage bi, final ColorSpace cs,
-            final boolean forceNoAlpha) throws ImagingOpException {
+                                       final boolean forceNoAlpha) throws ImagingOpException {
         return deriveColorModel(bi.getColorModel(), cs, forceNoAlpha);
     }
 
     public ColorModel deriveColorModel(final ColorModel colorModel, final ColorSpace cs,
-            final boolean forceNoAlpha) throws ImagingOpException {
+                                       final boolean forceNoAlpha) throws ImagingOpException {
 
         if (colorModel instanceof ComponentColorModel) {
             final ComponentColorModel ccm = (ComponentColorModel) colorModel;
@@ -199,12 +192,12 @@ public class ColorTools {
     }
 
     public BufferedImage convertBetweenColorSpacesX2(BufferedImage bi,
-            final ColorSpace from, final ColorSpace to) {
+                                                     final ColorSpace from, final ColorSpace to) {
         final RenderingHints hints = new RenderingHints(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
         hints.put(RenderingHints.KEY_COLOR_RENDERING,
                 RenderingHints.VALUE_COLOR_RENDER_QUALITY);
-        hints.put(RenderingHints.KEY_DITHERING, 
+        hints.put(RenderingHints.KEY_DITHERING,
                 RenderingHints.VALUE_DITHER_ENABLE);
 
         // bi = relabelColorSpace(bi, cs);
@@ -227,7 +220,7 @@ public class ColorTools {
     }
 
     public BufferedImage convertBetweenColorSpaces(BufferedImage bi,
-            final ColorSpace from, final ColorSpace to) {
+                                                   final ColorSpace from, final ColorSpace to) {
         final RenderingHints hints = new RenderingHints(RenderingHints.KEY_RENDERING,
                 RenderingHints.VALUE_RENDER_QUALITY);
         hints.put(RenderingHints.KEY_COLOR_RENDERING,

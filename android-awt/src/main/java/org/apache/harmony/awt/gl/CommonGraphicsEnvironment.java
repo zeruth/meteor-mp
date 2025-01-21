@@ -19,22 +19,17 @@
  */
 package org.apache.harmony.awt.gl;
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.GraphicsDevice;
-import java.awt.GraphicsEnvironment;
-import java.awt.HeadlessException;
-import java.awt.image.BufferedImage;
 import org.apache.harmony.awt.gl.font.FontManager;
 import org.apache.harmony.awt.gl.image.BufferedImageGraphics2D;
 
+import java.awt.*;
+import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Locale;
 
 
 /**
  * Common GraphicsEnvironment implementation
- *
  */
 public abstract class CommonGraphicsEnvironment extends GraphicsEnvironment {
 
@@ -68,7 +63,7 @@ public abstract class CommonGraphicsEnvironment extends GraphicsEnvironment {
         return FontManager.getInstance().getAllFamilies();
     }
 
-	public abstract GraphicsDevice getDefaultScreenDevice() throws HeadlessException;
+    public abstract GraphicsDevice getDefaultScreenDevice() throws HeadlessException;
 
-	public abstract GraphicsDevice[] getScreenDevices() throws HeadlessException;
+    public abstract GraphicsDevice[] getScreenDevices() throws HeadlessException;
 }

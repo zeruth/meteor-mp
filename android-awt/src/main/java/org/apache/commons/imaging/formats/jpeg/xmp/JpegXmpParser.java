@@ -17,13 +17,13 @@
 
 package org.apache.commons.imaging.formats.jpeg.xmp;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 
 public class JpegXmpParser extends BinaryFileParser {
 

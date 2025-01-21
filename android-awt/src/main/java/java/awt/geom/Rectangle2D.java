@@ -26,10 +26,166 @@ import java.util.NoSuchElementException;
 
 public abstract class Rectangle2D extends RectangularShape {
 
-    public static final int OUT_LEFT   = 1;
-    public static final int OUT_TOP    = 2;
-    public static final int OUT_RIGHT  = 4;
+    public static final int OUT_LEFT = 1;
+    public static final int OUT_TOP = 2;
+    public static final int OUT_RIGHT = 4;
     public static final int OUT_BOTTOM = 8;
+
+    protected Rectangle2D() {
+    }
+
+    public static void intersect(Rectangle2D src1, Rectangle2D src2, Rectangle2D dst) {
+        double x1 = Math.max(src1.getMinX(), src2.getMinX());
+        double y1 = Math.max(src1.getMinY(), src2.getMinY());
+        double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
+        double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
+        dst.setFrame(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    public static void union(Rectangle2D src1, Rectangle2D src2, Rectangle2D dst) {
+        double x1 = Math.min(src1.getMinX(), src2.getMinX());
+        double y1 = Math.min(src1.getMinY(), src2.getMinY());
+        double x2 = Math.max(src1.getMaxX(), src2.getMaxX());
+        double y2 = Math.max(src1.getMaxY(), src2.getMaxY());
+        dst.setFrame(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    public abstract void setRect(double x, double y, double width, double height);
+
+    public abstract int outcode(double x, double y);
+
+    public abstract Rectangle2D createIntersection(Rectangle2D r);
+
+    public abstract Rectangle2D createUnion(Rectangle2D r);
+
+    public void setRect(Rectangle2D r) {
+        setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+
+    @Override
+    public void setFrame(double x, double y, double width, double height) {
+        setRect(x, y, width, height);
+    }
+
+    public Rectangle2D getBounds2D() {
+        return (Rectangle2D) clone();
+    }
+
+    public boolean intersectsLine(double x1, double y1, double x2, double y2) {
+        double rx1 = getX();
+        double ry1 = getY();
+        double rx2 = rx1 + getWidth();
+        double ry2 = ry1 + getHeight();
+        return
+                (rx1 <= x1 && x1 <= rx2 && ry1 <= y1 && y1 <= ry2) ||
+                        (rx1 <= x2 && x2 <= rx2 && ry1 <= y2 && y2 <= ry2) ||
+                        Line2D.linesIntersect(rx1, ry1, rx2, ry2, x1, y1, x2, y2) ||
+                        Line2D.linesIntersect(rx2, ry1, rx1, ry2, x1, y1, x2, y2);
+    }
+
+    public boolean intersectsLine(Line2D l) {
+        return intersectsLine(l.getX1(), l.getY1(), l.getX2(), l.getY2());
+    }
+
+    public int outcode(Point2D p) {
+        return outcode(p.getX(), p.getY());
+    }
+
+    public boolean contains(double x, double y) {
+        if (isEmpty()) {
+            return false;
+        }
+
+        double x1 = getX();
+        double y1 = getY();
+        double x2 = x1 + getWidth();
+        double y2 = y1 + getHeight();
+
+        return
+                x1 <= x && x < x2 &&
+                        y1 <= y && y < y2;
+    }
+
+    public boolean intersects(double x, double y, double width, double height) {
+        if (isEmpty() || width <= 0.0 || height <= 0.0) {
+            return false;
+        }
+
+        double x1 = getX();
+        double y1 = getY();
+        double x2 = x1 + getWidth();
+        double y2 = y1 + getHeight();
+
+        return
+                x + width > x1 && x < x2 &&
+                        y + height > y1 && y < y2;
+    }
+
+    public boolean contains(double x, double y, double width, double height) {
+        if (isEmpty() || width <= 0.0 || height <= 0.0) {
+            return false;
+        }
+
+        double x1 = getX();
+        double y1 = getY();
+        double x2 = x1 + getWidth();
+        double y2 = y1 + getHeight();
+
+        return
+                x1 <= x && x + width <= x2 &&
+                        y1 <= y && y + height <= y2;
+    }
+
+    public void add(double x, double y) {
+        double x1 = Math.min(getMinX(), x);
+        double y1 = Math.min(getMinY(), y);
+        double x2 = Math.max(getMaxX(), x);
+        double y2 = Math.max(getMaxY(), y);
+        setRect(x1, y1, x2 - x1, y2 - y1);
+    }
+
+    public void add(Point2D p) {
+        add(p.getX(), p.getY());
+    }
+
+    public void add(Rectangle2D r) {
+        union(this, r, this);
+    }
+
+    public PathIterator getPathIterator(AffineTransform t) {
+        return new Iterator(this, t);
+    }
+
+    @Override
+    public PathIterator getPathIterator(AffineTransform t, double flatness) {
+        return new Iterator(this, t);
+    }
+
+    @Override
+    public int hashCode() {
+        HashCode hash = new HashCode();
+        hash.append(getX());
+        hash.append(getY());
+        hash.append(getWidth());
+        hash.append(getHeight());
+        return hash.hashCode();
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Rectangle2D) {
+            Rectangle2D r = (Rectangle2D) obj;
+            return
+                    getX() == r.getX() &&
+                            getY() == r.getY() &&
+                            getWidth() == r.getWidth() &&
+                            getHeight() == r.getHeight();
+        }
+        return false;
+    }
 
     public static class Float extends Rectangle2D {
 
@@ -79,18 +235,18 @@ public abstract class Rectangle2D extends RectangularShape {
 
         @Override
         public void setRect(double x, double y, double width, double height) {
-            this.x = (float)x;
-            this.y = (float)y;
-            this.width = (float)width;
-            this.height = (float)height;
+            this.x = (float) x;
+            this.y = (float) y;
+            this.width = (float) width;
+            this.height = (float) height;
         }
 
         @Override
         public void setRect(Rectangle2D r) {
-            this.x = (float)r.getX();
-            this.y = (float)r.getY();
-            this.width = (float)r.getWidth();
-            this.height = (float)r.getHeight();
+            this.x = (float) r.getX();
+            this.y = (float) r.getY();
+            this.width = (float) r.getWidth();
+            this.height = (float) r.getHeight();
         }
 
         @Override
@@ -99,23 +255,19 @@ public abstract class Rectangle2D extends RectangularShape {
 
             if (width <= 0.0f) {
                 code |= OUT_LEFT | OUT_RIGHT;
-            } else
-                if (px < x) {
-                    code |= OUT_LEFT;
-                } else
-                    if (px > x + width) {
-                        code |= OUT_RIGHT;
-                    }
+            } else if (px < x) {
+                code |= OUT_LEFT;
+            } else if (px > x + width) {
+                code |= OUT_RIGHT;
+            }
 
             if (height <= 0.0f) {
                 code |= OUT_TOP | OUT_BOTTOM;
-            } else
-                if (py < y) {
-                    code |= OUT_TOP;
-                } else
-                    if (py > y + height) {
-                        code |= OUT_BOTTOM;
-                    }
+            } else if (py < y) {
+                code |= OUT_TOP;
+            } else if (py > y + height) {
+                code |= OUT_BOTTOM;
+            }
 
             return code;
         }
@@ -218,23 +370,19 @@ public abstract class Rectangle2D extends RectangularShape {
 
             if (width <= 0.0) {
                 code |= OUT_LEFT | OUT_RIGHT;
-            } else
-                if (px < x) {
-                    code |= OUT_LEFT;
-                } else
-                    if (px > x + width) {
-                        code |= OUT_RIGHT;
-                    }
+            } else if (px < x) {
+                code |= OUT_LEFT;
+            } else if (px > x + width) {
+                code |= OUT_RIGHT;
+            }
 
             if (height <= 0.0) {
                 code |= OUT_TOP | OUT_BOTTOM;
-            } else
-                if (py < y) {
-                    code |= OUT_TOP;
-                } else
-                    if (py > y + height) {
-                        code |= OUT_BOTTOM;
-                    }
+            } else if (py < y) {
+                code |= OUT_TOP;
+            } else if (py > y + height) {
+                code |= OUT_BOTTOM;
+            }
 
             return code;
         }
@@ -267,7 +415,7 @@ public abstract class Rectangle2D extends RectangularShape {
     }
 
     /*
-     * Rectangle2D path iterator 
+     * Rectangle2D path iterator
      */
     class Iterator implements PathIterator {
 
@@ -275,37 +423,38 @@ public abstract class Rectangle2D extends RectangularShape {
          * The x coordinate of left-upper rectangle corner
          */
         double x;
-        
+
         /**
          * The y coordinate of left-upper rectangle corner
          */
         double y;
-        
-        
+
+
         /**
          * The width of rectangle
          */
         double width;
-        
+
         /**
          * The height of rectangle
          */
         double height;
-                
+
         /**
          * The path iterator transformation
          */
         AffineTransform t;
-        
+
         /**
          * The current segmenet index
          */
         int index;
-        
+
         /**
          * Constructs a new Rectangle2D.Iterator for given rectangle and transformation
-         * @param r - the source Rectangle2D object
-         * @param at - the AffineTransform object to apply rectangle path 
+         *
+         * @param r  - the source Rectangle2D object
+         * @param at - the AffineTransform object to apply rectangle path
          */
         Iterator(Rectangle2D r, AffineTransform at) {
             this.x = r.getX();
@@ -344,23 +493,23 @@ public abstract class Rectangle2D extends RectangularShape {
                 coords[1] = y;
             } else {
                 type = SEG_LINETO;
-                switch(index) {
-                case 1:
-                    coords[0] = x + width;
-                    coords[1] = y;
-                    break;
-                case 2:
-                    coords[0] = x + width;
-                    coords[1] = y + height;
-                    break;
-                case 3:
-                    coords[0] = x;
-                    coords[1] = y + height;
-                    break;
-                case 4:
-                    coords[0] = x;
-                    coords[1] = y;
-                    break;
+                switch (index) {
+                    case 1:
+                        coords[0] = x + width;
+                        coords[1] = y;
+                        break;
+                    case 2:
+                        coords[0] = x + width;
+                        coords[1] = y + height;
+                        break;
+                    case 3:
+                        coords[0] = x;
+                        coords[1] = y + height;
+                        break;
+                    case 4:
+                        coords[0] = x;
+                        coords[1] = y;
+                        break;
                 }
             }
             if (t != null) {
@@ -378,28 +527,28 @@ public abstract class Rectangle2D extends RectangularShape {
             }
             int type;
             if (index == 0) {
-                coords[0] = (float)x;
-                coords[1] = (float)y;
+                coords[0] = (float) x;
+                coords[1] = (float) y;
                 type = SEG_MOVETO;
             } else {
                 type = SEG_LINETO;
-                switch(index) {
-                case 1:
-                    coords[0] = (float)(x + width);
-                    coords[1] = (float)y;
-                    break;
-                case 2:
-                    coords[0] = (float)(x + width);
-                    coords[1] = (float)(y + height);
-                    break;
-                case 3:
-                    coords[0] = (float)x;
-                    coords[1] = (float)(y + height);
-                    break;
-                case 4:
-                    coords[0] = (float)x;
-                    coords[1] = (float)y;
-                    break;
+                switch (index) {
+                    case 1:
+                        coords[0] = (float) (x + width);
+                        coords[1] = (float) y;
+                        break;
+                    case 2:
+                        coords[0] = (float) (x + width);
+                        coords[1] = (float) (y + height);
+                        break;
+                    case 3:
+                        coords[0] = (float) x;
+                        coords[1] = (float) (y + height);
+                        break;
+                    case 4:
+                        coords[0] = (float) x;
+                        coords[1] = (float) y;
+                        break;
                 }
             }
             if (t != null) {
@@ -408,162 +557,6 @@ public abstract class Rectangle2D extends RectangularShape {
             return type;
         }
 
-    }
-
-    protected Rectangle2D() {
-    }
-
-    public abstract void setRect(double x, double y, double width, double height);
-
-    public abstract int outcode(double x, double y);
-
-    public abstract Rectangle2D createIntersection(Rectangle2D r);
-
-    public abstract Rectangle2D createUnion(Rectangle2D r);
-
-    public void setRect(Rectangle2D r) {
-        setRect(r.getX(), r.getY(), r.getWidth(), r.getHeight());
-    }
-
-    @Override
-    public void setFrame(double x, double y, double width, double height) {
-        setRect(x, y, width, height);
-    }
-
-    public Rectangle2D getBounds2D() {
-        return (Rectangle2D)clone();
-    }
-
-    public boolean intersectsLine(double x1, double y1, double x2, double y2) {
-        double rx1 = getX();
-        double ry1 = getY();
-        double rx2 = rx1 + getWidth();
-        double ry2 = ry1 + getHeight();
-        return
-            (rx1 <= x1 && x1 <= rx2 && ry1 <= y1 && y1 <= ry2) ||
-            (rx1 <= x2 && x2 <= rx2 && ry1 <= y2 && y2 <= ry2) ||
-            Line2D.linesIntersect(rx1, ry1, rx2, ry2, x1, y1, x2, y2) ||
-            Line2D.linesIntersect(rx2, ry1, rx1, ry2, x1, y1, x2, y2);
-    }
-
-    public boolean intersectsLine(Line2D l) {
-        return intersectsLine(l.getX1(), l.getY1(), l.getX2(), l.getY2());
-    }
-
-    public int outcode(Point2D p) {
-        return outcode(p.getX(), p.getY());
-    }
-
-    public boolean contains(double x, double y) {
-        if (isEmpty()) {
-            return false;
-        }
-
-        double x1 = getX();
-        double y1 = getY();
-        double x2 = x1 + getWidth();
-        double y2 = y1 + getHeight();
-
-        return
-            x1 <= x && x < x2 &&
-            y1 <= y && y < y2;
-    }
-
-    public boolean intersects(double x, double y, double width, double height) {
-        if (isEmpty() || width <= 0.0 || height <= 0.0) {
-            return false;
-        }
-
-        double x1 = getX();
-        double y1 = getY();
-        double x2 = x1 + getWidth();
-        double y2 = y1 + getHeight();
-
-        return
-            x + width > x1 && x < x2 &&
-            y + height > y1 && y < y2;
-    }
-
-    public boolean contains(double x, double y, double width, double height) {
-        if (isEmpty() || width <= 0.0 || height <= 0.0) {
-            return false;
-        }
-
-        double x1 = getX();
-        double y1 = getY();
-        double x2 = x1 + getWidth();
-        double y2 = y1 + getHeight();
-
-        return
-            x1 <= x && x + width <= x2 &&
-            y1 <= y && y + height <= y2;
-    }
-
-    public static void intersect(Rectangle2D src1, Rectangle2D src2, Rectangle2D dst) {
-        double x1 = Math.max(src1.getMinX(), src2.getMinX());
-        double y1 = Math.max(src1.getMinY(), src2.getMinY());
-        double x2 = Math.min(src1.getMaxX(), src2.getMaxX());
-        double y2 = Math.min(src1.getMaxY(), src2.getMaxY());
-        dst.setFrame(x1, y1, x2 - x1, y2 - y1);
-    }
-
-    public static void union(Rectangle2D src1, Rectangle2D src2, Rectangle2D dst) {
-        double x1 = Math.min(src1.getMinX(), src2.getMinX());
-        double y1 = Math.min(src1.getMinY(), src2.getMinY());
-        double x2 = Math.max(src1.getMaxX(), src2.getMaxX());
-        double y2 = Math.max(src1.getMaxY(), src2.getMaxY());
-        dst.setFrame(x1, y1, x2 - x1, y2 - y1);
-    }
-
-    public void add(double x, double y) {
-        double x1 = Math.min(getMinX(), x);
-        double y1 = Math.min(getMinY(), y);
-        double x2 = Math.max(getMaxX(), x);
-        double y2 = Math.max(getMaxY(), y);
-        setRect(x1, y1, x2 - x1, y2 - y1);
-    }
-
-    public void add(Point2D p) {
-        add(p.getX(), p.getY());
-    }
-
-    public void add(Rectangle2D r) {
-        union(this, r, this);
-    }
-
-    public PathIterator getPathIterator(AffineTransform t) {
-        return new Iterator(this, t);
-    }
-
-    @Override
-    public PathIterator getPathIterator(AffineTransform t, double flatness) {
-        return new Iterator(this, t);
-    }
-
-    @Override
-    public int hashCode() {
-        HashCode hash = new HashCode();
-        hash.append(getX());
-        hash.append(getY());
-        hash.append(getWidth());
-        hash.append(getHeight());
-        return hash.hashCode();
-    }
-
-    @Override
-    public boolean equals(Object obj) {
-        if (obj == this) {
-            return true;
-        }
-        if (obj instanceof Rectangle2D) {
-            Rectangle2D r = (Rectangle2D)obj;
-            return
-                getX() == r.getX() &&
-                getY() == r.getY() &&
-                getWidth() == r.getWidth() &&
-                getHeight() == r.getHeight();
-        }
-        return false;
     }
 
 }

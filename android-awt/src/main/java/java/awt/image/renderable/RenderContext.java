@@ -19,8 +19,7 @@
  */
 package java.awt.image.renderable;
 
-import java.awt.RenderingHints;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 
 public class RenderContext implements Cloneable {
@@ -30,7 +29,7 @@ public class RenderContext implements Cloneable {
     RenderingHints hints;
 
     public RenderContext(AffineTransform usr2dev, Shape aoi, RenderingHints hints) {
-        this.transform = (AffineTransform)usr2dev.clone();
+        this.transform = (AffineTransform) usr2dev.clone();
         this.aoi = aoi;
         this.hints = hints;
     }
@@ -52,14 +51,10 @@ public class RenderContext implements Cloneable {
         return new RenderContext(transform, aoi, hints);
     }
 
-    public void setTransform(AffineTransform newTransform) {
-        transform = (AffineTransform)newTransform.clone();
-    }
-
     /**
      * @deprecated
      */
-    @Deprecated    
+    @Deprecated
     public void preConcetenateTransform(AffineTransform modTransform) {
         preConcatenateTransform(modTransform);
     }
@@ -81,22 +76,26 @@ public class RenderContext implements Cloneable {
     }
 
     public AffineTransform getTransform() {
-        return (AffineTransform)transform.clone();
+        return (AffineTransform) transform.clone();
     }
 
-    public void setAreaOfInterest(Shape newAoi) {
-        aoi = newAoi;
+    public void setTransform(AffineTransform newTransform) {
+        transform = (AffineTransform) newTransform.clone();
     }
 
     public Shape getAreaOfInterest() {
         return aoi;
     }
 
-    public void setRenderingHints(RenderingHints hints) {
-        this.hints = hints;
+    public void setAreaOfInterest(Shape newAoi) {
+        aoi = newAoi;
     }
 
     public RenderingHints getRenderingHints() {
         return hints;
+    }
+
+    public void setRenderingHints(RenderingHints hints) {
+        this.hints = hints;
     }
 }

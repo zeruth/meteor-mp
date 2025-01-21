@@ -16,14 +16,14 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.formats.tiff.TiffField;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
 
 /**
  * Windows XP onwards store some tags using UTF-16LE, but the field type is byte
@@ -31,7 +31,7 @@ import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
  */
 public class TagInfoXpString extends TagInfo {
     public TagInfoXpString(final String name, final int tag, final int length,
-            final TiffDirectoryType directoryType) {
+                           final TiffDirectoryType directoryType) {
         super(name, tag, FieldType.BYTE, length, directoryType);
     }
 

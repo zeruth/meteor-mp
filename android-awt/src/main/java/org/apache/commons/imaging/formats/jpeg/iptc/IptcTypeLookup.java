@@ -22,6 +22,7 @@ import java.util.Map;
 public final class IptcTypeLookup {
 
     private static final Map<Integer, IptcType> IPTC_TYPE_MAP = new HashMap<Integer, IptcType>();
+
     static {
         for (final IptcType iptcType : IptcTypes.values()) {
             IPTC_TYPE_MAP.put(iptcType.getType(), iptcType);
@@ -30,7 +31,7 @@ public final class IptcTypeLookup {
 
     private IptcTypeLookup() {
     }
-    
+
     public static IptcType getIptcType(final int type) {
         if (!IPTC_TYPE_MAP.containsKey(type)) {
             return IptcTypes.getUnknown(type);

@@ -20,7 +20,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.PrintWriter;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.*;
+import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
 
 public abstract class GenericSegment extends Segment {
     protected final byte[] segmentData;
@@ -52,6 +52,7 @@ public abstract class GenericSegment extends Segment {
      * Returns a copy of the segment's contents,
      * excluding the marker and length bytes at
      * the beginning.
+     *
      * @return the segment's contents
      */
     public byte[] getSegmentData() {

@@ -23,15 +23,14 @@ package java.awt.image;
 import org.apache.harmony.awt.internal.nls.Messages;
 
 
-
 public final class DataBufferUShort extends DataBuffer {
 
     short data[][];
 
     public DataBufferUShort(short dataArrays[][], int size, int offsets[]) {
         super(TYPE_USHORT, size, dataArrays.length, offsets);
-        for(int i = 0; i < dataArrays.length; i++){
-            if(dataArrays[i].length < offsets[i] + size){
+        for (int i = 0; i < dataArrays.length; i++) {
+            if (dataArrays[i].length < offsets[i] + size) {
                 // awt.28d=Length of dataArray[{0}] is less than size + offset[{1}]
                 throw new IllegalArgumentException(Messages.getString("awt.28D", i, i));  //$NON-NLS-1$
             }
@@ -46,7 +45,7 @@ public final class DataBufferUShort extends DataBuffer {
 
     public DataBufferUShort(short dataArray[], int size, int offset) {
         super(TYPE_USHORT, size, 1, offset);
-        if(dataArray.length < size + offset){
+        if (dataArray.length < size + offset) {
             // awt.28E=Length of dataArray is less than size + offset
             throw new IllegalArgumentException(Messages.getString("awt.28E")); //$NON-NLS-1$
         }
@@ -63,8 +62,8 @@ public final class DataBufferUShort extends DataBuffer {
     public DataBufferUShort(int size, int numBanks) {
         super(TYPE_USHORT, size, numBanks);
         data = new short[numBanks][];
-        int i= 0;
-        while( i < numBanks) {
+        int i = 0;
+        while (i < numBanks) {
             data[i++] = new short[size];
         }
     }
@@ -77,13 +76,13 @@ public final class DataBufferUShort extends DataBuffer {
 
     @Override
     public void setElem(int bank, int i, int val) {
-        data[bank][offsets[bank] + i] = (short)val;
+        data[bank][offsets[bank] + i] = (short) val;
         notifyChanged();
     }
 
     @Override
     public void setElem(int i, int val) {
-        data[0][offset + i] = (short)val;
+        data[0][offset + i] = (short) val;
         notifyChanged();
     }
 

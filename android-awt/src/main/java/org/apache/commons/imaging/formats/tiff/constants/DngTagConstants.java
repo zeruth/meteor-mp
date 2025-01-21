@@ -16,24 +16,11 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAsciiOrByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLongOrRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoUndefined;
 
 /**
  * Digital Negative (DNG) Specification
@@ -44,7 +31,7 @@ public interface DngTagConstants {
     TagInfoByte EXIF_TAG_DNG_VERSION = new TagInfoByte(
             "DNGVersion", 0xc612, 4,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoByte EXIF_TAG_DNG_BACKWARD_VERSION = new TagInfoByte(
             "DNGBackwardVersion", 0xc613, 4,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
@@ -73,7 +60,7 @@ public interface DngTagConstants {
     int CFALAYOUT_VALUE_EVEN_ROWS_OFFSET_UP_1_2_ROW_EVEN_COLUMNS_OFFSET_RIGHT_1_2_COLUMN = 7;
     int CFALAYOUT_VALUE_EVEN_ROWS_OFFSET_DOWN_1_2_ROW_EVEN_COLUMNS_OFFSET_LEFT_1_2_COLUMN = 8;
     int CFALAYOUT_VALUE_EVEN_ROWS_OFFSET_DOWN_1_2_ROW_EVEN_COLUMNS_OFFSET_RIGHT_1_2_COLUMN = 9;
-    
+
     TagInfoShort EXIF_TAG_LINEARIZATION_TABLE = new TagInfoShort(
             "LinearizationTable", 0xc618, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -173,7 +160,7 @@ public interface DngTagConstants {
     TagInfoRational EXIF_TAG_DNG_LENS_INFO = new TagInfoRational(
             "DNGLensInfo", 0xc630, 4,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoRational EXIF_TAG_CHROMA_BLUR_RADIUS = new TagInfoRational(
             "ChromaBlurRadius", 0xc631, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -247,7 +234,7 @@ public interface DngTagConstants {
     TagInfoRational EXIF_TAG_BEST_QUALITY_SCALE = new TagInfoRational(
             "BestQualityScale", 0xc65c, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoByte EXIF_TAG_RAW_DATA_UNIQUE_ID = new TagInfoByte(
             "RawDataUniqueID", 0xc65d, 16,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
@@ -289,47 +276,47 @@ public interface DngTagConstants {
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
     short COLORIMETRIC_REFERENCE_VALUE_SCENE_REFERRED = 0;
     short COLORIMETRIC_REFERENCE_VALUE_OUTPUT_REFERRED = 1;
-    
+
     TagInfoAsciiOrByte EXIF_TAG_CAMERA_CALIBRATION_SIGNATURE = new TagInfoAsciiOrByte(
             "CameraCalibrationSignature", 0xc6f3, -1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoAsciiOrByte EXIF_TAG_PROFILE_CALIBRATION_SIGNATURE = new TagInfoAsciiOrByte(
             "ProfileCalibrationSignature", 0xc6f4, -1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoLong EXIF_TAG_EXTRA_CAMERA_PROFILES = new TagInfoLong(
             "ExtraCameraProfiles", 0xc6f5, -1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoAsciiOrByte EXIF_TAG_AS_SHOT_PROFILE_NAME = new TagInfoAsciiOrByte(
             "AsShotProfileName", 0xc6f6, -1,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoRational EXIF_TAG_NOISE_REDUCTION_APPLIED = new TagInfoRational(
             "NoiseReductionApplied", 0xc6f7, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoAscii EXIF_TAG_PROFILE_NAME = new TagInfoAscii(
             "ProfileName", 0xc6f8, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_PROFILE_HUE_SAT_MAP_DIMS = new TagInfoLong(
             "ProfileHueSatMapDims", 0xc6f9, 3,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_PROFILE_HUE_SAT_MAP_DATA1 = new TagInfoFloat(
             "ProfileHueSatMapData1", 0xc6fa, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_PROFILE_HUE_SAT_MAP_DATA2 = new TagInfoFloat(
             "ProfileHueSatMapData2", 0xc6fb, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_PROFILE_TONE_CURVE = new TagInfoFloat(
             "ProfileToneCurve", 0xc6fc, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_PROFILE_EMBED_POLICY = new TagInfoLong(
             "ProfileEmbedPolicy", 0xc6fd, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -337,23 +324,23 @@ public interface DngTagConstants {
     int PROFILE_EMBED_POLICY_VALUE_EMBED_IF_USED = 1;
     int PROFILE_EMBED_POLICY_VALUE_EMBED_NEVER = 2;
     int PROFILE_EMBED_POLICY_VALUE_NO_RESTRICTIONS = 3;
-    
+
     TagInfoAsciiOrByte EXIF_TAG_PROFILE_COPYRIGHT = new TagInfoAsciiOrByte(
             "ProfileCopyright", 0xc6fe, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoSRational EXIF_TAG_FORWARD_MATRIX1 = new TagInfoSRational(
             "ForwardMatrix1", 0xc714, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoSRational EXIF_TAG_FORWARD_MATRIX2 = new TagInfoSRational(
             "ForwardMatrix2", 0xc715, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoAsciiOrByte EXIF_TAG_PREVIEW_APPLICATION_NAME = new TagInfoAsciiOrByte(
             "PreviewApplicationName", 0xc716, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoAsciiOrByte EXIF_TAG_PREVIEW_APPLICATION_VERSION = new TagInfoAsciiOrByte(
             "PreviewApplicationVersion", 0xc717, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -365,7 +352,7 @@ public interface DngTagConstants {
     TagInfoByte EXIF_TAG_PREVIEW_SETTINGS_DIGEST = new TagInfoByte(
             "PreviewSettingsDigest", 0xc719, 16,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_PREVIEW_COLORSPACE = new TagInfoLong(
             "PreviewColorspace", 0xc71a, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -374,39 +361,39 @@ public interface DngTagConstants {
     int PREVIEW_COLORSPACE_VALUE_sRGB = 2;
     int PREVIEW_COLORSPACE_VALUE_ADOBE_RGB = 3;
     int PREVIEW_COLORSPACE_VALUE_PROPHOTO_RGB = 4;
-    
+
     TagInfoAscii EXIF_TAG_PREVIEW_DATE_TIME = new TagInfoAscii(
             "PreviewDateTime", 0xc71b, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoByte EXIF_TAG_RAW_IMAGE_DIGEST = new TagInfoByte(
             "RawImageDigest", 0xc71c, 16,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoByte EXIF_TAG_ORIGINAL_RAW_FILE_DIGEST = new TagInfoByte(
             "OriginalRawFileDigest", 0xc71d, 16,
             TiffDirectoryType.EXIF_DIRECTORY_IFD0);
-    
+
     TagInfoShortOrLong EXIF_TAG_SUB_TILE_BLOCK_SIZE = new TagInfoShortOrLong(
             "SubTileBlockSize", 0xc71e, 2,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoShortOrLong EXIF_TAG_ROW_INTERLEAVE_FACTOR = new TagInfoShortOrLong(
             "RowInterleaveFactor", 0xc71f, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong EXIF_TAG_PROFILE_LOOK_TABLE_DIMS = new TagInfoLong(
             "ProfileLookTableDims", 0xc725, 3,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoFloat EXIF_TAG_PROFILE_LOOK_TABLE_DATA = new TagInfoFloat(
             "ProfileLookTableData", 0xc726, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoUndefined EXIF_TAG_OPCODE_LIST_1 = new TagInfoUndefined(
             "OpcodeList1", 0xc740, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoUndefined EXIF_TAG_OPCODE_LIST_2 = new TagInfoUndefined(
             "OpcodeList2", 0xc741, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -414,7 +401,7 @@ public interface DngTagConstants {
     TagInfoUndefined EXIF_TAG_OPCODE_LIST_3 = new TagInfoUndefined(
             "OpcodeList3", 0xc74E, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoDouble EXIF_TAG_NOISE_PROFILE = new TagInfoDouble(
             "NoiseProfile", 0xc761, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);

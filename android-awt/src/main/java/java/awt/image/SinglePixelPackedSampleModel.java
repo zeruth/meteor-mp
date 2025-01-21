@@ -37,12 +37,12 @@ public class SinglePixelPackedSampleModel extends SampleModel {
     private int maxBitSize;
 
     public SinglePixelPackedSampleModel(int dataType, int w, int h,
-            int bitMasks[]) {
+                                        int bitMasks[]) {
         this(dataType, w, h, w, bitMasks);
     }
 
     public SinglePixelPackedSampleModel(int dataType, int w, int h,
-            int scanlineStride, int bitMasks[]) {
+                                        int scanlineStride, int bitMasks[]) {
 
         super(dataType, w, h, bitMasks.length);
 
@@ -102,39 +102,39 @@ public class SinglePixelPackedSampleModel extends SampleModel {
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
         }
         switch (getTransferType()) {
-        case DataBuffer.TYPE_BYTE:
-            byte bdata[];
-            if (obj == null) {
-                bdata = new byte[1];
-            } else {
-                bdata = (byte[]) obj;
-            }
+            case DataBuffer.TYPE_BYTE:
+                byte bdata[];
+                if (obj == null) {
+                    bdata = new byte[1];
+                } else {
+                    bdata = (byte[]) obj;
+                }
 
-            bdata[0] = (byte) data.getElem(y * scanlineStride + x);
-            obj = bdata;
-            break;
-        case DataBuffer.TYPE_USHORT:
-            short sdata[];
-            if (obj == null) {
-                sdata = new short[1];
-            } else {
-                sdata = (short[]) obj;
-            }
+                bdata[0] = (byte) data.getElem(y * scanlineStride + x);
+                obj = bdata;
+                break;
+            case DataBuffer.TYPE_USHORT:
+                short sdata[];
+                if (obj == null) {
+                    sdata = new short[1];
+                } else {
+                    sdata = (short[]) obj;
+                }
 
-            sdata[0] = (short) data.getElem(y * scanlineStride + x);
-            obj = sdata;
-            break;
-        case DataBuffer.TYPE_INT:
-            int idata[];
-            if (obj == null) {
-                idata = new int[1];
-            } else {
-                idata = (int[]) obj;
-            }
+                sdata[0] = (short) data.getElem(y * scanlineStride + x);
+                obj = sdata;
+                break;
+            case DataBuffer.TYPE_INT:
+                int idata[];
+                if (obj == null) {
+                    idata = new int[1];
+                } else {
+                    idata = (int[]) obj;
+                }
 
-            idata[0] = data.getElem(y * scanlineStride + x);
-            obj = idata;
-            break;
+                idata[0] = data.getElem(y * scanlineStride + x);
+                obj = idata;
+                break;
         }
         return obj;
     }
@@ -146,15 +146,15 @@ public class SinglePixelPackedSampleModel extends SampleModel {
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
         }
         switch (getTransferType()) {
-        case DataBuffer.TYPE_BYTE:
-            data.setElem(y * scanlineStride + x, ((byte[]) obj)[0] & 0xff);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data.setElem(y * scanlineStride + x, ((short[]) obj)[0] & 0xffff);
-            break;
-        case DataBuffer.TYPE_INT:
-            data.setElem(y * scanlineStride + x, ((int[]) obj)[0]);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data.setElem(y * scanlineStride + x, ((byte[]) obj)[0] & 0xff);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data.setElem(y * scanlineStride + x, ((short[]) obj)[0] & 0xffff);
+                break;
+            case DataBuffer.TYPE_INT:
+                data.setElem(y * scanlineStride + x, ((int[]) obj)[0]);
+                break;
         }
     }
 
@@ -239,7 +239,7 @@ public class SinglePixelPackedSampleModel extends SampleModel {
 
     @Override
     public int[] getPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         if ((x < 0) || (y < 0) || ((long) x + (long) w > this.width)
                 || ((long) y + (long) h > this.height)) {
             // awt.63=Coordinates are not in bounds
@@ -268,7 +268,7 @@ public class SinglePixelPackedSampleModel extends SampleModel {
 
     @Override
     public void setPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         if ((x < 0) || (y < 0) || ((long) x + (long) w > this.width)
                 || ((long) y + (long) h > this.height)) {
             // awt.63=Coordinates are not in bounds
@@ -283,7 +283,8 @@ public class SinglePixelPackedSampleModel extends SampleModel {
                 for (int n = 0; n < this.numBands; n++) {
                     try {
                         setSample(j, i, n, iArray[idx++], data);
-                    } catch (Exception e) {}
+                    } catch (Exception e) {
+                    }
                 }
             }
         }
@@ -303,7 +304,7 @@ public class SinglePixelPackedSampleModel extends SampleModel {
 
     @Override
     public int[] getSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                            DataBuffer data) {
         if ((x < 0) || (y < 0) || ((long) x + (long) w > this.width)
                 || ((long) y + (long) h > this.height)) {
             // awt.63=Coordinates are not in bounds
@@ -331,7 +332,7 @@ public class SinglePixelPackedSampleModel extends SampleModel {
 
     @Override
     public void setSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         if ((x < 0) || (y < 0) || ((long) x + (long) w > this.width)
                 || ((long) y + (long) h > this.height)) {
             // awt.63=Coordinates are not in bounds
@@ -352,15 +353,15 @@ public class SinglePixelPackedSampleModel extends SampleModel {
         int size = (this.height - 1) * scanlineStride + width;
 
         switch (this.dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(size);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(size);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(size);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(size);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(size);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(size);
+                break;
         }
         return data;
     }

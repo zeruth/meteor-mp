@@ -20,7 +20,6 @@ package javax.imageio.plugins.bmp;
 
 
 import javax.imageio.ImageWriteParam;
-
 import java.util.Locale;
 
 public class BMPImageWriteParam extends ImageWriteParam {
@@ -35,15 +34,15 @@ public class BMPImageWriteParam extends ImageWriteParam {
 
         // Set the compression
         canWriteCompressed = true;
-        compressionTypes = new String[] {"BI_RGB", "BI_RLE8", "BI_RLE4", "BI_BITFIELDS"};
-        compressionType = compressionTypes[0]; 
-    }
-
-    public void setTopDown(boolean topDown) {
-        this.topDown = topDown;
+        compressionTypes = new String[]{"BI_RGB", "BI_RLE8", "BI_RLE4", "BI_BITFIELDS"};
+        compressionType = compressionTypes[0];
     }
 
     public boolean isTopDown() {
         return topDown;
+    }
+
+    public void setTopDown(boolean topDown) {
+        this.topDown = topDown;
     }
 }

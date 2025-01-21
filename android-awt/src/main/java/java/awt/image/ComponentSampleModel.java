@@ -39,7 +39,7 @@ public class ComponentSampleModel extends SampleModel {
     protected int pixelStride;
 
     public ComponentSampleModel(int dataType, int w, int h, int pixelStride,
-            int scanlineStride, int bankIndices[], int bandOffsets[]) {
+                                int scanlineStride, int bankIndices[], int bandOffsets[]) {
 
         super(dataType, w, h, bandOffsets.length);
 
@@ -79,7 +79,7 @@ public class ComponentSampleModel extends SampleModel {
     }
 
     public ComponentSampleModel(int dataType, int w, int h, int pixelStride,
-            int scanlineStride, int bandOffsets[]) {
+                                int scanlineStride, int bandOffsets[]) {
 
         super(dataType, w, h, bandOffsets.length);
         if (pixelStride < 0) {
@@ -111,81 +111,81 @@ public class ComponentSampleModel extends SampleModel {
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
         }
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            byte bdata[];
-            if (obj == null) {
-                bdata = new byte[numBands];
-            } else {
-                bdata = (byte[]) obj;
-            }
+            case DataBuffer.TYPE_BYTE:
+                byte bdata[];
+                if (obj == null) {
+                    bdata = new byte[numBands];
+                } else {
+                    bdata = (byte[]) obj;
+                }
 
-            for (int i = 0; i < numBands; i++) {
-                bdata[i] = (byte) getSample(x, y, i, data);
-            }
+                for (int i = 0; i < numBands; i++) {
+                    bdata[i] = (byte) getSample(x, y, i, data);
+                }
 
-            obj = bdata;
-            break;
+                obj = bdata;
+                break;
 
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            short sdata[];
-            if (obj == null) {
-                sdata = new short[numBands];
-            } else {
-                sdata = (short[]) obj;
-            }
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                short sdata[];
+                if (obj == null) {
+                    sdata = new short[numBands];
+                } else {
+                    sdata = (short[]) obj;
+                }
 
-            for (int i = 0; i < numBands; i++) {
-                sdata[i] = (short) getSample(x, y, i, data);
-            }
+                for (int i = 0; i < numBands; i++) {
+                    sdata[i] = (short) getSample(x, y, i, data);
+                }
 
-            obj = sdata;
-            break;
+                obj = sdata;
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int idata[];
-            if (obj == null) {
-                idata = new int[numBands];
-            } else {
-                idata = (int[]) obj;
-            }
+            case DataBuffer.TYPE_INT:
+                int idata[];
+                if (obj == null) {
+                    idata = new int[numBands];
+                } else {
+                    idata = (int[]) obj;
+                }
 
-            for (int i = 0; i < numBands; i++) {
-                idata[i] = getSample(x, y, i, data);
-            }
+                for (int i = 0; i < numBands; i++) {
+                    idata[i] = getSample(x, y, i, data);
+                }
 
-            obj = idata;
-            break;
+                obj = idata;
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float fdata[];
-            if (obj == null) {
-                fdata = new float[numBands];
-            } else {
-                fdata = (float[]) obj;
-            }
+            case DataBuffer.TYPE_FLOAT:
+                float fdata[];
+                if (obj == null) {
+                    fdata = new float[numBands];
+                } else {
+                    fdata = (float[]) obj;
+                }
 
-            for (int i = 0; i < numBands; i++) {
-                fdata[i] = getSampleFloat(x, y, i, data);
-            }
+                for (int i = 0; i < numBands; i++) {
+                    fdata[i] = getSampleFloat(x, y, i, data);
+                }
 
-            obj = fdata;
-            break;
+                obj = fdata;
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double ddata[];
-            if (obj == null) {
-                ddata = new double[numBands];
-            } else {
-                ddata = (double[]) obj;
-            }
+            case DataBuffer.TYPE_DOUBLE:
+                double ddata[];
+                if (obj == null) {
+                    ddata = new double[numBands];
+                } else {
+                    ddata = (double[]) obj;
+                }
 
-            for (int i = 0; i < numBands; i++) {
-                ddata[i] = getSampleDouble(x, y, i, data);
-            }
+                for (int i = 0; i < numBands; i++) {
+                    ddata[i] = getSampleDouble(x, y, i, data);
+                }
 
-            obj = ddata;
-            break;
+                obj = ddata;
+                break;
         }
 
         return obj;
@@ -198,41 +198,41 @@ public class ComponentSampleModel extends SampleModel {
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
         }
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            byte barr[] = (byte[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, barr[i] & 0xff, data);
-            }
-            break;
+            case DataBuffer.TYPE_BYTE:
+                byte barr[] = (byte[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, barr[i] & 0xff, data);
+                }
+                break;
 
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            short sarr[] = (short[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, sarr[i] & 0xffff, data);
-            }
-            break;
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                short sarr[] = (short[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, sarr[i] & 0xffff, data);
+                }
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int iarr[] = (int[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, iarr[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_INT:
+                int iarr[] = (int[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, iarr[i], data);
+                }
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float farr[] = (float[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, farr[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_FLOAT:
+                float farr[] = (float[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, farr[i], data);
+                }
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double darr[] = (double[]) obj;
-            for (int i = 0; i < numBands; i++) {
-                setSample(x, y, i, darr[i], data);
-            }
-            break;
+            case DataBuffer.TYPE_DOUBLE:
+                double darr[] = (double[]) obj;
+                for (int i = 0; i < numBands; i++) {
+                    setSample(x, y, i, darr[i], data);
+                }
+                break;
         }
     }
 
@@ -243,14 +243,14 @@ public class ComponentSampleModel extends SampleModel {
         }
         ComponentSampleModel model = (ComponentSampleModel) o;
         return this.width == model.width && this.height == model.height &&
-               this.numBands == model.numBands &&
-               this.dataType == model.dataType &&
-               Arrays.equals(this.bandOffsets, model.bandOffsets) &&
-               Arrays.equals(this.bankIndices, model.bankIndices) &&
-               this.numBands == model.numBands &&
-               this.numBanks == model.numBanks &&
-               this.scanlineStride == model.scanlineStride &&
-               this.pixelStride == model.pixelStride;
+                this.numBands == model.numBands &&
+                this.dataType == model.dataType &&
+                Arrays.equals(this.bandOffsets, model.bandOffsets) &&
+                Arrays.equals(this.bankIndices, model.bankIndices) &&
+                this.numBands == model.numBands &&
+                this.numBanks == model.numBanks &&
+                this.scanlineStride == model.scanlineStride &&
+                this.pixelStride == model.pixelStride;
     }
 
     @Override
@@ -338,7 +338,7 @@ public class ComponentSampleModel extends SampleModel {
 
     @Override
     public int[] getPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         if (x < 0 || y < 0 || x > this.width || x + w > this.width
                 || y > this.height || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
@@ -366,7 +366,7 @@ public class ComponentSampleModel extends SampleModel {
 
     @Override
     public void setPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -394,7 +394,7 @@ public class ComponentSampleModel extends SampleModel {
 
     @Override
     public int[] getSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                            DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -407,7 +407,7 @@ public class ComponentSampleModel extends SampleModel {
         } else {
             samples = iArray;
         }
-        
+
         if (data == null) {
             // awt.295=data is null
             throw new NullPointerException(Messages.getString("awt.295")); //$NON-NLS-1$
@@ -424,7 +424,7 @@ public class ComponentSampleModel extends SampleModel {
 
     @Override
     public void setSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -470,27 +470,27 @@ public class ComponentSampleModel extends SampleModel {
             }
         }
         int size = (height - 1) * scanlineStride +
-        (width - 1) * pixelStride + maxOffset + 1;
+                (width - 1) * pixelStride + maxOffset + 1;
 
         switch (dataType) {
-        case DataBuffer.TYPE_BYTE:
-            data = new DataBufferByte(size, numBanks);
-            break;
-        case DataBuffer.TYPE_SHORT:
-            data = new DataBufferShort(size, numBanks);
-            break;
-        case DataBuffer.TYPE_USHORT:
-            data = new DataBufferUShort(size, numBanks);
-            break;
-        case DataBuffer.TYPE_INT:
-            data = new DataBufferInt(size, numBanks);
-            break;
-        case DataBuffer.TYPE_FLOAT:
-            data = new DataBufferFloat(size, numBanks);
-            break;
-        case DataBuffer.TYPE_DOUBLE:
-            data = new DataBufferDouble(size, numBanks);
-            break;
+            case DataBuffer.TYPE_BYTE:
+                data = new DataBufferByte(size, numBanks);
+                break;
+            case DataBuffer.TYPE_SHORT:
+                data = new DataBufferShort(size, numBanks);
+                break;
+            case DataBuffer.TYPE_USHORT:
+                data = new DataBufferUShort(size, numBanks);
+                break;
+            case DataBuffer.TYPE_INT:
+                data = new DataBufferInt(size, numBanks);
+                break;
+            case DataBuffer.TYPE_FLOAT:
+                data = new DataBufferFloat(size, numBanks);
+                break;
+            case DataBuffer.TYPE_DOUBLE:
+                data = new DataBufferDouble(size, numBanks);
+                break;
         }
 
         return data;

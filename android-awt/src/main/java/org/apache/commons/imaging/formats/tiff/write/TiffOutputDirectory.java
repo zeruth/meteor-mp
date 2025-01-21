@@ -16,13 +16,6 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.Comparator;
-import java.util.List;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.common.RationalNumber;
@@ -34,34 +27,18 @@ import org.apache.commons.imaging.formats.tiff.constants.TagConstantsUtils;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.constants.TiffTagConstants;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAsciiOrByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAsciiOrRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByteOrShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoDouble;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoFloat;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoGpsText;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoSShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrLongOrRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShortOrRational;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoXpString;
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
+import java.util.List;
 
 import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
 
 public final class TiffOutputDirectory extends TiffOutputItem {
-    public final int type;
-    private final List<TiffOutputField> fields = new ArrayList<TiffOutputField>();
-    private final ByteOrder byteOrder;
-    private TiffOutputDirectory nextDirectory;
     public static final Comparator<TiffOutputDirectory> COMPARATOR = new Comparator<TiffOutputDirectory>() {
         public int compare(final TiffOutputDirectory o1, final TiffOutputDirectory o2) {
             if (o1.type < o2.type) {
@@ -73,16 +50,20 @@ public final class TiffOutputDirectory extends TiffOutputItem {
             }
         }
     };
+    public final int type;
+    private final List<TiffOutputField> fields = new ArrayList<TiffOutputField>();
+    private final ByteOrder byteOrder;
+    private TiffOutputDirectory nextDirectory;
     private JpegImageData jpegImageData;
     private TiffImageData tiffImageData;
-
-    public void setNextDirectory(final TiffOutputDirectory nextDirectory) {
-        this.nextDirectory = nextDirectory;
-    }
 
     public TiffOutputDirectory(final int type, final ByteOrder byteOrder) {
         this.type = type;
         this.byteOrder = byteOrder;
+    }
+
+    public void setNextDirectory(final TiffOutputDirectory nextDirectory) {
+        this.nextDirectory = nextDirectory;
     }
 
     public void add(final TagInfoByte tagInfo, final byte... values)
@@ -307,7 +288,7 @@ public final class TiffOutputDirectory extends TiffOutputItem {
     }
 
     public void add(final TagInfoShortOrLongOrRational tagInfo,
-            final RationalNumber... values) throws ImageWriteException {
+                    final RationalNumber... values) throws ImageWriteException {
         if (tagInfo.length > 0 && tagInfo.length != values.length) {
             throw new ImageWriteException("Tag expects " + tagInfo.length
                     + " value(s), not " + values.length);

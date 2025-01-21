@@ -19,6 +19,10 @@ package org.apache.harmony.awt.geom;
 
 // the class represents the intersect point of two edges
 public class IntersectPoint {
+    //  the absciss coordinate of the point
+    private final double x;
+    //  the ordinate coordinate of the point
+    private final double y;
     //  the edge begin number of first line
     private int begIndex1;
     //  the edge end number of first line
@@ -37,16 +41,12 @@ public class IntersectPoint {
     private int rule2;
     //  the index of the second figure rules array
     private int ruleIndex2;
-    //  the absciss coordinate of the point
-    private final double x;
-    //  the ordinate coordinate of the point
-    private final double y;
     //  the parameter value of edge2
     private double param2;
 
     public IntersectPoint(int begIndex1, int endIndex1,
-            int begIndex2, int endIndex2,
-            double x, double y) {
+                          int begIndex2, int endIndex2,
+                          double x, double y) {
         this.begIndex1 = begIndex1;
         this.endIndex1 = endIndex1;
         this.begIndex2 = begIndex2;
@@ -55,9 +55,9 @@ public class IntersectPoint {
         this.y = y;
     }
 
-    public IntersectPoint (int begIndex1, int endIndex1, int rule1, int ruleIndex1,
-            int begIndex2, int endIndex2, int rule2, int ruleIndex2,
-            double x, double y, double param1, double param2) {
+    public IntersectPoint(int begIndex1, int endIndex1, int rule1, int ruleIndex1,
+                          int begIndex2, int endIndex2, int rule2, int ruleIndex2,
+                          double x, double y, double param1, double param2) {
         this.begIndex1 = begIndex1;
         this.endIndex1 = endIndex1;
         this.rule1 = rule1;

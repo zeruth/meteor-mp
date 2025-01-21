@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
 
 abstract class PixelParserSimple extends PixelParser {
     public PixelParserSimple(final BmpHeaderInfo bhi, final byte[] colorTable, final byte[] imageData) {

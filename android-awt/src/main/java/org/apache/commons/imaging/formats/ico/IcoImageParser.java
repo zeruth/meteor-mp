@@ -16,16 +16,7 @@
  */
 package org.apache.commons.imaging.formats.ico;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
-import org.apache.commons.imaging.Imaging;
-import org.apache.commons.imaging.PixelDensity;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
@@ -34,12 +25,9 @@ import org.apache.commons.imaging.palette.PaletteFactory;
 import org.apache.commons.imaging.palette.SimplePalette;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -48,14 +36,11 @@ import java.util.Map;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_FORMAT;
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_PIXEL_DENSITY;
-import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
-import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
 public class IcoImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".ico";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".ico", ".cur", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".ico", ".cur",};
 
     public IcoImageParser() {
         super.setByteOrder(ByteOrder.LITTLE_ENDIAN);
@@ -78,7 +63,7 @@ public class IcoImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.ICO, //
+        return new ImageFormat[]{ImageFormats.ICO, //
         };
     }
 
@@ -106,28 +91,6 @@ public class IcoImageParser extends ImageParser {
         return null;
     }
 
-    private static class FileHeader {
-        public final int reserved; // Reserved (2 bytes), always 0
-        public final int iconType; // IconType (2 bytes), if the image is an
-                                   // icon it?s 1, for cursors the value is 2.
-        public final int iconCount; // IconCount (2 bytes), number of icons in
-                                    // this file.
-
-        public FileHeader(final int reserved, final int iconType, final int iconCount) {
-            this.reserved = reserved;
-            this.iconType = iconType;
-            this.iconCount = iconCount;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("FileHeader");
-            pw.println("Reserved: " + reserved);
-            pw.println("IconType: " + iconType);
-            pw.println("IconCount: " + iconCount);
-            pw.println();
-        }
-    }
-
     private FileHeader readFileHeader(final InputStream is) throws ImageReadException, IOException {
         final int reserved = read2Bytes("Reserved", is, "Not a Valid ICO File", getByteOrder());
         final int iconType = read2Bytes("IconType", is, "Not a Valid ICO File", getByteOrder());
@@ -142,42 +105,6 @@ public class IcoImageParser extends ImageParser {
 
         return new FileHeader(reserved, iconType, iconCount);
 
-    }
-
-    private static class IconInfo {
-        public final byte width;
-        public final byte height;
-        public final byte colorCount;
-        public final byte reserved;
-        public final int planes;
-        public final int bitCount;
-        public final int imageSize;
-        public final int imageOffset;
-
-        public IconInfo(final byte width, final byte height,
-                final byte colorCount, final byte reserved, final int planes,
-                final int bitCount, final int imageSize, final int imageOffset) {
-            this.width = width;
-            this.height = height;
-            this.colorCount = colorCount;
-            this.reserved = reserved;
-            this.planes = planes;
-            this.bitCount = bitCount;
-            this.imageSize = imageSize;
-            this.imageOffset = imageOffset;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("IconInfo");
-            pw.println("Width: " + width);
-            pw.println("Height: " + height);
-            pw.println("ColorCount: " + colorCount);
-            pw.println("Reserved: " + reserved);
-            pw.println("Planes: " + planes);
-            pw.println("BitCount: " + bitCount);
-            pw.println("ImageSize: " + imageSize);
-            pw.println("ImageOffset: " + imageOffset);
-        }
     }
 
     private IconInfo readIconInfo(final InputStream is) throws IOException {
@@ -205,192 +132,80 @@ public class IcoImageParser extends ImageParser {
         return new IconInfo(width, height, colorCount, reserved, planes, bitCount, imageSize, imageOffset);
     }
 
-    private static class BitmapHeader {
-        public final int size;
-        public final int width;
-        public final int height;
-        public final int planes;
-        public final int bitCount;
-        public final int compression;
-        public final int sizeImage;
-        public final int xPelsPerMeter;
-        public final int yPelsPerMeter;
-        public final int colorsUsed;
-        public final int colorsImportant;
-
-        public BitmapHeader(final int size, final int width, final int height,
-                final int planes, final int bitCount, final int compression,
-                final int sizeImage, final int pelsPerMeter,
-                final int pelsPerMeter2, final int colorsUsed,
-                final int colorsImportant) {
-            this.size = size;
-            this.width = width;
-            this.height = height;
-            this.planes = planes;
-            this.bitCount = bitCount;
-            this.compression = compression;
-            this.sizeImage = sizeImage;
-            xPelsPerMeter = pelsPerMeter;
-            yPelsPerMeter = pelsPerMeter2;
-            this.colorsUsed = colorsUsed;
-            this.colorsImportant = colorsImportant;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("BitmapHeader");
-
-            pw.println("Size: " + size);
-            pw.println("Width: " + width);
-            pw.println("Height: " + height);
-            pw.println("Planes: " + planes);
-            pw.println("BitCount: " + bitCount);
-            pw.println("Compression: " + compression);
-            pw.println("SizeImage: " + sizeImage);
-            pw.println("XPelsPerMeter: " + xPelsPerMeter);
-            pw.println("YPelsPerMeter: " + yPelsPerMeter);
-            pw.println("ColorsUsed: " + colorsUsed);
-            pw.println("ColorsImportant: " + colorsImportant);
-        }
-    }
-
-    private static abstract class IconData {
-        public final IconInfo iconInfo;
-
-        public IconData(final IconInfo iconInfo) {
-            this.iconInfo = iconInfo;
-        }
-
-        public void dump(final PrintWriter pw) {
-            iconInfo.dump(pw);
-            pw.println();
-            dumpSubclass(pw);
-        }
-
-        protected abstract void dumpSubclass(PrintWriter pw);
-
-        public abstract BufferedImage readBufferedImage()
-                throws ImageReadException;
-    }
-
-    private static class BitmapIconData extends IconData {
-        public final BitmapHeader header;
-        public final BufferedImage bufferedImage;
-
-        public BitmapIconData(final IconInfo iconInfo,
-                final BitmapHeader header, final BufferedImage bufferedImage) {
-            super(iconInfo);
-            this.header = header;
-            this.bufferedImage = bufferedImage;
-        }
-
-        @Override
-        public BufferedImage readBufferedImage() throws ImageReadException {
-            return bufferedImage;
-        }
-
-        @Override
-        protected void dumpSubclass(final PrintWriter pw) {
-            pw.println("BitmapIconData");
-            header.dump(pw);
-            pw.println();
-        }
-    }
-
-    private static class PNGIconData extends IconData {
-        public final BufferedImage bufferedImage;
-
-        public PNGIconData(final IconInfo iconInfo,
-                final BufferedImage bufferedImage) {
-            super(iconInfo);
-            this.bufferedImage = bufferedImage;
-        }
-
-        @Override
-        public BufferedImage readBufferedImage() {
-            return bufferedImage;
-        }
-
-        @Override
-        protected void dumpSubclass(final PrintWriter pw) {
-            pw.println("PNGIconData");
-            pw.println();
-        }
-    }
-
     private IconData readBitmapIconData(final byte[] iconData, final IconInfo fIconInfo)
             throws ImageReadException, IOException {
         final ByteArrayInputStream is = new ByteArrayInputStream(iconData);
         final int size = read4Bytes("size", is, "Not a Valid ICO File", getByteOrder()); // Size (4
-                                                                   // bytes),
-                                                                   // size of
-                                                                   // this
-                                                                   // structure
-                                                                   // (always
-                                                                   // 40)
+        // bytes),
+        // size of
+        // this
+        // structure
+        // (always
+        // 40)
         final int width = read4Bytes("width", is, "Not a Valid ICO File", getByteOrder()); // Width (4
-                                                                     // bytes),
-                                                                     // width of
-                                                                     // the
-                                                                     // image
-                                                                     // (same as
-                                                                     // iconinfo.width)
+        // bytes),
+        // width of
+        // the
+        // image
+        // (same as
+        // iconinfo.width)
         final int height = read4Bytes("height", is, "Not a Valid ICO File", getByteOrder()); // Height
-                                                                       // (4
-                                                                       // bytes),
-                                                                       // scanlines
-                                                                       // in the
-                                                                       // color
-                                                                       // map +
-                                                                       // transparent
-                                                                       // map
-                                                                       // (iconinfo.height
-                                                                       // * 2)
+        // (4
+        // bytes),
+        // scanlines
+        // in the
+        // color
+        // map +
+        // transparent
+        // map
+        // (iconinfo.height
+        // * 2)
         final int planes = read2Bytes("planes", is, "Not a Valid ICO File", getByteOrder()); // Planes
-                                                                       // (2
-                                                                       // bytes),
-                                                                       // always
-                                                                       // 1
+        // (2
+        // bytes),
+        // always
+        // 1
         final int bitCount = read2Bytes("bitCount", is, "Not a Valid ICO File", getByteOrder()); // BitCount
-                                                                           // (2
-                                                                           // bytes),
-                                                                           // 1,4,8,16,24,32
-                                                                           // (see
-                                                                           // iconinfo
-                                                                           // for
-                                                                           // details)
+        // (2
+        // bytes),
+        // 1,4,8,16,24,32
+        // (see
+        // iconinfo
+        // for
+        // details)
         int compression = read4Bytes("compression", is, "Not a Valid ICO File", getByteOrder()); // Compression
-                                                                                 // (4
-                                                                                 // bytes),
-                                                                                 // we
-                                                                                 // don?t
-                                                                                 // use
-                                                                                 // this
-                                                                                 // (0)
+        // (4
+        // bytes),
+        // we
+        // don?t
+        // use
+        // this
+        // (0)
         final int sizeImage = read4Bytes("sizeImage", is, "Not a Valid ICO File", getByteOrder()); // SizeImage
-                                                                             // (4
-                                                                             // bytes),
-                                                                             // we
-                                                                             // don?t
-                                                                             // use
-                                                                             // this
-                                                                             // (0)
+        // (4
+        // bytes),
+        // we
+        // don?t
+        // use
+        // this
+        // (0)
         final int xPelsPerMeter = read4Bytes("xPelsPerMeter", is,
                 "Not a Valid ICO File", getByteOrder()); // XPelsPerMeter (4 bytes), we don?t
-                                         // use this (0)
-        final int yPelsPerMeter = read4Bytes("yPelsPerMeter", is, 
+        // use this (0)
+        final int yPelsPerMeter = read4Bytes("yPelsPerMeter", is,
                 "Not a Valid ICO File", getByteOrder()); // YPelsPerMeter (4 bytes), we don?t
-                                         // use this (0)
+        // use this (0)
         final int colorsUsed = read4Bytes("colorsUsed", is, "Not a Valid ICO File", getByteOrder()); // ColorsUsed
-                                                                               // (4
-                                                                               // bytes),
-                                                                               // we
-                                                                               // don?t
-                                                                               // use
-                                                                               // this
-                                                                               // (0)
+        // (4
+        // bytes),
+        // we
+        // don?t
+        // use
+        // this
+        // (0)
         final int colorsImportant = read4Bytes("ColorsImportant", is,
                 "Not a Valid ICO File", getByteOrder()); // ColorsImportant (4 bytes), we don?t
-                                         // use this (0)
+        // use this (0)
         int redMask = 0;
         int greenMask = 0;
         int blueMask = 0;
@@ -433,13 +248,13 @@ public class IcoImageParser extends ImageParser {
         try {
             bos = new BinaryOutputStream(baos,
                     ByteOrder.LITTLE_ENDIAN);
-    
+
             bos.write('B');
             bos.write('M');
             bos.write4Bytes(bitmapSize);
             bos.write4Bytes(0);
             bos.write4Bytes(bitmapPixelsOffset);
-    
+
             bos.write4Bytes(56);
             bos.write4Bytes(width);
             bos.write4Bytes(height / 2);
@@ -475,7 +290,7 @@ public class IcoImageParser extends ImageParser {
         int t_scanline_size = (width + 7) / 8;
         if ((t_scanline_size % 4) != 0) {
             t_scanline_size += 4 - (t_scanline_size % 4); // pad scanline to 4
-                                                          // byte size.
+            // byte size.
         }
         final int colorMapSizeBytes = t_scanline_size * (height / 2);
         byte[] transparencyMap = null;
@@ -533,18 +348,6 @@ public class IcoImageParser extends ImageParser {
         return readBitmapIconData(iconData, fIconInfo);
     }
 
-    private static class ImageContents {
-        public final FileHeader fileHeader;
-        public final IconData[] iconDatas;
-
-        public ImageContents(final FileHeader fileHeader,
-                final IconData[] iconDatas) {
-            super();
-            this.fileHeader = fileHeader;
-            this.iconDatas = iconDatas;
-        }
-    }
-
     private ImageContents readImage(final ByteSource byteSource)
             throws ImageReadException, IOException {
         InputStream is = null;
@@ -586,7 +389,7 @@ public class IcoImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         final ImageContents contents = readImage(byteSource);
         final FileHeader fileHeader = contents.fileHeader;
         if (fileHeader.iconCount > 0) {
@@ -613,30 +416,6 @@ public class IcoImageParser extends ImageParser {
         return result;
     }
 
-    // public boolean extractImages(ByteSource byteSource, File dst_dir,
-    // String dst_root, ImageParser encoder) throws ImageReadException,
-    // IOException, ImageWriteException
-    // {
-    // ImageContents contents = readImage(byteSource);
-    //
-    // FileHeader fileHeader = contents.fileHeader;
-    // for (int i = 0; i < fileHeader.iconCount; i++)
-    // {
-    // IconData iconData = contents.iconDatas[i];
-    //
-    // BufferedImage image = readBufferedImage(iconData);
-    //
-    // int size = Math.max(iconData.iconInfo.Width,
-    // iconData.iconInfo.Height);
-    // File file = new File(dst_dir, dst_root + "_" + size + "_"
-    // + iconData.iconInfo.BitCount
-    // + encoder.getDefaultExtension());
-    // encoder.writeImage(image, new FileOutputStream(file), null);
-    // }
-    //
-    // return true;
-    // }
-
     @Override
     public void writeImage(final BufferedImage src, final OutputStream os, Map<String, Object> params)
             throws ImageWriteException, IOException {
@@ -647,7 +426,7 @@ public class IcoImageParser extends ImageParser {
         if (params.containsKey(PARAM_KEY_FORMAT)) {
             params.remove(PARAM_KEY_FORMAT);
         }
-        
+
         final PixelDensity pixelDensity = (PixelDensity) params.remove(PARAM_KEY_PIXEL_DENSITY);
 
         if (!params.isEmpty()) {
@@ -679,12 +458,12 @@ public class IcoImageParser extends ImageParser {
         int scanline_size = (bitCount * src.getWidth() + 7) / 8;
         if ((scanline_size % 4) != 0) {
             scanline_size += 4 - (scanline_size % 4); // pad scanline to 4 byte
-                                                      // size.
+            // size.
         }
         int t_scanline_size = (src.getWidth() + 7) / 8;
         if ((t_scanline_size % 4) != 0) {
             t_scanline_size += 4 - (t_scanline_size % 4); // pad scanline to 4
-                                                          // byte size.
+            // byte size.
         }
         final int imageSize = 40 + 4 * (bitCount <= 8 ? (1 << bitCount) : 0)
                 + src.getHeight() * scanline_size + src.getHeight()
@@ -819,16 +598,220 @@ public class IcoImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    private static class FileHeader {
+        public final int reserved; // Reserved (2 bytes), always 0
+        public final int iconType; // IconType (2 bytes), if the image is an
+        // icon it?s 1, for cursors the value is 2.
+        public final int iconCount; // IconCount (2 bytes), number of icons in
+        // this file.
+
+        public FileHeader(final int reserved, final int iconType, final int iconCount) {
+            this.reserved = reserved;
+            this.iconType = iconType;
+            this.iconCount = iconCount;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("FileHeader");
+            pw.println("Reserved: " + reserved);
+            pw.println("IconType: " + iconType);
+            pw.println("IconCount: " + iconCount);
+            pw.println();
+        }
+    }
+
+    private static class IconInfo {
+        public final byte width;
+        public final byte height;
+        public final byte colorCount;
+        public final byte reserved;
+        public final int planes;
+        public final int bitCount;
+        public final int imageSize;
+        public final int imageOffset;
+
+        public IconInfo(final byte width, final byte height,
+                        final byte colorCount, final byte reserved, final int planes,
+                        final int bitCount, final int imageSize, final int imageOffset) {
+            this.width = width;
+            this.height = height;
+            this.colorCount = colorCount;
+            this.reserved = reserved;
+            this.planes = planes;
+            this.bitCount = bitCount;
+            this.imageSize = imageSize;
+            this.imageOffset = imageOffset;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("IconInfo");
+            pw.println("Width: " + width);
+            pw.println("Height: " + height);
+            pw.println("ColorCount: " + colorCount);
+            pw.println("Reserved: " + reserved);
+            pw.println("Planes: " + planes);
+            pw.println("BitCount: " + bitCount);
+            pw.println("ImageSize: " + imageSize);
+            pw.println("ImageOffset: " + imageOffset);
+        }
+    }
+
+    private static class BitmapHeader {
+        public final int size;
+        public final int width;
+        public final int height;
+        public final int planes;
+        public final int bitCount;
+        public final int compression;
+        public final int sizeImage;
+        public final int xPelsPerMeter;
+        public final int yPelsPerMeter;
+        public final int colorsUsed;
+        public final int colorsImportant;
+
+        public BitmapHeader(final int size, final int width, final int height,
+                            final int planes, final int bitCount, final int compression,
+                            final int sizeImage, final int pelsPerMeter,
+                            final int pelsPerMeter2, final int colorsUsed,
+                            final int colorsImportant) {
+            this.size = size;
+            this.width = width;
+            this.height = height;
+            this.planes = planes;
+            this.bitCount = bitCount;
+            this.compression = compression;
+            this.sizeImage = sizeImage;
+            xPelsPerMeter = pelsPerMeter;
+            yPelsPerMeter = pelsPerMeter2;
+            this.colorsUsed = colorsUsed;
+            this.colorsImportant = colorsImportant;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("BitmapHeader");
+
+            pw.println("Size: " + size);
+            pw.println("Width: " + width);
+            pw.println("Height: " + height);
+            pw.println("Planes: " + planes);
+            pw.println("BitCount: " + bitCount);
+            pw.println("Compression: " + compression);
+            pw.println("SizeImage: " + sizeImage);
+            pw.println("XPelsPerMeter: " + xPelsPerMeter);
+            pw.println("YPelsPerMeter: " + yPelsPerMeter);
+            pw.println("ColorsUsed: " + colorsUsed);
+            pw.println("ColorsImportant: " + colorsImportant);
+        }
+    }
+
+    private static abstract class IconData {
+        public final IconInfo iconInfo;
+
+        public IconData(final IconInfo iconInfo) {
+            this.iconInfo = iconInfo;
+        }
+
+        public void dump(final PrintWriter pw) {
+            iconInfo.dump(pw);
+            pw.println();
+            dumpSubclass(pw);
+        }
+
+        protected abstract void dumpSubclass(PrintWriter pw);
+
+        public abstract BufferedImage readBufferedImage()
+                throws ImageReadException;
+    }
+
+    private static class BitmapIconData extends IconData {
+        public final BitmapHeader header;
+        public final BufferedImage bufferedImage;
+
+        public BitmapIconData(final IconInfo iconInfo,
+                              final BitmapHeader header, final BufferedImage bufferedImage) {
+            super(iconInfo);
+            this.header = header;
+            this.bufferedImage = bufferedImage;
+        }
+
+        @Override
+        public BufferedImage readBufferedImage() throws ImageReadException {
+            return bufferedImage;
+        }
+
+        @Override
+        protected void dumpSubclass(final PrintWriter pw) {
+            pw.println("BitmapIconData");
+            header.dump(pw);
+            pw.println();
+        }
+    }
+
+    // public boolean extractImages(ByteSource byteSource, File dst_dir,
+    // String dst_root, ImageParser encoder) throws ImageReadException,
+    // IOException, ImageWriteException
+    // {
+    // ImageContents contents = readImage(byteSource);
+    //
+    // FileHeader fileHeader = contents.fileHeader;
+    // for (int i = 0; i < fileHeader.iconCount; i++)
+    // {
+    // IconData iconData = contents.iconDatas[i];
+    //
+    // BufferedImage image = readBufferedImage(iconData);
+    //
+    // int size = Math.max(iconData.iconInfo.Width,
+    // iconData.iconInfo.Height);
+    // File file = new File(dst_dir, dst_root + "_" + size + "_"
+    // + iconData.iconInfo.BitCount
+    // + encoder.getDefaultExtension());
+    // encoder.writeImage(image, new FileOutputStream(file), null);
+    // }
+    //
+    // return true;
+    // }
+
+    private static class PNGIconData extends IconData {
+        public final BufferedImage bufferedImage;
+
+        public PNGIconData(final IconInfo iconInfo,
+                           final BufferedImage bufferedImage) {
+            super(iconInfo);
+            this.bufferedImage = bufferedImage;
+        }
+
+        @Override
+        public BufferedImage readBufferedImage() {
+            return bufferedImage;
+        }
+
+        @Override
+        protected void dumpSubclass(final PrintWriter pw) {
+            pw.println("PNGIconData");
+            pw.println();
+        }
+    }
+
+    private static class ImageContents {
+        public final FileHeader fileHeader;
+        public final IconData[] iconDatas;
+
+        public ImageContents(final FileHeader fileHeader,
+                             final IconData[] iconDatas) {
+            super();
+            this.fileHeader = fileHeader;
+            this.iconDatas = iconDatas;
+        }
     }
 }

@@ -16,7 +16,6 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Sep 28, 2005
  */
 
@@ -29,12 +28,12 @@ import org.apache.harmony.awt.internal.nls.Messages;
 public class Kernel implements Cloneable {
     private final int xOrigin;
     private final int yOrigin;
+    float data[];
     private int width;
     private int height;
-    float data[];
 
     public Kernel(int width, int height, float[] data) {
-        int dataLength = width*height;
+        int dataLength = width * height;
         if (data.length < dataLength) {
             // awt.22B=Length of data should not be less than width*height
             throw new IllegalArgumentException(Messages.getString("awt.22B")); //$NON-NLS-1$
@@ -46,8 +45,8 @@ public class Kernel implements Cloneable {
         this.data = new float[dataLength];
         System.arraycopy(data, 0, this.data, 0, dataLength);
 
-        xOrigin = (width-1)/2;
-        yOrigin = (height-1)/2;
+        xOrigin = (width - 1) / 2;
+        yOrigin = (height - 1) / 2;
     }
 
     public final int getWidth() {

@@ -16,20 +16,20 @@
  */
 package org.apache.harmony.x.imageio.plugins;
 
-import java.awt.Image;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.ImageObserver;
+import org.apache.harmony.awt.gl.image.DecodingImageSource;
+import org.apache.harmony.awt.gl.image.OffscreenImage;
+import org.apache.harmony.x.imageio.internal.nls.Messages;
+
 import javax.imageio.ImageReadParam;
 import javax.imageio.ImageReader;
 import javax.imageio.ImageTypeSpecifier;
 import javax.imageio.metadata.IIOMetadata;
 import javax.imageio.spi.ImageReaderSpi;
 import javax.imageio.stream.ImageInputStream;
-import org.apache.harmony.awt.gl.image.DecodingImageSource;
-import org.apache.harmony.awt.gl.image.OffscreenImage;
-import org.apache.harmony.x.imageio.internal.nls.Messages;
-
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.awt.image.ColorModel;
+import java.awt.image.ImageObserver;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -43,7 +43,7 @@ import java.util.Iterator;
 public class AwtImageReader extends ImageReader {
 
     private ImageInputStream iis;
-    private OffscreenImage   image;
+    private OffscreenImage image;
 
     public AwtImageReader(final ImageReaderSpi imageReaderSpi) {
         super(imageReaderSpi);
@@ -53,8 +53,8 @@ public class AwtImageReader extends ImageReader {
     public int getHeight(final int i) throws IOException {
         return getImage(i).getHeight(new ImageObserver() {
             public boolean imageUpdate(final Image img, final int infoflags,
-                            final int x, final int y, final int width,
-                            final int height) {
+                                       final int x, final int y, final int width,
+                                       final int height) {
                 return (infoflags & HEIGHT) == 0;
             }
         });
@@ -64,8 +64,8 @@ public class AwtImageReader extends ImageReader {
     public int getWidth(final int i) throws IOException {
         return getImage(i).getWidth(new ImageObserver() {
             public boolean imageUpdate(final Image img, final int infoflags,
-                            final int x, final int y, final int width,
-                            final int height) {
+                                       final int x, final int y, final int width,
+                                       final int height) {
                 return (infoflags & WIDTH) == 0;
             }
         });
@@ -78,10 +78,10 @@ public class AwtImageReader extends ImageReader {
 
     @Override
     public Iterator<ImageTypeSpecifier> getImageTypes(final int i)
-                    throws IOException {
+            throws IOException {
         final ColorModel model = getImage(i).getColorModel();
-        final ImageTypeSpecifier[] spec = { new ImageTypeSpecifier(model,
-                        model.createCompatibleSampleModel(1, 1)) };
+        final ImageTypeSpecifier[] spec = {new ImageTypeSpecifier(model,
+                model.createCompatibleSampleModel(1, 1))};
         return Arrays.asList(spec).iterator();
     }
 
@@ -97,13 +97,13 @@ public class AwtImageReader extends ImageReader {
 
     @Override
     public BufferedImage read(final int i, final ImageReadParam imageReadParam)
-                    throws IOException {
+            throws IOException {
         return getImage(i).getBufferedImage();
     }
 
     @Override
     public void setInput(final Object input, final boolean seekForwardOnly,
-                    final boolean ignoreMetadata) {
+                         final boolean ignoreMetadata) {
         super.setInput(input, seekForwardOnly, ignoreMetadata);
         iis = (ImageInputStream) input;
         image = null;
@@ -122,8 +122,8 @@ public class AwtImageReader extends ImageReader {
         if (image == null) {
             if (iis == null) {
                 throw new IllegalArgumentException(Messages.getString(
-                    "imageio.2", //$NON-NLS-1$
-                    "input")); //$NON-NLS-1$
+                        "imageio.2", //$NON-NLS-1$
+                        "input")); //$NON-NLS-1$
             }
 
             final DecodingImageSource source = new IISDecodingImageSource(iis);

@@ -16,20 +16,17 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Oct 6, 2005
  */
 
 package java.awt.image;
 
 
-import java.awt.AlphaComposite;
-import java.awt.Graphics2D;
-import java.awt.RenderingHints;
-import java.awt.geom.Point2D;
-import java.awt.geom.Rectangle2D;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.geom.Point2D;
+import java.awt.geom.Rectangle2D;
 
 
 public class RescaleOp implements BufferedImageOp, RasterOp {
@@ -119,8 +116,8 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
 
         WritableRaster r =
                 dstCM.isCompatibleSampleModel(src.getSampleModel()) ?
-                src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
-                dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
+                        src.getRaster().createCompatibleWritableRaster(src.getWidth(), src.getHeight()) :
+                        dstCM.createCompatibleWritableRaster(src.getWidth(), src.getHeight());
 
         return new BufferedImage(
                 dstCM,
@@ -143,7 +140,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
 
         if (
                 this.scaleFactors.length != 1 &&
-                this.scaleFactors.length != src.getNumBands()
+                        this.scaleFactors.length != src.getNumBands()
         ) {
             // awt.21E=Number of scaling constants is not equal to the number of bands
             throw new IllegalArgumentException(Messages.getString("awt.21E")); //$NON-NLS-1$
@@ -151,10 +148,10 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
 
         // TODO
         //if (ippFilter(src, dst, BufferedImage.TYPE_CUSTOM, false) != 0)
-            if (slowFilter(src, dst, false) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src, dst, false) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         return dst;
     }
@@ -175,7 +172,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
         int[] masks = new int[numBands];
         int[] sampleSizes = sm.getSampleSize();
 
-        for (int i=0; i < numBands; i++){
+        for (int i = 0; i < numBands; i++) {
             maxValues[i] = (1 << sampleSizes[i]) - 1;
             masks[i] = ~(maxValues[i]);
         }
@@ -187,11 +184,11 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
         // Cycle over pixels to be calculated
         if (skipAlpha) { // Always suppose that alpha channel is the last band
             if (scaleFactors.length > 1) {
-                for (int i = 0; i < pixels.length; ){
-                    for (int bandIdx = 0; bandIdx < numBands-1; bandIdx++, i++){
+                for (int i = 0; i < pixels.length; ) {
+                    for (int bandIdx = 0; bandIdx < numBands - 1; bandIdx++, i++) {
                         pixels[i] = pixels[i] * scaleFactors[bandIdx] + offsets[bandIdx];
                         // Check for overflow now
-                        if (((int)pixels[i] & masks[bandIdx]) != 0) {
+                        if (((int) pixels[i] & masks[bandIdx]) != 0) {
                             if (pixels[i] < 0) {
                                 pixels[i] = 0;
                             } else {
@@ -203,11 +200,11 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
                     i++;
                 }
             } else {
-                for (int i = 0; i < pixels.length; ){
-                    for (int bandIdx = 0; bandIdx < numBands-1; bandIdx++, i++){
+                for (int i = 0; i < pixels.length; ) {
+                    for (int bandIdx = 0; bandIdx < numBands - 1; bandIdx++, i++) {
                         pixels[i] = pixels[i] * scaleFactors[0] + offsets[0];
                         // Check for overflow now
-                        if (((int)pixels[i] & masks[bandIdx]) != 0) {
+                        if (((int) pixels[i] & masks[bandIdx]) != 0) {
                             if (pixels[i] < 0) {
                                 pixels[i] = 0;
                             } else {
@@ -221,11 +218,11 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
             }
         } else {
             if (scaleFactors.length > 1) {
-                for (int i = 0; i < pixels.length; ){
-                    for (int bandIdx = 0; bandIdx < numBands; bandIdx++, i++){
+                for (int i = 0; i < pixels.length; ) {
+                    for (int bandIdx = 0; bandIdx < numBands; bandIdx++, i++) {
                         pixels[i] = pixels[i] * scaleFactors[bandIdx] + offsets[bandIdx];
                         // Check for overflow now
-                        if (((int)pixels[i] & masks[bandIdx]) != 0) {
+                        if (((int) pixels[i] & masks[bandIdx]) != 0) {
                             if (pixels[i] < 0) {
                                 pixels[i] = 0;
                             } else {
@@ -235,11 +232,11 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
                     }
                 }
             } else {
-                for (int i = 0; i < pixels.length; ){
-                    for (int bandIdx = 0; bandIdx < numBands; bandIdx++, i++){
+                for (int i = 0; i < pixels.length; ) {
+                    for (int bandIdx = 0; bandIdx < numBands; bandIdx++, i++) {
                         pixels[i] = pixels[i] * scaleFactors[0] + offsets[0];
                         // Check for overflow now
-                        if (((int)pixels[i] & masks[bandIdx]) != 0) {
+                        if (((int) pixels[i] & masks[bandIdx]) != 0) {
                             if (pixels[i] < 0) {
                                 pixels[i] = 0;
                             } else {
@@ -268,7 +265,7 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
         int nComponents = srcCM.getNumComponents();
         boolean skipAlpha;
         if (srcCM.hasAlpha()) {
-            if (scaleFactors.length == 1 || scaleFactors.length == nComponents-1) {
+            if (scaleFactors.length == 1 || scaleFactors.length == nComponents - 1) {
                 skipAlpha = true;
             } else if (scaleFactors.length == nComponents) {
                 skipAlpha = false;
@@ -290,9 +287,9 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
             // Treat BufferedImage.TYPE_INT_RGB and BufferedImage.TYPE_INT_ARGB as same
             if (
                     !((src.getType() == BufferedImage.TYPE_INT_RGB ||
-                       src.getType() == BufferedImage.TYPE_INT_ARGB) &&
-                      (dst.getType() == BufferedImage.TYPE_INT_RGB ||
-                       dst.getType() == BufferedImage.TYPE_INT_ARGB))
+                            src.getType() == BufferedImage.TYPE_INT_ARGB) &&
+                            (dst.getType() == BufferedImage.TYPE_INT_RGB ||
+                                    dst.getType() == BufferedImage.TYPE_INT_ARGB))
             ) {
                 finalDst = dst;
                 dst = createCompatibleDestImage(src, srcCM);
@@ -301,10 +298,10 @@ public class RescaleOp implements BufferedImageOp, RasterOp {
 
         // TODO
         //if (ippFilter(src.getRaster(), dst.getRaster(), src.getType(), skipAlpha) != 0)
-            if (slowFilter(src.getRaster(), dst.getRaster(), skipAlpha) != 0) {
-                // awt.21F=Unable to transform source
-                throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
-            }
+        if (slowFilter(src.getRaster(), dst.getRaster(), skipAlpha) != 0) {
+            // awt.21F=Unable to transform source
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
+        }
 
         if (finalDst != null) {
             Graphics2D g = finalDst.createGraphics();

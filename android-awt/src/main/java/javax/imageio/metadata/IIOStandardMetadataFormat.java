@@ -20,10 +20,9 @@ package javax.imageio.metadata;
 
 
 import javax.imageio.ImageTypeSpecifier;
-
 import java.util.ArrayList;
 
-class IIOStandardMetadataFormat  extends IIOMetadataFormatImpl {
+class IIOStandardMetadataFormat extends IIOMetadataFormatImpl {
     public IIOStandardMetadataFormat() {
         super(standardMetadataFormatName, CHILD_POLICY_SOME);
         buildDTD();

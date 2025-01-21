@@ -18,10 +18,10 @@
 package javax.imageio.plugins.jpeg;
 
 
-import javax.imageio.ImageWriteParam;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 import org.apache.harmony.x.imageio.plugins.jpeg.JPEGConsts;
 
+import javax.imageio.ImageWriteParam;
 import java.util.Locale;
 
 public class JPEGImageWriteParam extends ImageWriteParam {
@@ -46,7 +46,7 @@ public class JPEGImageWriteParam extends ImageWriteParam {
 
         canWriteCompressed = true;
         compressionTypes = new String[]{"JPEG"};
-        compressionType = compressionTypes[0]; 
+        compressionType = compressionTypes[0];
         compressionQuality = JPEGConsts.DEFAULT_JPEG_COMPRESSION_QUALITY;
     }
 
@@ -62,7 +62,7 @@ public class JPEGImageWriteParam extends ImageWriteParam {
         if (qTables == null || DCHuffmanTables == null || ACHuffmanTables == null) {
             throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
-        if(DCHuffmanTables.length != ACHuffmanTables.length) {
+        if (DCHuffmanTables.length != ACHuffmanTables.length) {
             throw new IllegalArgumentException(Messages.getString("imageio.43"));
         }
         if (qTables.length > 4 || DCHuffmanTables.length > 4) {
@@ -105,12 +105,12 @@ public class JPEGImageWriteParam extends ImageWriteParam {
         return COMP_QUALITY_VALUES.clone();
     }
 
-    public void setOptimizeHuffmanTables(boolean optimize) {
-        optimizeHuffmanTables = optimize;
-    }
-
     public boolean getOptimizeHuffmanTables() {
         return optimizeHuffmanTables;
+    }
+
+    public void setOptimizeHuffmanTables(boolean optimize) {
+        optimizeHuffmanTables = optimize;
     }
 
     @Override

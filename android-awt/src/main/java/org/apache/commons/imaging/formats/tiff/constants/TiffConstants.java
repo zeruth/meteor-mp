@@ -16,15 +16,15 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImagingConstants;
+
+import java.nio.ByteOrder;
 
 public interface TiffConstants
         extends
-            ImagingConstants,
-            TiffDirectoryConstants,
-            AllTagConstants {
+        ImagingConstants,
+        TiffDirectoryConstants,
+        AllTagConstants {
     ByteOrder DEFAULT_TIFF_BYTE_ORDER = ByteOrder.LITTLE_ENDIAN;
 
     int TIFF_HEADER_SIZE = 8;
@@ -66,8 +66,8 @@ public interface TiffConstants
     int TIFF_FLAG_T4_OPTIONS_UNCOMPRESSED_MODE = 2;
     int TIFF_FLAG_T4_OPTIONS_FILL = 4;
     int TIFF_FLAG_T6_OPTIONS_UNCOMPRESSED_MODE = 2;
-    
-    
+
+
     String PARAM_KEY_SUBIMAGE_X = "SUBIMAGE_X";
     String PARAM_KEY_SUBIMAGE_Y = "SUBIMAGE_Y";
     String PARAM_KEY_SUBIMAGE_WIDTH = "SUBIMAGE_WIDTH";

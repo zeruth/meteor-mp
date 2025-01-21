@@ -4,12 +4,8 @@ import java.awt.event.FocusListener;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
-import java.awt.image.ImageProducer;
-import java.awt.peer.ComponentPeer;
-import java.awt.peer.LightweightPeer;
 
-public class Component
-{
+public class Component {
     int x;
     int y;
 

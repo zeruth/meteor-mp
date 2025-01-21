@@ -32,12 +32,72 @@ public class CrossingHelper {
         this.sizes = sizes;
     }
 
+    // the array sorting
+    private static void sort(double[] coords1, int length1,
+                             double[] coords2, int length2,
+                             int[] array) {
+        int temp;
+        int length = length1 + length2;
+        double x1, y1, x2, y2;
+
+        for (int i = 1; i < length; i++) {
+            if (array[i - 1] < length1) {
+                x1 = coords1[2 * array[i - 1]];
+                y1 = coords1[2 * array[i - 1] + 1];
+            } else {
+                x1 = coords2[2 * (array[i - 1] - length1)];
+                y1 = coords2[2 * (array[i - 1] - length1) + 1];
+            }
+            if (array[i] < length1) {
+                x2 = coords1[2 * array[i]];
+                y2 = coords1[2 * array[i] + 1];
+            } else {
+                x2 = coords2[2 * (array[i] - length1)];
+                y2 = coords2[2 * (array[i] - length1) + 1];
+            }
+            int j = i;
+            while (j > 0 && compare(x1, y1, x2, y2) <= 0) {
+                temp = array[j];
+                array[j] = array[j - 1];
+                array[j - 1] = temp;
+                j--;
+                if (j > 0) {
+                    if (array[j - 1] < length1) {
+                        x1 = coords1[2 * array[j - 1]];
+                        y1 = coords1[2 * array[j - 1] + 1];
+                    } else {
+                        x1 = coords2[2 * (array[j - 1] - length1)];
+                        y1 = coords2[2 * (array[j - 1] - length1) + 1];
+                    }
+                    if (array[j] < length1) {
+                        x2 = coords1[2 * array[j]];
+                        y2 = coords1[2 * array[j] + 1];
+                    } else {
+                        x2 = coords2[2 * (array[j] - length1)];
+                        y2 = coords2[2 * (array[j] - length1) + 1];
+                    }
+                }
+            }
+        }
+    }
+
+    public static int compare(double x1, double y1, double x2, double y2) {
+
+        if ((x1 < x2) || (x1 == x2 && y1 < y2)) {
+            return 1;
+        } else if (x1 == x2 && y1 == y2) {
+            return 0;
+        }
+
+        return -1;
+    }
+
     public IntersectPoint[] findCrossing() {
         int pointCount1 = sizes[0] / 2;
         int pointCount2 = sizes[1] / 2;
         int[] indices = new int[pointCount1 + pointCount2];
 
-        for(int i = 0; i < pointCount1 + pointCount2; i++) {
+        for (int i = 0; i < pointCount1 + pointCount2; i++) {
             indices[i] = i;
         }
 
@@ -107,7 +167,7 @@ public class CrossingHelper {
         return isectPoints.toArray(new IntersectPoint[isectPoints.size()]);
     }
 
-    private boolean removeEdge(List<Edge> edges,  int begIndex, int endIndex) {
+    private boolean removeEdge(List<Edge> edges, int begIndex, int endIndex) {
 
         for (Edge edge : edges) {
             if (edge.reverseCompare(begIndex, endIndex)) {
@@ -121,9 +181,9 @@ public class CrossingHelper {
 
     // return the quantity of intersect points
     private void intersectShape(List<Edge> edges,
-            double[] coords1, int length1,
-            double[] coords2, int length2,
-            Edge initEdge) {
+                                double[] coords1, int length1,
+                                double[] coords2, int length2,
+                                Edge initEdge) {
         int areaOfEdge1, areaOfEdge2;
         int initBegin, initEnd;
         int addBegin, addEnd;
@@ -132,16 +192,16 @@ public class CrossingHelper {
         Edge edge;
 
         if (initEdge.areaNumber == 0) {
-            x1 = coords1[2* initEdge.begIndex];
-            y1 = coords1[2* initEdge.begIndex + 1];
-            x2 = coords1[2* initEdge.endIndex];
-            y2 = coords1[2* initEdge.endIndex + 1];
+            x1 = coords1[2 * initEdge.begIndex];
+            y1 = coords1[2 * initEdge.begIndex + 1];
+            x2 = coords1[2 * initEdge.endIndex];
+            y2 = coords1[2 * initEdge.endIndex + 1];
             areaOfEdge1 = 0;
         } else {
-            x1 = coords2[2* initEdge.begIndex];
-            y1 = coords2[2* initEdge.begIndex + 1];
-            x2 = coords2[2* initEdge.endIndex];
-            y2 = coords2[2* initEdge.endIndex + 1];
+            x1 = coords2[2 * initEdge.begIndex];
+            y1 = coords2[2 * initEdge.begIndex + 1];
+            x2 = coords2[2 * initEdge.endIndex];
+            y2 = coords2[2 * initEdge.endIndex + 1];
             areaOfEdge1 = 1;
         }
 
@@ -149,23 +209,23 @@ public class CrossingHelper {
             edge = iter.next();
 
             if (edge.areaNumber == 0) {
-                x3 = coords1[2* edge.begIndex];
-                y3 = coords1[2* edge.begIndex + 1];
-                x4 = coords1[2* edge.endIndex];
-                y4 = coords1[2* edge.endIndex + 1];
+                x3 = coords1[2 * edge.begIndex];
+                y3 = coords1[2 * edge.begIndex + 1];
+                x4 = coords1[2 * edge.endIndex];
+                y4 = coords1[2 * edge.endIndex + 1];
                 areaOfEdge2 = 0;
             } else {
-                x3 = coords2[2* edge.begIndex];
-                y3 = coords2[2* edge.begIndex + 1];
-                x4 = coords2[2* edge.endIndex];
-                y4 = coords2[2* edge.endIndex + 1];
+                x3 = coords2[2 * edge.begIndex];
+                y3 = coords2[2 * edge.begIndex + 1];
+                x4 = coords2[2 * edge.endIndex];
+                y4 = coords2[2 * edge.endIndex + 1];
                 areaOfEdge2 = 1;
             }
 
             if ((areaOfEdge1 != areaOfEdge2) &&
                     (GeometryUtil.intersectLines(
                             x1, y1, x2, y2, x3, y3, x4, y4, point) == 1) &&
-                            (!containsPoint(point))) {
+                    (!containsPoint(point))) {
 
                 if (initEdge.areaNumber == 0) {
                     initBegin = initEdge.begIndex;
@@ -207,10 +267,10 @@ public class CrossingHelper {
                             (initEnd == ip.getEndIndex(true))) {
 
                         if (compare(ip.getX(), ip.getY(), point[0], point[1]) > 0) {
-                            initEnd = - (isectPoints.indexOf(ip) + 1);
+                            initEnd = -(isectPoints.indexOf(ip) + 1);
                             ip.setBegIndex1(-(isectPoints.size() + 1));
                         } else {
-                            initBegin = - (isectPoints.indexOf(ip) + 1);
+                            initBegin = -(isectPoints.indexOf(ip) + 1);
                             ip.setEndIndex1(-(isectPoints.size() + 1));
                         }
                     }
@@ -219,10 +279,10 @@ public class CrossingHelper {
                             (addEnd == ip.getEndIndex(false))) {
 
                         if (compare(ip.getX(), ip.getY(), point[0], point[1]) > 0) {
-                            addEnd = - (isectPoints.indexOf(ip) + 1);
+                            addEnd = -(isectPoints.indexOf(ip) + 1);
                             ip.setBegIndex2(-(isectPoints.size() + 1));
                         } else {
-                            addBegin = - (isectPoints.indexOf(ip) + 1);
+                            addBegin = -(isectPoints.indexOf(ip) + 1);
                             ip.setEndIndex2(-(isectPoints.size() + 1));
                         }
                     }
@@ -231,55 +291,6 @@ public class CrossingHelper {
                 isectPoints.add(new IntersectPoint(initBegin, initEnd,
                         addBegin, addEnd,
                         point[0], point[1]));
-            }
-        }
-    }
-
-    // the array sorting
-    private static void sort(double[] coords1, int length1,
-            double[] coords2, int length2,
-            int[] array) {
-        int temp;
-        int length = length1 + length2;
-        double x1, y1, x2, y2;
-
-        for (int i = 1; i < length; i++) {
-            if (array[i-1] < length1) {
-                x1 = coords1[2*array[i-1]];
-                y1 = coords1[2*array[i-1] + 1];
-            } else {
-                x1 = coords2[2*(array[i-1] - length1)];
-                y1 = coords2[2*(array[i-1] - length1) + 1];
-            }
-            if (array[i] < length1) {
-                x2 = coords1[2*array[i]];
-                y2 = coords1[2*array[i] + 1];
-            } else {
-                x2 = coords2[2*(array[i] - length1)];
-                y2 = coords2[2*(array[i] - length1) + 1];
-            }
-            int j = i;
-            while (j > 0 && compare(x1, y1, x2, y2) <= 0) {
-                temp = array[j];
-                array[j] = array[j-1];
-                array[j-1] = temp;
-                j--;
-                if (j > 0) {
-                    if (array[j-1] < length1) {
-                        x1 = coords1[2*array[j-1]];
-                        y1 = coords1[2*array[j-1] + 1];
-                    } else {
-                        x1 = coords2[2*(array[j-1] - length1)];
-                        y1 = coords2[2*(array[j-1] - length1) + 1];
-                    }
-                    if (array[j] < length1) {
-                        x2 = coords1[2*array[j]];
-                        y2 = coords1[2*array[j] + 1];
-                    } else {
-                        x2 = coords2[2*(array[j] - length1)];
-                        y2 = coords2[2*(array[j] - length1) + 1];
-                    }
-                }
             }
         }
     }
@@ -298,17 +309,6 @@ public class CrossingHelper {
         return false;
     }
 
-    public static int compare(double x1, double y1, double x2, double y2) {
-
-        if ((x1 < x2) || (x1 == x2 && y1 < y2)) {
-            return 1;
-        } else if (x1 == x2 && y1 == y2) {
-            return 0;
-        }
-
-        return -1;
-    }
-
     private static final class Edge {
         final int begIndex;
         final int endIndex;
@@ -320,7 +320,7 @@ public class CrossingHelper {
             this.areaNumber = areaNumber;
         }
 
-        boolean reverseCompare (int begIndex, int endIndex) {
+        boolean reverseCompare(int begIndex, int endIndex) {
             return this.begIndex == endIndex && this.endIndex == begIndex;
         }
     }

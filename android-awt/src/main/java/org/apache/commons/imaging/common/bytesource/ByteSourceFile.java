@@ -16,16 +16,10 @@
  */
 package org.apache.commons.imaging.common.bytesource;
 
-import java.io.BufferedInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.RandomAccessFile;
-
 import org.apache.commons.imaging.common.BinaryFunctions;
 import org.apache.commons.imaging.util.IoUtils;
+
+import java.io.*;
 
 public class ByteSourceFile extends ByteSource {
     private final File file;

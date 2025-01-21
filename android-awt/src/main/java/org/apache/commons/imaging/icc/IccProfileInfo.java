@@ -16,15 +16,14 @@
  */
 package org.apache.commons.imaging.icc;
 
+import org.apache.commons.imaging.ImageReadException;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 
-import org.apache.commons.imaging.ImageReadException;
-
 public class IccProfileInfo {
 
-    private final byte[] data;
     public final int profileSize;
     public final int cmmTypeSignature;
     public final int profileVersion;
@@ -38,16 +37,17 @@ public class IccProfileInfo {
     public final int deviceModel;
     public final int renderingIntent;
     public final int profileCreatorSignature;
+    private final byte[] data;
     private final byte[] profileId;
     private final IccTag[] tags;
 
     public IccProfileInfo(final byte[] data, final int profileSize, final int cmmTypeSignature,
-            final int profileVersion, final int profileDeviceClassSignature,
-            final int colorSpace, final int profileConnectionSpace,
-            final int profileFileSignature, final int primaryPlatformSignature,
-            final int variousFlags, final int deviceManufacturer, final int deviceModel,
-            final int renderingIntent, final int profileCreatorSignature, final byte[] profileId,
-            final IccTag[] tags) {
+                          final int profileVersion, final int profileDeviceClassSignature,
+                          final int colorSpace, final int profileConnectionSpace,
+                          final int profileFileSignature, final int primaryPlatformSignature,
+                          final int variousFlags, final int deviceManufacturer, final int deviceModel,
+                          final int renderingIntent, final int profileCreatorSignature, final byte[] profileId,
+                          final IccTag[] tags) {
         this.data = data;
 
         this.profileSize = profileSize;
@@ -81,7 +81,7 @@ public class IccProfileInfo {
     }
 
     public boolean issRGB() {
-        return deviceManufacturer == IccConstants.IEC 
+        return deviceManufacturer == IccConstants.IEC
                 && deviceModel == IccConstants.sRGB;
     }
 

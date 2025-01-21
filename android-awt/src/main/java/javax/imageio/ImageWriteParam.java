@@ -19,9 +19,9 @@
  */
 package javax.imageio;
 
-import java.awt.Dimension;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import java.awt.*;
 import java.util.Locale;
 
 
@@ -49,7 +49,8 @@ public class ImageWriteParam extends IIOParam {
     protected float compressionQuality = 1.0f;
     protected Locale locale = null;
 
-    protected ImageWriteParam() {}
+    protected ImageWriteParam() {
+    }
 
     public ImageWriteParam(Locale locale) {
         this.locale = locale;
@@ -63,10 +64,6 @@ public class ImageWriteParam extends IIOParam {
         throw new UnsupportedOperationException(Messages.getString("imageio.33"));
     }
 
-    public boolean canWriteProgressive() {
-        return canWriteProgressive;
-    }
-
     public void setProgressiveMode(int mode) {
         if (canWriteProgressive()) {
             if (mode < MODE_DISABLED || mode > MODE_COPY_FROM_METADATA || mode == MODE_EXPLICIT) {
@@ -75,6 +72,10 @@ public class ImageWriteParam extends IIOParam {
             this.progressiveMode = mode;
         }
         throw new UnsupportedOperationException(Messages.getString("imageio.33"));
+    }
+
+    public boolean canWriteProgressive() {
+        return canWriteProgressive;
     }
 
     public boolean canOffsetTiles() {
@@ -112,6 +113,26 @@ public class ImageWriteParam extends IIOParam {
         return compressionMode;
     }
 
+    public void setCompressionMode(int mode) {
+        checkWriteCompressed();
+        switch (mode) {
+            case MODE_EXPLICIT: {
+                compressionMode = mode;
+                unsetCompression();
+                break;
+            }
+            case MODE_COPY_FROM_METADATA:
+            case MODE_DISABLED:
+            case MODE_DEFAULT: {
+                compressionMode = mode;
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException(Messages.getString("imageio.3C"));
+            }
+        }
+    }
+
     public String[] getCompressionTypes() {
         checkWriteCompressed();
         if (compressionTypes != null) {
@@ -124,6 +145,30 @@ public class ImageWriteParam extends IIOParam {
         checkWriteCompressed();
         checkCompressionMode();
         return compressionType;
+    }
+
+    public void setCompressionType(String compressionType) {
+        checkWriteCompressed();
+        checkCompressionMode();
+
+        if (compressionType == null) { // Don't check anything
+            this.compressionType = null;
+        } else {
+            String[] compressionTypes = getCompressionTypes();
+            if (compressionTypes == null) {
+                throw new UnsupportedOperationException(Messages.getString("imageio.3D"));
+            }
+
+            for (int i = 0; i < compressionTypes.length; i++) {
+                if (compressionTypes[i].equals(compressionType)) {
+                    this.compressionType = compressionType;
+                    return;
+                }
+            }
+
+            // Compression type is not in the list.
+            throw new IllegalArgumentException(Messages.getString("imageio.3E"));
+        }
     }
 
     public float getBitRate(float quality) {
@@ -141,6 +186,16 @@ public class ImageWriteParam extends IIOParam {
         checkCompressionMode();
         checkCompressionType();
         return compressionQuality;
+    }
+
+    public void setCompressionQuality(float quality) {
+        checkWriteCompressed();
+        checkCompressionMode();
+        checkCompressionType();
+        if (quality < 0 || quality > 1) {
+            throw new IllegalArgumentException(Messages.getString("imageio.38"));
+        }
+        compressionQuality = quality;
     }
 
     public String[] getCompressionQualityDescriptions() {
@@ -194,6 +249,27 @@ public class ImageWriteParam extends IIOParam {
     public int getTilingMode() {
         checkTiling();
         return tilingMode;
+    }
+
+    public void setTilingMode(int mode) {
+        checkTiling();
+
+        switch (mode) {
+            case MODE_EXPLICIT: {
+                tilingMode = mode;
+                unsetTiling();
+                break;
+            }
+            case MODE_COPY_FROM_METADATA:
+            case MODE_DISABLED:
+            case MODE_DEFAULT: {
+                tilingMode = mode;
+                break;
+            }
+            default: {
+                throw new IllegalArgumentException(Messages.getString("imageio.3C"));
+            }
+        }
     }
 
     public Dimension[] getPreferredTileSizes() {
@@ -251,60 +327,6 @@ public class ImageWriteParam extends IIOParam {
         compressionQuality = 1;
     }
 
-    public void setCompressionMode(int mode) {
-        checkWriteCompressed();
-        switch (mode) {
-            case MODE_EXPLICIT: {
-                compressionMode = mode;
-                unsetCompression();
-                break;
-            }
-            case MODE_COPY_FROM_METADATA:
-            case MODE_DISABLED:
-            case MODE_DEFAULT: {
-                compressionMode = mode;
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException(Messages.getString("imageio.3C"));
-            }
-        }
-    }
-
-    public void setCompressionQuality(float quality) {
-        checkWriteCompressed();
-        checkCompressionMode();
-        checkCompressionType();
-        if (quality < 0 || quality > 1) {
-            throw new IllegalArgumentException(Messages.getString("imageio.38"));
-        }
-        compressionQuality = quality;
-    }
-
-    public void setCompressionType(String compressionType) {
-        checkWriteCompressed();
-        checkCompressionMode();
-
-        if (compressionType == null) { // Don't check anything
-            this.compressionType = null;
-        } else {
-            String[] compressionTypes = getCompressionTypes();
-            if (compressionTypes == null) {
-                throw new UnsupportedOperationException(Messages.getString("imageio.3D"));
-            }
-
-            for (int i = 0; i < compressionTypes.length; i++) {
-                if (compressionTypes[i].equals(compressionType)) {
-                    this.compressionType = compressionType;
-                    return;
-                }
-            }
-
-            // Compression type is not in the list.
-            throw new IllegalArgumentException(Messages.getString("imageio.3E"));
-        }
-    }
-
     public void setTiling(int tileWidth, int tileHeight, int tileGridXOffset, int tileGridYOffset) {
         checkTiling();
         checkTilingMode();
@@ -313,18 +335,18 @@ public class ImageWriteParam extends IIOParam {
             throw new UnsupportedOperationException(Messages.getString("imageio.3F"));
         }
 
-        if (tileWidth <=0 || tileHeight <= 0) {
+        if (tileWidth <= 0 || tileHeight <= 0) {
             throw new IllegalArgumentException(Messages.getString("imageio.40"));
         }
 
         Dimension preferredTileSizes[] = getPreferredTileSizes();
         if (preferredTileSizes != null) {
-            for (int i = 0; i < preferredTileSizes.length; i+=2) {
+            for (int i = 0; i < preferredTileSizes.length; i += 2) {
                 Dimension minSize = preferredTileSizes[i];
-                Dimension maxSize = preferredTileSizes[i+1];
+                Dimension maxSize = preferredTileSizes[i + 1];
                 if (
                         tileWidth < minSize.width || tileWidth > maxSize.width ||
-                        tileHeight < minSize.height || tileHeight > maxSize.height
+                                tileHeight < minSize.height || tileHeight > maxSize.height
                 ) {
                     throw new IllegalArgumentException(Messages.getString("imageio.41"));
                 }
@@ -347,27 +369,6 @@ public class ImageWriteParam extends IIOParam {
         tileHeight = 0;
         tileGridXOffset = 0;
         tileGridYOffset = 0;
-    }
-
-    public void setTilingMode(int mode) {
-        checkTiling();
-
-        switch (mode) {
-            case MODE_EXPLICIT: {
-                tilingMode = mode;
-                unsetTiling();
-                break;
-            }
-            case MODE_COPY_FROM_METADATA:
-            case MODE_DISABLED:
-            case MODE_DEFAULT: {
-                tilingMode = mode;
-                break;
-            }
-            default: {
-                throw new IllegalArgumentException(Messages.getString("imageio.3C"));
-            }
-        }
     }
 }
 

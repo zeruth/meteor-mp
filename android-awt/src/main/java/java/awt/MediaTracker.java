@@ -19,8 +19,6 @@
  */
 package java.awt;
 
-import java.awt.Component;
-import java.awt.Image;
 import java.awt.image.ImageObserver;
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -29,16 +27,11 @@ import java.util.ListIterator;
 
 public class MediaTracker implements Serializable {
 
-    private static final long serialVersionUID = -483174189758638095L;
-
     public static final int ABORTED = 2;
-
     public static final int COMPLETE = 8;
-
     public static final int ERRORED = 4;
-
     public static final int LOADING = 1;
-
+    private static final long serialVersionUID = -483174189758638095L;
     Component owner;
     LinkedList<TrackingImage> trackingObjects = new LinkedList<TrackingImage>();
 
@@ -53,9 +46,9 @@ public class MediaTracker implements Serializable {
     public synchronized void addImage(Image image, int id, int w, int h) {
         int idx = 0;
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(id < node.getID()){
+            if (id < node.getID()) {
                 idx = li.previousIndex();
                 break;
             }
@@ -71,12 +64,12 @@ public class MediaTracker implements Serializable {
     public boolean checkAll(boolean load) {
         boolean result = true;
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(load) {
+            if (load) {
                 node.loadMedia();
             }
-            if((node.getState() & TrackingNode.LOADING_DONE) == 0){
+            if ((node.getState() & TrackingNode.LOADING_DONE) == 0) {
                 result = false;
             }
         }
@@ -90,13 +83,13 @@ public class MediaTracker implements Serializable {
     public boolean checkID(int id, boolean load) {
         boolean result = true;
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node.getID() == id){
-                if(load) {
+            if (node.getID() == id) {
+                if (load) {
                     node.loadMedia();
                 }
-                if((node.getState() & TrackingNode.LOADING_DONE) == 0){
+                if ((node.getState() & TrackingNode.LOADING_DONE) == 0) {
                     result = false;
                 }
             }
@@ -107,13 +100,13 @@ public class MediaTracker implements Serializable {
     public synchronized Object[] getErrorsAny() {
         ArrayList<Object> errors = new ArrayList<Object>();
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if((node.getState() & ERRORED) != 0){
+            if ((node.getState() & ERRORED) != 0) {
                 errors.add(node.getMediaObject());
             }
         }
-        if(errors.size() == 0) {
+        if (errors.size() == 0) {
             return null;
         }
         return errors.toArray();
@@ -122,15 +115,15 @@ public class MediaTracker implements Serializable {
     public synchronized Object[] getErrorsID(int id) {
         ArrayList<Object> errors = new ArrayList<Object>();
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node.getID() == id){
-                if((node.getState() & ERRORED) != 0){
+            if (node.getID() == id) {
+                if ((node.getState() & ERRORED) != 0) {
                     errors.add(node.getMediaObject());
                 }
             }
         }
-        if(errors.size() == 0) {
+        if (errors.size() == 0) {
             return null;
         }
         return errors.toArray();
@@ -138,9 +131,9 @@ public class MediaTracker implements Serializable {
 
     public synchronized boolean isErrorAny() {
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if((node.getState() & ERRORED) != 0) {
+            if ((node.getState() & ERRORED) != 0) {
                 return true;
             }
         }
@@ -149,10 +142,10 @@ public class MediaTracker implements Serializable {
 
     public synchronized boolean isErrorID(int id) {
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node.getID() == id){
-                if((node.getState() & ERRORED) != 0) {
+            if (node.getID() == id) {
+                if ((node.getState() & ERRORED) != 0) {
                     return true;
                 }
             }
@@ -162,9 +155,9 @@ public class MediaTracker implements Serializable {
 
     public synchronized void removeImage(Image image) {
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node.getMediaObject() == image) {
+            if (node.getMediaObject() == image) {
                 li.remove();
             }
         }
@@ -172,22 +165,22 @@ public class MediaTracker implements Serializable {
 
     public synchronized void removeImage(Image image, int id) {
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node.getID() == id && node.getMediaObject() == image) {
+            if (node.getID() == id && node.getMediaObject() == image) {
                 li.remove();
             }
         }
     }
 
     public synchronized void removeImage(Image image, int id, int width,
-            int height) {
+                                         int height) {
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(node instanceof TrackingImage){
+            if (node instanceof TrackingImage) {
                 TrackingImage ti = (TrackingImage) node;
-                if(ti.equals(image, id, width, height)) {
+                if (ti.equals(image, id, width, height)) {
                     li.remove();
                 }
             }
@@ -197,9 +190,9 @@ public class MediaTracker implements Serializable {
     public int statusAll(boolean load) {
         int status = 0;
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(load) {
+            if (load) {
                 node.loadMedia();
             }
             status |= node.getState();
@@ -210,10 +203,10 @@ public class MediaTracker implements Serializable {
     public int statusID(int id, boolean load) {
         int status = 0;
         ListIterator<TrackingImage> li = trackingObjects.listIterator();
-        while(li.hasNext()){
+        while (li.hasNext()) {
             TrackingNode node = li.next();
-            if(id == node.getID()){
-                if(load) {
+            if (id == node.getID()) {
+                if (load) {
                     node.loadMedia();
                 }
                 status |= node.getState();
@@ -229,18 +222,18 @@ public class MediaTracker implements Serializable {
     public synchronized boolean waitForAll(long ms) throws InterruptedException {
         boolean needLoad = true;
         long finishtime = System.currentTimeMillis() + ms;
-        while(true){
+        while (true) {
             int status = statusAll(needLoad);
-            if((status & LOADING) == 0){
+            if ((status & LOADING) == 0) {
                 return (status == COMPLETE);
             }
             needLoad = false;
             long timeout;
-            if(ms == 0){
+            if (ms == 0) {
                 timeout = 0;
-            }else{
+            } else {
                 long curtime = System.currentTimeMillis();
-                if(finishtime <= curtime) {
+                if (finishtime <= curtime) {
                     return false;
                 }
                 timeout = finishtime - curtime;
@@ -250,25 +243,25 @@ public class MediaTracker implements Serializable {
     }
 
     public void waitForID(int id) throws InterruptedException {
-        waitForID(id , 0);
+        waitForID(id, 0);
     }
 
     public synchronized boolean waitForID(int id, long ms)
             throws InterruptedException {
         boolean needLoad = true;
         long finishtime = System.currentTimeMillis() + ms;
-        while(true){
+        while (true) {
             int status = statusID(id, needLoad);
-            if((status & LOADING) == 0){
+            if ((status & LOADING) == 0) {
                 return (status == COMPLETE);
             }
             needLoad = false;
             long timeout;
-            if(ms == 0){
+            if (ms == 0) {
                 timeout = 0;
-            }else{
+            } else {
                 long curtime = System.currentTimeMillis();
-                if(finishtime <= curtime) {
+                if (finishtime <= curtime) {
                     return false;
                 }
                 timeout = finishtime - curtime;
@@ -277,11 +270,11 @@ public class MediaTracker implements Serializable {
         }
     }
 
-    synchronized void refresh(){
+    synchronized void refresh() {
         notifyAll();
     }
 
-    abstract class TrackingNode{
+    abstract class TrackingNode {
         final static int LOADING_DONE = ABORTED | ERRORED | COMPLETE;
         final static int LOADING_STARTED = LOADING | ERRORED | COMPLETE;
 
@@ -291,21 +284,23 @@ public class MediaTracker implements Serializable {
         TrackingNode next;
 
 
-        TrackingNode(MediaTracker tracker, int id){
+        TrackingNode(MediaTracker tracker, int id) {
             this.tracker = tracker;
             this.id = id;
         }
 
         abstract Object getMediaObject();
+
         abstract void loadMedia();
+
         abstract int getState();
 
-        int getID(){
+        int getID() {
             return id;
         }
 
-        void updateState(int state){
-            synchronized(this){
+        void updateState(int state) {
+            synchronized (this) {
                 this.state = state;
             }
             tracker.refresh();
@@ -313,7 +308,7 @@ public class MediaTracker implements Serializable {
 
     }
 
-    class TrackingImage extends TrackingNode implements ImageObserver{
+    class TrackingImage extends TrackingNode implements ImageObserver {
         Image img;
         int w, h;
 
@@ -331,43 +326,43 @@ public class MediaTracker implements Serializable {
 
         @Override
         void loadMedia() {
-            if((state & LOADING_STARTED) == 0){
+            if ((state & LOADING_STARTED) == 0) {
                 state = (state & ~ABORTED) | LOADING;
-                if(tracker.owner.prepareImage(img, w, h, this)){
+                if (tracker.owner.prepareImage(img, w, h, this)) {
                     updateState(COMPLETE);
                 }
             }
         }
 
         @Override
-        synchronized int getState(){
+        synchronized int getState() {
             int infoflags = tracker.owner.checkImage(img, w, h, this);
             int st = translateFlags(infoflags);
-            if(st != 0 && st != state) {
+            if (st != 0 && st != state) {
                 updateState(st);
             }
             return state;
         }
 
-        int translateFlags(int infoflags){
-            if((infoflags & ERROR) != 0) {
+        int translateFlags(int infoflags) {
+            if ((infoflags & ERROR) != 0) {
                 return ERRORED;
-            } else if((infoflags & ABORT) != 0) {
+            } else if ((infoflags & ABORT) != 0) {
                 return ABORTED;
-            } else if((infoflags & (ALLBITS | FRAMEBITS)) != 0) {
+            } else if ((infoflags & (ALLBITS | FRAMEBITS)) != 0) {
                 return COMPLETE;
             } else {
                 return 0;
             }
         }
 
-        boolean equals(Image image, int id, int width, int height){
+        boolean equals(Image image, int id, int width, int height) {
             return (image == img && this.id == id && w == width && h == height);
         }
 
         public boolean imageUpdate(Image image, int infoflags, int x, int y, int w, int h) {
             int st = translateFlags(infoflags);
-            if(st != 0 && st != state) {
+            if (st != 0 && st != state) {
                 updateState(st);
             }
             return ((state & LOADING) != 0);

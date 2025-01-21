@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.png.transparencyfilters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.BinaryFileParser;
+
+import java.io.IOException;
 
 public abstract class TransparencyFilter extends BinaryFileParser {
     protected final byte[] bytes;

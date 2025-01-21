@@ -16,14 +16,15 @@
  */
 package org.apache.commons.imaging.formats.psd.dataparsers;
 
-import java.awt.image.BufferedImage;
-import java.awt.image.DataBuffer;
 import org.apache.commons.imaging.formats.psd.ImageContents;
 import org.apache.commons.imaging.formats.psd.PsdHeaderInfo;
 
+import java.awt.image.BufferedImage;
+import java.awt.image.DataBuffer;
+
 public abstract class DataParser {
     public final void parseData(final int[][][] data, final BufferedImage bi,
-            final ImageContents imageContents) {
+                                final ImageContents imageContents) {
         final DataBuffer buffer = bi.getRaster().getDataBuffer();
 
         final PsdHeaderInfo header = imageContents.header;

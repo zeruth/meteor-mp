@@ -19,40 +19,40 @@
  */
 package org.apache.harmony.awt.gl;
 
-import java.awt.Graphics2D;
+import java.awt.*;
 import java.awt.font.GlyphVector;
 
 public abstract class TextRenderer {
-    
+
     /**
      * Draws string on specified Graphics at desired position.
-     * 
-     * @param g specified Graphics2D object
+     *
+     * @param g   specified Graphics2D object
      * @param str String object to draw
-     * @param x start X position to draw
-     * @param y start Y position to draw
+     * @param x   start X position to draw
+     * @param y   start Y position to draw
      */
     public abstract void drawString(Graphics2D g, String str, float x, float y);
 
     /**
      * Draws string on specified Graphics at desired position.
-     * 
-     * @param g specified Graphics2D object
+     *
+     * @param g   specified Graphics2D object
      * @param str String object to draw
-     * @param x start X position to draw
-     * @param y start Y position to draw
-     */    
-    public void drawString(Graphics2D g, String str, int x, int y){
-        drawString(g, str, (float)x, (float)y);
+     * @param x   start X position to draw
+     * @param y   start Y position to draw
+     */
+    public void drawString(Graphics2D g, String str, int x, int y) {
+        drawString(g, str, (float) x, (float) y);
     }
 
     /**
      * Draws GlyphVector on specified Graphics at desired position.
-     * 
-     * @param g specified Graphics2D object
+     *
+     * @param g           specified Graphics2D object
      * @param glyphVector GlyphVector object to draw
-     * @param x start X position to draw
-     * @param y start Y position to draw
+     * @param x           start X position to draw
+     * @param y           start Y position to draw
      */
     public abstract void drawGlyphVector(Graphics2D g, GlyphVector glyphVector, float x, float y);
 }

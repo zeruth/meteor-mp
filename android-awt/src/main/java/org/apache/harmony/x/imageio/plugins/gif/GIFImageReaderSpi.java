@@ -16,12 +16,12 @@
  */
 package org.apache.harmony.x.imageio.plugins.gif;
 
-import javax.imageio.ImageReader;
-import javax.imageio.spi.ImageReaderSpi;
 import org.apache.harmony.x.imageio.plugins.ImageSignature;
 import org.apache.harmony.x.imageio.plugins.ImageType;
 import org.apache.harmony.x.imageio.plugins.PluginUtils;
 
+import javax.imageio.ImageReader;
+import javax.imageio.spi.ImageReaderSpi;
 import java.io.IOException;
 import java.util.Locale;
 
@@ -29,23 +29,23 @@ public class GIFImageReaderSpi extends ImageReaderSpi {
 
     public GIFImageReaderSpi() {
         super(PluginUtils.VENDOR_NAME, PluginUtils.DEFAULT_VERSION,
-                        ImageType.GIF.getNames(), ImageType.GIF.getSuffixes(),
-                        ImageType.GIF.getMimeTypes(),
-                        GIFImageReader.class.getName(), STANDARD_INPUT_TYPE,
-                        null, false, null, null, null, null, false, null, null,
-                        null, null);
+                ImageType.GIF.getNames(), ImageType.GIF.getSuffixes(),
+                ImageType.GIF.getMimeTypes(),
+                GIFImageReader.class.getName(), STANDARD_INPUT_TYPE,
+                null, false, null, null, null, null, false, null, null,
+                null, null);
     }
 
     @Override
     public boolean canDecodeInput(final Object source) throws IOException {
         final byte[] sig = ImageSignature.readSignature(source, 6);
         return ImageSignature.GIF87a.verify(sig)
-            || ImageSignature.GIF89a.verify(sig);
+                || ImageSignature.GIF89a.verify(sig);
     }
 
     @Override
     public ImageReader createReaderInstance(Object extension)
-                    throws IOException {
+            throws IOException {
         return new GIFImageReader(this);
     }
 

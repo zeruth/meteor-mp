@@ -25,7 +25,7 @@ public class PhotoshopApp13Data {
     private final List<IptcBlock> rawBlocks;
 
     public PhotoshopApp13Data(final List<IptcRecord> records,
-            final List<IptcBlock> rawBlocks) {
+                              final List<IptcBlock> rawBlocks) {
         this.rawBlocks = rawBlocks;
         this.records = records;
     }

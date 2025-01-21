@@ -16,47 +16,31 @@
  */
 package org.apache.commons.imaging.formats.psd;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParser;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserBitmap;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserCmyk;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserGrayscale;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserIndexed;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserLab;
-import org.apache.commons.imaging.formats.psd.dataparsers.DataParserRgb;
+import org.apache.commons.imaging.formats.psd.dataparsers.*;
 import org.apache.commons.imaging.formats.psd.datareaders.CompressedDataReader;
 import org.apache.commons.imaging.formats.psd.datareaders.DataReader;
 import org.apache.commons.imaging.formats.psd.datareaders.UncompressedDataReader;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.PrintWriter;
-import java.io.UnsupportedEncodingException;
+import java.awt.*;
+import java.awt.image.BufferedImage;
+import java.io.*;
 import java.nio.ByteOrder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-import static org.apache.commons.imaging.common.BinaryFunctions.read2Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.read4Bytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readAndVerifyBytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.readByte;
-import static org.apache.commons.imaging.common.BinaryFunctions.readBytes;
-import static org.apache.commons.imaging.common.BinaryFunctions.skipBytes;
+import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
 public class PsdImageParser extends ImageParser {
+    public static final int IMAGE_RESOURCE_ID_ICC_PROFILE = 0x040F;
+    public static final int IMAGE_RESOURCE_ID_XMP = 0x0424;
+    public static final String BLOCK_NAME_XMP = "XMP";
     private static final String DEFAULT_EXTENSION = ".psd";
-    private static final String[] ACCEPTED_EXTENSIONS = { DEFAULT_EXTENSION, };
+    private static final String[] ACCEPTED_EXTENSIONS = {DEFAULT_EXTENSION,};
     private static final int PSD_SECTION_HEADER = 0;
     private static final int PSD_SECTION_COLOR_MODE = 1;
     private static final int PSD_SECTION_IMAGE_RESOURCES = 2;
@@ -64,9 +48,6 @@ public class PsdImageParser extends ImageParser {
     private static final int PSD_SECTION_IMAGE_DATA = 4;
     private static final int PSD_HEADER_LENGTH = 26;
     private static final int COLOR_MODE_INDEXED = 2;
-    public static final int IMAGE_RESOURCE_ID_ICC_PROFILE = 0x040F;
-    public static final int IMAGE_RESOURCE_ID_XMP = 0x0424;
-    public static final String BLOCK_NAME_XMP = "XMP";
 
     public PsdImageParser() {
         super.setByteOrder(ByteOrder.BIG_ENDIAN);
@@ -90,7 +71,7 @@ public class PsdImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.PSD, //
+        return new ImageFormat[]{ImageFormats.PSD, //
         };
     }
 
@@ -110,7 +91,7 @@ public class PsdImageParser extends ImageParser {
     }
 
     private PsdHeaderInfo readHeader(final InputStream is) throws ImageReadException, IOException {
-        readAndVerifyBytes(is, new byte[] { 56, 66, 80, 83 }, "Not a Valid PSD File");
+        readAndVerifyBytes(is, new byte[]{56, 66, 80, 83}, "Not a Valid PSD File");
 
         final int version = read2Bytes("Version", is, "Not a Valid PSD File", getByteOrder());
         final byte[] reserved = readBytes("Reserved", is, 6, "Not a Valid PSD File");
@@ -157,7 +138,7 @@ public class PsdImageParser extends ImageParser {
         // System.out.println("Compression: " + Compression);
 
         return new ImageContents(header, ColorModeDataLength,
-        // ColorModeData,
+                // ColorModeData,
                 ImageResourcesLength,
                 // ImageResources,
                 LayerAndMaskDataLength,
@@ -166,7 +147,7 @@ public class PsdImageParser extends ImageParser {
     }
 
     private List<ImageResourceBlock> readImageResourceBlocks(final byte[] bytes,
-            final int[] imageResourceIDs, final int maxBlocksToRead)
+                                                             final int[] imageResourceIDs, final int maxBlocksToRead)
             throws ImageReadException, IOException {
         return readImageResourceBlocks(new ByteArrayInputStream(bytes),
                 imageResourceIDs, maxBlocksToRead, bytes.length);
@@ -187,12 +168,12 @@ public class PsdImageParser extends ImageParser {
     }
 
     private List<ImageResourceBlock> readImageResourceBlocks(final InputStream is,
-            final int[] imageResourceIDs, final int maxBlocksToRead, int available)
+                                                             final int[] imageResourceIDs, final int maxBlocksToRead, int available)
             throws ImageReadException, IOException {
         final List<ImageResourceBlock> result = new ArrayList<ImageResourceBlock>();
 
         while (available > 0) {
-            readAndVerifyBytes(is, new byte[] { 56, 66, 73, 77 },
+            readAndVerifyBytes(is, new byte[]{56, 66, 73, 77},
                     "Not a Valid PSD File");
             available -= 4;
 
@@ -420,7 +401,7 @@ public class PsdImageParser extends ImageParser {
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         final List<ImageResourceBlock> blocks = readImageResourceBlocks(byteSource,
-                new int[] { IMAGE_RESOURCE_ID_ICC_PROFILE, }, 1);
+                new int[]{IMAGE_RESOURCE_ID_ICC_PROFILE,}, 1);
 
         if ((blocks == null) || (blocks.size() < 1)) {
             return null;
@@ -454,24 +435,24 @@ public class PsdImageParser extends ImageParser {
 
     private int getChannelsPerMode(final int mode) {
         switch (mode) {
-        case 0: // Bitmap
-            return 1;
-        case 1: // Grayscale
-            return 1;
-        case 2: // Indexed
-            return -1;
-        case 3: // RGB
-            return 3;
-        case 4: // CMYK
-            return 4;
-        case 7: // Multichannel
-            return -1;
-        case 8: // Duotone
-            return -1;
-        case 9: // Lab
-            return 4;
-        default:
-            return -1;
+            case 0: // Bitmap
+                return 1;
+            case 1: // Grayscale
+                return 1;
+            case 2: // Indexed
+                return -1;
+            case 3: // RGB
+                return 3;
+            case 4: // CMYK
+                return 4;
+            case 7: // Multichannel
+                return -1;
+            case 8: // Duotone
+                return -1;
+            case 9: // Lab
+                return 4;
+            default:
+                return -1;
 
         }
     }
@@ -526,14 +507,14 @@ public class PsdImageParser extends ImageParser {
 
         String compressionAlgorithm;
         switch (imageContents.Compression) {
-        case 0:
-            compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_NONE;
-            break;
-        case 1:
-            compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_PSD;
-            break;
-        default:
-            compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_UNKNOWN;
+            case 0:
+                compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_NONE;
+                break;
+            case 1:
+                compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_PSD;
+                break;
+            default:
+                compressionAlgorithm = ImageInfo.COMPRESSION_ALGORITHM_UNKNOWN;
         }
 
         return new ImageInfo(formatDetails, BitsPerPixel, comments,
@@ -624,7 +605,7 @@ public class PsdImageParser extends ImageParser {
         // fImageContents.blocks, kGraphicControlExtension);
 
         readImageResourceBlocks(byteSource,
-        // fImageContents.ImageResources,
+                // fImageContents.ImageResources,
                 null, -1);
 
         final int width = header.columns;
@@ -641,61 +622,61 @@ public class PsdImageParser extends ImageParser {
 
         DataParser dataParser;
         switch (imageContents.header.mode) {
-        case 0: // bitmap
-            dataParser = new DataParserBitmap();
-            break;
-        case 1:
-        case 8: // Duotone=8;
-            dataParser = new DataParserGrayscale();
-            break;
-        case 3:
-            dataParser = new DataParserRgb();
-            break;
-        case 4:
-            dataParser = new DataParserCmyk();
-            break;
-        case 9:
-            dataParser = new DataParserLab();
-            break;
-        case COLOR_MODE_INDEXED:
-        // case 2 : // Indexed=2;
-        {
+            case 0: // bitmap
+                dataParser = new DataParserBitmap();
+                break;
+            case 1:
+            case 8: // Duotone=8;
+                dataParser = new DataParserGrayscale();
+                break;
+            case 3:
+                dataParser = new DataParserRgb();
+                break;
+            case 4:
+                dataParser = new DataParserCmyk();
+                break;
+            case 9:
+                dataParser = new DataParserLab();
+                break;
+            case COLOR_MODE_INDEXED:
+                // case 2 : // Indexed=2;
+            {
 
-            final byte[] ColorModeData = getData(byteSource, PSD_SECTION_COLOR_MODE);
+                final byte[] ColorModeData = getData(byteSource, PSD_SECTION_COLOR_MODE);
 
-            // ImageResourceBlock block = findImageResourceBlock(blocks,
-            // 0x03EB);
-            // if (block == null)
-            // throw new ImageReadException(
-            // "Missing: Indexed Color Image Resource Block");
+                // ImageResourceBlock block = findImageResourceBlock(blocks,
+                // 0x03EB);
+                // if (block == null)
+                // throw new ImageReadException(
+                // "Missing: Indexed Color Image Resource Block");
 
-            dataParser = new DataParserIndexed(ColorModeData);
-            break;
-        }
-        case 7: // Multichannel=7;
-            // fDataParser = new DataParserStub();
-            // break;
+                dataParser = new DataParserIndexed(ColorModeData);
+                break;
+            }
+            case 7: // Multichannel=7;
+                // fDataParser = new DataParserStub();
+                // break;
 
-            // case 1 :
-            // fDataReader = new CompressedDataReader();
-            // break;
-        default:
-            throw new ImageReadException("Unknown Mode: "
-                    + imageContents.header.mode);
+                // case 1 :
+                // fDataReader = new CompressedDataReader();
+                // break;
+            default:
+                throw new ImageReadException("Unknown Mode: "
+                        + imageContents.header.mode);
         }
         DataReader fDataReader;
         switch (imageContents.Compression) {
-        case 0:
-            fDataReader = new UncompressedDataReader(dataParser);
-            break;
-        case 1:
-            fDataReader = new CompressedDataReader(dataParser);
-            break;
-        default:
-            throw new ImageReadException("Unknown Compression: "
-                    + imageContents.Compression);
+            case 0:
+                fDataReader = new UncompressedDataReader(dataParser);
+                break;
+            case 1:
+                fDataReader = new CompressedDataReader(dataParser);
+                break;
+            default:
+                throw new ImageReadException("Unknown Compression: "
+                        + imageContents.Compression);
         }
-        
+
         InputStream is = null;
         boolean canThrow = false;
         try {
@@ -717,11 +698,9 @@ public class PsdImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
@@ -740,7 +719,7 @@ public class PsdImageParser extends ImageParser {
         }
 
         final List<ImageResourceBlock> blocks = readImageResourceBlocks(byteSource,
-                new int[] { IMAGE_RESOURCE_ID_XMP, }, -1);
+                new int[]{IMAGE_RESOURCE_ID_XMP,}, -1);
 
         if ((blocks == null) || (blocks.size() < 1)) {
             return null;
@@ -757,7 +736,7 @@ public class PsdImageParser extends ImageParser {
 //                xmpBlocks.add(block);
 //            }
 //        } else {
-            xmpBlocks.addAll(blocks);
+        xmpBlocks.addAll(blocks);
 //        }
 
         if (xmpBlocks.size() < 1) {

@@ -41,82 +41,6 @@ public final class JobAttributes implements Cloneable {
     private SidesType sides;
 
 
-    /* section of the nested classes */
-    public static final class DefaultSelectionType {
-        public static final DefaultSelectionType ALL
-                                    = new DefaultSelectionType(0);
-        public static final DefaultSelectionType RANGE
-                                    = new DefaultSelectionType(1);
-        public static final DefaultSelectionType SELECTION
-                                    = new DefaultSelectionType(2);
-
-        private DefaultSelectionType(int i){
-            super();
-        }
-
-        private DefaultSelectionType(){
-            this(0);
-        }
-    }
-
-    public static final class DestinationType {
-        public static final DestinationType FILE = new DestinationType(0);
-        public static final DestinationType PRINTER = new DestinationType(1);
-
-        private DestinationType(int i) {
-            super();
-        }
-        private DestinationType() {
-            this(0);
-        }
-    }
-
-    public static final class DialogType{
-        public static final DialogType COMMON = new DialogType(0);
-        public static final DialogType NATIVE = new DialogType(1);
-        public static final DialogType NONE = new DialogType(2);
-
-        private DialogType(int i){
-            super();
-        }
-        private DialogType(){
-            this(0);
-        }
-
-    }
-
-    public static final class MultipleDocumentHandlingType {
-        public static final MultipleDocumentHandlingType
-                            SEPARATE_DOCUMENTS_COLLATED_COPIES
-                                = new MultipleDocumentHandlingType(0);
-        public static final MultipleDocumentHandlingType
-                            SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
-                            = new MultipleDocumentHandlingType(1);
-
-        private MultipleDocumentHandlingType(int i){
-            super();
-        }
-
-        private MultipleDocumentHandlingType(){
-            this(0);
-        }
-    }
-
-    public static final class SidesType{
-        public static final SidesType ONE_SIDED = new SidesType(0);
-        public static final SidesType TWO_SIDED_LONG_EDGE  = new SidesType(1);
-        public static final SidesType TWO_SIDED_SHORT_EDGE = new SidesType(2);
-
-        private SidesType(int i){
-            super();
-        }
-
-        private SidesType(){
-            this(0);
-        }
-    }
-    /* end of the nested classes */
-
     public JobAttributes() {
         setDefaultSelection(DefaultSelectionType.ALL);
         setDestination(DestinationType.PRINTER);
@@ -128,21 +52,21 @@ public final class JobAttributes implements Cloneable {
         setMinPage(1);
     }
 
-    public JobAttributes(JobAttributes obj){
-            set(obj);
+    public JobAttributes(JobAttributes obj) {
+        set(obj);
     }
 
     public JobAttributes(int copies,
-            DefaultSelectionType defaultSelection,
-            DestinationType destination,
-            DialogType dialog,
-            String fileName,
-            int maxPage,
-            int minPage,
-            MultipleDocumentHandlingType multipleDocumentHandling,
-            int[][] pageRanges,
-            String printer,
-            SidesType sides){
+                         DefaultSelectionType defaultSelection,
+                         DestinationType destination,
+                         DialogType dialog,
+                         String fileName,
+                         int maxPage,
+                         int minPage,
+                         MultipleDocumentHandlingType multipleDocumentHandling,
+                         int[][] pageRanges,
+                         String printer,
+                         SidesType sides) {
 
         setCopies(copies);
         setDefaultSelection(defaultSelection);
@@ -163,26 +87,27 @@ public final class JobAttributes implements Cloneable {
 
     public void setMultipleDocumentHandlingToDefault() {
         setMultipleDocumentHandling
-           (MultipleDocumentHandlingType.SEPARATE_DOCUMENTS_UNCOLLATED_COPIES);
+                (MultipleDocumentHandlingType.SEPARATE_DOCUMENTS_UNCOLLATED_COPIES);
     }
+    /* end of the nested classes */
 
-    public void setSidesToDefault(){
+    public void setSidesToDefault() {
         setSides(SidesType.ONE_SIDED);
     }
 
-    public int getCopies(){
+    public int getCopies() {
         return copies;
     }
 
     public void setCopies(int copies) {
-        if(copies <= 0) {
+        if (copies <= 0) {
             // awt.152=Invalid number of copies
             throw new IllegalArgumentException(Messages.getString("awt.152")); //$NON-NLS-1$
         }
         this.copies = copies;
     }
 
-    public int getMaxPage(){
+    public int getMaxPage() {
         return maxPage;
     }
 
@@ -194,7 +119,7 @@ public final class JobAttributes implements Cloneable {
         maxPage = imaxPage;
     }
 
-    public int getMinPage(){
+    public int getMinPage() {
         return minPage;
     }
 
@@ -251,20 +176,20 @@ public final class JobAttributes implements Cloneable {
         toPage = itoPage;
     }
 
-    public String getPrinter(){
+    public String getPrinter() {
         return printer;
     }
 
-    public void setPrinter(String printer){
+    public void setPrinter(String printer) {
         this.printer = printer;
-    }
-
-    public void setFileName(String fileName) {
-        this.fileName = fileName;
     }
 
     public String getFileName() {
         return fileName;
+    }
+
+    public void setFileName(String fileName) {
+        this.fileName = fileName;
     }
 
     public int[][] getPageRanges() {
@@ -293,33 +218,33 @@ public final class JobAttributes implements Cloneable {
         // awt.157=Invalid value for pageRanges
         String msg = Messages.getString("awt.157"); //$NON-NLS-1$
 
-        if(pr == null) {
+        if (pr == null) {
             throw new IllegalArgumentException(msg);
         }
-        
+
         int n1 = 0;
         int n2 = 0;
         int prl = pr.length;
 
-        for(int k = 0; k < prl; k++) {
-            if(pr[k] == null || pr[k].length != 2
+        for (int k = 0; k < prl; k++) {
+            if (pr[k] == null || pr[k].length != 2
                     || pr[k][0] <= n2 || pr[k][1] < pr[k][0]) {
                 throw new IllegalArgumentException(msg);
             }
 
             n2 = pr[k][1];
-            if(n1 == 0) {
+            if (n1 == 0) {
                 n1 = pr[k][0];
             }
         }
 
-        if(n1 < minPage || n2 > maxPage) {
+        if (n1 < minPage || n2 > maxPage) {
             throw new IllegalArgumentException(msg);
         }
 
         pageRanges = new int[prl][2];
 
-        for(int k = 0; k < prl; k++) {
+        for (int k = 0; k < prl; k++) {
             pageRanges[k][0] = pr[k][0];
             pageRanges[k][1] = pr[k][1];
         }
@@ -332,7 +257,7 @@ public final class JobAttributes implements Cloneable {
     }
 
     public void setDestination(DestinationType destination) {
-        if(destination == null){
+        if (destination == null) {
             // awt.158=Invalid value for destination
             throw new IllegalArgumentException(Messages.getString("awt.158")); //$NON-NLS-1$
         }
@@ -344,13 +269,12 @@ public final class JobAttributes implements Cloneable {
     }
 
     public void setDialog(DialogType dialog) {
-        if(dialog == null) {
+        if (dialog == null) {
             // awt.159=Invalid value for dialog
             throw new IllegalArgumentException(Messages.getString("awt.159")); //$NON-NLS-1$
         }
         this.dialog = dialog;
     }
-
 
     public DefaultSelectionType getDefaultSelection() {
         return defaultSelection;
@@ -366,27 +290,27 @@ public final class JobAttributes implements Cloneable {
     }
 
     public MultipleDocumentHandlingType
-            getMultipleDocumentHandling(){
+    getMultipleDocumentHandling() {
         return multiDocHandling;
     }
 
     public void setMultipleDocumentHandling
-        (MultipleDocumentHandlingType multipleDocumentHandling){
+            (MultipleDocumentHandlingType multipleDocumentHandling) {
 
-        if(multipleDocumentHandling == null) {
+        if (multipleDocumentHandling == null) {
             // awt.15B=Invalid value for multipleDocumentHandling
             throw new IllegalArgumentException(Messages.getString("awt.15B")); //$NON-NLS-1$
         }
         multiDocHandling = multipleDocumentHandling;
     }
 
-    public SidesType getSides(){
+    public SidesType getSides() {
         return sides;
     }
 
-    public void setSides(SidesType sides){
+    public void setSides(SidesType sides) {
 
-        if(sides == null) {
+        if (sides == null) {
             // awt.15C=Invalid value for attribute sides
             throw new IllegalArgumentException(Messages.getString("awt.15C")); //$NON-NLS-1$
         }
@@ -416,31 +340,31 @@ public final class JobAttributes implements Cloneable {
     }
 
     @Override
-    public String toString(){
-        /* The format is based on 1.5 release behavior 
+    public String toString() {
+        /* The format is based on 1.5 release behavior
          * which can be revealed by the following code:
          * System.out.println(new JobAttributes());
          */
 
         String s = "Page-ranges ["; //$NON-NLS-1$
-        int k = pageRanges.length-1;
-        for(int i = 0; i <= k ; i++)            {
+        int k = pageRanges.length - 1;
+        for (int i = 0; i <= k; i++) {
             s += pageRanges[i][0] + "-" //$NON-NLS-1$
-               + pageRanges[i][1] + ((i < k)? ",": ""); //$NON-NLS-1$ //$NON-NLS-2$
+                    + pageRanges[i][1] + ((i < k) ? "," : ""); //$NON-NLS-1$ //$NON-NLS-2$
         }
         s += "], copies=" + getCopies() //$NON-NLS-1$
-            + ",defSelection=" + getDefaultSelection() //$NON-NLS-1$
-            + ",dest=" + getDestination() //$NON-NLS-1$
-            + ",fromPg=" + getFromPage() //$NON-NLS-1$
-            + ",toPg=" + getToPage() //$NON-NLS-1$
-            + ",minPg=" + getMinPage() //$NON-NLS-1$
-            + ",maxPg=" + getMaxPage() //$NON-NLS-1$
-            + ",multiple-document-handling=" //$NON-NLS-1$
-            + getMultipleDocumentHandling()
-            + ",fileName=" + getFileName() //$NON-NLS-1$
-            + ",printer=" + getPrinter() //$NON-NLS-1$
-            + ",dialog=" + getDialog() //$NON-NLS-1$
-            + ",sides=" + getSides(); //$NON-NLS-1$
+                + ",defSelection=" + getDefaultSelection() //$NON-NLS-1$
+                + ",dest=" + getDestination() //$NON-NLS-1$
+                + ",fromPg=" + getFromPage() //$NON-NLS-1$
+                + ",toPg=" + getToPage() //$NON-NLS-1$
+                + ",minPg=" + getMinPage() //$NON-NLS-1$
+                + ",maxPg=" + getMaxPage() //$NON-NLS-1$
+                + ",multiple-document-handling=" //$NON-NLS-1$
+                + getMultipleDocumentHandling()
+                + ",fileName=" + getFileName() //$NON-NLS-1$
+                + ",printer=" + getPrinter() //$NON-NLS-1$
+                + ",dialog=" + getDialog() //$NON-NLS-1$
+                + ",sides=" + getSides(); //$NON-NLS-1$
         return s;
     }
 
@@ -457,87 +381,164 @@ public final class JobAttributes implements Cloneable {
     }
 
     @Override
-    public boolean equals(Object obj){
-        if(!(obj instanceof JobAttributes)){
+    public boolean equals(Object obj) {
+        if (!(obj instanceof JobAttributes)) {
             return false;
         }
-        JobAttributes ja = (JobAttributes)obj;
+        JobAttributes ja = (JobAttributes) obj;
 
-        if(fileName == null){
-            if(ja.fileName != null) {
+        if (fileName == null) {
+            if (ja.fileName != null) {
                 return false;
             }
         } else {
-            if(!fileName.equals(ja.fileName)) {
+            if (!fileName.equals(ja.fileName)) {
                 return false;
             }
         }
 
-        if(printer == null) {
-            if(ja.printer != null){
+        if (printer == null) {
+            if (ja.printer != null) {
                 return false;
             }
         } else {
-            if(!printer.equals(ja.printer)){
+            if (!printer.equals(ja.printer)) {
                 return false;
             }
         }
 
-        if(pageRanges == null) {
-            if(ja.pageRanges != null) {
+        if (pageRanges == null) {
+            if (ja.pageRanges != null) {
                 return false;
             }
         } else {
-            if(ja.pageRanges == null){
+            if (ja.pageRanges == null) {
                 return false;
             }
-            if(pageRanges.length != ja.pageRanges.length){
+            if (pageRanges.length != ja.pageRanges.length) {
                 return false;
             }
             for (int[] element : pageRanges) {
-                if(element[0] != element[0]
-                || element[1] != element[1]){
+                if (element[0] != element[0]
+                        || element[1] != element[1]) {
                     return false;
                 }
             }
         }
-        if(copies != ja.copies){
+        if (copies != ja.copies) {
             return false;
         }
-        if(defaultSelection != ja.defaultSelection){
+        if (defaultSelection != ja.defaultSelection) {
             return false;
         }
-        if(destination != ja.destination){
+        if (destination != ja.destination) {
             return false;
         }
-        if(dialog != ja.dialog){
+        if (dialog != ja.dialog) {
             return false;
         }
-        if(maxPage != ja.maxPage){
+        if (maxPage != ja.maxPage) {
             return false;
         }
-        if(minPage != ja.minPage){
+        if (minPage != ja.minPage) {
             return false;
         }
-        if(multiDocHandling != ja.multiDocHandling){
+        if (multiDocHandling != ja.multiDocHandling) {
             return false;
         }
-        if(firstPage != ja.firstPage){
+        if (firstPage != ja.firstPage) {
             return false;
         }
-        if(lastPage != ja.lastPage){
+        if (lastPage != ja.lastPage) {
             return false;
         }
-        if(sides != ja.sides){
+        if (sides != ja.sides) {
             return false;
         }
-        if(toPage != ja.toPage){
+        if (toPage != ja.toPage) {
             return false;
         }
-        if(fromPage != ja.fromPage){
+        if (fromPage != ja.fromPage) {
             return false;
         }
         return true;
+    }
+
+    /* section of the nested classes */
+    public static final class DefaultSelectionType {
+        public static final DefaultSelectionType ALL
+                = new DefaultSelectionType(0);
+        public static final DefaultSelectionType RANGE
+                = new DefaultSelectionType(1);
+        public static final DefaultSelectionType SELECTION
+                = new DefaultSelectionType(2);
+
+        private DefaultSelectionType(int i) {
+            super();
+        }
+
+        private DefaultSelectionType() {
+            this(0);
+        }
+    }
+
+    public static final class DestinationType {
+        public static final DestinationType FILE = new DestinationType(0);
+        public static final DestinationType PRINTER = new DestinationType(1);
+
+        private DestinationType(int i) {
+            super();
+        }
+
+        private DestinationType() {
+            this(0);
+        }
+    }
+
+    public static final class DialogType {
+        public static final DialogType COMMON = new DialogType(0);
+        public static final DialogType NATIVE = new DialogType(1);
+        public static final DialogType NONE = new DialogType(2);
+
+        private DialogType(int i) {
+            super();
+        }
+
+        private DialogType() {
+            this(0);
+        }
+
+    }
+
+    public static final class MultipleDocumentHandlingType {
+        public static final MultipleDocumentHandlingType
+                SEPARATE_DOCUMENTS_COLLATED_COPIES
+                = new MultipleDocumentHandlingType(0);
+        public static final MultipleDocumentHandlingType
+                SEPARATE_DOCUMENTS_UNCOLLATED_COPIES
+                = new MultipleDocumentHandlingType(1);
+
+        private MultipleDocumentHandlingType(int i) {
+            super();
+        }
+
+        private MultipleDocumentHandlingType() {
+            this(0);
+        }
+    }
+
+    public static final class SidesType {
+        public static final SidesType ONE_SIDED = new SidesType(0);
+        public static final SidesType TWO_SIDED_LONG_EDGE = new SidesType(1);
+        public static final SidesType TWO_SIDED_SHORT_EDGE = new SidesType(2);
+
+        private SidesType(int i) {
+            super();
+        }
+
+        private SidesType() {
+            this(0);
+        }
     }
 }
 

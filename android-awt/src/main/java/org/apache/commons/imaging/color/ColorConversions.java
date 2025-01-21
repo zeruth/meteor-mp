@@ -21,7 +21,7 @@ public final class ColorConversions {
     private static final double REF_X = 95.047;  // Observer= 2°, Illuminant= D65
     private static final double REF_Y = 100.000;
     private static final double REF_Z = 108.883;
-    
+
     private ColorConversions() {
     }
 
@@ -30,10 +30,10 @@ public final class ColorConversions {
     }
 
     public static ColorCieLab convertXYZtoCIELab(final double X, final double Y,
-            final double Z) {
+                                                 final double Z) {
 
         double var_X = X / REF_X; // REF_X = 95.047 Observer= 2°, Illuminant=
-                                  // D65
+        // D65
         double var_Y = Y / REF_Y; // REF_Y = 100.000
         double var_Z = Z / REF_Z; // REF_Z = 108.883
 
@@ -85,7 +85,7 @@ public final class ColorConversions {
         }
 
         final double X = REF_X * var_X; // REF_X = 95.047 Observer= 2°, Illuminant=
-                                  // D65
+        // D65
         final double Y = REF_Y * var_Y; // REF_Y = 100.000
         final double Z = REF_Z * var_Z; // REF_Z = 108.883
 
@@ -97,7 +97,7 @@ public final class ColorConversions {
     }
 
     public static ColorHunterLab convertXYZtoHunterLab(final double X,
-            final double Y, final double Z) {
+                                                       final double Y, final double Z) {
         final double L = 10 * Math.sqrt(Y);
         final double a = 17.5 * (((1.02 * X) - Y) / Math.sqrt(Y));
         final double b = 7 * ((Y - (0.847 * Z)) / Math.sqrt(Y));
@@ -110,7 +110,7 @@ public final class ColorConversions {
     }
 
     public static ColorXyz convertHunterLabtoXYZ(final double L, final double a,
-            final double b) {
+                                                 final double b) {
         final double var_Y = L / 10;
         final double var_X = a / 17.5 * L / 10;
         final double var_Z = b / 7 * L / 10;
@@ -263,7 +263,7 @@ public final class ColorConversions {
     }
 
     public static ColorCmy convertCMYKtoCMY(double C, double M, double Y,
-            final double K) {
+                                            final double K) {
         // Where CMYK and CMY values = 0 ÷ 1
 
         C = (C * (1 - K) + K);
@@ -295,7 +295,7 @@ public final class ColorConversions {
         final double var_B = (B / 255.0);
 
         final double var_Min = Math.min(var_R, Math.min(var_G, var_B)); // Min. value
-                                                                  // of RGB
+        // of RGB
         double var_Max;
         boolean maxIsR = false;
         boolean maxIsG = false;
@@ -316,11 +316,11 @@ public final class ColorConversions {
         // Debug.debug("del_Max", del_Max);
         if (del_Max == 0) {
             // This is a gray, no chroma...
-        
+
             H = 0; // HSL results = 0 ÷ 1
             S = 0;
         } else {
-        // Chromatic data...
+            // Chromatic data...
 
             // Debug.debug("L", L);
 
@@ -419,7 +419,7 @@ public final class ColorConversions {
         final double var_B = (B / 255.0);
 
         final double var_Min = Math.min(var_R, Math.min(var_G, var_B)); // Min. value
-                                                                  // of RGB
+        // of RGB
         boolean maxIsR = false;
         boolean maxIsG = false;
         double var_Max;
@@ -442,7 +442,7 @@ public final class ColorConversions {
             H = 0; // HSV results = 0 ÷ 1
             S = 0;
         } else {
-        // Chromatic data...
+            // Chromatic data...
             S = del_Max / var_Max;
 
             final double del_R = (((var_Max - var_R) / 6) + (del_Max / 2)) / del_Max;
@@ -527,7 +527,7 @@ public final class ColorConversions {
     }
 
     public static int convertCMYKtoRGB_Adobe(final int sc, final int sm, final int sy,
-            final int sk) {
+                                             final int sk) {
         final int red = 255 - (sc + sk);
         final int green = 255 - (sm + sk);
         final int blue = 255 - (sy + sk);

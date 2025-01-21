@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,20 +15,7 @@
 
 package org.apache.commons.imaging.formats.xpm;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DirectColorModel;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BasicCParser;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
@@ -36,43 +23,33 @@ import org.apache.commons.imaging.palette.PaletteFactory;
 import org.apache.commons.imaging.palette.SimplePalette;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.BufferedReader;
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.UUID;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_FORMAT;
 
 public class XpmImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".xpm";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".xpm", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".xpm",};
+    private static final char[] WRITE_PALETTE = {' ', '.', 'X', 'o', 'O', '+',
+            '@', '#', '$', '%', '&', '*', '=', '-', ';', ':', '>', ',', '<',
+            '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e',
+            'r', 't', 'y', 'u', 'i', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j',
+            'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'M', 'N', 'B', 'V',
+            'C', 'Z', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'P', 'I',
+            'U', 'Y', 'T', 'R', 'E', 'W', 'Q', '!', '~', '^', '/', '(', ')',
+            '_', '`', '\'', ']', '[', '{', '}', '|',};
     private static Map<String, Integer> colorNames;
-    private static final char[] WRITE_PALETTE = { ' ', '.', 'X', 'o', 'O', '+',
-        '@', '#', '$', '%', '&', '*', '=', '-', ';', ':', '>', ',', '<',
-        '1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'q', 'w', 'e',
-        'r', 't', 'y', 'u', 'i', 'p', 'a', 's', 'd', 'f', 'g', 'h', 'j',
-        'k', 'l', 'z', 'x', 'c', 'v', 'b', 'n', 'm', 'M', 'N', 'B', 'V',
-        'C', 'Z', 'A', 'S', 'D', 'F', 'G', 'H', 'J', 'K', 'L', 'P', 'I',
-        'U', 'Y', 'T', 'R', 'E', 'W', 'Q', '!', '~', '^', '/', '(', ')',
-        '_', '`', '\'', ']', '[', '{', '}', '|', };
 
     private static void loadColorNames() throws ImageReadException {
         synchronized (XpmImageParser.class) {
             if (colorNames != null) {
                 return;
             }
-    
+
             try {
                 final InputStream rgbTxtStream =
                         XpmImageParser.class.getResourceAsStream("rgb.txt");
@@ -129,7 +106,7 @@ public class XpmImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.XPM, //
+        return new ImageFormat[]{ImageFormats.XPM, //
         };
     }
 
@@ -147,17 +124,17 @@ public class XpmImageParser extends ImageParser {
         int colorType = ImageInfo.COLOR_TYPE_BW;
         for (final Entry<Object, PaletteEntry> entry : xpmHeader.palette
                 .entrySet()) {
-         final PaletteEntry paletteEntry = entry.getValue();
-         if ((paletteEntry.getBestARGB() & 0xff000000) != 0xff000000) {
-        transparent = true;
-         }
-         if (paletteEntry.haveColor) {
-        colorType = ImageInfo.COLOR_TYPE_RGB;
-         } else if (colorType != ImageInfo.COLOR_TYPE_RGB
-            && (paletteEntry.haveGray || paletteEntry.haveGray4Level)) {
-        colorType = ImageInfo.COLOR_TYPE_GRAYSCALE;
-         }
-      }
+            final PaletteEntry paletteEntry = entry.getValue();
+            if ((paletteEntry.getBestARGB() & 0xff000000) != 0xff000000) {
+                transparent = true;
+            }
+            if (paletteEntry.haveColor) {
+                colorType = ImageInfo.COLOR_TYPE_RGB;
+            } else if (colorType != ImageInfo.COLOR_TYPE_RGB
+                    && (paletteEntry.haveGray || paletteEntry.haveGray4Level)) {
+                colorType = ImageInfo.COLOR_TYPE_GRAYSCALE;
+            }
+        }
         return new ImageInfo("XPM version 3", xpmHeader.numCharsPerPixel * 8,
                 new ArrayList<String>(), ImageFormats.XPM,
                 "X PixMap", xpmHeader.height, "image/x-xpixmap", 1, 0, 0, 0, 0,
@@ -176,73 +153,6 @@ public class XpmImageParser extends ImageParser {
     public byte[] getICCProfileBytes(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
-    }
-
-    private static class XpmHeader {
-        int width;
-        int height;
-        int numColors;
-        int numCharsPerPixel;
-        int xHotSpot = -1;
-        int yHotSpot = -1;
-        boolean xpmExt;
-
-        Map<Object, PaletteEntry> palette = new HashMap<Object, PaletteEntry>();
-
-        public XpmHeader(final int width, final int height, final int numColors,
-                final int numCharsPerPixel, final int xHotSpot, final int yHotSpot, final boolean xpmExt) {
-            this.width = width;
-            this.height = height;
-            this.numColors = numColors;
-            this.numCharsPerPixel = numCharsPerPixel;
-            this.xHotSpot = xHotSpot;
-            this.yHotSpot = yHotSpot;
-            this.xpmExt = xpmExt;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("XpmHeader");
-            pw.println("Width: " + width);
-            pw.println("Height: " + height);
-            pw.println("NumColors: " + numColors);
-            pw.println("NumCharsPerPixel: " + numCharsPerPixel);
-            if (xHotSpot != -1 && yHotSpot != -1) {
-                pw.println("X hotspot: " + xHotSpot);
-                pw.println("Y hotspot: " + yHotSpot);
-            }
-            pw.println("XpmExt: " + xpmExt);
-        }
-    }
-
-    private static class PaletteEntry {
-        int index;
-        boolean haveColor = false;
-        int colorArgb;
-        boolean haveGray = false;
-        int grayArgb;
-        boolean haveGray4Level = false;
-        int gray4LevelArgb;
-        boolean haveMono = false;
-        int monoArgb;
-
-        int getBestARGB() {
-            if (haveColor) {
-                return colorArgb;
-            } else if (haveGray) {
-                return grayArgb;
-            } else if (haveGray4Level) {
-                return gray4LevelArgb;
-            } else if (haveMono) {
-                return monoArgb;
-            } else {
-                return 0x00000000;
-            }
-        }
-    }
-
-    private static class XpmParseResult {
-        XpmHeader xpmHeader;
-        BasicCParser cParser;
     }
 
     private XpmHeader readXpmHeader(final ByteSource byteSource)
@@ -277,7 +187,7 @@ public class XpmImageParser extends ImageParser {
     }
 
     private boolean parseNextString(final BasicCParser cParser,
-            final StringBuilder stringBuilder) throws IOException, ImageReadException {
+                                    final StringBuilder stringBuilder) throws IOException, ImageReadException {
         stringBuilder.setLength(0);
         String token = cParser.nextToken();
         if (token.charAt(0) != '"') {
@@ -370,7 +280,7 @@ public class XpmImageParser extends ImageParser {
             return 0x00000000;
         }
     }
-    
+
     private void populatePaletteEntry(final PaletteEntry paletteEntry, final String key, final String color) throws ImageReadException {
         if ("m".equals(key)) {
             paletteEntry.monoArgb = parseColor(color);
@@ -408,11 +318,11 @@ public class XpmImageParser extends ImageParser {
             for (int j = 0; j < tokens.length; j++) {
                 final String token = tokens[j];
                 boolean isKey = false;
-                if (previousKeyIndex < (j - 1) 
+                if (previousKeyIndex < (j - 1)
                         && "m".equals(token)
-                        || "g4".equals(token) 
+                        || "g4".equals(token)
                         || "g".equals(token)
-                        || "c".equals(token) 
+                        || "c".equals(token)
                         || "s".equals(token)) {
                     isKey = true;
                 }
@@ -522,9 +432,9 @@ public class XpmImageParser extends ImageParser {
             final int[] palette = new int[xpmHeader.palette.size()];
             for (final Entry<Object, PaletteEntry> entry : xpmHeader.palette
                     .entrySet()) {
-            final PaletteEntry paletteEntry = entry.getValue();
-            palette[paletteEntry.index] = paletteEntry.getBestARGB();
-         }
+                final PaletteEntry paletteEntry = entry.getValue();
+                palette[paletteEntry.index] = paletteEntry.getBestARGB();
+            }
             colorModel = new IndexColorModel(8, xpmHeader.palette.size(),
                     palette, 0, true, -1, DataBuffer.TYPE_BYTE);
             raster = Raster.createInterleavedRaster(
@@ -535,9 +445,9 @@ public class XpmImageParser extends ImageParser {
             final int[] palette = new int[xpmHeader.palette.size()];
             for (final Entry<Object, PaletteEntry> entry : xpmHeader.palette
                     .entrySet()) {
-            final PaletteEntry paletteEntry = entry.getValue();
-            palette[paletteEntry.index] = paletteEntry.getBestARGB();
-         }
+                final PaletteEntry paletteEntry = entry.getValue();
+                palette[paletteEntry.index] = paletteEntry.getBestARGB();
+            }
             colorModel = new IndexColorModel(16, xpmHeader.palette.size(),
                     palette, 0, true, -1, DataBuffer.TYPE_USHORT);
             raster = Raster.createInterleavedRaster(
@@ -548,8 +458,8 @@ public class XpmImageParser extends ImageParser {
             colorModel = new DirectColorModel(32, 0x00ff0000, 0x0000ff00,
                     0x000000ff, 0xff000000);
             raster = Raster.createPackedRaster(DataBuffer.TYPE_INT,
-                    xpmHeader.width, xpmHeader.height, new int[] { 0x00ff0000,
-                            0x0000ff00, 0x000000ff, 0xff000000 }, null);
+                    xpmHeader.width, xpmHeader.height, new int[]{0x00ff0000,
+                            0x0000ff00, 0x000000ff, 0xff000000}, null);
             bpp = 32;
         }
 
@@ -605,7 +515,7 @@ public class XpmImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         final XpmParseResult result = parseXpmHeader(byteSource);
         return readXpmImage(result.xpmHeader, result.cParser);
     }
@@ -735,16 +645,81 @@ public class XpmImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    private static class XpmHeader {
+        int width;
+        int height;
+        int numColors;
+        int numCharsPerPixel;
+        int xHotSpot = -1;
+        int yHotSpot = -1;
+        boolean xpmExt;
+
+        Map<Object, PaletteEntry> palette = new HashMap<Object, PaletteEntry>();
+
+        public XpmHeader(final int width, final int height, final int numColors,
+                         final int numCharsPerPixel, final int xHotSpot, final int yHotSpot, final boolean xpmExt) {
+            this.width = width;
+            this.height = height;
+            this.numColors = numColors;
+            this.numCharsPerPixel = numCharsPerPixel;
+            this.xHotSpot = xHotSpot;
+            this.yHotSpot = yHotSpot;
+            this.xpmExt = xpmExt;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("XpmHeader");
+            pw.println("Width: " + width);
+            pw.println("Height: " + height);
+            pw.println("NumColors: " + numColors);
+            pw.println("NumCharsPerPixel: " + numCharsPerPixel);
+            if (xHotSpot != -1 && yHotSpot != -1) {
+                pw.println("X hotspot: " + xHotSpot);
+                pw.println("Y hotspot: " + yHotSpot);
+            }
+            pw.println("XpmExt: " + xpmExt);
+        }
+    }
+
+    private static class PaletteEntry {
+        int index;
+        boolean haveColor = false;
+        int colorArgb;
+        boolean haveGray = false;
+        int grayArgb;
+        boolean haveGray4Level = false;
+        int gray4LevelArgb;
+        boolean haveMono = false;
+        int monoArgb;
+
+        int getBestARGB() {
+            if (haveColor) {
+                return colorArgb;
+            } else if (haveGray) {
+                return grayArgb;
+            } else if (haveGray4Level) {
+                return gray4LevelArgb;
+            } else if (haveMono) {
+                return monoArgb;
+            } else {
+                return 0x00000000;
+            }
+        }
+    }
+
+    private static class XpmParseResult {
+        XpmHeader xpmHeader;
+        BasicCParser cParser;
     }
 }

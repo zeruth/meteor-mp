@@ -22,20 +22,20 @@ import org.apache.harmony.x.imageio.internal.nls.Messages;
 
 public class JPEGHuffmanTable {
     public static final JPEGHuffmanTable StdDCLuminance = new JPEGHuffmanTable(
-            new short[] {0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
-            new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x0A, 0x0B},
+            new short[]{0, 1, 5, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0},
+            new short[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x0A, 0x0B},
             false
     );
 
     public static final JPEGHuffmanTable StdDCChrominance = new JPEGHuffmanTable(
-            new short[] {0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
-            new short[] {0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x0A, 0x0B},
+            new short[]{0, 3, 1, 1, 1, 1, 1, 1, 1, 1, 1, 0, 0, 0, 0, 0},
+            new short[]{0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 0x0A, 0x0B},
             false
     );
 
     public static final JPEGHuffmanTable StdACLuminance = new JPEGHuffmanTable(
-            new short[] {0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 0x7D},
-            new short[] {
+            new short[]{0, 2, 1, 3, 3, 2, 4, 3, 5, 5, 4, 4, 0, 0, 1, 0x7D},
+            new short[]{
                     0x01, 0x02, 0x03, 0x00, 0x04, 0x11, 0x05, 0x12, 0x21, 0x31, 0x41, 0x06,
                     0x13, 0x51, 0x61, 0x07, 0x22, 0x71, 0x14, 0x32, 0x81, 0x91, 0xA1, 0x08,
                     0x23, 0x42, 0xB1, 0xC1, 0x15, 0x52, 0xD1, 0xF0, 0x24, 0x33, 0x62, 0x72,
@@ -55,8 +55,8 @@ public class JPEGHuffmanTable {
     );
 
     public static final JPEGHuffmanTable StdACChrominance = new JPEGHuffmanTable(
-            new short[] {0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 0x77},
-            new short[] {
+            new short[]{0, 2, 1, 2, 4, 4, 3, 4, 7, 5, 4, 4, 0, 1, 2, 0x77},
+            new short[]{
                     0x00, 0x01, 0x02, 0x03, 0x11, 0x04, 0x05, 0x21, 0x31, 0x06, 0x12, 0x41,
                     0x51, 0x07, 0x61, 0x71, 0x13, 0x22, 0x32, 0x81, 0x08, 0x14, 0x42, 0x91,
                     0xA1, 0xB1, 0xC1, 0x09, 0x23, 0x33, 0x52, 0xF0, 0x15, 0x62, 0x72, 0xD1,
@@ -118,18 +118,6 @@ public class JPEGHuffmanTable {
         System.arraycopy(values, 0, this.values, 0, values.length);
     }
 
-    public short[] getLengths() {
-        short newLengths[] = new short[lengths.length];
-        System.arraycopy(lengths, 0, newLengths, 0, lengths.length);
-        return newLengths;
-    }
-
-    public short[] getValues() {
-        short newValues[] = new short[values.length];
-        System.arraycopy(values, 0, newValues, 0, values.length);
-        return newValues;
-    }
-
     private static void checkHuffmanTable(short[] lengths, short[] values) {
         int numLeaves = 0;
         int possibleLeaves = 2;
@@ -145,6 +133,18 @@ public class JPEGHuffmanTable {
         if (values.length != numLeaves) {
             throw new IllegalArgumentException(Messages.getString("imageio.4B"));
         }
+    }
+
+    public short[] getLengths() {
+        short newLengths[] = new short[lengths.length];
+        System.arraycopy(lengths, 0, newLengths, 0, lengths.length);
+        return newLengths;
+    }
+
+    public short[] getValues() {
+        short newValues[] = new short[values.length];
+        System.arraycopy(values, 0, newValues, 0, values.length);
+        return newValues;
     }
 
     @Override

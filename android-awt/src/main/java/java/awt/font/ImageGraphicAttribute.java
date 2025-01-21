@@ -20,11 +20,10 @@
 package java.awt.font;
 
 
-import java.awt.Graphics2D;
-import java.awt.Image;
-import java.awt.geom.Rectangle2D;
 import org.apache.harmony.misc.HashCode;
 
+import java.awt.*;
+import java.awt.geom.Rectangle2D;
 
 
 public final class ImageGraphicAttribute extends GraphicAttribute {
@@ -44,8 +43,8 @@ public final class ImageGraphicAttribute extends GraphicAttribute {
     // the height of the image object
     private float fImgHeight;
 
-    public ImageGraphicAttribute(Image image, int alignment, float originX, 
-            float originY) {
+    public ImageGraphicAttribute(Image image, int alignment, float originX,
+                                 float originY) {
         super(alignment);
 
         this.fImage = image;
@@ -89,8 +88,7 @@ public final class ImageGraphicAttribute extends GraphicAttribute {
     public boolean equals(Object obj) {
         try {
             return equals((ImageGraphicAttribute) obj);
-        }
-        catch(ClassCastException e) {
+        } catch (ClassCastException e) {
             return false;
         }
 
@@ -98,7 +96,7 @@ public final class ImageGraphicAttribute extends GraphicAttribute {
 
     @Override
     public void draw(Graphics2D g2, float x, float y) {
-        g2.drawImage(fImage, (int)(x - fOriginX), (int)(y - fOriginY), null);
+        g2.drawImage(fImage, (int) (x - fOriginX), (int) (y - fOriginY), null);
     }
 
     @Override

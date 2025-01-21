@@ -22,7 +22,6 @@ package java.awt.image;
 import java.util.Hashtable;
 
 
-
 public class FilteredImageSource implements ImageProducer {
 
     private final ImageProducer source;
@@ -36,7 +35,7 @@ public class FilteredImageSource implements ImageProducer {
     }
 
     public synchronized boolean isConsumer(ImageConsumer ic) {
-        if(ic != null) {
+        if (ic != null) {
             return consTable.containsKey(ic);
         }
         return false;
@@ -49,14 +48,14 @@ public class FilteredImageSource implements ImageProducer {
     }
 
     public void requestTopDownLeftRightResend(ImageConsumer ic) {
-        if(ic != null && isConsumer(ic)){
+        if (ic != null && isConsumer(ic)) {
             ImageFilter fic = (ImageFilter) consTable.get(ic);
             fic.resendTopDownLeftRight(source);
         }
     }
 
     public synchronized void removeConsumer(ImageConsumer ic) {
-        if(ic != null && isConsumer(ic)){
+        if (ic != null && isConsumer(ic)) {
             ImageConsumer fic = consTable.get(ic);
             source.removeConsumer(fic);
             consTable.remove(ic);
@@ -64,7 +63,7 @@ public class FilteredImageSource implements ImageProducer {
     }
 
     public synchronized void addConsumer(ImageConsumer ic) {
-        if(ic != null && !isConsumer(ic)){
+        if (ic != null && !isConsumer(ic)) {
             ImageConsumer fic = filter.getFilterInstance(ic);
             source.addConsumer(fic);
             consTable.put(ic, fic);

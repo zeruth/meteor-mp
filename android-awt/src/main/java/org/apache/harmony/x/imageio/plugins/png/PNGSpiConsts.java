@@ -18,21 +18,19 @@
 package org.apache.harmony.x.imageio.plugins.png;
 
 public class PNGSpiConsts {
+    static final String[] writerSpiNames = {PNGImageWriterSpi.class.getName()};
+    static final String[] readerSpiNames = {PNGImageReaderSpi.class.getName()};
+    // -- TODO fill this stuff with correct data
+    static final boolean supportsStandardStreamMetadataFormat = false;
+    static final String nativeStreamMetadataFormatName = null;
+    static final String nativeStreamMetadataFormatClassName = null;
+    static final String[] extraStreamMetadataFormatNames = null;
+    static final String[] extraStreamMetadataFormatClassNames = null;
+    static final boolean supportsStandardImageMetadataFormat = false;
+    static final String nativeImageMetadataFormatName = "javax_imageio_png_1.0";
+    static final String nativeImageMetadataFormatClassName = PNGMetadataFormat.class.getName();
+    static final String[] extraImageMetadataFormatNames = null;
+    static final String[] extraImageMetadataFormatClassNames = null;
     private PNGSpiConsts() {
     }
-    
-    static final String[] writerSpiNames                       = { PNGImageWriterSpi.class.getName() };
-    static final String[] readerSpiNames                       = { PNGImageReaderSpi.class.getName() };
-
-    // -- TODO fill this stuff with correct data
-    static final boolean  supportsStandardStreamMetadataFormat = false;
-    static final String   nativeStreamMetadataFormatName       = null;
-    static final String   nativeStreamMetadataFormatClassName  = null;
-    static final String[] extraStreamMetadataFormatNames       = null;
-    static final String[] extraStreamMetadataFormatClassNames  = null;
-    static final boolean  supportsStandardImageMetadataFormat  = false;
-    static final String   nativeImageMetadataFormatName        = "javax_imageio_png_1.0";
-    static final String   nativeImageMetadataFormatClassName   = PNGMetadataFormat.class.getName();
-    static final String[] extraImageMetadataFormatNames        = null;
-    static final String[] extraImageMetadataFormatClassNames   = null;
 }

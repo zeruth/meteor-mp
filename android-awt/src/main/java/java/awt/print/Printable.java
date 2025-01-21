@@ -19,7 +19,7 @@
  */
 package java.awt.print;
 
-import java.awt.Graphics;
+import java.awt.*;
 
 public interface Printable {
 

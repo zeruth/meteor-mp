@@ -16,34 +16,23 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  */
 
 package org.apache.harmony.awt.gl.font;
 
 
-import java.awt.Font;
-import java.awt.Graphics2D;
-import java.awt.Shape;
-import java.awt.font.FontRenderContext;
-import java.awt.font.GlyphJustificationInfo;
-import java.awt.font.GraphicAttribute;
-import java.awt.font.TextAttribute;
-import java.awt.font.TextHitInfo;
-import java.awt.geom.GeneralPath;
-import java.awt.geom.Rectangle2D;
 import org.apache.harmony.awt.gl.font.TextDecorator.Decoration;
 import org.apache.harmony.awt.internal.nls.Messages;
 import org.apache.harmony.misc.HashCode;
 
+import java.awt.*;
+import java.awt.font.*;
+import java.awt.geom.GeneralPath;
+import java.awt.geom.Rectangle2D;
 import java.text.Annotation;
 import java.text.AttributedCharacterIterator;
 import java.text.AttributedCharacterIterator.Attribute;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.Map;
+import java.util.*;
 
 
 /**
@@ -78,10 +67,9 @@ public class TextRunBreaker implements Cloneable {
     int visual2logical[];
 
     SegmentsInfo storedSegments;
-    private boolean haveAllSegments = false;
     int segmentsStart, segmentsEnd;
-
     float justification = 1.0f;
+    private boolean haveAllSegments = false;
 
     public TextRunBreaker(AttributedCharacterIterator aci, FontRenderContext frc) {
         this.aci = aci;
@@ -216,10 +204,10 @@ public class TextRunBreaker implements Cloneable {
         }
 
         for (
-            int index = segmentsStart, nextRunStart = segmentsStart;
-            index < segmentsEnd;
-            index = nextRunStart, aci.setIndex(index)
-           )  {
+                int index = segmentsStart, nextRunStart = segmentsStart;
+                index < segmentsEnd;
+                index = nextRunStart, aci.setIndex(index)
+        ) {
             nextRunStart = aci.getRunLimit();
             attributes = unpackAttributes(aci.getAttributes());
 
@@ -264,7 +252,7 @@ public class TextRunBreaker implements Cloneable {
         // We have added some default fonts, so we have some extra runs in text
         if (forcedFontRunStartsList != null) {
             forcedFontRunStarts = new int[forcedFontRunStartsList.size()];
-            for (int i=0; i<forcedFontRunStartsList.size(); i++) {
+            for (int i = 0; i < forcedFontRunStartsList.size(); i++) {
                 forcedFontRunStarts[i] =
                         forcedFontRunStartsList.get(i).intValue();
             }
@@ -281,7 +269,7 @@ public class TextRunBreaker implements Cloneable {
     int getStyleRunLimit(int runStart, int maxPos) {
         try {
             aci.setIndex(runStart);
-        } catch(IllegalArgumentException e) { // Index out of bounds
+        } catch (IllegalArgumentException e) { // Index out of bounds
             if (runStart < segmentsStart) {
                 aci.first();
             } else {
@@ -334,12 +322,12 @@ public class TextRunBreaker implements Cloneable {
 
                 if (fontOrGAttr instanceof GraphicAttribute) {
                     runSegments.add(
-                        new TextRunSegmentImpl.TextRunSegmentGraphic(
-                                (GraphicAttribute)fontOrGAttr,
-                                endLevelRun - levelPos,
-                                levelPos + runStart)
+                            new TextRunSegmentImpl.TextRunSegmentGraphic(
+                                    (GraphicAttribute) fontOrGAttr,
+                                    endLevelRun - levelPos,
+                                    levelPos + runStart)
                     );
-                    Arrays.fill(logical2segment, levelPos, endLevelRun, runSegments.size()-1);
+                    Arrays.fill(logical2segment, levelPos, endLevelRun, runSegments.size() - 1);
                 } else {
                     TextRunSegmentImpl.TextSegmentInfo i =
                             new TextRunSegmentImpl.TextSegmentInfo(
@@ -357,7 +345,7 @@ public class TextRunBreaker implements Cloneable {
                                     (Decoration) tdd
                             )
                     );
-                    Arrays.fill(logical2segment, levelPos, endLevelRun, runSegments.size()-1);
+                    Arrays.fill(logical2segment, levelPos, endLevelRun, runSegments.size() - 1);
                 }
 
                 levelPos = endLevelRun;
@@ -374,9 +362,9 @@ public class TextRunBreaker implements Cloneable {
      * Checks if text run segments are up to date and creates the new segments if not.
      */
     public void createAllSegments() {
-        if ( !haveAllSegments &&
-            (logical2segment == null ||
-             logical2segment.length != segmentsEnd - segmentsStart)
+        if (!haveAllSegments &&
+                (logical2segment == null ||
+                        logical2segment.length != segmentsEnd - segmentsStart)
         ) { // Check if we don't have all segments yet
             resetSegments();
             createSegments(segmentsStart, segmentsEnd);
@@ -400,7 +388,7 @@ public class TextRunBreaker implements Cloneable {
                 int segmentIndex = logical2segment[start];
                 segmentIndex < runSegments.size();
                 segmentIndex++
-           ) {
+        ) {
             s = runSegments.get(segmentIndex);
             breakIndex = s.getCharIndexFromAdvance(maxAdvance, start);
 
@@ -431,7 +419,7 @@ public class TextRunBreaker implements Cloneable {
         char newText[] = new char[text.length + 1];
         System.arraycopy(text, 0, newText, 0, insertPos);
         newText[insertPos] = insChar;
-        System.arraycopy(text, insertPos, newText, insertPos+1, text.length - insertPos);
+        System.arraycopy(text, insertPos, newText, insertPos + 1, text.length - insertPos);
         text = newText;
 
         if (aci.getRunStart() == key.intValue() && aci.getRunLimit() == key.intValue() + 1) {
@@ -459,7 +447,7 @@ public class TextRunBreaker implements Cloneable {
 
         char newText[] = new char[text.length - 1];
         System.arraycopy(text, 0, newText, 0, deletePos);
-        System.arraycopy(text, deletePos+1, newText, deletePos, newText.length - deletePos);
+        System.arraycopy(text, deletePos + 1, newText, deletePos, newText.length - deletePos);
         text = newText;
 
         if (fonts.get(key) != null) {
@@ -490,7 +478,7 @@ public class TextRunBreaker implements Cloneable {
             }
         }
 
-        for (int i=0; i<keys.size(); i++) {
+        for (int i = 0; i < keys.size(); i++) {
             oldkey = keys.get(i);
             key = new Integer(shift + oldkey.intValue());
             fonts.put(key, fonts.remove(oldkey));
@@ -508,16 +496,6 @@ public class TextRunBreaker implements Cloneable {
         visual2segment = null;
         levels = null;
         haveAllSegments = false;
-    }
-
-    private class SegmentsInfo {
-        ArrayList<TextRunSegment> runSegments;
-        int logical2segment[];
-        int segment2visual[];
-        int visual2segment[];
-        byte levels[];
-        int segmentsStart;
-        int segmentsEnd;
     }
 
     /**
@@ -572,8 +550,8 @@ public class TextRunBreaker implements Cloneable {
             res.storedSegments = null;
             ArrayList<TextRunSegment> newSegments = new ArrayList<TextRunSegment>(runSegments.size());
             for (int i = 0; i < runSegments.size(); i++) {
-                TextRunSegment seg =  runSegments.get(i);
-                newSegments.add((TextRunSegment)seg.clone());
+                TextRunSegment seg = runSegments.get(i);
+                newSegments.add((TextRunSegment) seg.clone());
             }
             res.runSegments = newSegments;
             return res;
@@ -612,7 +590,7 @@ public class TextRunBreaker implements Cloneable {
      * of the layout from the origin of the graphics
      */
     public void drawSegments(Graphics2D g2d, float xOffset, float yOffset) {
-        for (int i=0; i<runSegments.size(); i++) {
+        for (int i = 0; i < runSegments.size(); i++) {
             runSegments.get(i).draw(g2d, xOffset, yOffset);
         }
     }
@@ -628,7 +606,7 @@ public class TextRunBreaker implements Cloneable {
 
         TextRunSegment segment;
 
-        for (int idx = firstEndpoint; idx < secondEndpoint; idx=segment.getEnd()) {
+        for (int idx = firstEndpoint; idx < secondEndpoint; idx = segment.getEnd()) {
             segment = runSegments.get(logical2segment[idx]);
             bounds.append(segment.getCharsBlackBoxBounds(idx, secondEndpoint), false);
         }
@@ -643,7 +621,7 @@ public class TextRunBreaker implements Cloneable {
     public Rectangle2D getVisualBounds() {
         Rectangle2D bounds = null;
 
-        for (int i=0; i<runSegments.size(); i++) {
+        for (int i = 0; i < runSegments.size(); i++) {
             TextRunSegment s = runSegments.get(i);
             if (bounds != null) {
                 Rectangle2D.union(bounds, s.getVisualBounds(), bounds);
@@ -662,7 +640,7 @@ public class TextRunBreaker implements Cloneable {
     public Rectangle2D getLogicalBounds() {
         Rectangle2D bounds = null;
 
-        for (int i=0; i<runSegments.size(); i++) {
+        for (int i = 0; i < runSegments.size(); i++) {
             TextRunSegment s = runSegments.get(i);
             if (bounds != null) {
                 Rectangle2D.union(bounds, s.getLogicalBounds(), bounds);
@@ -735,8 +713,8 @@ public class TextRunBreaker implements Cloneable {
             segment = runSegments.get(i);
             Rectangle2D bounds = segment.getVisualBounds();
             if ((bounds.getMinX() <= x && bounds.getMaxX() >= x) || // We are in the segment
-               (endOfPrevSeg < x && bounds.getMinX() > x)) { // We are somewhere between the segments
-                return segment.hitTest(x,y);
+                    (endOfPrevSeg < x && bounds.getMinX() > x)) { // We are somewhere between the segments
+                return segment.hitTest(x, y);
             }
             endOfPrevSeg = bounds.getMaxX();
         }
@@ -819,7 +797,7 @@ public class TextRunBreaker implements Cloneable {
 
             if (((gapLeft > 0) ^ jInfo.grow) || gapLeft == 0) {
                 gapLeft = 0;
-                jInfo.gapPerUnit = jInfo.gapToFill/jInfo.weight;
+                jInfo.gapPerUnit = jInfo.gapToFill / jInfo.weight;
                 break;
             }
             jInfo.useLimits = true;
@@ -827,7 +805,7 @@ public class TextRunBreaker implements Cloneable {
             if (jInfo.absorbedWeight > 0) {
                 jInfo.absorb = true;
                 jInfo.absorbedGapPerUnit =
-                        (jInfo.gapToFill-jInfo.growLimit)/jInfo.absorbedWeight;
+                        (jInfo.gapToFill - jInfo.growLimit) / jInfo.absorbedWeight;
                 break;
             }
         }
@@ -841,6 +819,16 @@ public class TextRunBreaker implements Cloneable {
         }
 
         justification = -1; // Make further justification impossible
+    }
+
+    private class SegmentsInfo {
+        ArrayList<TextRunSegment> runSegments;
+        int logical2segment[];
+        int segment2visual[];
+        int visual2segment[];
+        byte levels[];
+        int segmentsStart;
+        int segmentsEnd;
     }
 
     /**

@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.formats.png.scanlinefilters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
+
+import java.io.IOException;
 
 public abstract class ScanlineFilter {
     public abstract void unfilter(byte[] src, byte[] dst, byte[] up)

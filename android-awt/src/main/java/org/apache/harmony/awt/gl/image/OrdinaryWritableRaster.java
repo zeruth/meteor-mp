@@ -23,8 +23,7 @@
  */
 package org.apache.harmony.awt.gl.image;
 
-import java.awt.Point;
-import java.awt.Rectangle;
+import java.awt.*;
 import java.awt.image.DataBuffer;
 import java.awt.image.Raster;
 import java.awt.image.SampleModel;
@@ -33,13 +32,13 @@ import java.awt.image.WritableRaster;
 public class OrdinaryWritableRaster extends WritableRaster {
 
     public OrdinaryWritableRaster(SampleModel sampleModel,
-            DataBuffer dataBuffer, Rectangle aRegion,
-            Point sampleModelTranslate, WritableRaster parent) {
+                                  DataBuffer dataBuffer, Rectangle aRegion,
+                                  Point sampleModelTranslate, WritableRaster parent) {
         super(sampleModel, dataBuffer, aRegion, sampleModelTranslate, parent);
     }
 
     public OrdinaryWritableRaster(SampleModel sampleModel,
-            DataBuffer dataBuffer, Point origin) {
+                                  DataBuffer dataBuffer, Point origin) {
         super(sampleModel, dataBuffer, origin);
     }
 
@@ -59,14 +58,14 @@ public class OrdinaryWritableRaster extends WritableRaster {
 
     @Override
     public WritableRaster createWritableChild(int parentX, int parentY, int w,
-            int h, int childMinX, int childMinY, int[] bandList) {
+                                              int h, int childMinX, int childMinY, int[] bandList) {
         return super.createWritableChild(parentX, parentY, w, h, childMinX,
                 childMinY, bandList);
     }
 
     @Override
     public WritableRaster createWritableTranslatedChild(int childMinX,
-            int childMinY) {
+                                                        int childMinY) {
         return super.createWritableTranslatedChild(childMinX, childMinY);
     }
 

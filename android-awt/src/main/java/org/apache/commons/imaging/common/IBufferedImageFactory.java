@@ -21,8 +21,8 @@ import java.awt.image.BufferedImage;
 
 public interface IBufferedImageFactory {
     BufferedImage getColorBufferedImage(int width, int height,
-            boolean hasAlpha);
+                                        boolean hasAlpha);
 
     BufferedImage getGrayscaleBufferedImage(int width, int height,
-            boolean hasAlpha);
+                                            boolean hasAlpha);
 }

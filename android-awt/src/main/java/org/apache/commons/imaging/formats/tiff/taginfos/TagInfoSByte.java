@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
+
+import java.nio.ByteOrder;
 
 public class TagInfoSByte extends TagInfo {
     public TagInfoSByte(final String name, final int tag, final int length, final TiffDirectoryType directoryType) {

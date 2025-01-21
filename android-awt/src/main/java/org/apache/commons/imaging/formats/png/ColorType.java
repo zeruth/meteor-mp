@@ -41,6 +41,30 @@ public enum ColorType {
         this.allowedBitDepths = allowedBitDepths;
     }
 
+    public static ColorType getColorType(int value) {
+        for (ColorType type : values()) {
+            if (type.value == value) {
+                return type;
+            }
+        }
+
+        return null;
+    }
+
+    static ColorType getColorType(boolean alpha, boolean grayscale) {
+        if (grayscale) {
+            if (alpha) {
+                return ColorType.GREYSCALE_WITH_ALPHA;
+            } else {
+                return ColorType.GREYSCALE;
+            }
+        } else if (alpha) {
+            return ColorType.TRUE_COLOR_WITH_ALPHA;
+        } else {
+            return ColorType.TRUE_COLOR;
+        }
+    }
+
     int getValue() {
         return value;
     }
@@ -59,29 +83,5 @@ public enum ColorType {
 
     boolean isBitDepthAllowed(int bitDepth) {
         return Arrays.binarySearch(allowedBitDepths, bitDepth) >= 0;
-    }
-
-    public static ColorType getColorType(int value) {
-        for (ColorType type : values()) {
-            if (type.value == value) {
-                return type;
-            }
-        }
-        
-        return null;
-    }
-
-    static ColorType getColorType(boolean alpha, boolean grayscale) {
-        if (grayscale) {
-            if (alpha) {
-                return ColorType.GREYSCALE_WITH_ALPHA;
-            } else {
-                return ColorType.GREYSCALE;
-            }
-        } else if (alpha) {
-            return ColorType.TRUE_COLOR_WITH_ALPHA;
-        } else {
-            return ColorType.TRUE_COLOR;
-        }
     }
 }

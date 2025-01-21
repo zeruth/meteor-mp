@@ -17,14 +17,15 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 13.03.2006
- *
  */
 package org.apache.harmony.awt.gl.image;
 
 public interface DataBufferListener {
-    
+
     void dataChanged();
+
     void dataTaken();
+
     void dataReleased();
 
 }

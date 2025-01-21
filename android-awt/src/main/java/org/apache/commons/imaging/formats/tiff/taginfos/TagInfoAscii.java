@@ -16,16 +16,16 @@
  */
 package org.apache.commons.imaging.formats.tiff.taginfos;
 
-import java.io.UnsupportedEncodingException;
-import java.nio.ByteOrder;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.formats.tiff.constants.TiffDirectoryType;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 
+import java.io.UnsupportedEncodingException;
+import java.nio.ByteOrder;
+
 public class TagInfoAscii extends TagInfo {
     public TagInfoAscii(final String name, final int tag, final int length,
-            final TiffDirectoryType directoryType) {
+                        final TiffDirectoryType directoryType) {
         super(name, tag, FieldType.ASCII, length, directoryType);
     }
 

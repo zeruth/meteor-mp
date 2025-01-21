@@ -17,10 +17,11 @@
 
 package org.apache.harmony.awt.gl.image;
 
+import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
+
 import java.awt.image.ColorModel;
 import java.awt.image.ImageConsumer;
 import java.awt.image.IndexColorModel;
-
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -28,48 +29,37 @@ import java.util.Arrays;
 import java.util.Hashtable;
 import java.util.List;
 
-import ro.andob.awtcompat.nativec.AwtCompatNativeComponents;
-
 public class GifDecoder extends ImageDecoder {
-
-    // ImageConsumer hints: common
-    private static final int baseHints =
-            ImageConsumer.SINGLEPASS | ImageConsumer.COMPLETESCANLINES |
-            ImageConsumer.SINGLEFRAME;
-    // ImageConsumer hints: interlaced
-    private static final int interlacedHints =
-            baseHints | ImageConsumer.RANDOMPIXELORDER;
 
     // Impossible color value - no translucent pixels allowed
     static final int IMPOSSIBLE_VALUE = 0x0FFFFFFF;
-
+    // ImageConsumer hints: common
+    private static final int baseHints =
+            ImageConsumer.SINGLEPASS | ImageConsumer.COMPLETESCANLINES |
+                    ImageConsumer.SINGLEFRAME;
+    // ImageConsumer hints: interlaced
+    private static final int interlacedHints =
+            baseHints | ImageConsumer.RANDOMPIXELORDER;
     // I/O buffer
     private static final int MIN_BUFFER_SIZE = 1024;
     private static final int MAX_BUFFER_SIZE = 2097152;
-    private int buffer_size;
-    private byte buffer[];
-
     GifDataStream gifDataStream = new GifDataStream();
     GifGraphicBlock currBlock;
-
+    ColorModel gcm;
+    private int buffer_size;
+    private byte buffer[];
     // Pointer to native structure which store decoding state
     // between subsequent decoding/IO-suspension cycles
     private long hNativeDecoder; // NULL initially
-
     // Number of bytes eaten by the native decoder
     private int bytesConsumed;
-
     private boolean consumersPrepared;
     private Hashtable<String, String> properties = new Hashtable<String, String>();
-
     // Could be set up by java code or native method when
     // transparent pixel index changes or local color table encountered
     private boolean forceRGB;
-
     private byte screenBuffer[];
     private int screenRGBBuffer[];
-
-    ColorModel gcm;
 
     public GifDecoder(DecodingImageSource src, InputStream is) {
         super(src, is);
@@ -156,7 +146,7 @@ public class GifDecoder extends ImageDecoder {
                 fillColor = gls.globalColorTable.cm.getTransparentPixel();
             }
 
-            screenBuffer = new byte[gls.logicalScreenHeight*gls.logicalScreenWidth];
+            screenBuffer = new byte[gls.logicalScreenHeight * gls.logicalScreenWidth];
             Arrays.fill(screenBuffer, (byte) fillColor);
         }
 
@@ -178,7 +168,7 @@ public class GifDecoder extends ImageDecoder {
             }
 
             // Read from the input stream
-            for (;;) {
+            for (; ; ) {
                 needBytes = buffer_size - bytesInBuffer;
                 offset = bytesInBuffer;
 
@@ -208,10 +198,10 @@ public class GifDecoder extends ImageDecoder {
 
                 if (
                         !consumersPrepared &&
-                        gifDataStream.logicalScreen.completed &&
-                        gifDataStream.logicalScreen.globalColorTable.completed &&
-                        (currBlock.imageData != null || // Have transparent pixel filled
-                        currBlock.rgbImageData != null)
+                                gifDataStream.logicalScreen.completed &&
+                                gifDataStream.logicalScreen.globalColorTable.completed &&
+                                (currBlock.imageData != null || // Have transparent pixel filled
+                                        currBlock.rgbImageData != null)
                 ) {
                     prepareConsumers();
                     consumersPrepared = true;
@@ -262,7 +252,7 @@ public class GifDecoder extends ImageDecoder {
             int numFrames = gifDataStream.graphicBlocks.size();
             // At first last block will be disposed
             GifGraphicBlock gb =
-                    gifDataStream.graphicBlocks.get(numFrames-1);
+                    gifDataStream.graphicBlocks.get(numFrames - 1);
 
             ImageLoader.beginAnimation();
 
@@ -272,7 +262,7 @@ public class GifDecoder extends ImageDecoder {
                 }
 
                 // Show all frames
-                for (int i=0; i<numFrames; i++) {
+                for (int i = 0; i < numFrames; i++) {
                     gb.dispose();
                     gb = gifDataStream.graphicBlocks.get(i);
 
@@ -294,7 +284,7 @@ public class GifDecoder extends ImageDecoder {
                                 gb.imageTop,
                                 gb.imageWidth,
                                 gb.imageHeight,
-                                gcm, 
+                                gcm,
                                 gb.imageData,
                                 0,
                                 gb.imageWidth
@@ -348,14 +338,12 @@ public class GifDecoder extends ImageDecoder {
     }
 
     public class GifGraphicBlock {
-        //  Indicates that reading of this block accomplished
-        boolean completed = false;
-
         final static int DISPOSAL_NONE = 0;
         final static int DISPOSAL_NODISPOSAL = 1;
         final static int DISPOSAL_BACKGROUND = 2;
         final static int DISPOSAL_RESTORE = 3;
-
+        //  Indicates that reading of this block accomplished
+        boolean completed = false;
         int disposalMethod;
         int delayTime; // Multiplied by 10 already
         int transparentColor = IMPOSSIBLE_VALUE;
@@ -420,10 +408,10 @@ public class GifDecoder extends ImageDecoder {
                                 imageData[offset] & 0xFF;
                         if (pixelValue == transparentColor) {
                             if (forceRGB) {
-                                pixelValue = getScreenRGBBuffer() [imageOffset];
+                                pixelValue = getScreenRGBBuffer()[imageOffset];
                                 rgbData[offset] = pixelValue;
                             } else {
-                                pixelValue = screenBuffer [imageOffset];
+                                pixelValue = screenBuffer[imageOffset];
                                 imageData[offset] = (byte) pixelValue;
                             }
                         }
@@ -450,7 +438,7 @@ public class GifDecoder extends ImageDecoder {
                         numLines,
                         ColorModel.getRGBdefault(),
                         getRgbImageData(),
-                        currY*imageWidth,
+                        currY * imageWidth,
                         imageWidth
                 );
             } else {
@@ -459,9 +447,9 @@ public class GifDecoder extends ImageDecoder {
                         imageTop + currY,
                         imageWidth,
                         numLines,
-                        gcm, 
+                        gcm,
                         imageData,
-                        currY*imageWidth,
+                        currY * imageWidth,
                         imageWidth
                 );
             }
@@ -489,12 +477,12 @@ public class GifDecoder extends ImageDecoder {
                 disposalMethod = DISPOSAL_NONE;
             }
 
-            switch(disposalMethod) {
+            switch (disposalMethod) {
                 case DISPOSAL_BACKGROUND: {
                     if (forceRGB) {
                         getRgbImageData(); // Ensure that transparentColor is RGB, not index
 
-                        int data[] = new int[imageWidth*imageHeight];
+                        int data[] = new int[imageWidth * imageHeight];
 
                         // Compatibility: Fill with transparent color if we have one
                         if (transparentColor != IMPOSSIBLE_VALUE) {
@@ -522,7 +510,7 @@ public class GifDecoder extends ImageDecoder {
 
                         sendToScreenBuffer(data);
                     } else {
-                        byte data[] = new byte[imageWidth*imageHeight];
+                        byte data[] = new byte[imageWidth * imageHeight];
 
                         // Compatibility: Fill with transparent color if we have one
                         if (transparentColor != IMPOSSIBLE_VALUE) {
@@ -542,7 +530,7 @@ public class GifDecoder extends ImageDecoder {
                                 imageTop,
                                 imageWidth,
                                 imageHeight,
-                                gcm, 
+                                gcm,
                                 data,
                                 0,
                                 imageWidth
@@ -581,7 +569,7 @@ public class GifDecoder extends ImageDecoder {
                     System.arraycopy(dataInt,
                             0,
                             getScreenRGBBuffer(),
-                            imageLeft + imageTop*width,
+                            imageLeft + imageTop * width,
                             dataInt.length
                     );
                 } else { // Each scanline
@@ -594,7 +582,7 @@ public class GifDecoder extends ImageDecoder {
                     System.arraycopy(dataByte,
                             0,
                             screenBuffer,
-                            imageLeft + imageTop*width,
+                            imageLeft + imageTop * width,
                             dataByte.length
                     );
                 } else { // Each scanline
@@ -604,11 +592,11 @@ public class GifDecoder extends ImageDecoder {
         } // sendToScreenBuffer
 
         private void copyScanlines(Object src, Object dst, int width) {
-            for (int i=0; i<imageHeight; i++) {
+            for (int i = 0; i < imageHeight; i++) {
                 System.arraycopy(src,
-                        i*imageWidth,
+                        i * imageWidth,
                         dst,
-                        imageLeft + i*width + imageTop*width,
+                        imageLeft + i * width + imageTop * width,
                         imageWidth
                 );
             } // for
@@ -618,8 +606,8 @@ public class GifDecoder extends ImageDecoder {
             int width = gifDataStream.logicalScreen.logicalScreenWidth;
 
             Object dst = forceRGB ?
-                    (Object) new int[imageWidth*imageHeight] :
-                    new byte[imageWidth*imageHeight];
+                    (Object) new int[imageWidth * imageHeight] :
+                    new byte[imageWidth * imageHeight];
 
             Object src = forceRGB ?
                     getScreenRGBBuffer() :
@@ -632,11 +620,11 @@ public class GifDecoder extends ImageDecoder {
                 offset = imageWidth * imageTop;
                 toSend = src;
             } else {
-                for (int i=0; i<imageHeight; i++) {
+                for (int i = 0; i < imageHeight; i++) {
                     System.arraycopy(src,
-                            imageLeft + i*width + imageTop*width,
+                            imageLeft + i * width + imageTop * width,
                             dst,
-                            i*imageWidth,
+                            i * imageWidth,
                             imageWidth
                     );
                 } // for
@@ -650,7 +638,7 @@ public class GifDecoder extends ImageDecoder {
                         imageWidth,
                         imageHeight,
                         ColorModel.getRGBdefault(),
-                        (int [])toSend,
+                        (int[]) toSend,
                         offset,
                         imageWidth
                 );
@@ -660,8 +648,8 @@ public class GifDecoder extends ImageDecoder {
                         imageTop,
                         imageWidth,
                         imageHeight,
-                        gcm, 
-                        (byte [])toSend,
+                        gcm,
+                        (byte[]) toSend,
                         offset,
                         imageWidth
                 );
@@ -675,7 +663,7 @@ public class GifDecoder extends ImageDecoder {
 
         IndexColorModel cm = null;
         int size = 0; // Actual number of colors in the color table
-        byte colors[] = new byte[256*3];
+        byte colors[] = new byte[256 * 3];
 
         IndexColorModel getColorModel(int transparentColor) {
             if (cm != null) {
@@ -683,19 +671,18 @@ public class GifDecoder extends ImageDecoder {
                     return cm = null; // Force default ARGB color model
                 }
                 return cm;
-            } else
-                if (completed && size > 0) {
-                    if (transparentColor == IMPOSSIBLE_VALUE) {
-                        return cm =
-                                new IndexColorModel(8, size, colors, 0, false);
-                    }
-
-                    if (transparentColor > size) {
-                        size = transparentColor + 1;
-                    }
+            } else if (completed && size > 0) {
+                if (transparentColor == IMPOSSIBLE_VALUE) {
                     return cm =
-                            new IndexColorModel(8, size, colors, 0, false, transparentColor);
+                            new IndexColorModel(8, size, colors, 0, false);
                 }
+
+                if (transparentColor > size) {
+                    size = transparentColor + 1;
+                }
+                return cm =
+                        new IndexColorModel(8, size, colors, 0, false, transparentColor);
+            }
 
             return cm = null; // Force default ARGB color model
         }

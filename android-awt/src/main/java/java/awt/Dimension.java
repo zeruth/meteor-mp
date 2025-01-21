@@ -19,11 +19,10 @@
  */
 package java.awt;
 
-import java.awt.geom.Dimension2D;
 import org.apache.harmony.misc.HashCode;
 
+import java.awt.geom.Dimension2D;
 import java.io.Serializable;
-
 
 
 public class Dimension extends Dimension2D implements Serializable {
@@ -59,7 +58,7 @@ public class Dimension extends Dimension2D implements Serializable {
             return true;
         }
         if (obj instanceof Dimension) {
-            Dimension d = (Dimension)obj;
+            Dimension d = (Dimension) obj;
             return (d.width == width && d.height == height);
         }
         return false;
@@ -77,17 +76,17 @@ public class Dimension extends Dimension2D implements Serializable {
         this.height = height;
     }
 
-    public void setSize(Dimension d) {
-        setSize(d.width, d.height);
-    }
-
     @Override
     public void setSize(double width, double height) {
-        setSize((int)Math.ceil(width), (int)Math.ceil(height));
+        setSize((int) Math.ceil(width), (int) Math.ceil(height));
     }
 
     public Dimension getSize() {
         return new Dimension(width, height);
+    }
+
+    public void setSize(Dimension d) {
+        setSize(d.width, d.height);
     }
 
     @Override

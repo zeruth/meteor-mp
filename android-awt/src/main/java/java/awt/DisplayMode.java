@@ -20,29 +20,24 @@
 package java.awt;
 
 public final class DisplayMode {
-    private final int width;
-
-    private final int height;
-
-    private final int bitDepth;
-
-    private final int refreshRate;
-
-   /***************************************************************************
-    *
-    *  Constants
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Constants
+     *
+     ***************************************************************************/
 
     public static final int BIT_DEPTH_MULTI = -1;
-
     public static final int REFRESH_RATE_UNKNOWN = 0;
+    private final int width;
+    private final int height;
+    private final int bitDepth;
+    private final int refreshRate;
 
-   /***************************************************************************
-    *
-    *  Constructors
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Constructors
+     *
+     ***************************************************************************/
 
     public DisplayMode(int width, int height, int bitDepth, int refreshRate) {
         this.width = width;
@@ -52,16 +47,16 @@ public final class DisplayMode {
     }
 
 
-   /***************************************************************************
-    *
-    *  Public methods
-    *
-    ***************************************************************************/
+    /***************************************************************************
+     *
+     *  Public methods
+     *
+     ***************************************************************************/
 
     @Override
     public boolean equals(Object dm) {
         if (dm instanceof DisplayMode) {
-            return equals((DisplayMode)dm);
+            return equals((DisplayMode) dm);
         }
         return false;
     }

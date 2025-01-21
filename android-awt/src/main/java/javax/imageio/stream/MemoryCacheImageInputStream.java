@@ -24,7 +24,7 @@ import org.apache.harmony.x.imageio.stream.RandomAccessMemoryCache;
 import java.io.IOException;
 import java.io.InputStream;
 
-public class MemoryCacheImageInputStream  extends ImageInputStreamImpl {
+public class MemoryCacheImageInputStream extends ImageInputStreamImpl {
     private InputStream is;
     private RandomAccessMemoryCache ramc = new RandomAccessMemoryCache();
 
@@ -40,7 +40,7 @@ public class MemoryCacheImageInputStream  extends ImageInputStreamImpl {
         bitOffset = 0;
 
         if (streamPos >= ramc.length()) {
-            int count = (int)(streamPos - ramc.length() + 1);
+            int count = (int) (streamPos - ramc.length() + 1);
             int bytesAppended = ramc.appendData(is, count);
 
             if (bytesAppended < count) {
@@ -60,7 +60,7 @@ public class MemoryCacheImageInputStream  extends ImageInputStreamImpl {
         bitOffset = 0;
 
         if (streamPos >= ramc.length()) {
-            int count = (int)(streamPos - ramc.length() + len);
+            int count = (int) (streamPos - ramc.length() + len);
             ramc.appendData(is, count);
         }
 

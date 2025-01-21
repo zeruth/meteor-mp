@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
+
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 
 public interface AllTagConstants extends
         AdobePhotoshopTagConstants,
@@ -41,7 +41,7 @@ public interface AllTagConstants extends
         TiffEpTagConstants,
         TiffTagConstants,
         WangTagConstants {
-    
+
     List<TagInfo> ALL_TAGS = Collections.unmodifiableList(TagConstantsUtils.mergeTagLists(
             AdobePageMaker6TagConstants.ALL_ADOBE_PAGEMAKER_6_TAGS,
             AdobePhotoshopTagConstants.ALL_ADOBE_PHOTOSHOP_TAGS,

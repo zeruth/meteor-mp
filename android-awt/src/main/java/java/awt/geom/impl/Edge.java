@@ -34,6 +34,9 @@ final class Edge {
     int etag;
     double activey;
     int equivalence;
+    private Edge lastEdge;
+    private int lastResult;
+    private double lastLimit;
 
     public Edge(Curve c, int ctag) {
         this(c, ctag, AreaOp.ETAG_IGNORE);
@@ -69,10 +72,6 @@ final class Edge {
         equivalence = eq;
     }
 
-    private Edge lastEdge;
-    private int lastResult;
-    private double lastLimit;
-
     public int compareTo(Edge other, double yrange[]) {
         if (other == lastEdge && yrange[0] < lastLimit) {
             if (yrange[1] > lastLimit) {
@@ -84,7 +83,7 @@ final class Edge {
             if (yrange[1] > other.lastLimit) {
                 yrange[1] = other.lastLimit;
             }
-            return 0-other.lastResult;
+            return 0 - other.lastResult;
         }
         //long start = System.currentTimeMillis();
         int ret = curve.compareTo(other.curve, yrange);
@@ -114,12 +113,12 @@ final class Edge {
     }
 
     public String toString() {
-        return ("Edge["+curve+
-                ", "+
-                (ctag == AreaOp.CTAG_LEFT ? "L" : "R")+
-                ", "+
+        return ("Edge[" + curve +
+                ", " +
+                (ctag == AreaOp.CTAG_LEFT ? "L" : "R") +
+                ", " +
                 (etag == AreaOp.ETAG_ENTER ? "I" :
-                 (etag == AreaOp.ETAG_EXIT ? "O" : "N"))+
+                        (etag == AreaOp.ETAG_EXIT ? "O" : "N")) +
                 "]");
     }
 }

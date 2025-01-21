@@ -17,18 +17,18 @@
 /**
  * @author Igor V. Stolyarov
  * Created on 23.11.2005
- *
  */
 
 
 package org.apache.harmony.awt.gl;
 
 
-import java.awt.Image;
+import org.apache.harmony.awt.gl.image.DataBufferListener;
+
+import java.awt.*;
 import java.awt.image.DataBuffer;
 import java.awt.image.DataBufferInt;
 import java.awt.image.IndexColorModel;
-import org.apache.harmony.awt.gl.image.DataBufferListener;
 
 
 /**
@@ -41,25 +41,35 @@ public abstract class AwtImageBackdoorAccessor {
 
     static protected AwtImageBackdoorAccessor inst;
 
-    public static AwtImageBackdoorAccessor getInstance(){
+    public static AwtImageBackdoorAccessor getInstance() {
         // First we need to run the static initializer in the DataBuffer class to resolve inst.
         new DataBufferInt(0);
         return inst;
     }
 
     public abstract Surface getImageSurface(Image image);
+
     public abstract boolean isGrayPallete(IndexColorModel icm);
 
     public abstract Object getData(DataBuffer db);
+
     public abstract int[] getDataInt(DataBuffer db);
+
     public abstract byte[] getDataByte(DataBuffer db);
+
     public abstract short[] getDataShort(DataBuffer db);
+
     public abstract short[] getDataUShort(DataBuffer db);
+
     public abstract double[] getDataDouble(DataBuffer db);
+
     public abstract float[] getDataFloat(DataBuffer db);
+
     public abstract void releaseData(DataBuffer db);
-    
+
     public abstract void addDataBufferListener(DataBuffer db, DataBufferListener listener);
+
     public abstract void removeDataBufferListener(DataBuffer db);
+
     public abstract void validate(DataBuffer db);
 }

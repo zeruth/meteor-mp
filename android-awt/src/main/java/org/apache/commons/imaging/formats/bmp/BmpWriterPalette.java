@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.bmp;
 
-import java.awt.image.BufferedImage;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.palette.SimplePalette;
 
+import java.awt.image.BufferedImage;
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
 

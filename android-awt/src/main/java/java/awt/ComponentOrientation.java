@@ -20,33 +20,29 @@
 package java.awt;
 
 import java.io.Serializable;
-import java.util.HashSet;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
-import java.util.Set;
+import java.util.*;
 
 
 public final class ComponentOrientation implements Serializable {
-    private static final long serialVersionUID = -4113291392143563828L;
-
     public static final ComponentOrientation LEFT_TO_RIGHT = new ComponentOrientation(true, true);
-
     public static final ComponentOrientation RIGHT_TO_LEFT = new ComponentOrientation(true, false);
-
     public static final ComponentOrientation UNKNOWN = new ComponentOrientation(true, true);
-
+    private static final long serialVersionUID = -4113291392143563828L;
     private static final Set<String> rlLangs = new HashSet<String>(); //RIGHT_TO_LEFT languages
-
-    private final boolean horizontal;
-
-    private final boolean left2right;
 
     static {
         rlLangs.add("ar"); //$NON-NLS-1$
         rlLangs.add("fa"); //$NON-NLS-1$
         rlLangs.add("iw"); //$NON-NLS-1$
         rlLangs.add("ur"); //$NON-NLS-1$
+    }
+
+    private final boolean horizontal;
+    private final boolean left2right;
+
+    private ComponentOrientation(boolean hor, boolean l2r) {
+        horizontal = hor;
+        left2right = l2r;
     }
 
     /**
@@ -57,8 +53,7 @@ public final class ComponentOrientation implements Serializable {
         Object obj = null;
         try {
             obj = bdl.getObject("Orientation"); //$NON-NLS-1$
-        }
-        catch (MissingResourceException mre) {
+        } catch (MissingResourceException mre) {
             obj = null;
         }
         if (obj instanceof ComponentOrientation) {
@@ -74,11 +69,6 @@ public final class ComponentOrientation implements Serializable {
     public static ComponentOrientation getOrientation(Locale locale) {
         String lang = locale.getLanguage();
         return rlLangs.contains(lang) ? RIGHT_TO_LEFT : LEFT_TO_RIGHT;
-    }
-
-    private ComponentOrientation(boolean hor, boolean l2r) {
-        horizontal = hor;
-        left2right = l2r;
     }
 
     public boolean isHorizontal() {

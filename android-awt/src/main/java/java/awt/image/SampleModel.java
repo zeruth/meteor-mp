@@ -47,7 +47,7 @@ public abstract class SampleModel {
 
         if (dataType < DataBuffer.TYPE_BYTE ||
                 dataType > DataBuffer.TYPE_DOUBLE &&
-                dataType != DataBuffer.TYPE_UNDEFINED) {
+                        dataType != DataBuffer.TYPE_UNDEFINED) {
             // awt.230=dataType is not one of the supported data types
             throw new IllegalArgumentException(Messages.getString("awt.230")); //$NON-NLS-1$
         }
@@ -65,119 +65,119 @@ public abstract class SampleModel {
     }
 
     public abstract Object getDataElements(int x, int y, Object obj,
-            DataBuffer data);
+                                           DataBuffer data);
 
     public Object getDataElements(int x, int y, int w, int h, Object obj,
-            DataBuffer data) {
+                                  DataBuffer data) {
         int numDataElements = getNumDataElements();
         int idx = 0;
 
         switch (getTransferType()) {
-        case DataBuffer.TYPE_BYTE:
-            byte bdata[];
-            byte bbuf[] = null;
+            case DataBuffer.TYPE_BYTE:
+                byte bdata[];
+                byte bbuf[] = null;
 
-            if (obj == null) {
-                bdata = new byte[numDataElements * w * h];
-            } else {
-                bdata = (byte[]) obj;
-            }
+                if (obj == null) {
+                    bdata = new byte[numDataElements * w * h];
+                } else {
+                    bdata = (byte[]) obj;
+                }
 
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    bbuf = (byte[]) getDataElements(j, i, bbuf, data);
-                    for (int n = 0; n < numDataElements; n++) {
-                        bdata[idx++] = bbuf[n];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        bbuf = (byte[]) getDataElements(j, i, bbuf, data);
+                        for (int n = 0; n < numDataElements; n++) {
+                            bdata[idx++] = bbuf[n];
+                        }
                     }
                 }
-            }
-            obj = bdata;
-            break;
+                obj = bdata;
+                break;
 
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            short sdata[];
-            short sbuf[] = null;
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                short sdata[];
+                short sbuf[] = null;
 
-            if (obj == null) {
-                sdata = new short[numDataElements * w * h];
-            } else {
-                sdata = (short[]) obj;
-            }
+                if (obj == null) {
+                    sdata = new short[numDataElements * w * h];
+                } else {
+                    sdata = (short[]) obj;
+                }
 
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    sbuf = (short[]) getDataElements(j, i, sbuf, data);
-                    for (int n = 0; n < numDataElements; n++) {
-                        sdata[idx++] = sbuf[n];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        sbuf = (short[]) getDataElements(j, i, sbuf, data);
+                        for (int n = 0; n < numDataElements; n++) {
+                            sdata[idx++] = sbuf[n];
+                        }
                     }
                 }
-            }
-            obj = sdata;
-            break;
+                obj = sdata;
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int idata[];
-            int ibuf[] = null;
+            case DataBuffer.TYPE_INT:
+                int idata[];
+                int ibuf[] = null;
 
-            if (obj == null) {
-                idata = new int[numDataElements * w * h];
-            } else {
-                idata = (int[]) obj;
-            }
+                if (obj == null) {
+                    idata = new int[numDataElements * w * h];
+                } else {
+                    idata = (int[]) obj;
+                }
 
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    ibuf = (int[]) getDataElements(j, i, ibuf, data);
-                    for (int n = 0; n < numDataElements; n++) {
-                        idata[idx++] = ibuf[n];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        ibuf = (int[]) getDataElements(j, i, ibuf, data);
+                        for (int n = 0; n < numDataElements; n++) {
+                            idata[idx++] = ibuf[n];
+                        }
                     }
                 }
-            }
-            obj = idata;
-            break;
+                obj = idata;
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float fdata[];
-            float fbuf[] = null;
+            case DataBuffer.TYPE_FLOAT:
+                float fdata[];
+                float fbuf[] = null;
 
-            if (obj == null) {
-                fdata = new float[numDataElements * w * h];
-            } else {
-                fdata = (float[]) obj;
-            }
+                if (obj == null) {
+                    fdata = new float[numDataElements * w * h];
+                } else {
+                    fdata = (float[]) obj;
+                }
 
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    fbuf = (float[]) getDataElements(j, i, fbuf, data);
-                    for (int n = 0; n < numDataElements; n++) {
-                        fdata[idx++] = fbuf[n];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        fbuf = (float[]) getDataElements(j, i, fbuf, data);
+                        for (int n = 0; n < numDataElements; n++) {
+                            fdata[idx++] = fbuf[n];
+                        }
                     }
                 }
-            }
-            obj = fdata;
-            break;
+                obj = fdata;
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double ddata[];
-            double dbuf[] = null;
+            case DataBuffer.TYPE_DOUBLE:
+                double ddata[];
+                double dbuf[] = null;
 
-            if (obj == null) {
-                ddata = new double[numDataElements * w * h];
-            } else {
-                ddata = (double[]) obj;
-            }
+                if (obj == null) {
+                    ddata = new double[numDataElements * w * h];
+                } else {
+                    ddata = (double[]) obj;
+                }
 
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    dbuf = (double[]) getDataElements(j, i, dbuf, data);
-                    for (int n = 0; n < numDataElements; n++) {
-                        ddata[idx++] = dbuf[n];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        dbuf = (double[]) getDataElements(j, i, dbuf, data);
+                        for (int n = 0; n < numDataElements; n++) {
+                            ddata[idx++] = dbuf[n];
+                        }
                     }
                 }
-            }
-            obj = ddata;
-            break;
+                obj = ddata;
+                break;
 
         }
 
@@ -185,75 +185,75 @@ public abstract class SampleModel {
     }
 
     public abstract void setDataElements(int x, int y, Object obj,
-            DataBuffer data);
+                                         DataBuffer data);
 
     public void setDataElements(int x, int y, int w, int h, Object obj,
-            DataBuffer data) {
+                                DataBuffer data) {
         int numDataElements = getNumDataElements();
         int idx = 0;
 
         switch (getTransferType()) {
-        case DataBuffer.TYPE_BYTE:
-            byte bbuf[] = new byte[numDataElements];
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    for (int n = 0; n < numDataElements; n++) {
-                        bbuf[n] = ((byte[]) obj)[idx++];
+            case DataBuffer.TYPE_BYTE:
+                byte bbuf[] = new byte[numDataElements];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        for (int n = 0; n < numDataElements; n++) {
+                            bbuf[n] = ((byte[]) obj)[idx++];
+                        }
+                        setDataElements(j, i, bbuf, data);
                     }
-                    setDataElements(j, i, bbuf, data);
                 }
-            }
 
-            break;
+                break;
 
-        case DataBuffer.TYPE_SHORT:
-        case DataBuffer.TYPE_USHORT:
-            short sbuf[] = new short[numDataElements];
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    for (int n = 0; n < numDataElements; n++) {
-                        sbuf[n] = ((short[]) obj)[idx++];
+            case DataBuffer.TYPE_SHORT:
+            case DataBuffer.TYPE_USHORT:
+                short sbuf[] = new short[numDataElements];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        for (int n = 0; n < numDataElements; n++) {
+                            sbuf[n] = ((short[]) obj)[idx++];
+                        }
+                        setDataElements(j, i, sbuf, data);
                     }
-                    setDataElements(j, i, sbuf, data);
                 }
-            }
-            break;
+                break;
 
-        case DataBuffer.TYPE_INT:
-            int ibuf[] = new int[numDataElements];
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    for (int n = 0; n < numDataElements; n++) {
-                        ibuf[n] = ((int[]) obj)[idx++];
+            case DataBuffer.TYPE_INT:
+                int ibuf[] = new int[numDataElements];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        for (int n = 0; n < numDataElements; n++) {
+                            ibuf[n] = ((int[]) obj)[idx++];
+                        }
+                        setDataElements(j, i, ibuf, data);
                     }
-                    setDataElements(j, i, ibuf, data);
                 }
-            }
-            break;
+                break;
 
-        case DataBuffer.TYPE_FLOAT:
-            float fbuf[] = new float[numDataElements];
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    for (int n = 0; n < numDataElements; n++) {
-                        fbuf[n] = ((float[]) obj)[idx++];
+            case DataBuffer.TYPE_FLOAT:
+                float fbuf[] = new float[numDataElements];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        for (int n = 0; n < numDataElements; n++) {
+                            fbuf[n] = ((float[]) obj)[idx++];
+                        }
+                        setDataElements(j, i, fbuf, data);
                     }
-                    setDataElements(j, i, fbuf, data);
                 }
-            }
-            break;
+                break;
 
-        case DataBuffer.TYPE_DOUBLE:
-            double dbuf[] = new double[numDataElements];
-            for (int i = y; i < y + h; i++) {
-                for (int j = x; j < x + w; j++) {
-                    for (int n = 0; n < numDataElements; n++) {
-                        dbuf[n] = ((double[]) obj)[idx++];
+            case DataBuffer.TYPE_DOUBLE:
+                double dbuf[] = new double[numDataElements];
+                for (int i = y; i < y + h; i++) {
+                    for (int j = x; j < x + w; j++) {
+                        for (int n = 0; n < numDataElements; n++) {
+                            dbuf[n] = ((double[]) obj)[idx++];
+                        }
+                        setDataElements(j, i, dbuf, data);
                     }
-                    setDataElements(j, i, dbuf, data);
                 }
-            }
-            break;
+                break;
 
         }
     }
@@ -363,7 +363,7 @@ public abstract class SampleModel {
     }
 
     public int[] getPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -388,7 +388,7 @@ public abstract class SampleModel {
     }
 
     public void setPixels(int x, int y, int w, int h, int iArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -404,7 +404,7 @@ public abstract class SampleModel {
     }
 
     public float[] getPixels(int x, int y, int w, int h, float fArray[],
-            DataBuffer data) {
+                             DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -429,7 +429,7 @@ public abstract class SampleModel {
     }
 
     public void setPixels(int x, int y, int w, int h, float fArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -445,7 +445,7 @@ public abstract class SampleModel {
     }
 
     public double[] getPixels(int x, int y, int w, int h, double dArray[],
-            DataBuffer data) {
+                              DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -470,7 +470,7 @@ public abstract class SampleModel {
     }
 
     public void setPixels(int x, int y, int w, int h, double dArray[],
-            DataBuffer data) {
+                          DataBuffer data) {
         if (x < 0 || y < 0 || x + w > this.width || y + h > this.height) {
             // awt.63=Coordinates are not in bounds
             throw new ArrayIndexOutOfBoundsException(Messages.getString("awt.63")); //$NON-NLS-1$
@@ -488,7 +488,7 @@ public abstract class SampleModel {
     public abstract void setSample(int x, int y, int b, int s, DataBuffer data);
 
     public int[] getSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                            DataBuffer data) {
         int samples[];
         int idx = 0;
 
@@ -508,7 +508,7 @@ public abstract class SampleModel {
     }
 
     public void setSamples(int x, int y, int w, int h, int b, int iArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         int idx = 0;
         for (int i = y; i < y + h; i++) {
             for (int j = x; j < x + w; j++) {
@@ -518,7 +518,7 @@ public abstract class SampleModel {
     }
 
     public float[] getSamples(int x, int y, int w, int h, int b,
-            float fArray[], DataBuffer data) {
+                              float fArray[], DataBuffer data) {
         float samples[];
         int idx = 0;
 
@@ -538,7 +538,7 @@ public abstract class SampleModel {
     }
 
     public void setSamples(int x, int y, int w, int h, int b, float fArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         int idx = 0;
         for (int i = y; i < y + h; i++) {
             for (int j = x; j < x + w; j++) {
@@ -548,7 +548,7 @@ public abstract class SampleModel {
     }
 
     public double[] getSamples(int x, int y, int w, int h, int b,
-            double dArray[], DataBuffer data) {
+                               double dArray[], DataBuffer data) {
         double samples[];
         int idx = 0;
 
@@ -568,7 +568,7 @@ public abstract class SampleModel {
     }
 
     public void setSamples(int x, int y, int w, int h, int b, double dArray[],
-            DataBuffer data) {
+                           DataBuffer data) {
         int idx = 0;
         for (int i = y; i < y + h; i++) {
             for (int j = x; j < x + w; j++) {

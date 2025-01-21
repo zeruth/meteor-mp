@@ -21,15 +21,14 @@ package java.awt;
 
 /**
  * BufferCapabilities
- *
  */
 public class BufferCapabilities implements Cloneable {
     private final ImageCapabilities frontBufferCapabilities;
     private final ImageCapabilities backBufferCapabilities;
     private final FlipContents flipContents;
 
-    public BufferCapabilities(ImageCapabilities frontBufferCapabilities, 
-            ImageCapabilities backBufferCapabilities, FlipContents flipContents) {
+    public BufferCapabilities(ImageCapabilities frontBufferCapabilities,
+                              ImageCapabilities backBufferCapabilities, FlipContents flipContents) {
         if (frontBufferCapabilities == null || backBufferCapabilities == null) {
             throw new IllegalArgumentException();
         }

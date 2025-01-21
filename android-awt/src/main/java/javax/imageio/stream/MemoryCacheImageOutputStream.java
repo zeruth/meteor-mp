@@ -106,11 +106,11 @@ public class MemoryCacheImageOutputStream extends ImageOutputStreamImpl {
         super.flushBefore(pos);
 
         long newFlushedPosition = getFlushedPosition();
-        int nBytes = (int)(newFlushedPosition - flushedPosition);
+        int nBytes = (int) (newFlushedPosition - flushedPosition);
 
         ramc.getData(os, nBytes, flushedPosition);
         ramc.freeBefore(newFlushedPosition);
 
-        os.flush();        
+        os.flush();
     }
 }

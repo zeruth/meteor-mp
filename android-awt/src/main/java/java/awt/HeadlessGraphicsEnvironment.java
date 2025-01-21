@@ -21,12 +21,12 @@ import org.apache.harmony.awt.gl.CommonGraphicsEnvironment;
 
 
 class HeadlessGraphicsEnvironment extends CommonGraphicsEnvironment {
-    
+
     @Override
     public boolean isHeadlessInstance() {
         return true;
     }
-    
+
     @Override
     public GraphicsDevice getDefaultScreenDevice() throws HeadlessException {
         throw new HeadlessException();

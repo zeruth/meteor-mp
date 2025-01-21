@@ -33,29 +33,6 @@ import java.util.List;
  * several images and running animation.
  */
 public class ImageLoader extends Thread {
-    // Contains ImageLoader objects
-    // and queue of image sources waiting to be loaded
-    static class ImageLoadersStorage {
-        private static final int MAX_THREADS = 5;
-        private static final int TIMEOUT = 4000;
-        static ImageLoadersStorage instance;
-
-        List<DecodingImageSource> queue = new LinkedList<DecodingImageSource>();
-        List<Thread> loaders = new ArrayList<Thread>(MAX_THREADS);
-
-        private int freeLoaders;
-
-        private ImageLoadersStorage() {}
-
-        static ImageLoadersStorage getStorage() {
-            if (instance == null) {
-                instance = new ImageLoadersStorage();
-            }
-
-            return instance;
-        }
-    }
-
     ImageLoader() {
         super();
         setDaemon(true);
@@ -69,7 +46,7 @@ public class ImageLoader extends Thread {
     private static void createLoader() {
         final ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
 
-        synchronized(storage.loaders) {
+        synchronized (storage.loaders) {
             if (storage.loaders.size() < ImageLoadersStorage.MAX_THREADS) {
                 AccessController.doPrivileged(
                         new PrivilegedAction<Void>() {
@@ -87,11 +64,12 @@ public class ImageLoader extends Thread {
     /**
      * Adds a new image source to the queue and starts a new loader
      * thread if required
+     *
      * @param imgSrc - image source
      */
     public static void addImageSource(DecodingImageSource imgSrc) {
         ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
-        synchronized(storage.queue) {
+        synchronized (storage.queue) {
             if (!storage.queue.contains(imgSrc)) {
                 storage.queue.add(imgSrc);
             }
@@ -107,12 +85,13 @@ public class ImageLoader extends Thread {
      * Waits for a new ImageSource until timout expires.
      * Loader thread will terminate after returning from this method
      * if timeout expired and image source was not picked up from the queue.
+     *
      * @return image source picked up from the queue or null if timeout expired
      */
     private static DecodingImageSource getWaitingImageSource() {
         ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
 
-        synchronized(storage.queue) {
+        synchronized (storage.queue) {
             DecodingImageSource isrc = null;
 
             if (storage.queue.size() == 0) {
@@ -133,6 +112,44 @@ public class ImageLoader extends Thread {
 
             return isrc;
         }
+    }
+
+    /**
+     * Removes current thread from loaders (so we are able
+     * to create more loaders) and decreases its priority.
+     */
+    static void beginAnimation() {
+        ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
+        Thread currThread = Thread.currentThread();
+
+        synchronized (storage) {
+            storage.loaders.remove(currThread);
+
+            if (storage.freeLoaders < storage.queue.size()) {
+                createLoader();
+            }
+        }
+
+        currThread.setPriority(Thread.MIN_PRIORITY);
+    }
+
+    /**
+     * Sends the current thread to wait for the new images to load
+     * if there are free placeholders for loaders
+     */
+    static void endAnimation() {
+        ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
+        Thread currThread = Thread.currentThread();
+
+        synchronized (storage) {
+            if (storage.loaders.size() < ImageLoadersStorage.MAX_THREADS &&
+                    !storage.loaders.contains(currThread)
+            ) {
+                storage.loaders.add(currThread);
+            }
+        }
+
+        currThread.setPriority(Thread.NORM_PRIORITY);
     }
 
     /**
@@ -160,47 +177,33 @@ public class ImageLoader extends Thread {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            synchronized(storage.loaders) {
+            synchronized (storage.loaders) {
                 storage.loaders.remove(Thread.currentThread());
             }
         }
     }
 
-    /**
-     * Removes current thread from loaders (so we are able
-     * to create more loaders) and decreases its priority.
-     */
-    static void beginAnimation() {
-        ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
-        Thread currThread = Thread.currentThread();
+    // Contains ImageLoader objects
+    // and queue of image sources waiting to be loaded
+    static class ImageLoadersStorage {
+        private static final int MAX_THREADS = 5;
+        private static final int TIMEOUT = 4000;
+        static ImageLoadersStorage instance;
 
-        synchronized(storage) {
-            storage.loaders.remove(currThread);
+        List<DecodingImageSource> queue = new LinkedList<DecodingImageSource>();
+        List<Thread> loaders = new ArrayList<Thread>(MAX_THREADS);
 
-            if (storage.freeLoaders < storage.queue.size()) {
-                createLoader();
-            }
+        private int freeLoaders;
+
+        private ImageLoadersStorage() {
         }
 
-        currThread.setPriority(Thread.MIN_PRIORITY);
-    }
-
-    /**
-     * Sends the current thread to wait for the new images to load
-     * if there are free placeholders for loaders
-     */
-    static void endAnimation() {
-        ImageLoadersStorage storage = ImageLoadersStorage.getStorage();
-        Thread currThread = Thread.currentThread();
-
-        synchronized(storage) {
-            if (storage.loaders.size() < ImageLoadersStorage.MAX_THREADS &&
-                    !storage.loaders.contains(currThread)
-            ) {
-                storage.loaders.add(currThread);
+        static ImageLoadersStorage getStorage() {
+            if (instance == null) {
+                instance = new ImageLoadersStorage();
             }
-        }
 
-        currThread.setPriority(Thread.NORM_PRIORITY);
+            return instance;
+        }
     }
 }

@@ -19,11 +19,11 @@
  */
 package java.awt;
 
+import org.apache.harmony.awt.internal.nls.Messages;
+
 import java.awt.font.FontRenderContext;
 import java.awt.font.LineMetrics;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
-
 import java.io.Serializable;
 import java.text.CharacterIterator;
 
@@ -67,8 +67,8 @@ public abstract class FontMetrics implements Serializable {
     }
 
     public LineMetrics getLineMetrics(CharacterIterator ci, int beginIndex,
-                                        int limit, Graphics context) {
-        return font.getLineMetrics(ci, beginIndex, limit, 
+                                      int limit, Graphics context) {
+        return font.getLineMetrics(ci, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
@@ -77,14 +77,14 @@ public abstract class FontMetrics implements Serializable {
     }
 
     public LineMetrics getLineMetrics(char[] chars, int beginIndex, int limit,
-                                        Graphics context) {
-        return font.getLineMetrics(chars, beginIndex, limit, 
+                                      Graphics context) {
+        return font.getLineMetrics(chars, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
     public LineMetrics getLineMetrics(String str, int beginIndex, int limit,
-                                        Graphics context) {
-        return font.getLineMetrics(str, beginIndex, limit, 
+                                      Graphics context) {
+        return font.getLineMetrics(str, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
@@ -93,21 +93,21 @@ public abstract class FontMetrics implements Serializable {
     }
 
     public Rectangle2D getStringBounds(CharacterIterator ci, int beginIndex,
-            int limit, Graphics context) {
-        return font.getStringBounds(ci, beginIndex, limit, 
+                                       int limit, Graphics context) {
+        return font.getStringBounds(ci, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
     public Rectangle2D getStringBounds(String str, int beginIndex, int limit,
-            Graphics context) {
-        return font.getStringBounds(str, beginIndex, limit, 
+                                       Graphics context) {
+        return font.getStringBounds(str, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
 
     public Rectangle2D getStringBounds(char[] chars, int beginIndex, int limit,
-            Graphics context) {
-        return font.getStringBounds(chars, beginIndex, limit, 
+                                       Graphics context) {
+        return font.getStringBounds(chars, beginIndex, limit,
                 this.getFRCFromGraphics(context));
     }
 
@@ -121,36 +121,36 @@ public abstract class FontMetrics implements Serializable {
 
     public int bytesWidth(byte[] data, int off, int len) {
         int width = 0;
-        if ((off >= data.length) || (off < 0)){
+        if ((off >= data.length) || (off < 0)) {
             // awt.13B=offset off is out of range
             throw new IllegalArgumentException(Messages.getString("awt.13B")); //$NON-NLS-1$
         }
 
-        if ((off+len > data.length)){
+        if ((off + len > data.length)) {
             // awt.13C=number of elements len is out of range
             throw new IllegalArgumentException(Messages.getString("awt.13C")); //$NON-NLS-1$
         }
 
-        for (int i = off; i < off+len; i++){
+        for (int i = off; i < off + len; i++) {
             width += charWidth(data[i]);
         }
 
         return width;
     }
 
-    public int charsWidth(char[] data, int off , int len){
+    public int charsWidth(char[] data, int off, int len) {
         int width = 0;
-        if ((off >= data.length) || (off < 0)){
+        if ((off >= data.length) || (off < 0)) {
             // awt.13B=offset off is out of range
             throw new IllegalArgumentException(Messages.getString("awt.13B")); //$NON-NLS-1$
         }
 
-        if ((off+len > data.length)){
+        if ((off + len > data.length)) {
             // awt.13C=number of elements len is out of range
             throw new IllegalArgumentException(Messages.getString("awt.13C")); //$NON-NLS-1$
         }
 
-        for (int i = off; i < off+len; i++){
+        for (int i = off; i < off + len; i++) {
             width += charWidth(data[i]);
         }
 
@@ -206,17 +206,17 @@ public abstract class FontMetrics implements Serializable {
     public int stringWidth(String str) {
         return 0;
     }
-    
+
     /**
      * Returns FontRenderContext instance of the Graphics context specified.
+     *
      * @param context the specified Graphics context
-     * 
      * @return a FontRenderContext of the specified Graphics context.
      */
-    private FontRenderContext getFRCFromGraphics(Graphics context){
+    private FontRenderContext getFRCFromGraphics(Graphics context) {
         FontRenderContext frc;
         if (context instanceof Graphics2D) {
-            frc = ((Graphics2D)context).getFontRenderContext();
+            frc = ((Graphics2D) context).getFontRenderContext();
         } else {
             frc = new FontRenderContext(null, false, false);
         }

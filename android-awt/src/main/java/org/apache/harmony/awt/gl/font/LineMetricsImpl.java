@@ -20,16 +20,16 @@
 package org.apache.harmony.awt.gl.font;
 
 
-import java.awt.font.LineMetrics;
 import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.font.LineMetrics;
 
 
 /**
- *
  * LineMetrics implementation class.
  */
 
-public class LineMetricsImpl extends LineMetrics implements Cloneable{
+public class LineMetricsImpl extends LineMetrics implements Cloneable {
 
     // array of baseline offsets
     float[] baselineOffsets;
@@ -87,7 +87,7 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
 
     // Ascent of the font (in pixels)
     int lAscent;
-    
+
     // Descent of the font (in pixels)
     int lDescent;
 
@@ -100,34 +100,33 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
     /**
      * Creates LineMetricsImpl object from specified parameters. If baseline data parameter
      * is null than {0, (-ascent+descent)/2, -ascent} values are used for baseline offsets.
-     *  
-     * @param len a number of characters 
-     * @param metrics an array of 16 elements with metrics values that can be 
-     * initialized in native code.<p>
-     * metrics[0] - ascent<p>
-     * metrics[1] - descent<p>
-     * metrics[2] - external leading<p>
-     * metrics[3] - underline thickness<p>
-     * -metrics[4] - underline offset<p>
-     * metrics[5] - strikethrough thickness<p>
-     * -metrics[6] - strikethrough offset<p>
-     * metrics[7] - maximum char width<p>
-     * metrics[8] - ascent in pixels<p>
-     * metrics[9] - descent in pixles<p>
-     * metrics[10] - external leading in pixels<p>
-     * metrics[11] - underline thickness in pixels<p>
-     * -metrics[12] - underline offset in pixels<p>
-     * metrics[13] - strikethrough thickness in pixels<p>
-     * -metrics[14] - strikethrough offset in pixels<p>
-     * metrics[15] - maximum char width in pixels<p>
-
+     *
+     * @param len           a number of characters
+     * @param metrics       an array of 16 elements with metrics values that can be
+     *                      initialized in native code.<p>
+     *                      metrics[0] - ascent<p>
+     *                      metrics[1] - descent<p>
+     *                      metrics[2] - external leading<p>
+     *                      metrics[3] - underline thickness<p>
+     *                      -metrics[4] - underline offset<p>
+     *                      metrics[5] - strikethrough thickness<p>
+     *                      -metrics[6] - strikethrough offset<p>
+     *                      metrics[7] - maximum char width<p>
+     *                      metrics[8] - ascent in pixels<p>
+     *                      metrics[9] - descent in pixles<p>
+     *                      metrics[10] - external leading in pixels<p>
+     *                      metrics[11] - underline thickness in pixels<p>
+     *                      -metrics[12] - underline offset in pixels<p>
+     *                      metrics[13] - strikethrough thickness in pixels<p>
+     *                      -metrics[14] - strikethrough offset in pixels<p>
+     *                      metrics[15] - maximum char width in pixels<p>
      * @param _baselineData an array of 3 elements with baseline offsets metrics<p>
-     * _baselineData[0] - roman baseline offset<p> 
-     * _baselineData[1] - center baseline offset<p>
-     * _baselineData[2] - hanging baseline offset<p>
+     *                      _baselineData[0] - roman baseline offset<p>
+     *                      _baselineData[1] - center baseline offset<p>
+     *                      _baselineData[2] - hanging baseline offset<p>
      */
-    public LineMetricsImpl(int len, float[] metrics, float[] _baselineData){
-        if (metrics.length < 16){
+    public LineMetricsImpl(int len, float[] metrics, float[] _baselineData) {
+        if (metrics.length < 16) {
             // awt.40=Wrong number of metrics\!
             throw new IllegalArgumentException(Messages.getString("awt.40")); //$NON-NLS-1$
         }
@@ -137,11 +136,11 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         descent = metrics[1];   // Descent of the font
         leading = metrics[2];  // External leading
 
-        if (_baselineData == null){
+        if (_baselineData == null) {
             baseLineIndex = 0;
-            baselineOffsets = new float[]{0, (-ascent+descent)/2, -ascent};
+            baselineOffsets = new float[]{0, (-ascent + descent) / 2, -ascent};
         } else {
-            baseLineIndex = (int)_baselineData[3];
+            baseLineIndex = (int) _baselineData[3];
             baselineOffsets = new float[3];
             System.arraycopy(_baselineData, 0, baselineOffsets, 0, 3);
         }
@@ -153,40 +152,40 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         strikethroughOffset = -metrics[6];
         maxCharWidth = metrics[7];
 
-        lAscent = (int)metrics[8];  // Ascent of the font
-        lDescent = (int)metrics[9]; // Descent of the font
-        lLeading = (int)metrics[10];  // External leading
+        lAscent = (int) metrics[8];  // Ascent of the font
+        lDescent = (int) metrics[9]; // Descent of the font
+        lLeading = (int) metrics[10];  // External leading
         lHeight = lAscent + lDescent + lLeading;    // Height of the font ( == (ascent + descent + leading))
-        lUnderlineThickness = (int)metrics[11];
-        lUnderlineOffset = - (int)metrics[12];
-        lStrikethroughThickness = (int)metrics[13];
-        lStrikethroughOffset = -(int)metrics[14];
-        lMaxCharWidth = (int)metrics[15];
+        lUnderlineThickness = (int) metrics[11];
+        lUnderlineOffset = -(int) metrics[12];
+        lStrikethroughThickness = (int) metrics[13];
+        lStrikethroughOffset = -(int) metrics[14];
+        lMaxCharWidth = (int) metrics[15];
 
     }
 
     /**
      * Creates LineMetricsImpl object from specified parameters. If baseline data parameter
      * is null than {0, (-ascent+descent)/2, -ascent} values are used for baseline offsets.
-     *  
-     * @param _numChars number of chars 
-     * @param _baseLineIndex index of the baseline offset
-     * @param _baselineOffsets an array of baseline offsets
-     * @param _underlineThickness underline thickness
-     * @param _underlineOffset underline offset
+     *
+     * @param _numChars               number of chars
+     * @param _baseLineIndex          index of the baseline offset
+     * @param _baselineOffsets        an array of baseline offsets
+     * @param _underlineThickness     underline thickness
+     * @param _underlineOffset        underline offset
      * @param _strikethroughThickness strikethrough thickness
-     * @param _strikethroughOffset strinkethrough offset
-     * @param _leading leading of the font
-     * @param _height font height
-     * @param _ascent ascent of the font
-     * @param _descent descent of the font
-     * @param _maxCharWidth max char width
+     * @param _strikethroughOffset    strinkethrough offset
+     * @param _leading                leading of the font
+     * @param _height                 font height
+     * @param _ascent                 ascent of the font
+     * @param _descent                descent of the font
+     * @param _maxCharWidth           max char width
      */
     public LineMetricsImpl(int _numChars, int _baseLineIndex,
-            float[] _baselineOffsets, float _underlineThickness,
-            float _underlineOffset, float _strikethroughThickness,
-            float _strikethroughOffset, float _leading, float _height,
-            float _ascent, float _descent, float _maxCharWidth) {
+                           float[] _baselineOffsets, float _underlineThickness,
+                           float _underlineOffset, float _strikethroughThickness,
+                           float _strikethroughOffset, float _leading, float _height,
+                           float _ascent, float _descent, float _maxCharWidth) {
 
         numChars = _numChars;
         baseLineIndex = _baseLineIndex;
@@ -210,19 +209,19 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         maxCharWidth = _maxCharWidth;
     }
 
-    public LineMetricsImpl(){
+    public LineMetricsImpl() {
 
     }
 
     /**
-     * All metrics are scaled according to scaleX and scaleY values. 
+     * All metrics are scaled according to scaleX and scaleY values.
      * This function helps to recompute metrics according to the scale factors
      * of desired AffineTransform.
-     * 
+     *
      * @param scaleX scale X factor
      * @param scaleY scale Y factor
      */
-    public void scale(float scaleX, float scaleY){
+    public void scale(float scaleX, float scaleY) {
         float absScaleX = Math.abs(scaleX);
         float absScaleY = Math.abs(scaleY);
 
@@ -235,11 +234,11 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         ascent *= absScaleY;
         descent *= absScaleY;
 
-        if(baselineOffsets == null) {
+        if (baselineOffsets == null) {
             getBaselineOffsets();
         }
 
-        for (int i=0; i< baselineOffsets.length; i++){
+        for (int i = 0; i < baselineOffsets.length; i++) {
             baselineOffsets[i] *= scaleY;
         }
 
@@ -247,7 +246,7 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         lUnderlineOffset *= scaleY;
         lStrikethroughThickness *= absScaleY;
         lStrikethroughOffset *= scaleY;
-        lLeading  *= absScaleY;
+        lLeading *= absScaleY;
         lHeight *= absScaleY;
         lAscent *= absScaleY;
         lDescent *= absScaleY;
@@ -274,6 +273,15 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
     @Override
     public int getNumChars() {
         return numChars;
+    }
+
+    /**
+     * Set num chars to the desired value.
+     *
+     * @param num specified number of chars
+     */
+    public void setNumChars(int num) {
+        numChars = num;
     }
 
     /**
@@ -420,20 +428,11 @@ public class LineMetricsImpl extends LineMetrics implements Cloneable{
         return maxCharWidth;
     }
 
-    /**
-     * Set num chars to the desired value.
-     * 
-     * @param num specified number of chars
-     */
-    public void setNumChars(int num){
-        numChars = num;
-    }
-
     @Override
-    public Object clone(){
-        try{
+    public Object clone() {
+        try {
             return super.clone();
-        }catch (CloneNotSupportedException e){
+        } catch (CloneNotSupportedException e) {
             return null;
         }
     }

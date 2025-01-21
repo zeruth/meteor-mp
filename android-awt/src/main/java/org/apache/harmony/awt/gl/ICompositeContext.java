@@ -20,14 +20,13 @@
 package org.apache.harmony.awt.gl;
 
 
-import java.awt.Composite;
-import java.awt.CompositeContext;
-import java.awt.image.ColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
 import org.apache.harmony.awt.gl.render.JavaBlitter;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.image.ColorModel;
+import java.awt.image.Raster;
+import java.awt.image.WritableRaster;
 
 
 /**
@@ -38,7 +37,7 @@ public class ICompositeContext implements CompositeContext {
     ColorModel srcCM, dstCM;
     ImageSurface srcSurf, dstSurf;
 
-    public ICompositeContext(Composite comp, ColorModel src, ColorModel dst){
+    public ICompositeContext(Composite comp, ColorModel src, ColorModel dst) {
         composite = comp;
         srcCM = src;
         dstCM = dst;
@@ -51,27 +50,27 @@ public class ICompositeContext implements CompositeContext {
 
     public void compose(Raster srcIn, Raster dstIn, WritableRaster dstOut) {
 
-        if(!srcCM.isCompatibleRaster(srcIn)) {
+        if (!srcCM.isCompatibleRaster(srcIn)) {
             // awt.48=The srcIn raster is incompatible with src ColorModel
             throw new IllegalArgumentException(Messages.getString("awt.48")); //$NON-NLS-1$
         }
 
-        if(!dstCM.isCompatibleRaster(dstIn)) {
+        if (!dstCM.isCompatibleRaster(dstIn)) {
             // awt.49=The dstIn raster is incompatible with dst ColorModel
             throw new IllegalArgumentException(Messages.getString("awt.49")); //$NON-NLS-1$
         }
 
-        if(dstIn != dstOut){
-            if(!dstCM.isCompatibleRaster(dstOut)) {
+        if (dstIn != dstOut) {
+            if (!dstCM.isCompatibleRaster(dstOut)) {
                 // awt.4A=The dstOut raster is incompatible with dst ColorModel
                 throw new IllegalArgumentException(Messages.getString("awt.4A")); //$NON-NLS-1$
             }
             dstOut.setDataElements(0, 0, dstIn);
         }
         WritableRaster src;
-        if(srcIn instanceof WritableRaster){
+        if (srcIn instanceof WritableRaster) {
             src = (WritableRaster) srcIn;
-        }else{
+        } else {
             src = srcIn.createCompatibleWritableRaster();
             src.setDataElements(0, 0, srcIn);
         }

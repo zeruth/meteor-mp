@@ -16,10 +16,10 @@
  */
 package org.apache.commons.imaging.formats.tiff.photometricinterpreters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
 
 public class PhotometricInterpreterPalette extends PhotometricInterpreter {
 
@@ -30,8 +30,8 @@ public class PhotometricInterpreterPalette extends PhotometricInterpreter {
     private final int[] indexColorMap;
 
     public PhotometricInterpreterPalette(final int samplesPerPixel,
-            final int[] bitsPerSample, final int predictor, final int width, final int height,
-            final int[] colorMap) {
+                                         final int[] bitsPerSample, final int predictor, final int width, final int height,
+                                         final int[] colorMap) {
         super(samplesPerPixel, bitsPerSample, predictor, width, height);
 
         final int bitsPerPixel = this.bitsPerSample[0];
@@ -49,7 +49,7 @@ public class PhotometricInterpreterPalette extends PhotometricInterpreter {
 
     @Override
     public void interpretPixel(final ImageBuilder imageBuilder, final int[] samples, final int x,
-            final int y) throws ImageReadException, IOException {
+                               final int y) throws ImageReadException, IOException {
         imageBuilder.setRGB(x, y, indexColorMap[samples[0]]);
     }
 }

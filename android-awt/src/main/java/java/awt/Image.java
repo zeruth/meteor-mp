@@ -20,14 +20,10 @@
 package java.awt;
 
 
-import java.awt.image.AreaAveragingScaleFilter;
-import java.awt.image.FilteredImageSource;
-import java.awt.image.ImageFilter;
-import java.awt.image.ImageObserver;
-import java.awt.image.ImageProducer;
-import java.awt.image.ReplicateScaleFilter;
 import org.apache.harmony.awt.gl.image.OffscreenImage;
 import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.image.*;
 
 
 public abstract class Image {
@@ -43,10 +39,12 @@ public abstract class Image {
     public static final int SCALE_REPLICATE = 8;
 
     public static final int SCALE_AREA_AVERAGING = 16;
-
+    private static final ImageCapabilities capabilities = new ImageCapabilities(false);
     protected float accelerationPriority = 0.5f;
 
-    private static final ImageCapabilities capabilities = new ImageCapabilities(false);
+    public static Image createImage(ImageProducer producer) {
+        return new OffscreenImage(producer);
+    }
 
     public abstract Object getProperty(String name, ImageObserver observer);
 
@@ -64,15 +62,10 @@ public abstract class Image {
             filter = new ReplicateScaleFilter(width, height);
         }
         ImageProducer producer = new FilteredImageSource(getSource(), filter);
-        
+
         return new OffscreenImage(producer);
 //        return Toolkit.getDefaultToolkit().createImage(producer);
         //throw new UnsupportedOperationException();
-    }
-    
-    public static Image createImage(ImageProducer producer)
-    {
-    	return new OffscreenImage(producer);
     }
 
     public abstract Graphics getGraphics();

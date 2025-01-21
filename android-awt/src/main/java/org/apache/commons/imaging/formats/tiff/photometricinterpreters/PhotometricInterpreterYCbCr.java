@@ -16,16 +16,16 @@
  */
 package org.apache.commons.imaging.formats.tiff.photometricinterpreters;
 
-import java.io.IOException;
-
 import org.apache.commons.imaging.ImageReadException;
 import org.apache.commons.imaging.common.ImageBuilder;
+
+import java.io.IOException;
 
 public class PhotometricInterpreterYCbCr extends PhotometricInterpreter {
 
     public PhotometricInterpreterYCbCr(final int samplesPerPixel,
-            final int[] bitsPerSample, final int predictor,
-            final int width, final int height) {
+                                       final int[] bitsPerSample, final int predictor,
+                                       final int width, final int height) {
         super(samplesPerPixel, bitsPerSample, predictor, width, height);
     }
 
@@ -41,13 +41,10 @@ public class PhotometricInterpreterYCbCr extends PhotometricInterpreter {
      * imageWidth and imageHeight. These variables are either set manually in
      * the case of a null constructor, or they are automatically calculated from
      * the image parameter constructor.
-     * 
-     * @param Y
-     *            The Y component set.
-     * @param Cb
-     *            The Cb component set.
-     * @param Cr
-     *            The Cr component set.
+     *
+     * @param Y  The Y component set.
+     * @param Cb The Cb component set.
+     * @param Cr The Cr component set.
      * @return R The R component.
      */
     public static int convertYCbCrtoRGB(final int Y, final int Cb, final int Cr) {
@@ -66,7 +63,7 @@ public class PhotometricInterpreterYCbCr extends PhotometricInterpreter {
 
     @Override
     public void interpretPixel(final ImageBuilder imageBuilder, final int[] samples, final int x,
-            final int y) throws ImageReadException, IOException {
+                               final int y) throws ImageReadException, IOException {
         final int Y = samples[0];
         final int Cb = samples[1];
         final int Cr = samples[2];

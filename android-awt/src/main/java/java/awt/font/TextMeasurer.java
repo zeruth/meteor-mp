@@ -44,7 +44,7 @@ public final class TextMeasurer implements Cloneable {
         AttributedCharacterIterator oldAci = aci;
         aci = newParagraph;
         if ((oldAci.getEndIndex() - oldAci.getBeginIndex()) -
-           (aci.getEndIndex() - aci.getBeginIndex()) != -1) {
+                (aci.getEndIndex() - aci.getBeginIndex()) != -1) {
             breaker = new TextRunBreaker(aci, this.frc);
             tmc = new TextMetricsCalculator(breaker);
         } else {
@@ -56,7 +56,7 @@ public final class TextMeasurer implements Cloneable {
         AttributedCharacterIterator oldAci = aci;
         aci = newParagraph;
         if ((oldAci.getEndIndex() - oldAci.getBeginIndex()) -
-           (aci.getEndIndex() - aci.getBeginIndex()) != 1) {
+                (aci.getEndIndex() - aci.getBeginIndex()) != 1) {
             breaker = new TextRunBreaker(aci, this.frc);
             tmc = new TextMetricsCalculator(breaker);
         } else {

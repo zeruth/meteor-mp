@@ -933,6 +933,7 @@ class KeyEvent(val AWTKeyId: Int) {
          */
         val KEY_LOCATION_NUMPAD = 4
     }
+
     var isConsumed = false
 
     fun consume() {

@@ -19,8 +19,7 @@
  */
 package java.awt.geom;
 
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 
 public abstract class RectangularShape implements Shape, Cloneable {
 
@@ -67,12 +66,12 @@ public abstract class RectangularShape implements Shape, Cloneable {
         return new Rectangle2D.Double(getX(), getY(), getWidth(), getHeight());
     }
 
-    public void setFrame(Point2D loc, Dimension2D size) {
-        setFrame(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
-    }
-
     public void setFrame(Rectangle2D r) {
         setFrame(r.getX(), r.getY(), r.getWidth(), r.getHeight());
+    }
+
+    public void setFrame(Point2D loc, Dimension2D size) {
+        setFrame(loc.getX(), loc.getY(), size.getWidth(), size.getHeight());
     }
 
     public void setFrameFromDiagonal(double x1, double y1, double x2, double y2) {
@@ -121,10 +120,10 @@ public abstract class RectangularShape implements Shape, Cloneable {
     }
 
     public Rectangle getBounds() {
-        int x1 = (int)Math.floor(getMinX());
-        int y1 = (int)Math.floor(getMinY());
-        int x2 = (int)Math.ceil(getMaxX());
-        int y2 = (int)Math.ceil(getMaxY());
+        int x1 = (int) Math.floor(getMinX());
+        int y1 = (int) Math.floor(getMinY());
+        int x2 = (int) Math.ceil(getMaxX());
+        int y2 = (int) Math.ceil(getMaxY());
         return new Rectangle(x1, y1, x2 - x1, y2 - y1);
     }
 

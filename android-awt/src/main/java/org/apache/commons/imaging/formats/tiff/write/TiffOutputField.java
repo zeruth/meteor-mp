@@ -16,34 +16,34 @@
  */
 package org.apache.commons.imaging.formats.tiff.write;
 
-import java.io.IOException;
-import java.nio.ByteOrder;
-import java.util.Arrays;
-
 import org.apache.commons.imaging.ImageWriteException;
 import org.apache.commons.imaging.common.BinaryOutputStream;
 import org.apache.commons.imaging.formats.tiff.fieldtypes.FieldType;
 import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
 
-import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.*;
+import java.io.IOException;
+import java.nio.ByteOrder;
+import java.util.Arrays;
+
+import static org.apache.commons.imaging.formats.tiff.constants.TiffConstants.TIFF_ENTRY_MAX_VALUE_LENGTH;
 
 public class TiffOutputField {
+    private static final String NEWLINE = System.getProperty("line.separator");
     public final int tag;
     public final TagInfo tagInfo;
     public final FieldType fieldType;
     public final int count;
-    private byte[] bytes;
     private final TiffOutputItem.Value separateValueItem;
+    private byte[] bytes;
     private int sortHint = -1;
-    private static final String NEWLINE = System.getProperty("line.separator");
 
     public TiffOutputField(final TagInfo tagInfo, final FieldType tagtype, final int count,
-            final byte[] bytes) {
+                           final byte[] bytes) {
         this(tagInfo.tag, tagInfo, tagtype, count, bytes);
     }
 
     public TiffOutputField(final int tag, final TagInfo tagInfo, final FieldType fieldType,
-            final int count, final byte[] bytes) {
+                           final int count, final byte[] bytes) {
         this.tag = tag;
         this.tagInfo = tagInfo;
         this.fieldType = fieldType;
@@ -60,7 +60,7 @@ public class TiffOutputField {
     }
 
     protected static TiffOutputField createOffsetField(final TagInfo tagInfo,
-            final ByteOrder byteOrder) throws ImageWriteException {
+                                                       final ByteOrder byteOrder) throws ImageWriteException {
         return new TiffOutputField(tagInfo, FieldType.LONG, 1,
                 FieldType.LONG.writeData(0, byteOrder));
     }
@@ -101,7 +101,7 @@ public class TiffOutputField {
     protected final boolean isLocalValue() {
         return bytes.length <= TIFF_ENTRY_MAX_VALUE_LENGTH;
     }
-    
+
     public boolean bytesEqual(final byte[] data) {
         return Arrays.equals(bytes, data);
     }

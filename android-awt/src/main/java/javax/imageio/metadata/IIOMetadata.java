@@ -32,7 +32,8 @@ public abstract class IIOMetadata {
     protected IIOMetadataController defaultController;
     protected IIOMetadataController controller;
 
-    protected IIOMetadata() {}
+    protected IIOMetadata() {
+    }
 
     protected IIOMetadata(boolean standardMetadataFormatSupported,
                           String nativeMetadataFormatName,
@@ -68,12 +69,19 @@ public abstract class IIOMetadata {
     }
 
     public abstract Node getAsTree(String formatName);
+
     public abstract boolean isReadOnly();
+
     public abstract void mergeTree(String formatName, Node root) throws IIOInvalidTreeException;
+
     public abstract void reset();
 
     public IIOMetadataController getController() {
         return controller;
+    }
+
+    public void setController(IIOMetadataController controller) {
+        this.controller = controller;
     }
 
     public boolean hasController() {
@@ -195,12 +203,8 @@ public abstract class IIOMetadata {
         if ((node = getStandardTransparencyNode()) != null) {
             root.appendChild(node);
         }
-        
-        return root;
-    }
 
-    public void setController(IIOMetadataController controller) {
-        this.controller = controller;
+        return root;
     }
 
     public void setFromTree(String formatName, Node root) throws IIOInvalidTreeException {

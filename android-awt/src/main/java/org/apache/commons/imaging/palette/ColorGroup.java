@@ -16,18 +16,24 @@
  */
 package org.apache.commons.imaging.palette;
 
-import java.util.List;
-
 import org.apache.commons.imaging.ImageWriteException;
 
+import java.util.List;
+
 class ColorGroup {
+    public final List<ColorCount> colorCounts;
+    public final boolean ignoreAlpha;
+    public final int alphaDiff;
+    public final int redDiff;
+    public final int greenDiff;
+    public final int blueDiff;
+    public final int maxDiff;
+    public final int diffTotal;
+    public final int totalPoints;
     // public final ColorGroup parent;
     public ColorGroupCut cut;
     // public final List children = new ArrayList();
     public int paletteIndex = -1;
-
-    public final List<ColorCount> colorCounts;
-    public final boolean ignoreAlpha;
     public int minRed = Integer.MAX_VALUE;
     public int maxRed = Integer.MIN_VALUE;
     public int minGreen = Integer.MAX_VALUE;
@@ -36,15 +42,6 @@ class ColorGroup {
     public int maxBlue = Integer.MIN_VALUE;
     public int minAlpha = Integer.MAX_VALUE;
     public int maxAlpha = Integer.MIN_VALUE;
-
-    public final int alphaDiff;
-    public final int redDiff;
-    public final int greenDiff;
-    public final int blueDiff;
-
-    public final int maxDiff;
-    public final int diffTotal;
-    public final int totalPoints;
 
     public ColorGroup(final List<ColorCount> colorCounts, final boolean ignoreAlpha) throws ImageWriteException {
         this.colorCounts = colorCounts;

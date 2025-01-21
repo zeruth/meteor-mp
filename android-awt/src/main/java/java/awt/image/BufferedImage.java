@@ -19,23 +19,16 @@
  */
 package java.awt.image;
 
-import java.awt.Graphics;
-import java.awt.Graphics2D;
-import java.awt.GraphicsEnvironment;
-import java.awt.Image;
-import java.awt.Point;
-import java.awt.Rectangle;
-import java.awt.Transparency;
-import java.awt.color.ColorSpace;
 import org.apache.harmony.awt.gl.ImageSurface;
 import org.apache.harmony.awt.gl.Surface;
 import org.apache.harmony.awt.gl.image.BufferedImageSource;
 import org.apache.harmony.awt.internal.nls.Messages;
 
+import java.awt.*;
+import java.awt.color.ColorSpace;
 import java.util.Enumeration;
 import java.util.Hashtable;
 import java.util.Vector;
-
 
 
 public class BufferedImage extends
@@ -94,21 +87,16 @@ public class BufferedImage extends
     private static final int GREEN_555_MASK = 0x03e0;
 
     private static final int BLUE_555_MASK = 0x001f;
-
-    private ColorModel cm;
-
     private final WritableRaster raster;
-
     private final int imageType;
-
-    private Hashtable<?, ?> properties;
-
-    // Surface of the Buffered Image - used for blitting one Buffered Image 
+    // Surface of the Buffered Image - used for blitting one Buffered Image
     // on the other one or on the Component
     private final ImageSurface imageSurf;
+    private ColorModel cm;
+    private Hashtable<?, ?> properties;
 
     public BufferedImage(ColorModel cm, WritableRaster raster,
-            boolean isRasterPremultiplied, Hashtable<?, ?> properties) {
+                         boolean isRasterPremultiplied, Hashtable<?, ?> properties) {
         if (!cm.isCompatibleRaster(raster)) {
             // awt.4D=The raster is incompatible with this ColorModel
             throw new IllegalArgumentException(Messages.getString("awt.4D")); //$NON-NLS-1$
@@ -119,7 +107,7 @@ public class BufferedImage extends
             throw new IllegalArgumentException(Messages.getString("awt.228")); //$NON-NLS-1$
         }
 
-        this.cm  = cm;
+        this.cm = cm;
         this.raster = raster;
         this.properties = properties;
 
@@ -131,38 +119,38 @@ public class BufferedImage extends
     }
 
     public BufferedImage(int width, int height, int imageType,
-            IndexColorModel cm) {
+                         IndexColorModel cm) {
         switch (imageType) {
-        case TYPE_BYTE_BINARY:
-            if (cm.hasAlpha()) {
-                // awt.227=This image type can't have alpha
-                throw new IllegalArgumentException(Messages.getString("awt.227")); //$NON-NLS-1$
-            }
-            int pixel_bits = 0;
-            int mapSize = cm.getMapSize();
-            if (mapSize <= 2) {
-                pixel_bits = 1;
-            } else if (mapSize <= 4) {
-                pixel_bits = 2;
-            } else if (mapSize <= 16) {
-                pixel_bits = 4;
-            } else {
-                // awt.221=The imageType is TYPE_BYTE_BINARY and the color map has more than 16 entries
-                throw new IllegalArgumentException(Messages.getString("awt.221")); //$NON-NLS-1$
-            }
+            case TYPE_BYTE_BINARY:
+                if (cm.hasAlpha()) {
+                    // awt.227=This image type can't have alpha
+                    throw new IllegalArgumentException(Messages.getString("awt.227")); //$NON-NLS-1$
+                }
+                int pixel_bits = 0;
+                int mapSize = cm.getMapSize();
+                if (mapSize <= 2) {
+                    pixel_bits = 1;
+                } else if (mapSize <= 4) {
+                    pixel_bits = 2;
+                } else if (mapSize <= 16) {
+                    pixel_bits = 4;
+                } else {
+                    // awt.221=The imageType is TYPE_BYTE_BINARY and the color map has more than 16 entries
+                    throw new IllegalArgumentException(Messages.getString("awt.221")); //$NON-NLS-1$
+                }
 
-            raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE, width,
-                    height, 1, pixel_bits, null);
-            break;
+                raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE, width,
+                        height, 1, pixel_bits, null);
+                break;
 
-        case TYPE_BYTE_INDEXED:
-            raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-                    width, height, 1, null);
-            break;
+            case TYPE_BYTE_INDEXED:
+                raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
+                        width, height, 1, null);
+                break;
 
-        default:
-            // awt.222=The imageType is not TYPE_BYTE_BINARY or TYPE_BYTE_INDEXED
-            throw new IllegalArgumentException(Messages.getString("awt.222")); //$NON-NLS-1$
+            default:
+                // awt.222=The imageType is not TYPE_BYTE_BINARY or TYPE_BYTE_INDEXED
+                throw new IllegalArgumentException(Messages.getString("awt.222")); //$NON-NLS-1$
 
         }
 
@@ -180,177 +168,177 @@ public class BufferedImage extends
     public BufferedImage(int width, int height, int imageType) {
 
         switch (imageType) {
-        case TYPE_INT_RGB:
-            cm = new DirectColorModel(24, RED_MASK, GREEN_MASK, BLUE_MASK);
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+            case TYPE_INT_RGB:
+                cm = new DirectColorModel(24, RED_MASK, GREEN_MASK, BLUE_MASK);
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_INT_ARGB:
-            cm = ColorModel.getRGBdefault();
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+            case TYPE_INT_ARGB:
+                cm = ColorModel.getRGBdefault();
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_INT_ARGB_PRE:
-            cm = new DirectColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    32,
-                    RED_MASK,
-                    GREEN_MASK,
-                    BLUE_MASK,
-                    ALPHA_MASK,
-                    true,
-                    DataBuffer.TYPE_INT);
+            case TYPE_INT_ARGB_PRE:
+                cm = new DirectColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        32,
+                        RED_MASK,
+                        GREEN_MASK,
+                        BLUE_MASK,
+                        ALPHA_MASK,
+                        true,
+                        DataBuffer.TYPE_INT);
 
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_INT_BGR:
-            cm = new DirectColorModel(24,
-                    RED_BGR_MASK,
-                    GREEN_BGR_MASK,
-                    BLUE_BGR_MASK);
+            case TYPE_INT_BGR:
+                cm = new DirectColorModel(24,
+                        RED_BGR_MASK,
+                        GREEN_BGR_MASK,
+                        BLUE_BGR_MASK);
 
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_3BYTE_BGR: {
-            int bits[] = { 8, 8, 8 };
-            int bandOffsets[] = { 2, 1, 0 };
-            cm = new ComponentColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    bits, 
-                    false, 
-                    false, 
-                    Transparency.OPAQUE, 
-                    DataBuffer.TYPE_BYTE);
+            case TYPE_3BYTE_BGR: {
+                int bits[] = {8, 8, 8};
+                int bandOffsets[] = {2, 1, 0};
+                cm = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        bits,
+                        false,
+                        false,
+                        Transparency.OPAQUE,
+                        DataBuffer.TYPE_BYTE);
 
-            raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-                    width, height, width * 3, 3, bandOffsets, null);
+                raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
+                        width, height, width * 3, 3, bandOffsets, null);
             }
             break;
 
-        case TYPE_4BYTE_ABGR: {
-            int bits[] = { 8, 8, 8, 8 };
-            int bandOffsets[] = { 3, 2, 1, 0 };
-            cm = new ComponentColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    bits, 
-                    true, 
-                    false, 
-                    Transparency.TRANSLUCENT, 
-                    DataBuffer.TYPE_BYTE);
+            case TYPE_4BYTE_ABGR: {
+                int bits[] = {8, 8, 8, 8};
+                int bandOffsets[] = {3, 2, 1, 0};
+                cm = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        bits,
+                        true,
+                        false,
+                        Transparency.TRANSLUCENT,
+                        DataBuffer.TYPE_BYTE);
 
-            raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-                    width, height, width * 4, 4, bandOffsets, null);
+                raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
+                        width, height, width * 4, 4, bandOffsets, null);
             }
             break;
 
-        case TYPE_4BYTE_ABGR_PRE: {
-            int bits[] = { 8, 8, 8, 8 };
-            int bandOffsets[] = { 3, 2, 1, 0 };
-            cm = new ComponentColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    bits, 
-                    true, 
-                    true, 
-                    Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
+            case TYPE_4BYTE_ABGR_PRE: {
+                int bits[] = {8, 8, 8, 8};
+                int bandOffsets[] = {3, 2, 1, 0};
+                cm = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        bits,
+                        true,
+                        true,
+                        Transparency.TRANSLUCENT, DataBuffer.TYPE_BYTE);
 
-            raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-                    width, height, width * 4, 4, bandOffsets, null);
+                raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
+                        width, height, width * 4, 4, bandOffsets, null);
             }
             break;
 
-        case TYPE_USHORT_565_RGB:
-            cm = new DirectColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    16,
-                    RED_565_MASK,
-                    GREEN_565_MASK,
-                    BLUE_565_MASK,
-                    0,
-                    false,
-                    DataBuffer.TYPE_USHORT);
+            case TYPE_USHORT_565_RGB:
+                cm = new DirectColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        16,
+                        RED_565_MASK,
+                        GREEN_565_MASK,
+                        BLUE_565_MASK,
+                        0,
+                        false,
+                        DataBuffer.TYPE_USHORT);
 
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_USHORT_555_RGB:
-            cm = new DirectColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_sRGB),
-                    15,
-                    RED_555_MASK,
-                    GREEN_555_MASK,
-                    BLUE_555_MASK,
-                    0,
-                    false,
-                    DataBuffer.TYPE_USHORT);
+            case TYPE_USHORT_555_RGB:
+                cm = new DirectColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_sRGB),
+                        15,
+                        RED_555_MASK,
+                        GREEN_555_MASK,
+                        BLUE_555_MASK,
+                        0,
+                        false,
+                        DataBuffer.TYPE_USHORT);
 
-            raster = cm.createCompatibleWritableRaster(width, height);
-            break;
+                raster = cm.createCompatibleWritableRaster(width, height);
+                break;
 
-        case TYPE_BYTE_GRAY: {
-            int bits[] = { 8 };
-            cm = new ComponentColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                    bits, 
-                    false, 
-                    false, 
-                    Transparency.OPAQUE, 
-                    DataBuffer.TYPE_BYTE);
+            case TYPE_BYTE_GRAY: {
+                int bits[] = {8};
+                cm = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                        bits,
+                        false,
+                        false,
+                        Transparency.OPAQUE,
+                        DataBuffer.TYPE_BYTE);
 
-            raster = cm.createCompatibleWritableRaster(width, height);
+                raster = cm.createCompatibleWritableRaster(width, height);
             }
             break;
 
-        case TYPE_USHORT_GRAY: {
-            int bits[] = { 16 };
-            cm = new ComponentColorModel(
-                    ColorSpace.getInstance(ColorSpace.CS_GRAY),
-                    bits, 
-                    false, 
-                    false, 
-                    Transparency.OPAQUE, 
-                    DataBuffer.TYPE_USHORT);
-            raster = cm.createCompatibleWritableRaster(width, height);
+            case TYPE_USHORT_GRAY: {
+                int bits[] = {16};
+                cm = new ComponentColorModel(
+                        ColorSpace.getInstance(ColorSpace.CS_GRAY),
+                        bits,
+                        false,
+                        false,
+                        Transparency.OPAQUE,
+                        DataBuffer.TYPE_USHORT);
+                raster = cm.createCompatibleWritableRaster(width, height);
             }
             break;
 
-        case TYPE_BYTE_BINARY: {
-            int colorMap[] = { 0, 0xffffff };
-            cm = new IndexColorModel(1, 2, colorMap, 0, false, -1,
-                    DataBuffer.TYPE_BYTE);
+            case TYPE_BYTE_BINARY: {
+                int colorMap[] = {0, 0xffffff};
+                cm = new IndexColorModel(1, 2, colorMap, 0, false, -1,
+                        DataBuffer.TYPE_BYTE);
 
-            raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE, width,
-                    height, 1, 1, null);
+                raster = Raster.createPackedRaster(DataBuffer.TYPE_BYTE, width,
+                        height, 1, 1, null);
             }
             break;
 
-        case TYPE_BYTE_INDEXED: {
-            int colorMap[] = new int[256];
-            int i = 0;
-            for (int r = 0; r < 256; r += 51) {
-                for (int g = 0; g < 256; g += 51) {
-                    for (int b = 0; b < 256; b += 51) {
-                        colorMap[i] = (r << 16) | (g << 8) | b;
-                        i++;
+            case TYPE_BYTE_INDEXED: {
+                int colorMap[] = new int[256];
+                int i = 0;
+                for (int r = 0; r < 256; r += 51) {
+                    for (int g = 0; g < 256; g += 51) {
+                        for (int b = 0; b < 256; b += 51) {
+                            colorMap[i] = (r << 16) | (g << 8) | b;
+                            i++;
+                        }
                     }
                 }
-            }
 
-            int gray = 0x12;
-            for (; i < 256; i++, gray += 6) {
-                colorMap[i] = (gray << 16) | (gray << 8) | gray;
-            }
-            cm = new IndexColorModel(8, 256, colorMap, 0, false, -1,
-                    DataBuffer.TYPE_BYTE);
-            raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
-                    width, height, 1, null);
+                int gray = 0x12;
+                for (; i < 256; i++, gray += 6) {
+                    colorMap[i] = (gray << 16) | (gray << 8) | gray;
+                }
+                cm = new IndexColorModel(8, 256, colorMap, 0, false, -1,
+                        DataBuffer.TYPE_BYTE);
+                raster = Raster.createInterleavedRaster(DataBuffer.TYPE_BYTE,
+                        width, height, 1, null);
 
             }
             break;
-        default:
-            // awt.224=Unknown image type
-            throw new IllegalArgumentException(Messages.getString("awt.224")); //$NON-NLS-1$
+            default:
+                // awt.224=Unknown image type
+                throw new IllegalArgumentException(Messages.getString("awt.224")); //$NON-NLS-1$
         }
         this.imageType = imageType;
         imageSurf = createImageSurface(imageType);
@@ -362,7 +350,7 @@ public class BufferedImage extends
     }
 
     public Object getProperty(String name) {
-        if(name == null) {
+        if (name == null) {
             // awt.225=Property name is null
             throw new NullPointerException(Messages.getString("awt.225")); //$NON-NLS-1$
         }
@@ -404,7 +392,7 @@ public class BufferedImage extends
 
         SampleModel sm = raster.getSampleModel();
         SampleModel nsm = sm.createCompatibleSampleModel(w, h);
-        WritableRaster outr = Raster.createWritableRaster(nsm, 
+        WritableRaster outr = Raster.createWritableRaster(nsm,
                 rect.getLocation());
         Object data = null;
 
@@ -422,7 +410,7 @@ public class BufferedImage extends
             return null;
         }
         Vector<String> v = new Vector<String>();
-        for (Enumeration<?> e = properties.keys(); e.hasMoreElements();) {
+        for (Enumeration<?> e = properties.keys(); e.hasMoreElements(); ) {
             try {
                 v.add((String) e.nextElement());
             } catch (ClassCastException ex) {
@@ -442,7 +430,7 @@ public class BufferedImage extends
     @Override
     public String toString() {
         return "BufferedImage@" + Integer.toHexString(hashCode()) + //$NON-NLS-1$
-            ": type = " + imageType + " " + cm + " " + raster; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
+                ": type = " + imageType + " " + cm + " " + raster; //$NON-NLS-1$ //$NON-NLS-2$ //$NON-NLS-3$
     }
 
     public WritableRaster getWritableTile(int tileX, int tileY) {
@@ -467,23 +455,6 @@ public class BufferedImage extends
         return raster.getSampleModel();
     }
 
-    public void setData(Raster r) {
-
-        Rectangle from = r.getBounds();
-        Rectangle to = raster.getBounds();
-        Rectangle intersection = to.intersection(from);
-
-        int minX = intersection.x;
-        int minY = intersection.y;
-        int w = intersection.width;
-        int h = intersection.height;
-
-        Object data = null;
-
-        data = r.getDataElements(minX, minY, w, h, data);
-        raster.setDataElements(minX, minY, w, h, data);
-    }
-
     public Raster getTile(int tileX, int tileY) {
         if (tileX == 0 && tileY == 0) {
             return raster;
@@ -501,7 +472,7 @@ public class BufferedImage extends
         WritableRaster outr = Raster.createWritableRaster(
                 raster.getSampleModel(),
                 new Point(raster.getSampleModelTranslateX(),
-                raster.getSampleModelTranslateY()));
+                        raster.getSampleModelTranslateY()));
 
         Object data = null;
 
@@ -509,6 +480,23 @@ public class BufferedImage extends
         outr.setDataElements(minX, minY, w, h, data);
 
         return outr;
+    }
+
+    public void setData(Raster r) {
+
+        Rectangle from = r.getBounds();
+        Rectangle to = raster.getBounds();
+        Rectangle intersection = to.intersection(from);
+
+        int minX = intersection.x;
+        int minY = intersection.y;
+        int w = intersection.width;
+        int h = intersection.height;
+
+        Object data = null;
+
+        data = r.getDataElements(minX, minY, w, h, data);
+        raster.setDataElements(minX, minY, w, h, data);
     }
 
     @Override
@@ -543,7 +531,7 @@ public class BufferedImage extends
 
     public Graphics2D createGraphics() {
         GraphicsEnvironment ge =
-            GraphicsEnvironment.getLocalGraphicsEnvironment();
+                GraphicsEnvironment.getLocalGraphicsEnvironment();
         return ge.createGraphics(this);
     }
 
@@ -553,14 +541,14 @@ public class BufferedImage extends
     }
 
     public void coerceData(boolean isAlphaPremultiplied) {
-        if (cm.hasAlpha() && 
+        if (cm.hasAlpha() &&
                 cm.isAlphaPremultiplied() != isAlphaPremultiplied) {
             cm = cm.coerceData(raster, isAlphaPremultiplied);
         }
     }
 
     public int[] getRGB(int startX, int startY, int w, int h, int[] rgbArray,
-            int offset, int scansize) {
+                        int offset, int scansize) {
         if (rgbArray == null) {
             rgbArray = new int[offset + h * scansize];
         }
@@ -576,12 +564,12 @@ public class BufferedImage extends
     }
 
     public void setRGB(int startX, int startY, int w, int h, int[] rgbArray,
-            int offset, int scansize) {
+                       int offset, int scansize) {
         int off = offset;
         for (int y = startY; y < startY + h; y++, off += scansize) {
             int i = off;
             for (int x = startX; x < startX + w; x++, i++) {
-                raster.setDataElements(x, y, 
+                raster.setDataElements(x, y,
                         cm.getDataElements(rgbArray[i], null));
             }
         }

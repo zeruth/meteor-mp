@@ -2,9 +2,9 @@
  *  Licensed under the Apache License, Version 2.0 (the "License");
  *  you may not use this file except in compliance with the License.
  *  You may obtain a copy of the License at
- * 
+ *
  *       http://www.apache.org/licenses/LICENSE-2.0
- * 
+ *
  *  Unless required by applicable law or agreed to in writing, software
  *  distributed under the License is distributed on an "AS IS" BASIS,
  *  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
@@ -15,43 +15,23 @@
 
 package org.apache.commons.imaging.formats.xbm;
 
-import java.awt.Dimension;
-import java.awt.image.BufferedImage;
-import java.awt.image.ColorModel;
-import java.awt.image.DataBuffer;
-import java.awt.image.DataBufferByte;
-import java.awt.image.IndexColorModel;
-import java.awt.image.Raster;
-import java.awt.image.WritableRaster;
-import org.apache.commons.imaging.ImageFormat;
-import org.apache.commons.imaging.ImageFormats;
-import org.apache.commons.imaging.ImageInfo;
-import org.apache.commons.imaging.ImageParser;
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.ImageWriteException;
+import org.apache.commons.imaging.*;
 import org.apache.commons.imaging.common.BasicCParser;
 import org.apache.commons.imaging.common.IImageMetadata;
 import org.apache.commons.imaging.common.bytesource.ByteSource;
 import org.apache.commons.imaging.util.IoUtils;
 
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import java.io.PrintWriter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
+import java.awt.*;
+import java.awt.image.*;
+import java.io.*;
+import java.util.*;
 import java.util.Map.Entry;
-import java.util.Properties;
-import java.util.UUID;
 
 import static org.apache.commons.imaging.ImagingConstants.PARAM_KEY_FORMAT;
 
 public class XbmImageParser extends ImageParser {
     private static final String DEFAULT_EXTENSION = ".xbm";
-    private static final String[] ACCEPTED_EXTENSIONS = { ".xbm", };
+    private static final String[] ACCEPTED_EXTENSIONS = {".xbm",};
 
     @Override
     public String getName() {
@@ -70,7 +50,7 @@ public class XbmImageParser extends ImageParser {
 
     @Override
     protected ImageFormat[] getAcceptedTypes() {
-        return new ImageFormat[] { ImageFormats.XBM, //
+        return new ImageFormat[]{ImageFormats.XBM, //
         };
     }
 
@@ -104,35 +84,6 @@ public class XbmImageParser extends ImageParser {
         return null;
     }
 
-    private static class XbmHeader {
-        int width;
-        int height;
-        int xHot = -1;
-        int yHot = -1;
-
-        public XbmHeader(final int width, final int height, final int xHot, final int yHot) {
-            this.width = width;
-            this.height = height;
-            this.xHot = xHot;
-            this.yHot = yHot;
-        }
-
-        public void dump(final PrintWriter pw) {
-            pw.println("XbmHeader");
-            pw.println("Width: " + width);
-            pw.println("Height: " + height);
-            if (xHot != -1 && yHot != -1) {
-                pw.println("X hot: " + xHot);
-                pw.println("Y hot: " + yHot);
-            }
-        }
-    }
-
-    private static class XbmParseResult {
-        XbmHeader xbmHeader;
-        BasicCParser cParser;
-    }
-
     private XbmHeader readXbmHeader(final ByteSource byteSource)
             throws ImageReadException, IOException {
         final XbmParseResult result = parseXbmHeader(byteSource);
@@ -153,17 +104,17 @@ public class XbmImageParser extends ImageParser {
             int xHot = -1;
             int yHot = -1;
             for (final Entry<String, String> entry : defines.entrySet()) {
-            final String name = entry.getKey();
-            if (name.endsWith("_width")) {
-            width = Integer.parseInt(entry.getValue());
-            } else if (name.endsWith("_height")) {
-            height = Integer.parseInt(entry.getValue());
-            } else if (name.endsWith("_x_hot")) {
-            xHot = Integer.parseInt(entry.getValue());
-            } else if (name.endsWith("_y_hot")) {
-            yHot = Integer.parseInt(entry.getValue());
+                final String name = entry.getKey();
+                if (name.endsWith("_width")) {
+                    width = Integer.parseInt(entry.getValue());
+                } else if (name.endsWith("_height")) {
+                    height = Integer.parseInt(entry.getValue());
+                } else if (name.endsWith("_x_hot")) {
+                    xHot = Integer.parseInt(entry.getValue());
+                } else if (name.endsWith("_y_hot")) {
+                    yHot = Integer.parseInt(entry.getValue());
+                }
             }
-         }
             if (width == -1) {
                 throw new ImageReadException("width not found");
             }
@@ -275,11 +226,11 @@ public class XbmImageParser extends ImageParser {
             }
         }
 
-        int[] palette = { 0xffffff, 0x000000 };
+        int[] palette = {0xffffff, 0x000000};
         ColorModel colorModel = new IndexColorModel(1, 2, palette, 0, false, -1, DataBuffer.TYPE_BYTE);
         DataBufferByte dataBuffer = new DataBufferByte(imageData, imageData.length);
         WritableRaster raster = Raster.createPackedRaster(dataBuffer, xbmHeader.width, xbmHeader.height, 1, null);
-        
+
         return new BufferedImage(colorModel, raster, colorModel.isAlphaPremultiplied(), new Properties());
     }
 
@@ -292,7 +243,7 @@ public class XbmImageParser extends ImageParser {
 
     @Override
     public final BufferedImage getBufferedImage(final ByteSource byteSource,
-            final Map<String, Object> params) throws ImageReadException, IOException {
+                                                final Map<String, Object> params) throws ImageReadException, IOException {
         final XbmParseResult result = parseXbmHeader(byteSource);
         return readXbmImage(result.xbmHeader, result.cParser);
     }
@@ -398,16 +349,43 @@ public class XbmImageParser extends ImageParser {
     /**
      * Extracts embedded XML metadata as XML string.
      * <p>
-     * 
-     * @param byteSource
-     *            File containing image data.
-     * @param params
-     *            Map of optional parameters, defined in ImagingConstants.
+     *
+     * @param byteSource File containing image data.
+     * @param params     Map of optional parameters, defined in ImagingConstants.
      * @return Xmp Xml as String, if present. Otherwise, returns null.
      */
     @Override
     public String getXmpXml(final ByteSource byteSource, final Map<String, Object> params)
             throws ImageReadException, IOException {
         return null;
+    }
+
+    private static class XbmHeader {
+        int width;
+        int height;
+        int xHot = -1;
+        int yHot = -1;
+
+        public XbmHeader(final int width, final int height, final int xHot, final int yHot) {
+            this.width = width;
+            this.height = height;
+            this.xHot = xHot;
+            this.yHot = yHot;
+        }
+
+        public void dump(final PrintWriter pw) {
+            pw.println("XbmHeader");
+            pw.println("Width: " + width);
+            pw.println("Height: " + height);
+            if (xHot != -1 && yHot != -1) {
+                pw.println("X hot: " + xHot);
+                pw.println("Y hot: " + yHot);
+            }
+        }
+    }
+
+    private static class XbmParseResult {
+        XbmHeader xbmHeader;
+        BasicCParser cParser;
     }
 }

@@ -16,16 +16,11 @@
  */
 package org.apache.commons.imaging.formats.tiff.constants;
 
+import org.apache.commons.imaging.formats.tiff.taginfos.*;
+
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
-
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfo;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoAscii;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoByte;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLongOrIFD;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoLong;
-import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
 
 /**
  * TIFF specification supplement 1
@@ -36,17 +31,17 @@ import org.apache.commons.imaging.formats.tiff.taginfos.TagInfoShort;
  */
 public interface AdobePageMaker6TagConstants {
     TagInfoLongOrIFD TIFF_TAG_SUB_IFD = new TagInfoLongOrIFD(
-            "SubIFDs",  0x014a, -1,
+            "SubIFDs", 0x014a, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN, true);
 
     TagInfoByte TIFF_TAG_CLIP_PATH = new TagInfoByte(
-            "ClipPath",  0x0157, -1,
+            "ClipPath", 0x0157, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong TIFF_TAG_XCLIP_PATH_UNITS = new TagInfoLong(
             "XClipPathUnits", 0x0158, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     TagInfoLong TIFF_TAG_YCLIP_PATH_UNITS = new TagInfoLong(
             "YClipPathUnits", 0x0159, 1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
@@ -66,7 +61,7 @@ public interface AdobePageMaker6TagConstants {
     TagInfoAscii TIFF_TAG_IMAGE_ID = new TagInfoAscii(
             "ImageID", 0x800d, -1,
             TiffDirectoryType.EXIF_DIRECTORY_UNKNOWN);
-    
+
     List<TagInfo> ALL_ADOBE_PAGEMAKER_6_TAGS =
             Collections.unmodifiableList(Arrays.asList(
                     TIFF_TAG_SUB_IFD,

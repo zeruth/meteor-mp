@@ -25,13 +25,13 @@ import java.nio.ByteOrder;
 public final class ByteConversions {
     private ByteConversions() {
     }
-    
+
     public static byte[] toBytes(final short value, final ByteOrder byteOrder) {
         final byte[] result = new byte[2];
         toBytes(value, byteOrder, result, 0);
         return result;
     }
-    
+
     public static byte[] toBytes(final short[] values, final ByteOrder byteOrder) {
         return toBytes(values, 0, values.length, byteOrder);
     }
@@ -59,7 +59,7 @@ public final class ByteConversions {
         toBytes(value, byteOrder, result, 0);
         return result;
     }
-    
+
     public static byte[] toBytes(final int[] values, final ByteOrder byteOrder) {
         return toBytes(values, 0, values.length, byteOrder);
     }
@@ -71,7 +71,7 @@ public final class ByteConversions {
         }
         return result;
     }
-    
+
     private static void toBytes(final int value, final ByteOrder byteOrder, final byte[] result, final int offset) {
         if (byteOrder == ByteOrder.BIG_ENDIAN) {
             result[offset + 0] = (byte) (value >> 24);
@@ -130,7 +130,7 @@ public final class ByteConversions {
     }
 
     private static byte[] toBytes(final double[] values, final int offset,
-            final int length, final ByteOrder byteOrder) {
+                                  final int length, final ByteOrder byteOrder) {
         final byte[] result = new byte[length * 8];
         for (int i = 0; i < length; i++) {
             toBytes(values[offset + i], byteOrder, result, i * 8);
@@ -172,7 +172,7 @@ public final class ByteConversions {
     }
 
     private static byte[] toBytes(final RationalNumber[] values, final int offset,
-            final int length, final ByteOrder byteOrder) {
+                                  final int length, final ByteOrder byteOrder) {
         final byte[] result = new byte[length * 8];
         for (int i = 0; i < length; i++) {
             toBytes(values[offset + i], byteOrder, result, i * 8);
@@ -181,7 +181,7 @@ public final class ByteConversions {
     }
 
     private static void toBytes(final RationalNumber value, final ByteOrder byteOrder,
-            final byte[] result, final int offset) {
+                                final byte[] result, final int offset) {
         if (byteOrder == ByteOrder.BIG_ENDIAN) {
             result[offset + 0] = (byte) (value.numerator >> 24);
             result[offset + 1] = (byte) (value.numerator >> 16);
@@ -216,7 +216,7 @@ public final class ByteConversions {
     }
 
     private static short[] toShorts(final byte[] bytes, final int offset,
-            final int length, final ByteOrder byteOrder) {
+                                    final int length, final ByteOrder byteOrder) {
         final short[] result = new short[length / 2];
         for (int i = 0; i < result.length; i++) {
             result[i] = toShort(bytes, offset + 2 * i, byteOrder);
@@ -237,13 +237,13 @@ public final class ByteConversions {
             return ((byte1 << 8) | byte0);
         }
     }
-    
+
     public static int[] toUInt16s(final byte[] bytes, final ByteOrder byteOrder) {
         return toUInt16s(bytes, 0, bytes.length, byteOrder);
     }
 
     private static int[] toUInt16s(final byte[] bytes, final int offset, final int length,
-            final ByteOrder byteOrder) {
+                                   final ByteOrder byteOrder) {
         final int[] result = new int[length / 2];
         for (int i = 0; i < result.length; i++) {
             result[i] = toUInt16(bytes, offset + 2 * i, byteOrder);
@@ -272,7 +272,7 @@ public final class ByteConversions {
     }
 
     private static int[] toInts(final byte[] bytes, final int offset, final int length,
-            final ByteOrder byteOrder) {
+                                final ByteOrder byteOrder) {
         final int[] result = new int[length / 4];
         for (int i = 0; i < result.length; i++) {
             result[i] = toInt(bytes, offset + 4 * i, byteOrder);
@@ -302,8 +302,8 @@ public final class ByteConversions {
         return toFloats(bytes, 0, bytes.length, byteOrder);
     }
 
-    private static float[] toFloats(final byte[] bytes, final int offset, 
-            final int length, final ByteOrder byteOrder) {
+    private static float[] toFloats(final byte[] bytes, final int offset,
+                                    final int length, final ByteOrder byteOrder) {
         final float[] result = new float[length / 4];
         for (int i = 0; i < result.length; i++) {
             result[i] = toFloat(bytes, offset + 4 * i, byteOrder);
@@ -342,7 +342,7 @@ public final class ByteConversions {
     }
 
     private static double[] toDoubles(final byte[] bytes, final int offset,
-            final int length, final ByteOrder byteOrder) {
+                                      final int length, final ByteOrder byteOrder) {
         final double[] result = new double[length / 8];
         for (int i = 0; i < result.length; i++) {
             result[i] = toDouble(bytes, offset + 8 * i, byteOrder);
@@ -379,8 +379,8 @@ public final class ByteConversions {
         return toRationals(bytes, 0, bytes.length, byteOrder);
     }
 
-    private static RationalNumber[] toRationals(final byte[] bytes, 
-            final int offset, final int length, final ByteOrder byteOrder) {
+    private static RationalNumber[] toRationals(final byte[] bytes,
+                                                final int offset, final int length, final ByteOrder byteOrder) {
         final RationalNumber[] result = new RationalNumber[length / 8];
         for (int i = 0; i < result.length; i++) {
             result[i] = toRational(bytes, offset + 8 * i, byteOrder);

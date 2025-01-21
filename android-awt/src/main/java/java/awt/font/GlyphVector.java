@@ -20,9 +20,7 @@
 package java.awt.font;
 
 
-import java.awt.Font;
-import java.awt.Rectangle;
-import java.awt.Shape;
+import java.awt.*;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -47,22 +45,22 @@ public abstract class GlyphVector implements Cloneable {
         // bounds rectangle
         Rectangle2D visualRect = getVisualBounds();
 
-        int minX = (int)Math.floor(visualRect.getMinX() + x);
-        int minY = (int)Math.floor(visualRect.getMinY() + y);
-        int width = (int)Math.ceil(visualRect.getMaxX() + x) - minX;
-        int height = (int)Math.ceil(visualRect.getMaxY() + y) - minY;
+        int minX = (int) Math.floor(visualRect.getMinX() + x);
+        int minY = (int) Math.floor(visualRect.getMinY() + y);
+        int width = (int) Math.ceil(visualRect.getMaxX() + x) - minX;
+        int height = (int) Math.ceil(visualRect.getMaxY() + y) - minY;
 
         return new Rectangle(minX, minY, width, height);
     }
 
-    public Rectangle getGlyphPixelBounds(int index, FontRenderContext frc, 
-            float x, float y) {
+    public Rectangle getGlyphPixelBounds(int index, FontRenderContext frc,
+                                         float x, float y) {
         Rectangle2D visualRect = getGlyphVisualBounds(index).getBounds2D();
 
-        int minX = (int)Math.floor(visualRect.getMinX() + x);
-        int minY = (int)Math.floor(visualRect.getMinY() + y);
-        int width = (int)Math.ceil(visualRect.getMaxX() + x) - minX;
-        int height = (int)Math.ceil(visualRect.getMaxY() + y) - minY;
+        int minX = (int) Math.floor(visualRect.getMinX() + x);
+        int minY = (int) Math.floor(visualRect.getMinY() + y);
+        int width = (int) Math.ceil(visualRect.getMaxX() + x) - minX;
+        int height = (int) Math.ceil(visualRect.getMaxY() + y) - minY;
 
         return new Rectangle(minX, minY, width, height);
     }
@@ -75,8 +73,8 @@ public abstract class GlyphVector implements Cloneable {
 
     public abstract Point2D getGlyphPosition(int glyphIndex);
 
-    public abstract void setGlyphTransform(int glyphIndex, 
-            AffineTransform trans);
+    public abstract void setGlyphTransform(int glyphIndex,
+                                           AffineTransform trans);
 
     public abstract AffineTransform getGlyphTransform(int glyphIndex);
 
@@ -107,27 +105,27 @@ public abstract class GlyphVector implements Cloneable {
 
     public abstract Font getFont();
 
-    public abstract int[] getGlyphCodes(int beginGlyphIndex, int numEntries, 
-            int[] codeReturn);
+    public abstract int[] getGlyphCodes(int beginGlyphIndex, int numEntries,
+                                        int[] codeReturn);
 
-    public int[] getGlyphCharIndices(int beginGlyphIndex, int numEntries, 
-            int[] codeReturn) {
+    public int[] getGlyphCharIndices(int beginGlyphIndex, int numEntries,
+                                     int[] codeReturn) {
         if (codeReturn == null) {
             codeReturn = new int[numEntries];
         }
 
-        for (int i = 0; i < numEntries; i++){
-            codeReturn[i] = getGlyphCharIndex(i+beginGlyphIndex);
+        for (int i = 0; i < numEntries; i++) {
+            codeReturn[i] = getGlyphCharIndex(i + beginGlyphIndex);
         }
         return codeReturn;
     }
 
-    public abstract float[] getGlyphPositions(int beginGlyphIndex, 
-            int numEntries, float[] positionReturn);
+    public abstract float[] getGlyphPositions(int beginGlyphIndex,
+                                              int numEntries, float[] positionReturn);
 
     public abstract int getGlyphCode(int glyphIndex);
 
-    public int getGlyphCharIndex(int glyphIndex){
+    public int getGlyphCharIndex(int glyphIndex) {
         // default implementation one-to-one
         return glyphIndex;
     }
@@ -136,7 +134,7 @@ public abstract class GlyphVector implements Cloneable {
 
     public abstract int getNumGlyphs();
 
-    public int getLayoutFlags(){
+    public int getLayoutFlags() {
         // default implementation - returned value is 0
         return 0;
     }

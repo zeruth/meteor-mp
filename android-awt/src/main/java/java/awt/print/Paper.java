@@ -23,67 +23,66 @@ import java.awt.geom.Rectangle2D;
 
 public class Paper implements Cloneable {
 
-    private double paperHeight;
-    private double paperWidth;
-    private final Rectangle2D.Double paperImageableArea;
-
     private static final double INCH = 72D;    // inch in pixels
     private static final double INCH2 = 144D;  // double inch
     private static final double LETTER_WIDTH = 612D; // default width in pixels
     private static final double LETTER_HEIGHT = 792D;// default height in pixels
+    private final Rectangle2D.Double paperImageableArea;
+    private double paperHeight;
+    private double paperWidth;
 
     public Paper() {
         super();
         paperWidth = LETTER_WIDTH;
         paperHeight = LETTER_HEIGHT;
         paperImageableArea = new Rectangle2D.Double(INCH, INCH,
-                                    paperWidth - INCH2, paperHeight - INCH2);
+                paperWidth - INCH2, paperHeight - INCH2);
     }
 
     @Override
-    public Object clone(){
+    public Object clone() {
         Paper clonedPaper;
         try {
-            clonedPaper = (Paper)super.clone();
-        } catch(CloneNotSupportedException cnse){
+            clonedPaper = (Paper) super.clone();
+        } catch (CloneNotSupportedException cnse) {
             cnse.printStackTrace();
             clonedPaper = null;
         }
         return clonedPaper;
     }
 
-    public double getHeight(){
+    public double getHeight() {
         return paperHeight;
     }
 
-    public double getImageableWidth(){
+    public double getImageableWidth() {
         return paperImageableArea.getWidth();
     }
 
-    public double getImageableHeight(){
+    public double getImageableHeight() {
         return paperImageableArea.getHeight();
     }
 
-    public double getImageableX(){
+    public double getImageableX() {
         return paperImageableArea.getX();
     }
 
-    public double getImageableY(){
+    public double getImageableY() {
         return paperImageableArea.getY();
     }
 
-    public double getWidth(){
+    public double getWidth() {
         return paperWidth;
     }
 
     public void setImageableArea(double x,
                                  double y,
                                  double width,
-                                 double height){
+                                 double height) {
         paperImageableArea.setRect(x, y, width, height);
     }
 
-    public void setSize(double width,  double height){
+    public void setSize(double width, double height) {
         paperWidth = width;
         paperHeight = height;
     }

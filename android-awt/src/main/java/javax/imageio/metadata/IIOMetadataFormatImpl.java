@@ -17,17 +17,12 @@
 
 package javax.imageio.metadata;
 
-import javax.imageio.ImageTypeSpecifier;
 import org.apache.harmony.x.imageio.internal.nls.Messages;
 
+import javax.imageio.ImageTypeSpecifier;
 import java.security.AccessController;
 import java.security.PrivilegedAction;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
-import java.util.MissingResourceException;
-import java.util.ResourceBundle;
+import java.util.*;
 
 public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     @SuppressWarnings({"ConstantDeclaredInAbstractClass"})
@@ -47,8 +42,8 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         }
         if (
                 childPolicy < CHILD_POLICY_EMPTY ||
-                childPolicy > CHILD_POLICY_MAX ||
-                childPolicy == CHILD_POLICY_REPEAT
+                        childPolicy > CHILD_POLICY_MAX ||
+                        childPolicy == CHILD_POLICY_REPEAT
         ) {
             throw new IllegalArgumentException(Messages.getString("imageio.64"));
         }
@@ -78,6 +73,14 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         root.maxChildren = maxChildren;
         root.childPolicy = CHILD_POLICY_REPEAT;
         elementHash.put(rootName, root);
+    }
+
+    public static IIOMetadataFormat getStandardFormatInstance() {
+        if (standardFormat == null) {
+            standardFormat = new IIOStandardMetadataFormat();
+        }
+
+        return standardFormat;
     }
 
     @SuppressWarnings({"AbstractMethodOverridesAbstractMethod"})
@@ -219,12 +222,12 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
     protected void addElement(String elementName, String parentName, int childPolicy) {
         if (
                 childPolicy < CHILD_POLICY_EMPTY ||
-                childPolicy > CHILD_POLICY_MAX ||
-                childPolicy == CHILD_POLICY_REPEAT
+                        childPolicy > CHILD_POLICY_MAX ||
+                        childPolicy == CHILD_POLICY_REPEAT
         ) {
             throw new IllegalArgumentException(Messages.getString("imageio.64"));
         }
-        
+
         Element parent = findElement(parentName);
         Element element = new Element();
         element.name = elementName;
@@ -382,7 +385,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         if ((attr.valueType & VALUE_RANGE) == 0) {
             throw new IllegalArgumentException(Messages.getString("imageio.70"));
         }
-        return attr.maxValue;        
+        return attr.maxValue;
     }
 
     public String getAttributeMinValue(String elementName, String attrName) {
@@ -400,7 +403,7 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
 
     public int getAttributeValueType(String elementName, String attrName) {
         Attlist attr = findAttribute(elementName, attrName);
-        return attr.valueType;                
+        return attr.valueType;
     }
 
     public String[] getChildNames(String elementName) {
@@ -504,16 +507,15 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         return resourceBaseName;
     }
 
-    public String getRootName() {
-        return rootName;
+    protected void setResourceBaseName(String resourceBaseName) {
+        if (resourceBaseName == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.75"));
+        }
+        this.resourceBaseName = resourceBaseName;
     }
 
-    public static IIOMetadataFormat getStandardFormatInstance() {
-        if (standardFormat == null) {
-            standardFormat = new IIOStandardMetadataFormat();
-        }
-
-        return standardFormat;
+    public String getRootName() {
+        return rootName;
     }
 
     public boolean isAttributeRequired(String elementName, String attrName) {
@@ -539,12 +541,67 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         Element element = findElement(elementName);
         element.objectValue = null;
     }
-    
-    protected void setResourceBaseName(String resourceBaseName) {
-        if (resourceBaseName == null) {
-            throw new IllegalArgumentException(Messages.getString("imageio.75"));
+
+    private Element findElement(String name) {
+        Element element;
+        if ((element = elementHash.get(name)) == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.8C", name));
         }
-        this.resourceBaseName = resourceBaseName;
+
+        return element;
+    }
+
+    private Attlist findAttribute(String elementName, String attributeName) {
+        Element element = findElement(elementName);
+        Attlist attribute;
+        if ((attribute = element.attributes.get(attributeName)) == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.8D", attributeName));
+        }
+
+        return attribute;
+    }
+
+    private ObjectValue findObjectValue(String elementName) {
+        Element element = findElement(elementName);
+        ObjectValue v = element.objectValue;
+        if (v == null) {
+            throw new IllegalArgumentException(Messages.getString("imageio.76"));
+        }
+        return v;
+    }
+
+    private String getResourceString(String key, Locale locale) {
+        if (locale == null) {
+            locale = Locale.getDefault();
+        }
+
+        // Get the context class loader and try to locate the bundle with it first
+        ClassLoader contextClassloader = AccessController.doPrivileged(
+                new PrivilegedAction<ClassLoader>() {
+                    public ClassLoader run() {
+                        return Thread.currentThread().getContextClassLoader();
+                    }
+                });
+
+        // Now try to get the resource bundle
+        ResourceBundle rb;
+        try {
+            rb = ResourceBundle.getBundle(resourceBaseName, locale, contextClassloader);
+        } catch (MissingResourceException e) {
+            try {
+                rb = ResourceBundle.getBundle(resourceBaseName, locale);
+            } catch (MissingResourceException e1) {
+                return null;
+            }
+        }
+
+        try {
+            return rb.getString(key);
+        } catch (MissingResourceException e) {
+            return null;
+        } catch (ClassCastException e) {
+            return null; // Not a string resource
+        }
     }
 
     @SuppressWarnings({"ClassWithoutConstructor"})
@@ -592,67 +649,5 @@ public abstract class IIOMetadataFormatImpl implements IIOMetadataFormat {
         boolean maxInclusive;
 
         int valueType;
-    }
-
-    private Element findElement(String name) {
-        Element element;
-        if ((element = elementHash.get(name)) == null) {
-            throw new IllegalArgumentException(Messages.getString("imageio.8C", name));
-        }
-
-        return element;
-    }
-
-    private Attlist findAttribute(String elementName, String attributeName) {
-        Element element = findElement(elementName);
-        Attlist attribute;
-        if ((attribute = element.attributes.get(attributeName)) == null) {
-            throw new IllegalArgumentException(Messages.getString("imageio.8D", attributeName));
-        }
-
-        return attribute;
-    }
-
-    private ObjectValue findObjectValue(String elementName) {
-        Element element = findElement(elementName);
-        ObjectValue v = element.objectValue;
-        if (v == null) {
-            throw new IllegalArgumentException(Messages.getString("imageio.76"));
-        }
-        return v;
-    }
-
-    private String getResourceString(String key, Locale locale) {
-        if (locale == null) {
-            locale = Locale.getDefault();
-        }
-
-        // Get the context class loader and try to locate the bundle with it first
-        ClassLoader contextClassloader = AccessController.doPrivileged(
-                new PrivilegedAction<ClassLoader>() {
-                    public ClassLoader run() {
-                        return Thread.currentThread().getContextClassLoader();
-                    }
-        });
-
-        // Now try to get the resource bundle
-        ResourceBundle rb;
-        try {
-            rb = ResourceBundle.getBundle(resourceBaseName, locale, contextClassloader);
-        } catch (MissingResourceException e) {
-            try {
-                rb = ResourceBundle.getBundle(resourceBaseName, locale);
-            } catch (MissingResourceException e1) {
-                return null;
-            }
-        }
-
-        try {
-            return rb.getString(key);
-        } catch (MissingResourceException e) {
-            return null;
-        } catch (ClassCastException e) {
-            return null; // Not a string resource
-        }
     }
 }

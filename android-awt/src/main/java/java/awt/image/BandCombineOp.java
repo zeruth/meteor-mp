@@ -16,16 +16,16 @@
  */
 /**
  * @author Oleg V. Khaschansky
- *
  * @date: Sep 20, 2005
  */
 
 package java.awt.image;
 
-import java.awt.RenderingHints;
+import org.apache.harmony.awt.internal.nls.Messages;
+
+import java.awt.*;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import org.apache.harmony.awt.internal.nls.Messages;
 
 
 public class BandCombineOp implements RasterOp {
@@ -51,28 +51,28 @@ public class BandCombineOp implements RasterOp {
         this.mxWidth = matrix[0].length;
         this.matrix = new float[mxHeight][mxWidth];
 
-        for (int i=0; i<mxHeight; i++){
+        for (int i = 0; i < mxHeight; i++) {
             System.arraycopy(matrix[i], 0, this.matrix[i], 0, mxWidth);
         }
 
         this.rHints = hints;
     }
 
-    public final RenderingHints getRenderingHints(){
+    public final RenderingHints getRenderingHints() {
         return this.rHints;
     }
 
     public final float[][] getMatrix() {
         float res[][] = new float[mxHeight][mxWidth];
 
-        for (int i=0; i<mxHeight; i++) {
+        for (int i = 0; i < mxHeight; i++) {
             System.arraycopy(matrix[i], 0, res[i], 0, mxWidth);
         }
 
         return res;
     }
 
-    public final Point2D getPoint2D (Point2D srcPoint, Point2D dstPoint) {
+    public final Point2D getPoint2D(Point2D srcPoint, Point2D dstPoint) {
         if (dstPoint == null) {
             dstPoint = new Point2D.Float();
         }
@@ -81,13 +81,13 @@ public class BandCombineOp implements RasterOp {
         return dstPoint;
     }
 
-    public final Rectangle2D getBounds2D(Raster src){
+    public final Rectangle2D getBounds2D(Raster src) {
         return src.getBounds();
     }
 
-    public WritableRaster createCompatibleDestRaster (Raster src) {
+    public WritableRaster createCompatibleDestRaster(Raster src) {
         int numBands = src.getNumBands();
-        if (mxWidth != numBands && mxWidth != (numBands+1) || numBands != mxHeight) {
+        if (mxWidth != numBands && mxWidth != (numBands + 1) || numBands != mxHeight) {
             // awt.254=Number of bands in the source raster ({0}) is
             //          incompatible with the matrix [{1}x{2}]
             throw new IllegalArgumentException(Messages.getString("awt.254", //$NON-NLS-1$
@@ -100,12 +100,12 @@ public class BandCombineOp implements RasterOp {
     public WritableRaster filter(Raster src, WritableRaster dst) {
         int numBands = src.getNumBands();
 
-        if (mxWidth != numBands && mxWidth != (numBands+1)) {
+        if (mxWidth != numBands && mxWidth != (numBands + 1)) {
             // awt.254=Number of bands in the source raster ({0}) is
             //          incompatible with the matrix [{1}x{2}]
             throw new IllegalArgumentException(
                     Messages.getString("awt.254", //$NON-NLS-1$
-                    new Object[]{numBands, mxWidth, mxHeight}));
+                            new Object[]{numBands, mxWidth, mxHeight}));
         }
 
         if (dst == null) {
@@ -120,16 +120,10 @@ public class BandCombineOp implements RasterOp {
         //if (ippFilter(src, dst) != 0)
         if (verySlowFilter(src, dst) != 0) {
             // awt.21F=Unable to transform source
-            throw new ImagingOpException (Messages.getString("awt.21F")); //$NON-NLS-1$
+            throw new ImagingOpException(Messages.getString("awt.21F")); //$NON-NLS-1$
         }
 
         return dst;
-    }
-
-    private static final class SampleModelInfo {
-        int channels;
-        int channelsOrder[];
-        int stride;
     }
 
     private final SampleModelInfo checkSampleModel(SampleModel sm) {
@@ -155,7 +149,7 @@ public class BandCombineOp implements RasterOp {
             }
 
             // Check sample models
-            for (int i=0; i<ret.channels; i++) {
+            for (int i = 0; i < ret.channels; i++) {
                 if (sppsm1.getSampleSize(i) != 8) {
                     return null;
                 }
@@ -163,7 +157,7 @@ public class BandCombineOp implements RasterOp {
 
             ret.channelsOrder = new int[ret.channels];
             int bitOffsets[] = sppsm1.getBitOffsets();
-            for (int i=0; i<ret.channels; i++) {
+            for (int i = 0; i < ret.channels; i++) {
                 if (bitOffsets[i] % 8 != 0) {
                     return null;
                 }
@@ -193,27 +187,27 @@ public class BandCombineOp implements RasterOp {
         int dY = src.getHeight();//< dst.getHeight() ? src.getHeight() : dst.getHeight();
 
         float sample;
-        int srcPixels[] = new int[numBands*dX*dY];
-        int dstPixels[] = new int[mxHeight*dX*dY];
+        int srcPixels[] = new int[numBands * dX * dY];
+        int dstPixels[] = new int[mxHeight * dX * dY];
 
         srcPixels = src.getPixels(srcMinX, srcY, dX, dY, srcPixels);
 
         if (numBands == mxWidth) {
-            for (int i=0, j=0; i<srcPixels.length; i+=numBands) {
+            for (int i = 0, j = 0; i < srcPixels.length; i += numBands) {
                 for (int dstB = 0; dstB < mxHeight; dstB++) {
                     sample = 0f;
                     for (int srcB = 0; srcB < numBands; srcB++) {
-                        sample += matrix[dstB][srcB] * srcPixels[i+srcB];
+                        sample += matrix[dstB][srcB] * srcPixels[i + srcB];
                     }
                     dstPixels[j++] = (int) sample;
                 }
             }
         } else {
-            for (int i=0, j=0; i<srcPixels.length; i+=numBands) {
+            for (int i = 0, j = 0; i < srcPixels.length; i += numBands) {
                 for (int dstB = 0; dstB < mxHeight; dstB++) {
                     sample = 0f;
                     for (int srcB = 0; srcB < numBands; srcB++) {
-                        sample += matrix[dstB][srcB] * srcPixels[i+srcB];
+                        sample += matrix[dstB][srcB] * srcPixels[i + srcB];
                     }
                     dstPixels[j++] = (int) (sample + matrix[dstB][numBands]);
                 }
@@ -223,5 +217,11 @@ public class BandCombineOp implements RasterOp {
         dst.setPixels(dstMinX, dstY, dX, dY, dstPixels);
 
         return 0;
+    }
+
+    private static final class SampleModelInfo {
+        int channels;
+        int channelsOrder[];
+        int stride;
     }
 }

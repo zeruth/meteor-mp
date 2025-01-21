@@ -16,9 +16,9 @@
  */
 package org.apache.commons.imaging.palette;
 
-import java.util.List;
-
 import org.apache.commons.imaging.ImageWriteException;
+
+import java.util.List;
 
 public abstract class MedianCutImplementation {
     public abstract boolean performNextMedianCut(final List<ColorGroup> colorGroups, final boolean ignoreAlpha)

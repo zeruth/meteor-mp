@@ -16,12 +16,12 @@
  */
 package org.apache.commons.imaging.formats.jpeg.segments;
 
+import org.apache.commons.imaging.ImageReadException;
+import org.apache.commons.imaging.formats.jpeg.JpegConstants;
+
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.InputStream;
-
-import org.apache.commons.imaging.ImageReadException;
-import org.apache.commons.imaging.formats.jpeg.JpegConstants;
 
 import static org.apache.commons.imaging.common.BinaryFunctions.*;
 
@@ -36,17 +36,12 @@ public class JfifSegment extends Segment {
     public final int yThumbnail;
     public final int thumbnailSize;
 
-    @Override
-    public String getDescription() {
-        return "JFIF (" + getSegmentType() + ")";
-    }
-
     public JfifSegment(final int marker, final byte[] segmentData)
             throws ImageReadException, IOException {
         this(marker, segmentData.length, new ByteArrayInputStream(segmentData));
     }
 
-    public JfifSegment(final int marker, final int markerLength, final InputStream is) 
+    public JfifSegment(final int marker, final int markerLength, final InputStream is)
             throws ImageReadException, IOException {
         super(marker, markerLength);
 
@@ -77,6 +72,11 @@ public class JfifSegment extends Segment {
         if (getDebug()) {
             System.out.println("");
         }
+    }
+
+    @Override
+    public String getDescription() {
+        return "JFIF (" + getSegmentType() + ")";
     }
 
 }

@@ -46,6 +46,7 @@ import com.meteor.android.MainActivity
 import com.meteor.android.MainActivity.Companion.clientInstance
 import com.meteor.android.MainActivity.Companion.fps
 import com.meteor.android.MainActivity.Companion.image
+import meteor.Common.filterQuality
 import meteor.Main
 import meteor.events.DrawFinished
 import org.rationalityfrontline.kevent.KEVENT
@@ -189,7 +190,7 @@ object GamePanel {
                 LaunchedEffect(Unit) {
                     focusRequester.requestFocus()
                 }
-                Image(it, "", filterQuality = filter.value, contentScale = ContentScale.FillBounds, modifier =
+                Image(it, "", filterQuality = filterQuality.value.composeValue, contentScale = ContentScale.FillBounds, modifier =
                 Modifier
                     .fillMaxSize()
                     .focusable(true, interactionSource)

@@ -29,6 +29,7 @@ import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import compose.icons.lineawesomeicons.LockSolid
 import compose.icons.lineawesomeicons.UnlockSolid
+import meteor.Common.filterQuality
 import meteor.Main
 import meteor.common.config.ConfigManager
 import meteor.ui.MeteorWindow.fixedState
@@ -50,8 +51,6 @@ object GameView {
 
     val focusRequester = FocusRequester()
     val stretchedMode = mutableStateOf(ConfigManager.get<Boolean>("meteor.stretched", false))
-
-    val filterQuality = mutableStateOf(ConfigManager.get<meteor.plugin.meteor.FilterQuality>("Meteor.filterQuality", meteor.plugin.meteor.FilterQuality.None))
 
     @Composable
     fun RowScope.GameViewContainer(src: ImageBitmap) {

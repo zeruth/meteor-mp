@@ -14,8 +14,8 @@ Latest Android Studio / NDK
   
 # Building  
 
-you can build either platform using android:build or desktop:build  
-You can run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
+you can build either platform with gradlew using android:build or desktop:build  
+you can build/run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
 or you can use the output apk at android/build/outputs/apk  
 or you can create a distributable using the included run configuration if you replace the jbr runtime with an oracle 21 runtime  
 

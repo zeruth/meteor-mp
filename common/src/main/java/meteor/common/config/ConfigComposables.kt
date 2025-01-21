@@ -1,4 +1,4 @@
-package meteor.ui.compose.components.config
+package meteor.common.config
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -23,12 +23,10 @@ import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import meteor.common.config.Config
-import meteor.common.config.ConfigItem
+import meteor.Common.switchStateMap
+import meteor.Common.textStateMap
 import meteor.common.plugin.meteor.UIColor
 import meteor.common.ui.Colors
-import meteor.ui.compose.components.sidebar.buttons.PluginsButton.Companion.switchStateMap
-import meteor.ui.compose.components.sidebar.buttons.PluginsButton.Companion.textStateMap
 
 object ConfigComposables {
 

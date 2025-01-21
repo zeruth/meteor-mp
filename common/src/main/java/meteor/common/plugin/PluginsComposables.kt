@@ -1,11 +1,11 @@
-package meteor.ui.compose.components.plugins
+package meteor.common.plugin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.Switch
-import androidx.compose.material3.SwitchDefaults
-import androidx.compose.material3.Text
+import androidx.compose.material.Switch
+import androidx.compose.material.SwitchDefaults
+import androidx.compose.material.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -16,15 +16,14 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.CogSolid
 import compose.icons.lineawesomeicons.StarSolid
+import meteor.Common.favoritesMap
 import meteor.common.config.ConfigComposables.ConfigPanel
 import meteor.common.config.ConfigManager
 import meteor.common.panel.PanelComposables
-import meteor.common.plugin.Plugin
 import meteor.common.plugin.PluginManager.plugins
 import meteor.common.plugin.PluginManager.runningMap
 import meteor.common.ui.Colors
-import meteor.ui.compose.components.GeneralComposables.SidedNode
-import meteor.ui.compose.components.sidebar.buttons.PluginsButton.Companion.favoritesMap
+import meteor.common.ui.GeneralComposables.SidedNode
 
 object PluginsComposables {
 

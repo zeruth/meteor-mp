@@ -10,12 +10,10 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.dp
-import com.meteor.android.MainActivity
 import com.meteor.android.MainActivity.Companion.image
+import meteor.common.panel.PanelComposables.Panel
 import meteor.ui.compose.components.GamePanel.Game
-import meteor.ui.compose.components.panel.PanelComposables.Panel
 import meteor.ui.compose.components.sidebar.SidebarComposables.Sidebar
 import meteor.ui.compose.components.sidebar.UISide
 import java.awt.Dimension

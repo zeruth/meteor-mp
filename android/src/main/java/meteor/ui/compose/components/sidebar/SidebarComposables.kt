@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import ext.kotlin.MutableStateExt.toggle
+import meteor.common.panel.PanelComposables.secondaryContent
 import meteor.common.ui.Colors.secondary
 import meteor.common.ui.Colors.surfaceDark
 import meteor.ui.compose.components.Window.panelOpen
 import meteor.ui.compose.components.Window.sidebarWidth
-import meteor.ui.compose.components.panel.PanelComposables.secondaryContent
 import meteor.ui.compose.components.sidebar.buttons.PluginsButton
 
 object SidebarComposables {

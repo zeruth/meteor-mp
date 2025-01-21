@@ -5,9 +5,9 @@ import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.PlugSolid
 import meteor.common.panel.PanelComposables
 import meteor.common.plugin.Plugin
+import meteor.common.plugin.PluginsComposables.PluginList
 import meteor.ui.MeteorWindow
 import meteor.ui.MeteorWindow.windowState
-import meteor.ui.components.plugins.PluginsComposables.PluginList
 import meteor.ui.components.sidebar.SidebarButton
 
 class PluginsButton : SidebarButton(icon = LineAwesomeIcons.PlugSolid) {

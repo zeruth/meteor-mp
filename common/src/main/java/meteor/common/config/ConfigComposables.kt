@@ -1,12 +1,13 @@
 package meteor.common.config
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults.buttonColors
-import androidx.compose.material3.DropdownMenu
-import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.OutlinedTextFieldDefaults
 import androidx.compose.material3.Switch
@@ -17,12 +18,17 @@ import androidx.compose.material3.TextFieldDefaults
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import compose.icons.LineAwesomeIcons
+import compose.icons.lineawesomeicons.ChevronLeftSolid
+import compose.icons.lineawesomeicons.ChevronRightSolid
 import meteor.Common.switchStateMap
 import meteor.Common.textStateMap
 import meteor.common.plugin.meteor.UIColor
@@ -32,7 +38,7 @@ object ConfigComposables {
 
     @Suppress("UNCHECKED_CAST")
     @Composable
-    fun ConfigPanel(config: Config) {
+    fun  ConfigPanel(config: Config) {
         Box(Modifier.fillMaxSize()) {
             Column(Modifier.fillMaxSize()) {
                 for (item in config.items) {
@@ -78,8 +84,12 @@ object ConfigComposables {
                 switchStateMap[config.key] = config.get()
             },
             colors = SwitchDefaults.colors(
-                uncheckedThumbColor = Colors.surfaceDark.value,
-                checkedThumbColor = Colors.secondary.value
+                uncheckedTrackColor = Colors.surfaceDark.value,
+                checkedTrackColor = Colors.surfaceDark.value,
+                uncheckedThumbColor = Colors.secondary.value,
+                checkedThumbColor = Colors.secondary.value,
+                uncheckedBorderColor = Colors.surfaceDark.value,
+                checkedBorderColor = Colors.surfaceDark.value
             )
         )
     }
@@ -109,7 +119,9 @@ object ConfigComposables {
                 color = Colors.secondary.value,
                 fontSize = 16.sp
             ),
-            colors = OutlinedTextFieldDefaults.colors(focusedBorderColor = Colors.secondary.value)
+            colors = OutlinedTextFieldDefaults.colors(
+                focusedBorderColor = Colors.secondary.value,
+                unfocusedBorderColor = Colors.secondary.value)
         )
     }
 
@@ -133,31 +145,47 @@ object ConfigComposables {
                 style = TextStyle(color = Colors.secondary.value, fontSize = 18.sp)
             )
             Spacer(Modifier.weight(1f))
+            val first = getEnumEntries<T>().first()
+            val last = getEnumEntries<T>().last()
+            val hasPrev = selectedOption != first
+            val hasNext = selectedOption != last
+            if (hasPrev) {
+                Box(Modifier.size(20.dp).align(Alignment.CenterVertically).clip(RoundedCornerShape(5.dp)).clickable {
+                    var nextIsPrev = false
+                    getEnumEntries<T>().reversed().forEach {
+                        if (it == selectedOption) {
+                            nextIsPrev = true
+                        }
+                        else if (nextIsPrev) {
+                            selectedOption = it
+                            expanded = false
+                            config.set(selectedOption)
+                            return@clickable
+                        }
+                    }
+                }) {
+                    Image(LineAwesomeIcons.ChevronLeftSolid, "", colorFilter = ColorFilter.tint(Colors.secondary.value))
+                }
+            }
             Button(onClick = { expanded = true }, colors = buttonColors(containerColor = Colors.surfaceDark.value)) {
                 Text(text = selectedOption.name, style = TextStyle(color = Colors.secondary.value))
             }
-        }
-        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            DropdownMenu(
-                expanded = expanded,
-                onDismissRequest = { expanded = false },
-                modifier = Modifier
-                    .background(Colors.surfaceDark.value)
-            ) {
-                getEnumEntries<T>().forEach { option ->
-                    DropdownMenuItem(onClick = {
-                        expanded = false
-                        selectedOption = option
-                        config.set(selectedOption)
-                        println("should have set")
-                    }, modifier = Modifier.background(Colors.surfaceDark.value), text = {
-                        if (T::class == UIColor::class) {
-                            Text(text = option.name, color = (option as UIColor).color)
+            if (hasNext) {
+                Box(Modifier.size(20.dp).align(Alignment.CenterVertically).clip(RoundedCornerShape(5.dp)).clickable {
+                    var nextIsNext = false
+                    getEnumEntries<T>().forEach {
+                        if (it == selectedOption) {
+                            nextIsNext = true
                         }
-                        else {
-                            Text(text = option.name, color = Colors.secondary.value)
+                        else if (nextIsNext) {
+                            selectedOption = it
+                            expanded = false
+                            config.set(selectedOption)
+                            return@clickable
                         }
-                    })
+                    }
+                }) {
+                    Image(LineAwesomeIcons.ChevronRightSolid, "", colorFilter = ColorFilter.tint(Colors.secondary.value))
                 }
             }
         }
@@ -198,11 +226,14 @@ object ConfigComposables {
                 color = Colors.secondary.value,
                 fontSize = 18.sp
             ),
-            colors = TextFieldDefaults.colors(/*
-                focusedTextColor = Colors.secondary.value,
-                backgroundColor = Colors.surface.value,
+            colors = TextFieldDefaults.colors(
+                cursorColor = Colors.secondary.value,
+                disabledTextColor = Colors.secondary.value,
+                focusedContainerColor = Colors.surfaceDark.value,
+                unfocusedContainerColor = Colors.surfaceDark.value,
+                focusedLabelColor = Colors.secondary.value,
                 focusedIndicatorColor = Colors.secondary.value,
-                unfocusedIndicatorColor = Colors.secondary.value*/
+                unfocusedIndicatorColor = Colors.secondary.value,
             ),
             keyboardOptions = KeyboardOptions.Default.copy(keyboardType = KeyboardType.Number)
         )

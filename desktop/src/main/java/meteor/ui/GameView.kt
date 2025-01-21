@@ -14,7 +14,6 @@ import androidx.compose.ui.awt.awtEventOrNull
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.FilterQuality
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerButton
@@ -30,17 +29,14 @@ import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import compose.icons.lineawesomeicons.LockSolid
 import compose.icons.lineawesomeicons.UnlockSolid
 import meteor.Common.filterQuality
-import meteor.Main
 import meteor.common.config.ConfigManager
+import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.MeteorWindow.fixedState
 import meteor.ui.MeteorWindow.fixedWindowSize
 import meteor.ui.MeteorWindow.resetWindowSize
-import meteor.ui.MeteorWindow.sidebarWidth
-import meteor.ui.MeteorWindow.windowInstance
 import meteor.ui.MeteorWindow.windowState
-import meteor.ui.components.sidebar.SidebarComposables
-import meteor.ui.components.sidebar.buttons.FullscreenToggleButton
-import meteor.ui.components.sidebar.buttons.StretchToggleButton
+import meteor.ui.buttons.FullscreenToggleButton
+import meteor.ui.buttons.StretchToggleButton
 import java.awt.Dimension
 import meteor.Main.client as clientInstance
 

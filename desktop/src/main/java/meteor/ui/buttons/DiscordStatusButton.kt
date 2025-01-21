@@ -1,4 +1,4 @@
-package meteor.ui.components.sidebar.buttons
+package meteor.ui.buttons
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -24,10 +24,10 @@ import androidx.compose.ui.window.WindowPosition
 import androidx.compose.ui.window.WindowState
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.Discord
-import meteor.DiscordPresence
-import meteor.DiscordPresence.updatingDiscordState
+import meteor.discord.DiscordPresence
+import meteor.discord.DiscordPresence.updatingDiscordState
 import meteor.common.config.ConfigManager
-import meteor.ui.components.sidebar.SidebarButton
+import meteor.common.ui.components.sidebar.SidebarButton
 
 class DiscordStatusButton : SidebarButton(
     icon = LineAwesomeIcons.Discord,

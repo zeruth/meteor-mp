@@ -1,4 +1,4 @@
-package meteor.ui.compose.components
+package meteor.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
@@ -6,11 +6,8 @@ import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectDragGesturesAfterLongPress
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.interaction.collectIsHoveredAsState
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.offset
-import androidx.compose.foundation.layout.size
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -33,25 +30,17 @@ import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
 import androidx.compose.ui.input.key.onKeyEvent
 import androidx.compose.ui.input.key.type
-import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
-import androidx.compose.ui.unit.dp
-import com.meteor.android.MainActivity
-import com.meteor.android.MainActivity.Companion.clientInstance
-import com.meteor.android.MainActivity.Companion.fps
-import com.meteor.android.MainActivity.Companion.image
+import meteor.MainActivity
+import meteor.MainActivity.Companion.clientInstance
+import meteor.MainActivity.Companion.fps
+import meteor.MainActivity.Companion.image
 import meteor.Common.filterQuality
-import meteor.Main
-import meteor.events.DrawFinished
 import org.rationalityfrontline.kevent.KEVENT
-import java.awt.Point
-import java.lang.Math.abs
 
 /**
  * This panel will contain the game view & compose overlays eventually

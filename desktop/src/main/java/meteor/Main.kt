@@ -5,13 +5,14 @@ import androidx.compose.runtime.key
 import androidx.compose.ui.window.application
 import client.client
 import com.google.gson.GsonBuilder
-import meteor.DiscordPresence.updatingDiscordState
+import meteor.discord.DiscordPresence.updatingDiscordState
 import meteor.audio.MidiPlayer
 import meteor.audio.SoundPlayer
 import meteor.common.config.ConfigManager
 import meteor.common.plugin.PluginManager
+import meteor.discord.DiscordPresence
 import meteor.ui.MeteorWindow.MeteorWindow
-import meteor.ui.components.sidebar.buttons.DiscordStatusButton.Companion.showDiscordStatusWindow
+import meteor.ui.buttons.DiscordStatusButton.Companion.showDiscordStatusWindow
 import java.io.File
 
 object Main {

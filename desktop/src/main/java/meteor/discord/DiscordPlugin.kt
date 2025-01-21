@@ -1,4 +1,4 @@
-package meteor.plugin.discord
+package meteor.discord
 
 import meteor.common.plugin.Plugin
 

@@ -1,32 +1,28 @@
-package meteor.ui.compose.components
+package meteor.ui
 
 import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import androidx.compose.ui.unit.dp
-import com.meteor.android.MainActivity.Companion.image
+import meteor.MainActivity.Companion.image
+import meteor.Common.configWidth
+import meteor.Common.panelOpen
+import meteor.Common.sidebarWidth
+import meteor.Common.uiSide
 import meteor.common.panel.PanelComposables.Panel
-import meteor.ui.compose.components.GamePanel.Game
-import meteor.ui.compose.components.sidebar.SidebarComposables.Sidebar
-import meteor.ui.compose.components.sidebar.UISide
-import java.awt.Dimension
+import meteor.ui.GamePanel.Game
+import meteor.common.ui.components.sidebar.SidebarComposables.Sidebar
+import meteor.common.ui.components.sidebar.UISide
 
 /**
  * The main entry point to the Compose UI
  */
 object Window {
-    val sidebarWidth = mutableStateOf(40.dp)
-    val configWidth = mutableStateOf(300.dp)
-    var panelOpen = mutableStateOf(false)
-    val uiSide = mutableStateOf(UISide.RIGHT)
-    var gameWidth = mutableStateOf((-1).dp)
+
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable

@@ -1,4 +1,4 @@
-package meteor.ui.compose.components.sidebar
+package meteor.common.ui.components.sidebar
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -6,38 +6,56 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import ext.kotlin.MutableStateExt.toggle
+import meteor.Common.panelOpen
+import meteor.Common.sidebarWidth
 import meteor.common.panel.PanelComposables.secondaryContent
 import meteor.common.ui.Colors.secondary
 import meteor.common.ui.Colors.surfaceDark
-import meteor.ui.compose.components.Window.panelOpen
-import meteor.ui.compose.components.Window.sidebarWidth
-import meteor.ui.compose.components.sidebar.buttons.PluginsButton
+import meteor.common.ui.components.sidebar.buttons.PluginsButton
 
 object SidebarComposables {
-    val sidebarButtons = arrayListOf(PluginsButton())
+    val sidebarButtons = arrayListOf<SidebarButton>(PluginsButton())
     val padding = mutableStateOf(5.dp)
     val buttonSize = mutableStateOf(sidebarWidth.value - padding.value)
     var lastButtonClicked = mutableStateOf<SidebarButton?>(null)
 
+    inline fun<reified T> getButton(): T {
+        return sidebarButtons.filterIsInstance<T>().first()
+    }
+
+    fun add(sidebarButton: SidebarButton) {
+        if (!sidebarButtons.contains(sidebarButton)) {
+            sidebarButtons.add(sidebarButton)
+        }
+    }
+
+    fun remove(sidebarButton: SidebarButton) {
+        if (sidebarButtons.contains(sidebarButton)) {
+            sidebarButtons.remove(sidebarButton)
+        }
+    }
+
     @Composable
-    fun Sidebar() {
+    fun Sidebar(vararg platformButtons: SidebarButton) {
+        val allButtons = platformButtons.toMutableSet()
+        platformButtons.forEach { add(it) }
+        allButtons.addAll(sidebarButtons)
         //Sidebar
-        Box(Modifier.fillMaxSize().background(surfaceDark.value)) {
+        Box(Modifier.width(sidebarWidth.value).fillMaxHeight().background(surfaceDark.value)) {
             //Buttons
             Column(Modifier.fillMaxSize().padding(all = padding.value)) {
-                for (sidebarButton in sidebarButtons.filter { !it.bottom }) {
+                for (sidebarButton in allButtons.filter { !it.bottom }.sortedBy { it.position }) {
                     SidebarButtonNode(
                         sidebarButton
                     )
                 }
                 Spacer(Modifier.weight(1f))
-                for (sidebarButton in sidebarButtons.filter { it.bottom }) {
+                for (sidebarButton in allButtons.filter { it.bottom }.sortedBy { it.position }) {
                     SidebarButtonNode(
                         sidebarButton
                     )

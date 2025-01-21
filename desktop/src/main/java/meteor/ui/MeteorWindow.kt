@@ -11,17 +11,19 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import meteor.Common.panelOpen
 import meteor.Game.gameImage
 import meteor.Game.loadingImage
 import meteor.common.panel.PanelComposables.Panel
-import meteor.common.plugin.PluginManager
-import meteor.common.plugin.meteor.MeteorPlugin
+import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.GameView.GameViewContainer
 import meteor.ui.GameView.stretchedMode
-import meteor.ui.components.sidebar.SidebarComposables
+import meteor.ui.buttons.CloseMeteorButton
+import meteor.ui.buttons.DiscordStatusButton
+import meteor.ui.buttons.FullscreenToggleButton
+import meteor.ui.buttons.StretchToggleButton
 import java.awt.Dimension
 
 object MeteorWindow {
@@ -45,7 +47,6 @@ object MeteorWindow {
         val resetBounds = !stretchedMode.value
         val height = if (resetBounds) fixedWindowSize.height else windowInstance.height
         var width = if (resetBounds) fixedWindowSize.width else windowInstance.width
-        val meteorPlugin = PluginManager.get<MeteorPlugin>()!!
 
         if (panelWasOpen != panelOpen.value) {
             if (panelOpen.value) {
@@ -64,7 +65,10 @@ object MeteorWindow {
 
     }
 
-    var panelOpen = mutableStateOf(false)
+    val closeMeteorButton = CloseMeteorButton()
+    val discordStatusButton = DiscordStatusButton()
+    val fullscreenToggleButton = FullscreenToggleButton()
+    val stretchToggleButton = StretchToggleButton()
 
 
     @Composable
@@ -86,7 +90,14 @@ object MeteorWindow {
                             Panel()
                         }
                     }
-                    SidebarComposables.Sidebar()
+                    val currentButtons = mutableSetOf(discordStatusButton, stretchToggleButton, fullscreenToggleButton)
+                    if (windowState.value != fullscreenState) {
+                        SidebarComposables.remove(closeMeteorButton)
+                    } else {
+                        currentButtons.add(closeMeteorButton)
+                    }
+
+                    SidebarComposables.Sidebar(*currentButtons.toTypedArray())
                 }
             }
 

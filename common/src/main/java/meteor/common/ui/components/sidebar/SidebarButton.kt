@@ -1,4 +1,4 @@
-package meteor.ui.components.sidebar
+package meteor.common.ui.components.sidebar
 
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
@@ -11,7 +11,8 @@ open class SidebarButton(
     tint: Color? = null,
     imageResource: String? = null,
     val actionButton: Boolean = false,
-    val bottom: Boolean = false
+    val bottom: Boolean = false,
+    val position: Int = 0
 ) {
     var icon = mutableStateOf(icon)
     var description = mutableStateOf(description)

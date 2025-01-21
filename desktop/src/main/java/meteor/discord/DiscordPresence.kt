@@ -1,12 +1,12 @@
-package meteor
+package meteor.discord
 
 import androidx.compose.runtime.mutableStateOf
 import io.github.vyfor.kpresence.RichClient
 import io.github.vyfor.kpresence.logger.ILogger
 import io.github.vyfor.kpresence.logger.LogLevel
 import io.github.vyfor.kpresence.rpc.ActivityType
+import meteor.Main
 import meteor.common.plugin.PluginManager
-import meteor.plugin.discord.DiscordPlugin
 
 object DiscordPresence {
     private val discordClient = RichClient(969159977463848960)

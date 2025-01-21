@@ -14,7 +14,7 @@ pluginManagement {
     }
 }
 
-rootProject.name = "Meteor Android"
+rootProject.name = "Meteor Multiplatform"
 include(":android")
 include(":desktop")
 include(":android-awt")

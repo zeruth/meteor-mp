@@ -1,4 +1,4 @@
-package meteor.ui.components.panel
+package meteor.common.panel
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
@@ -7,7 +7,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
-import meteor.common.ui.Colors
+import meteor.common.ui.Colors.secondarySurface
 
 object PanelComposables {
     val content: MutableState<(@Composable () -> Unit)?> = mutableStateOf(null)
@@ -15,7 +15,7 @@ object PanelComposables {
 
     @Composable
     fun Panel() {
-        Box(modifier = Modifier.fillMaxSize().background(Colors.secondarySurface.value)) {
+        Box(modifier = Modifier.fillMaxSize().background(secondarySurface.value)) {
             if (secondaryContent.value != null) {
                 secondaryContent.value!!.invoke()
             } else {

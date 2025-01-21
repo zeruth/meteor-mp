@@ -3,8 +3,8 @@ package meteor.ui.compose.components.sidebar.buttons
 import androidx.compose.runtime.mutableStateMapOf
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.PlugSolid
+import meteor.common.panel.PanelComposables
 import meteor.common.plugin.Plugin
-import meteor.ui.compose.components.panel.PanelComposables
 import meteor.ui.compose.components.plugins.PluginsComposables.PluginList
 import meteor.ui.compose.components.sidebar.SidebarButton
 

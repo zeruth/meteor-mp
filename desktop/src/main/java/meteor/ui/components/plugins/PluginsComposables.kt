@@ -18,11 +18,11 @@ import compose.icons.lineawesomeicons.CogSolid
 import compose.icons.lineawesomeicons.StarSolid
 import meteor.common.config.ConfigComposables.ConfigPanel
 import meteor.common.config.ConfigManager
+import meteor.common.panel.PanelComposables
 import meteor.common.plugin.Plugin
 import meteor.common.plugin.PluginManager.plugins
 import meteor.common.ui.Colors
 import meteor.ui.components.GeneralComposables.SidedNode
-import meteor.ui.components.panel.PanelComposables
 import meteor.ui.components.sidebar.buttons.PluginsButton.Companion.favoritesMap
 import meteor.ui.components.sidebar.buttons.PluginsButton.Companion.runningMap
 

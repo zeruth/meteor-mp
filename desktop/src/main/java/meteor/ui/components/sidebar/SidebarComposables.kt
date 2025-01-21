@@ -10,14 +10,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import ext.kotlin.MutableStateExt.toggle
+import meteor.common.panel.PanelComposables.secondaryContent
 import meteor.common.ui.Colors
 import meteor.ui.MeteorWindow
 import meteor.ui.MeteorWindow.panelOpen
 import meteor.ui.MeteorWindow.sidebarWidth
 import meteor.ui.MeteorWindow.windowState
-import meteor.ui.components.panel.PanelComposables.secondaryContent
 import meteor.ui.components.sidebar.buttons.*
-import meteor.ui.compose.components.sidebar.SidebarButton
 
 object SidebarComposables {
     val sidebarButtons = arrayListOf(PluginsButton(), DiscordStatusButton(), StretchToggleButton(), FullscreenToggleButton())

@@ -1,33 +1,44 @@
-### Meteor - Android  
+### Meteor - Multiplatform (Desktop/Android) 
 ---
-**BETA**  
-**This branch connects to 2004scape.org by default**
+**This connects to 2004scape.org by default and follows their rules diligently**
 ---
-Galaxy S24 Ultra  
-![image](https://github.com/user-attachments/assets/af862eff-61e6-4123-a645-20011111a4b8)  
 
-Video  
-[![Video](https://img.youtube.com/vi/cCQErZ1HsmU/0.jpg)](https://www.youtube.com/watch?v=cCQErZ1HsmU)
-
+![image](https://github.com/user-attachments/assets/d9fffa2c-3008-42d2-b488-c26665eb8a38)
+  
 # Requirements  
 
-Android 11 R device
-
+Android 11 R device  
+JDK 22  
+Latest Android Studio / NDK  
+(These all MUST BE INSTALLED)  
+  
 # Building  
 
-Get latest Android Studio / NDK  
-Execute bundled run configuration 'Inject' at clone and when modifying api/api-rs/deob/mixins  
-You can now build the 'app' module  
+you can build either platform using android:build or desktop:build  
+You can run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
+or you can use the output apk at android/build/outputs/apk  
+or you can create a distributable using the included run configuration if you replace the jbr runtime with an oracle 21 runtime  
 
 # Info
-You should be able to use the Account plugin to configure Auto User/Pass, and that will let you login when hitting existing user.  
-(properties are stored in sandboxed app data, no other apps can access this data unless your device is rooted.)  
-  
-You should be able to rotate the camera, long press to open menu, tap to click, organize inventory / bank, and use sliders
+The project was entirely re-written using a shared code concept using Compose with no reflection / injection  
+This unified code concept is still very new so a lot of things have regressed (input on android)  
+expect a lot of things moving to the common module and bug fixes where they pop up  
 
-You should be able to open the keyboard at any time via the keyboard button on the toolbar and close it by pressing enter  
-  
-Currently the game renders at 50fps in the Android Emulator and on my personal S24 Ultra.  
-Performance has not been tested on other devices.  
+```
+Forbidden features (unless otherwise permitted by Lost-City):  
+    artificial input of any kind  
+    camera zoom / middle mouse rotate  
+    menu entry swapping (including changing menu entry text)
+    overlays of any kind over the game
+    visual game state tracking in UI form be it swing or compose
+
+    Per Pazaz:
+    "in general: don’t give yourself an advantage that forces a new meta on the community.
+        The original experience should be a viable option for people to play with"
+
+    Per Zeruth:
+    "We will absolutely be respecting the project here, if things change regarding content
+        that is forbidden or not, it will be reflected here."
+```
   
 Please create an issue ONLY if your phone does not have one already, and ONLY for rendering issues.  

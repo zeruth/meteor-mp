@@ -9,11 +9,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import meteor.MainActivity.Companion.image
-import meteor.common.Common.configWidth
-import meteor.common.Common.panelOpen
-import meteor.common.Common.sidebarWidth
-import meteor.common.Common.uiSide
-import meteor.common.panel.PanelComposables.Panel
+import meteor.common.ui.components.panel.PanelComposables.Panel
+import meteor.common.ui.UI.configWidth
+import meteor.common.ui.UI.panelOpen
+import meteor.common.ui.UI.sidebarWidth
+import meteor.common.ui.UI.uiSide
 import meteor.ui.GamePanel.Game
 import meteor.common.ui.components.sidebar.SidebarComposables.Sidebar
 import meteor.common.ui.components.sidebar.UISide

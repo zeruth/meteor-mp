@@ -8,7 +8,7 @@ import client.client
 import client.events.DrawFinished
 import meteor.Main.client as clientInstance
 import jagex2.client.GameShell
-import org.rationalityfrontline.kevent.KEVENT
+import meteor.common.Common.eventbus
 import sign.signlink
 import java.net.InetAddress
 
@@ -34,7 +34,7 @@ object Game {
     }
 
     init {
-        KEVENT.subscribe<DrawFinished> {
+        eventbus.subscribe<DrawFinished> {
             gameImage.value = GameShell.image.toComposeImageBitmap()
         }
     }

@@ -3,7 +3,7 @@ package meteor.audio
 import client.events.MidiPlay
 import client.events.MidiStop
 import meteor.Main
-import org.rationalityfrontline.kevent.KEVENT
+import meteor.common.Common.eventbus
 import java.io.File
 import java.io.IOException
 import java.util.*
@@ -19,10 +19,10 @@ object MidiPlayer {
     fun init(){}
 
     init {
-        KEVENT.subscribe<MidiPlay> {
+        eventbus.subscribe<MidiPlay> {
             playSong(it.data.name, true)
         }
-        KEVENT.subscribe<MidiStop> {
+        eventbus.subscribe<MidiStop> {
             stop()
         }
     }

@@ -13,10 +13,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import meteor.common.Common.panelOpen
 import meteor.Game.gameImage
 import meteor.Game.loadingImage
-import meteor.common.panel.PanelComposables.Panel
+import meteor.common.ui.components.panel.PanelComposables.Panel
+import meteor.common.ui.UI.panelOpen
 import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.GameView.GameViewContainer
 import meteor.ui.GameView.stretchedMode

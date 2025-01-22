@@ -3,7 +3,7 @@ package meteor.common.ui.components.sidebar
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import meteor.common.panel.PanelComposables
+import meteor.common.ui.components.panel.PanelComposables
 
 open class SidebarButton(
     icon: ImageVector? = null,

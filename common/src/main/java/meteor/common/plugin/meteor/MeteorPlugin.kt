@@ -1,10 +1,10 @@
 package meteor.common.plugin.meteor
 
-import meteor.common.Common.filterQuality
 import meteor.common.config.ConfigManager
 import meteor.common.events.ConfigChanged
 import meteor.common.plugin.Plugin
 import meteor.common.ui.Colors
+import meteor.common.ui.UI.filterQuality
 
 class MeteorPlugin : Plugin("Meteor", cantDisable = true, enabledByDefault = true) {
     val config = configuration<MeteorConfig>()

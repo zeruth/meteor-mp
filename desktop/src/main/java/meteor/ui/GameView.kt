@@ -29,8 +29,9 @@ import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import compose.icons.lineawesomeicons.LockSolid
 import compose.icons.lineawesomeicons.UnlockSolid
-import meteor.common.Common.filterQuality
+import meteor.common.Common.eventbus
 import meteor.common.config.ConfigManager
+import meteor.common.ui.UI.filterQuality
 import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.MeteorWindow.fixedState
 import meteor.ui.MeteorWindow.fixedWindowSize
@@ -38,7 +39,6 @@ import meteor.ui.MeteorWindow.resetWindowSize
 import meteor.ui.MeteorWindow.windowState
 import meteor.ui.buttons.FullscreenToggleButton
 import meteor.ui.buttons.StretchToggleButton
-import org.rationalityfrontline.kevent.KEVENT
 import java.awt.Dimension
 import meteor.Main.client as clientInstance
 
@@ -53,7 +53,7 @@ object GameView {
     var recentDraws = ArrayList<Long>()
 
     init {
-        KEVENT.subscribe<DrawFinished> {
+        eventbus.subscribe<DrawFinished> {
             val expiredTimes = ArrayList<Long>()
             recentDraws.add(System.currentTimeMillis())
             for (renderTime in recentDraws) {

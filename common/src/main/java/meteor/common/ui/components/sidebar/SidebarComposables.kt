@@ -11,11 +11,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
 import meteor.common.ext.kotlin.MutableStateExt.toggle
-import meteor.common.Common.panelOpen
-import meteor.common.Common.sidebarWidth
-import meteor.common.panel.PanelComposables.secondaryContent
+import meteor.common.ui.components.panel.PanelComposables.secondaryContent
 import meteor.common.ui.Colors.secondary
 import meteor.common.ui.Colors.surfaceDark
+import meteor.common.ui.UI.panelOpen
+import meteor.common.ui.UI.sidebarWidth
 import meteor.common.ui.components.sidebar.buttons.PluginsButton
 
 object SidebarComposables {
@@ -103,12 +103,5 @@ object SidebarComposables {
         if (panelOpen.value)
             button.onClick()
         lastButtonClicked.value = button
-    }
-
-    @Composable
-    fun SidebarButton() {
-        Box(Modifier.fillMaxWidth().height(buttonSize.value).background(secondary.value)) {
-
-        }
     }
 }

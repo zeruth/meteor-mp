@@ -2,17 +2,17 @@ package meteor.audio
 
 import client.events.WavePlay
 import client.events.WaveReplay
-import org.rationalityfrontline.kevent.KEVENT
+import meteor.common.Common.eventbus
 import java.io.InputStream
 import javax.sound.sampled.*
 
 class SoundPlayer(stream: AudioInputStream, delay: Int) {
     companion object {
         init {
-            KEVENT.subscribe<WavePlay> {
+            eventbus.subscribe<WavePlay> {
                 SoundPlayer(AudioSystem.getAudioInputStream(it.data.soundStream), 0)
             }
-            KEVENT.subscribe<WaveReplay> {
+            eventbus.subscribe<WaveReplay> {
                 WavePlay.lastWave.reset()
                 SoundPlayer(AudioSystem.getAudioInputStream(WavePlay.lastWave), 0)
             }

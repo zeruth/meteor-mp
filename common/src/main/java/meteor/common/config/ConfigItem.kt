@@ -10,8 +10,9 @@ class ConfigItem<T>(val config: Config, val name: String, val key: String, val d
     }
 
     fun getStringValue(): String {
-        return ConfigManager.getString(key, defaultValue as Any)!!
+        return ConfigManager.getString(key, defaultValue as Any)
     }
+
     inline fun <reified T> get(): T {
         return ConfigManager.get(key, defaultValue as Any) as T
     }

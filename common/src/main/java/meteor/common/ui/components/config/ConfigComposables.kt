@@ -1,4 +1,4 @@
-package meteor.common.config
+package meteor.common.ui.components.config
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -29,10 +29,13 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.ChevronLeftSolid
 import compose.icons.lineawesomeicons.ChevronRightSolid
-import meteor.common.Common.switchStateMap
-import meteor.common.Common.textStateMap
+import meteor.common.config.Config
+import meteor.common.config.ConfigItem
 import meteor.common.plugin.meteor.UIColor
 import meteor.common.ui.Colors
+import meteor.common.ui.UI.switchStateMap
+import meteor.common.ui.UI.textStateMap
+import meteor.plugin.meteor.FilterQuality
 
 object ConfigComposables {
 
@@ -50,7 +53,7 @@ object ConfigComposables {
                             if (item.defaultValue is UIColor)
                                 ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<UIColor>>).invoke(this) }
                             else if (item.defaultValue is meteor.plugin.meteor.FilterQuality)
-                                ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<meteor.plugin.meteor.FilterQuality>>).invoke(this) }
+                                ConfigNode(height = 35) { EnumConfigNode(item as ConfigItem<Enum<FilterQuality>>).invoke(this) }
                         }
                     }
                     Spacer(Modifier.height(2.dp))

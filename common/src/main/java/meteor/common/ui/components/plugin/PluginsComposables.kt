@@ -1,4 +1,4 @@
-package meteor.common.plugin
+package meteor.common.ui.components.plugin
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -16,14 +16,15 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.CogSolid
 import compose.icons.lineawesomeicons.StarSolid
-import meteor.common.Common.favoritesMap
-import meteor.common.config.ConfigComposables.ConfigPanel
+import meteor.common.ui.components.config.ConfigComposables.ConfigPanel
 import meteor.common.config.ConfigManager
-import meteor.common.panel.PanelComposables
+import meteor.common.plugin.Plugin
+import meteor.common.ui.components.panel.PanelComposables
 import meteor.common.plugin.PluginManager.plugins
 import meteor.common.plugin.PluginManager.runningMap
 import meteor.common.ui.Colors
 import meteor.common.ui.GeneralComposables.SidedNode
+import meteor.common.ui.UI.favoritesMap
 
 object PluginsComposables {
 

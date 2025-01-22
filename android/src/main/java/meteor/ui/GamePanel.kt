@@ -39,8 +39,8 @@ import meteor.MainActivity
 import meteor.MainActivity.Companion.clientInstance
 import meteor.MainActivity.Companion.fps
 import meteor.MainActivity.Companion.image
-import meteor.common.Common.filterQuality
-import org.rationalityfrontline.kevent.KEVENT
+import meteor.common.Common.eventbus
+import meteor.common.ui.UI.filterQuality
 
 /**
  * This panel will contain the game view & compose overlays eventually
@@ -71,7 +71,7 @@ object GamePanel {
     var waitTapFrame = 0
 
     init {
-        KEVENT.subscribe<client.events.DrawFinished>(priority = Int.MAX_VALUE) {
+        eventbus.subscribe<client.events.DrawFinished>(priority = Int.MAX_VALUE) {
             if (mouseDown)
                 waitFrame += 1
             else
@@ -81,14 +81,14 @@ object GamePanel {
                 waitTapFrame += 1
             }
         }
-        KEVENT.subscribe<client.events.DrawFinished> {
+        eventbus.subscribe<client.events.DrawFinished> {
             pendingMove?.let {
                 clientInstance.mouseMoved(it.x, it.y)
                 mouseDown = true
                 pendingMove = null
             }
         }
-        KEVENT.subscribe<client.events.DrawFinished> {
+        eventbus.subscribe<client.events.DrawFinished> {
             pendingPress?.let {
                 if (!mouseDown || waitFrame == 0)
                     return@let
@@ -96,7 +96,7 @@ object GamePanel {
                 pendingPress = null
             }
         }
-        KEVENT.subscribe<client.events.DrawFinished> {
+        eventbus.subscribe<client.events.DrawFinished> {
             pendingTap?.let {
                 if (waitTapFrame == 0)
                     return@let
@@ -105,7 +105,7 @@ object GamePanel {
                 pendingTap = null
             }
         }
-        KEVENT.subscribe<client.events.DrawFinished> {
+        eventbus.subscribe<client.events.DrawFinished> {
             pendingHold?.let {
                 if (!mouseDown || waitFrame == 0)
                     return@let

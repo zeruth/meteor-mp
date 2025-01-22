@@ -3,8 +3,8 @@ package meteor.common.config
 import meteor.common.Common.gson
 import meteor.common.Configuration
 import meteor.Logger
+import meteor.common.Common.eventbus
 import meteor.common.events.ConfigChanged
-import org.rationalityfrontline.kevent.KEVENT
 import java.io.File
 
 object ConfigManager {
@@ -73,12 +73,14 @@ object ConfigManager {
      */
     fun <T> set(key: String, value: T) {
         if (updateValue(key, value)) {
-            KEVENT.post(ConfigChanged(getItem<T>(key)))
+            eventbus.post(ConfigChanged(getItem<T>(key)))
             save()
         }
     }
 
     fun save() {
-        configFile.writeText(gson.toJson(properties))
+        //Don't save empty properties ever.
+        if (properties.properties.isNotEmpty())
+            configFile.writeText(gson.toJson(properties))
     }
 }

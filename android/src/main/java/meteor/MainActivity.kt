@@ -29,9 +29,9 @@ import meteor.MainActivity.Companion.image
 import meteor.MainActivity.Companion.recentDraws
 import ext.awt.BufferedImageExt.toComposeImageBitmap
 import meteor.common.Common
+import meteor.common.Common.eventbus
 import meteor.common.plugin.PluginManager
 import meteor.ui.Window.ViewBox
-import org.rationalityfrontline.kevent.KEVENT
 import sign.signlink
 import java.awt.image.BufferedImage
 import java.awt.image.DataBufferInt
@@ -91,7 +91,7 @@ class MainActivity : ComponentActivity() {
     }
 
     fun startGame() {
-        KEVENT.subscribe<DrawFinished> {
+        eventbus.subscribe<DrawFinished> {
             receivedDraw = true
             updateGameImage()
         }

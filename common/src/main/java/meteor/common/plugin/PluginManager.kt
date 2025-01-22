@@ -11,7 +11,6 @@ object PluginManager {
     val runningMap = mutableStateMapOf<Plugin, Boolean>()
 
     init {
-        //plugins.add(DiscordPlugin())
         plugins.add(MeteorPlugin())
     }
 

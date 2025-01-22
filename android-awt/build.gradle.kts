@@ -5,7 +5,7 @@ plugins {
 
 android {
     namespace = "com.meteor.nat.awt"
-    compileSdk = 34
+    compileSdk = 35
 
     defaultConfig {
         minSdk = 26
@@ -23,12 +23,13 @@ android {
             )
         }
     }
+    //Note we must always use 1_8 here as it's the only version where we can spoof the java.awt classes
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
         targetCompatibility = JavaVersion.VERSION_1_8
     }
     kotlinOptions {
-        jvmTarget = "1.8"
+        jvmTarget = "17"
     }
     externalNativeBuild {
         cmake {

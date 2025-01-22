@@ -153,33 +153,38 @@ public class Font implements Serializable {
     }
 
     public Font(String name, int style, int size) {
-        this.name = (name != null) ? name : "Default"; //$NON-NLS-1$
-        this.size = (size >= 0) ? size : 0;
-        this.style = (style & ~0x03) == 0 ? style : Font.PLAIN;
-        this.pointSize = this.size;
+        try {
 
-        fRequestedAttributes = new Hashtable<Attribute, Object>(5);
+            this.name = (name != null) ? name : "Default"; //$NON-NLS-1$
+            this.size = (size >= 0) ? size : 0;
+            this.style = (style & ~0x03) == 0 ? style : Font.PLAIN;
+            this.pointSize = this.size;
 
-        fRequestedAttributes.put(TextAttribute.TRANSFORM, IDENTITY_TRANSFORM);
+            fRequestedAttributes = new Hashtable<Attribute, Object>(5);
 
-        this.transformed = false;
+            fRequestedAttributes.put(TextAttribute.TRANSFORM, IDENTITY_TRANSFORM);
 
-        fRequestedAttributes.put(TextAttribute.FAMILY, this.name);
-        fRequestedAttributes.put(TextAttribute.SIZE, new Float(this.size));
+            this.transformed = false;
 
-        if ((this.style & Font.BOLD) != 0) {
-            fRequestedAttributes.put(TextAttribute.WEIGHT,
-                    TextAttribute.WEIGHT_BOLD);
-        } else {
-            fRequestedAttributes.put(TextAttribute.WEIGHT,
-                    TextAttribute.WEIGHT_REGULAR);
-        }
-        if ((this.style & Font.ITALIC) != 0) {
-            fRequestedAttributes.put(TextAttribute.POSTURE,
-                    TextAttribute.POSTURE_OBLIQUE);
-        } else {
-            fRequestedAttributes.put(TextAttribute.POSTURE,
-                    TextAttribute.POSTURE_REGULAR);
+            fRequestedAttributes.put(TextAttribute.FAMILY, this.name);
+            fRequestedAttributes.put(TextAttribute.SIZE, new Float(this.size));
+
+            if ((this.style & Font.BOLD) != 0) {
+                fRequestedAttributes.put(TextAttribute.WEIGHT,
+                        TextAttribute.WEIGHT_BOLD);
+            } else {
+                fRequestedAttributes.put(TextAttribute.WEIGHT,
+                        TextAttribute.WEIGHT_REGULAR);
+            }
+            if ((this.style & Font.ITALIC) != 0) {
+                fRequestedAttributes.put(TextAttribute.POSTURE,
+                        TextAttribute.POSTURE_OBLIQUE);
+            } else {
+                fRequestedAttributes.put(TextAttribute.POSTURE,
+                        TextAttribute.POSTURE_REGULAR);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 

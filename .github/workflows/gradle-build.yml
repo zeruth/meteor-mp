@@ -1,0 +1,50 @@
+# This workflow uses actions that are not certified by GitHub.
+# They are provided by a third-party and are governed by
+# separate terms of service, privacy policy, and support
+# documentation.
+# This workflow will build a package using Gradle and then publish it to GitHub packages when a release is created
+# For more information see: https://github.com/actions/setup-java/blob/main/docs/advanced-usage.md#Publishing-using-gradle
+
+name: Gradle Build
+
+on:
+  push:
+    branches:
+      - 225
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: JDK 21 setup
+      uses: actions/setup-java@v4
+      with:
+        java-version: '21'
+        distribution: 'temurin'
+
+    - name: Gradle setup
+      uses: gradle/actions/setup-gradle@v4.0.0
+      with:
+        gradle-version: "8.12"
+
+    - name: Build Desktop/Android
+      run: .\gradlew build
+
+    - name: Upload Android as artifact
+      uses: actions/upload-artifact@v4.6.0
+      with:
+        name: meteor-android
+        path: android/build/outputs/apk/debug/android-debug.apk
+
+    - name: Package Desktop
+      run: .\gradlew desktop:createDistributable
+
+    - name: Upload Desktop as artifact
+      uses: actions/upload-artifact@v4.6.0
+      with:
+        name: meteor-desktop
+        path: desktop/build/compose/binaries/main/app/

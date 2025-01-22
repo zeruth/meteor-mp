@@ -29,8 +29,8 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.ChevronLeftSolid
 import compose.icons.lineawesomeicons.ChevronRightSolid
-import meteor.Common.switchStateMap
-import meteor.Common.textStateMap
+import meteor.common.Common.switchStateMap
+import meteor.common.Common.textStateMap
 import meteor.common.plugin.meteor.UIColor
 import meteor.common.ui.Colors
 

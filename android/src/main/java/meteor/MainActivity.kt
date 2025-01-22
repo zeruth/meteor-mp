@@ -28,6 +28,7 @@ import meteor.MainActivity.Companion.fps
 import meteor.MainActivity.Companion.image
 import meteor.MainActivity.Companion.recentDraws
 import ext.awt.BufferedImageExt.toComposeImageBitmap
+import meteor.common.Common
 import meteor.common.plugin.PluginManager
 import meteor.ui.Window.ViewBox
 import org.rationalityfrontline.kevent.KEVENT
@@ -129,7 +130,7 @@ class MainActivity : ComponentActivity() {
         requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
         hideSystemUI()
         Common.isAndroid = true
-        meteor.Configuration.init(applicationContext)
+        meteor.common.Configuration.init(applicationContext)
         Logger.logFile = File(dataDir, "log.txt")
         startGame()
         PluginManager.startPlugins()

@@ -29,7 +29,7 @@ import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import compose.icons.lineawesomeicons.LockSolid
 import compose.icons.lineawesomeicons.UnlockSolid
-import meteor.Common.filterQuality
+import meteor.common.Common.filterQuality
 import meteor.common.config.ConfigManager
 import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.MeteorWindow.fixedState

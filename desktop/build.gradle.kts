@@ -13,9 +13,11 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":rs2"))
 
-    implementation(compose.runtime)
-    implementation(compose.ui)
-    implementation(compose.desktop.currentOs)
+    with(compose) {
+        implementation(runtime)
+        implementation(ui)
+        implementation(desktop.currentOs)
+    }
 
     with(libs) {
         implementation(eventbus)

@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.sp
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.CogSolid
 import compose.icons.lineawesomeicons.StarSolid
-import meteor.Common.favoritesMap
+import meteor.common.Common.favoritesMap
 import meteor.common.config.ConfigComposables.ConfigPanel
 import meteor.common.config.ConfigManager
 import meteor.common.panel.PanelComposables

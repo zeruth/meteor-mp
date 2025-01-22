@@ -1,8 +1,6 @@
 package meteor.common.plugin.meteor
 
-import androidx.compose.runtime.mutableStateOf
-import meteor.Common
-import meteor.Common.filterQuality
+import meteor.common.Common.filterQuality
 import meteor.common.config.ConfigManager
 import meteor.common.events.ConfigChanged
 import meteor.common.plugin.Plugin

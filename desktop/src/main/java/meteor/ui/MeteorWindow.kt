@@ -13,7 +13,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
-import meteor.Common.panelOpen
+import meteor.common.Common.panelOpen
 import meteor.Game.gameImage
 import meteor.Game.loadingImage
 import meteor.common.panel.PanelComposables.Panel

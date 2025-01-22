@@ -39,7 +39,7 @@ import meteor.MainActivity
 import meteor.MainActivity.Companion.clientInstance
 import meteor.MainActivity.Companion.fps
 import meteor.MainActivity.Companion.image
-import meteor.Common.filterQuality
+import meteor.common.Common.filterQuality
 import org.rationalityfrontline.kevent.KEVENT
 
 /**

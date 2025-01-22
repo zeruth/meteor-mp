@@ -14,13 +14,20 @@ kotlin {
 }
 
 dependencies {
-    compileOnly(compose.runtime)
-    compileOnly(compose.ui)
-    compileOnly(compose.desktop.currentOs)
-    compileOnly(libs.logger)
-    compileOnly(libs.eventbus)
-    compileOnly(libs.gson)
-    compileOnly(libs.material3)
-    compileOnly(libs.line.awesome)
     compileOnly(files("../lib/android-35.jar"))
+
+    with(compose) {
+        compileOnly(runtime)
+        compileOnly(ui)
+        compileOnly(desktop.currentOs)
+    }
+
+    with(libs) {
+        compileOnly(kotlin.reflect)
+        compileOnly(logger)
+        compileOnly(eventbus)
+        compileOnly(gson)
+        compileOnly(material3)
+        compileOnly(line.awesome)
+    }
 }

@@ -10,9 +10,9 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.unit.dp
-import ext.kotlin.MutableStateExt.toggle
-import meteor.Common.panelOpen
-import meteor.Common.sidebarWidth
+import meteor.common.ext.kotlin.MutableStateExt.toggle
+import meteor.common.Common.panelOpen
+import meteor.common.Common.sidebarWidth
 import meteor.common.panel.PanelComposables.secondaryContent
 import meteor.common.ui.Colors.secondary
 import meteor.common.ui.Colors.surfaceDark

@@ -8,6 +8,8 @@ import com.google.gson.GsonBuilder
 import meteor.discord.DiscordPresence.updatingDiscordState
 import meteor.audio.MidiPlayer
 import meteor.audio.SoundPlayer
+import meteor.common.Common
+import meteor.common.Configuration
 import meteor.common.config.ConfigManager
 import meteor.common.plugin.PluginManager
 import meteor.discord.DiscordPresence

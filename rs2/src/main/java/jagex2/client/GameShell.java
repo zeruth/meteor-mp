@@ -45,7 +45,7 @@ public class GameShell extends Component implements Runnable, MouseListener, Mou
 	protected Graphics graphics;
 
 	@OriginalMember(owner = "client.client!a", name = "o", descriptor = "Lclient!qb;")
-	protected PixMap drawArea;
+	public PixMap drawArea;
 
 	@OriginalMember(owner = "client.client!a", name = "p", descriptor = "[Lclient!hb;")
 	private final Pix32[] temp = new Pix32[6];

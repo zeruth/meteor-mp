@@ -38,11 +38,13 @@ android {
 }
 
 dependencies {
-    implementation(libs.sfntly)
-    implementation(libs.androidx.core.ktx)
-    implementation(libs.androidx.appcompat)
-    implementation(libs.material)
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.junit)
-    androidTestImplementation(libs.androidx.espresso.core)
+    with(libs) {
+        implementation(sfntly)
+        implementation(androidx.core.ktx)
+        implementation(androidx.appcompat)
+        implementation(material)
+        testImplementation(junit)
+        androidTestImplementation(androidx.junit)
+        androidTestImplementation(androidx.espresso.core)
+    }
 }

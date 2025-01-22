@@ -1,7 +1,7 @@
 package meteor.common.config
 
-import meteor.Common.gson
-import meteor.Configuration
+import meteor.common.Common.gson
+import meteor.common.Configuration
 import meteor.Logger
 import meteor.common.events.ConfigChanged
 import org.rationalityfrontline.kevent.KEVENT

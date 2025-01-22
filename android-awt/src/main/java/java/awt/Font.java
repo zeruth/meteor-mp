@@ -50,7 +50,7 @@ public class Font implements Serializable {
     public static final int LAYOUT_NO_START_CONTEXT = 2;
     public static final int LAYOUT_NO_LIMIT_CONTEXT = 4;
     public static final String SANS_SERIF = "Sans Serif";
-    static final Font DEFAULT_FONT = new Font("Dialog", Font.PLAIN, 12); //$NON-NLS-1$
+    static final Font DEFAULT_FONT = null;
     private static final long serialVersionUID = -4206021311591459213L;
     // Identity Transform attribute
     private static final TransformAttribute IDENTITY_TRANSFORM = new TransformAttribute(new AffineTransform());

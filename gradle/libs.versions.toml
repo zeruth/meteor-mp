@@ -22,6 +22,7 @@ material3 = "1.7.3"
 sfntly = "1.0.1"
 compose-plugin = "1.8.0-alpha01"
 kotlin = "2.1.0"
+annotationJvm = "1.9.1"
 
 [libraries]
 androidx-core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "coreKtx" }
@@ -54,6 +55,7 @@ material = { group = "com.google.android.material", name = "material", version.r
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 sfntly = { module = "com.jaredrummler:sfntly", version.ref = "sfntly" }
 kpresence = {group = "io.github.vyfor", name = "kpresence", version = "0.6.4"}
+androidx-annotation-jvm = { group = "androidx.annotation", name = "annotation-jvm", version.ref = "annotationJvm" }
 
 [plugins]
 jetbrainsCompose = { id = "org.jetbrains.compose", version.ref = "compose-plugin" }

@@ -46,20 +46,17 @@ object CameraControls {
             return
         key(containerSize.value) {
             Box(modifier = Modifier
-                .width((140 * touchScaleX).dp)
-                .height((93 * touchScaleY).dp)
-                .offset(x = (6  / touchScaleX).dp, y = (10  / touchScaleY).dp)) {
-                Box(modifier = Modifier.size(40.dp).align(Alignment.BottomEnd).pointerInput(Unit) {
+                .fillMaxSize()) {
+                Box(modifier = Modifier.size(40.dp).align(Alignment.TopEnd).offset(y = 15.dp).pointerInput(Unit) {
                     detectTapGestures(
                         onTap = {
                             showControls.toggle()
                         }
                     )
                 }) {
-                    Image(LineAwesomeIcons.Eye, contentDescription = null, colorFilter = ColorFilter.tint(Colors.secondary.value), modifier = Modifier.fillMaxSize().absolutePadding(right = 10.dp))
+                    Image(LineAwesomeIcons.Eye, contentDescription = null, colorFilter = ColorFilter.tint(Colors.secondary.value), modifier = Modifier.fillMaxSize())
                 }
                 if (showControls.value) {
-
                     Box(modifier = Modifier.size(40.dp).align(Alignment.CenterStart).pointerInput(Unit) {
                         detectTapGestures(
                             onPress = {

@@ -17,9 +17,10 @@ import meteor.common.ui.Colors.surfaceDark
 import meteor.common.ui.UI.panelOpen
 import meteor.common.ui.UI.sidebarWidth
 import meteor.common.ui.components.sidebar.buttons.PluginsButton
+import meteor.common.ui.components.sidebar.buttons.WorldsButton
 
 object SidebarComposables {
-    val sidebarButtons = arrayListOf<SidebarButton>(PluginsButton())
+    val sidebarButtons = arrayListOf(PluginsButton(), WorldsButton())
     val padding = mutableStateOf(5.dp)
     val buttonSize = mutableStateOf(sidebarWidth.value - padding.value)
     var lastButtonClicked = mutableStateOf<SidebarButton?>(null)

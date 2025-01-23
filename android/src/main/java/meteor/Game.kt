@@ -5,15 +5,13 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import client.Configuration
 import client.client
 import client.events.DrawFinished
 import ext.awt.BufferedImageExt.getPixels
+import jagex2.client.Configuration
 import meteor.MainActivity.Companion.clientInstance
 import meteor.common.Common.eventbus
 import sign.signlink
-import java.awt.image.BufferedImage
-import java.awt.image.DataBufferInt
 import java.lang.Thread.sleep
 import java.net.InetAddress
 

@@ -4,7 +4,6 @@ import static client.client.isAndroid;
 
 import android.graphics.Typeface;
 
-import client.Configuration;
 import jagex2.graphics.Pix32;
 import jagex2.graphics.PixMap;
 import org.openrs2.deob.annotation.OriginalArg;

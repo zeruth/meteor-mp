@@ -14,7 +14,10 @@ kotlin {
 }
 
 dependencies {
+
     compileOnly(files("../lib/android-35.jar"))
+
+    compileOnly(project(":rs2"))
 
     with(compose) {
         compileOnly(runtime)
@@ -23,6 +26,7 @@ dependencies {
     }
 
     with(libs) {
+        implementation(libs.androidx.annotation.jvm)
         compileOnly(kotlin.reflect)
         compileOnly(logger)
         compileOnly(eventbus)

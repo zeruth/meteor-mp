@@ -2350,10 +2350,12 @@ public class client extends GameShell {
 		this.draw3DEntityElements();
 		if (isAndroid) {
 			this.areaViewport.setPixels();
+			System.out.println(this.areaViewport.width + ":" + this.areaViewport.height);
 			KEventKt.getKEVENT().post(AreaViewportDrawFinished.INSTANCE);
 		}
-		else
+		else {
 			this.areaViewport.draw(super.graphics, 8, 11);
+		}
 		this.cameraX = cameraX;
 		this.cameraY = cameraY;
 		this.cameraZ = cameraZ;
@@ -7609,7 +7611,7 @@ public class client extends GameShell {
 				this.drawTitleScreen();
 			}
 
-			this.stream = new ClientStream(this, this.openSocket(portOffset + 43594));
+			this.stream = new ClientStream(this, this.openSocket(Configuration.PORT_OFFSET + 43594));
 			this.stream.read(this.in.data, 0, 8);
 			this.in.pos = 0;
 
@@ -11720,5 +11722,10 @@ public class client extends GameShell {
 				this.imageTitle8.draw(super.graphics, 574, 186);
 			}
 		}
+	}
+
+	public static void updateServerConnection(String URL, int PORT_OFFSET) {
+		Configuration.URL = URL;
+		Configuration.PORT_OFFSET = PORT_OFFSET;
 	}
 }

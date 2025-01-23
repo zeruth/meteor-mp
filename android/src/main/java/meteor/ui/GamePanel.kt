@@ -64,8 +64,8 @@ object GamePanel {
     val dragging = mutableStateOf(false)
     val filter = mutableStateOf(FilterQuality.Medium)
     var density = 1f
-    var touchScaleX = 0f
-    var touchScaleY = 0f
+    var touchScaleX = mutableFloatStateOf(0f)
+    var touchScaleY = mutableFloatStateOf(0f)
     var mouseDown = false
     var waitFrame = 0
     var waitTapFrame = 0
@@ -121,8 +121,8 @@ object GamePanel {
     var viewportImage = mutableStateOf<ImageBitmap?>(null)
 
     private fun android.graphics.Point.scaled(): android.graphics.Point {
-        val scaledX = (x / touchScaleX).toInt()
-        val scaledY = (y / touchScaleY).toInt()
+        val scaledX = (x / touchScaleX.floatValue).toInt()
+        val scaledY = (y / touchScaleY.floatValue).toInt()
 
         return android.graphics.Point(scaledX, scaledY);
     }
@@ -214,10 +214,10 @@ object GamePanel {
                     .registerKeyListener()
                     .onGloballyPositioned { layoutCoordinates ->
                         containerSize.value = layoutCoordinates.size
-                        touchScaleX = containerSize.value.width.toFloat() / 789
-                        touchScaleY = containerSize.value.height.toFloat() / 532
+                        touchScaleX.value = containerSize.value.width.toFloat() / 789
+                        touchScaleY.value = containerSize.value.height.toFloat() / 532
                     }.pointerInteropFilter { change ->
-                        clientInstance.mouseMoved((change.x / touchScaleX).toInt(), (change.y / touchScaleY).toInt())
+                        clientInstance.mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
                         false
                     }.pointerInput(Unit) {
                         detectDragGestures(onDragStart = {

@@ -90,7 +90,7 @@ public class PixMap implements ImageProducer, ImageObserver {
 	}
 
 	@OriginalMember(owner = "client.client!qb", name = "a", descriptor = "()V")
-	private synchronized void setPixels() {
+    public synchronized void setPixels() {
 		if (this.imageConsumer != null) {
 			this.imageConsumer.setPixels(0, 0, this.width, this.height, this.colorModel, this.pixels, 0, this.width);
 			this.imageConsumer.imageComplete(2);

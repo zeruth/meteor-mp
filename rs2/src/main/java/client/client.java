@@ -926,7 +926,7 @@ public class client extends GameShell {
 	private PixMap areaMapback;
 
 	@OriginalMember(owner = "client.client!client.client", name = "Rg", descriptor = "Lclient!qb;")
-	private PixMap areaViewport;
+	public PixMap areaViewport;
 
 	@OriginalMember(owner = "client.client!client.client", name = "Sg", descriptor = "Lclient!qb;")
 	private PixMap areaChatback;
@@ -2348,7 +2348,12 @@ public class client extends GameShell {
 		this.drawTileHint();
 		this.updateTextures(jitter);
 		this.draw3DEntityElements();
-		this.areaViewport.draw(super.graphics, 8, 11);
+		if (isAndroid) {
+			this.areaViewport.setPixels();
+			KEventKt.getKEVENT().post(AreaViewportDrawFinished.INSTANCE);
+		}
+		else
+			this.areaViewport.draw(super.graphics, 8, 11);
 		this.cameraX = cameraX;
 		this.cameraY = cameraY;
 		this.cameraZ = cameraZ;

@@ -1,5 +1,8 @@
 package meteor.ui
 
+import android.graphics.Bitmap
+import android.graphics.Canvas
+import android.graphics.Paint
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.detectDragGestures
@@ -9,27 +12,15 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableFloatStateOf
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.FilterQuality
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEvent
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
+import androidx.compose.ui.graphics.*
+import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -114,7 +105,11 @@ object GamePanel {
                 pendingHold = null
             }
         }
+        eventbus.subscribe<client.events.AreaViewportDrawFinished> {
+            viewportImage.value = Bitmap.createBitmap(clientInstance.areaViewport.pixels, clientInstance.areaViewport.width, clientInstance.areaViewport.height, Bitmap.Config.RGB_565).asImageBitmap()
+        }
     }
+    var viewportImage = mutableStateOf<ImageBitmap?>(null)
 
     private fun android.graphics.Point.scaled(): android.graphics.Point {
         val scaledX = (x / touchScaleX).toInt()
@@ -164,6 +159,14 @@ object GamePanel {
         }
     }
 
+    fun drawViewportOntoImage(sourceBitmap: Bitmap, targetBitmap: Bitmap): Bitmap {
+        val resultBitmap = targetBitmap.copy(Bitmap.Config.RGB_565, true)
+        val canvas = Canvas(resultBitmap)
+        val paint = Paint()
+        canvas.drawBitmap(sourceBitmap, 8f, 11f, paint)
+        return resultBitmap
+    }
+
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun Game() {
@@ -174,6 +177,13 @@ object GamePanel {
 
         Box(modifier = Modifier.fillMaxSize()) {
             image.value?.let {
+                var it = it
+                if (clientInstance.ingame) {
+                    viewportImage.value?.let { image ->
+                        it = drawViewportOntoImage(image.asAndroidBitmap(), it.asAndroidBitmap()).asImageBitmap()
+                    }
+                }
+
                 val interactionSource = remember { MutableInteractionSource() }
                 val focusRequester = remember { FocusRequester() }
                 LaunchedEffect(Unit) {

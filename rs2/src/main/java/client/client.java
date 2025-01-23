@@ -2350,7 +2350,6 @@ public class client extends GameShell {
 		this.draw3DEntityElements();
 		if (isAndroid) {
 			this.areaViewport.setPixels();
-			System.out.println(this.areaViewport.width + ":" + this.areaViewport.height);
 			KEventKt.getKEVENT().post(AreaViewportDrawFinished.INSTANCE);
 		}
 		else {

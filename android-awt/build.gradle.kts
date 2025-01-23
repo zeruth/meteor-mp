@@ -3,6 +3,8 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
+version = "2.1.1-SNAPSHOT"
+
 android {
     namespace = "com.meteor.nat.awt"
     compileSdk = 35

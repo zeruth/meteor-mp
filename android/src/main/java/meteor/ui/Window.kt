@@ -23,16 +23,11 @@ import meteor.common.ui.components.sidebar.UISide
  */
 object Window {
 
-
-    @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun BoxScope.MeteorViewBox() {
         if (image.value == null)
             return
-        Row(Modifier.fillMaxSize().pointerInteropFilter {
-            Log.d("", "pos: $it.x ${it.y}")
-            false
-        }) {
+        Row(Modifier.fillMaxSize()) {
             when (uiSide.value) {
                 UISide.RIGHT -> {
                     Box(Modifier.fillMaxHeight().weight(1f).background(Color.Black)) {

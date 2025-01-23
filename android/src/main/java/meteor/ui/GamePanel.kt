@@ -22,6 +22,7 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
@@ -32,6 +33,7 @@ import meteor.MainActivity.Companion.clientInstance
 import meteor.common.Common.eventbus
 import meteor.common.ui.UI.filterQuality
 import meteor.input.KeyboardController.handleKeyEvent
+import meteor.ui.CameraControls.CameraControls
 
 /**
  * This panel will contain the game view & compose overlays eventually
@@ -202,39 +204,32 @@ object GamePanel {
                         containerSize.value = layoutCoordinates.size
                         touchScaleX = containerSize.value.width.toFloat() / 789
                         touchScaleY = containerSize.value.height.toFloat() / 532
-                    }
-                    .pointerInput(Unit) {
-                        detectDragGesturesAfterLongPress(onDragStart = {
-
-                        }, onDragEnd = {
-                            mouseDown = false
-                        }) { change, dragAmount ->
-
-                        }
-                    }
-                    .pointerInput(Unit) {
+                    }.pointerInteropFilter { change ->
+                        clientInstance.mouseMoved((change.x / touchScaleX).toInt(), (change.y / touchScaleY).toInt())
+                        false
+                    }.pointerInput(Unit) {
                         detectDragGestures(onDragStart = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                             pendingPress = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
+                        }, onDragCancel = {
+                            clientInstance.mouseReleased()
                         }, onDragEnd = {
                             clientInstance.mouseReleased()
-                            mouseDown = false
-                        }) { change, _ ->
+                        }) { change, dragAmount ->
                             pendingMove = android.graphics.Point(change.position.x.toInt(), change.position.y.toInt()).scaled()
                         }
-                    }
-                    .pointerInput(Unit) {
+                    }.pointerInput(Unit) {
                         detectTapGestures(onTap = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
-                            pendingTap = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
+                            pendingPress = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                         }, onLongPress = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                             pendingHold = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                         })
-
                     })
             }
             Text("FPS: ${fps.intValue}", color = Color.Yellow, modifier = Modifier.align(Alignment.TopEnd))
+            CameraControls()
         }
     }
 }

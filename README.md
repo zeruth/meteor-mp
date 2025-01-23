@@ -3,22 +3,6 @@
 **This connects to 2004scape.org by default and follows their rules diligently**
 ---
 
-![image](https://github.com/user-attachments/assets/d9fffa2c-3008-42d2-b488-c26665eb8a38)
-  
-# Requirements  
-
-Android 11 R device  
-JDK 22  
-Latest Android Studio / NDK  
-(These all MUST BE INSTALLED)  
-  
-# Building  
-
-you can build either platform with gradlew using android:build or desktop:build  
-you can build/run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
-or you can use the output apk at android/build/outputs/apk  
-or you can create a distributable using the included run configuration if you replace the jbr runtime with an oracle 21 runtime  
-
 # Info
 The project was entirely re-written using a shared code concept using Compose with no reflection / injection  
 This unified code concept is still very new so a lot of things have regressed (input on android)  
@@ -40,5 +24,23 @@ Forbidden features (unless otherwise permitted by Lost-City):
     "We will absolutely be respecting the project here, if things change regarding content
         that is forbidden or not, it will be reflected here."
 ```
+
+Desktop:  
+![Desktop](https://github.com/user-attachments/assets/93781112-0ca6-4798-8363-247b903f7b9a)
   
-Please create an issue ONLY if your phone does not have one already, and ONLY for rendering issues.  
+Android:  
+![Android](https://github.com/user-attachments/assets/6e875ac6-92f6-4408-af70-750a33c516d4)
+  
+# Requirements  
+
+Android 11 R device  
+JDK 22  
+Latest Android Studio / NDK  
+(These all MUST BE INSTALLED)  
+  
+# Building  
+
+you can build either platform with gradlew using android:build or desktop:build  
+you can build/run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
+or you can use the output apk at android/build/outputs/apk  
+or you can create a distributable using the included run configuration if you replace the jbr runtime with an oracle 21 runtime  

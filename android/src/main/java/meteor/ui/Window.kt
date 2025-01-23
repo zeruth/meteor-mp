@@ -17,11 +17,14 @@ import meteor.common.ui.UI.uiSide
 import meteor.ui.GamePanel.Game
 import meteor.common.ui.components.sidebar.SidebarComposables.Sidebar
 import meteor.common.ui.components.sidebar.UISide
+import meteor.input.KeyboardButton
 
 /**
  * The main entry point to the Compose UI
  */
 object Window {
+
+    val sidebarButtons = arrayOf(KeyboardButton())
 
     @Composable
     fun BoxScope.MeteorViewBox() {
@@ -39,13 +42,13 @@ object Window {
                         }
                     }
                     Box(Modifier.fillMaxHeight().width(sidebarWidth.value)) {
-                        Sidebar()
+                        Sidebar(*sidebarButtons)
                     }
                 }
 
                 UISide.LEFT -> {
                     Box(Modifier.fillMaxHeight().width(sidebarWidth.value)) {
-                        Sidebar()
+                        Sidebar(*sidebarButtons)
                     }
                     if (panelOpen.value) {
                         Box(Modifier.fillMaxHeight().width(configWidth.value)) {

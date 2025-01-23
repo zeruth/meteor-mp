@@ -11,6 +11,9 @@ import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -18,6 +21,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.*
 import androidx.compose.ui.input.key.*
@@ -26,13 +30,16 @@ import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntSize
 import meteor.Game.fps
 import meteor.Game.image
 import meteor.MainActivity.Companion.clientInstance
 import meteor.common.Common.eventbus
+import meteor.common.ext.kotlin.MutableStateExt.toggle
 import meteor.common.ui.UI.filterQuality
 import meteor.input.KeyboardController.handleKeyEvent
+import meteor.input.KeyboardController.keyboardController
 import meteor.ui.CameraControls.CameraControls
 
 /**
@@ -169,6 +176,10 @@ object GamePanel {
         return resultBitmap
     }
 
+    lateinit var gamePanelFocusRequester: FocusRequester
+    val gameInputText = mutableStateOf("")
+    val hideInputBox = mutableStateOf(false)
+
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
     fun Game() {
@@ -176,6 +187,7 @@ object GamePanel {
         // Get the screen density
         density = LocalDensity.current.density
         var longPressing = false
+
 
         Box(modifier = Modifier.fillMaxSize()) {
             image.value?.let {
@@ -187,17 +199,17 @@ object GamePanel {
                 }
 
                 val interactionSource = remember { MutableInteractionSource() }
-                val focusRequester = remember { FocusRequester() }
-                LaunchedEffect(Unit) {
-                    focusRequester.requestFocus()
-                }
+                gamePanelFocusRequester = remember { FocusRequester() }
                 Image(it, "", filterQuality = filterQuality.value.composeValue, contentScale = ContentScale.FillBounds, modifier =
                 Modifier
-                    .fillMaxSize()
+                    .focusRequester(gamePanelFocusRequester) // Request focus for this field
+                    .onFocusChanged { focusState ->
+                        // Handle focus state changes if needed
+                    }.fillMaxSize()
                     .focusable(true, interactionSource)
-                    .focusRequester(focusRequester)
                     .onKeyEvent { keyEvent ->
                         handleKeyEvent(keyEvent.nativeKeyEvent)
+                        false
                     }
                     .registerKeyListener()
                     .onGloballyPositioned { layoutCoordinates ->
@@ -230,6 +242,27 @@ object GamePanel {
             }
             Text("FPS: ${fps.intValue}", color = Color.Yellow, modifier = Modifier.align(Alignment.TopEnd))
             CameraControls()
+
+            /**
+             * TODO: This is a cheeky workaround for showing the keyboard
+             */
+            if (!hideInputBox.value) {
+                BasicTextField(
+                    value = "",
+                    onValueChange = { },
+                    keyboardOptions = KeyboardOptions.Default.copy(),
+                    keyboardActions = KeyboardActions(),
+                    modifier = Modifier
+                        // This is how we trick it into showing keyboard the first time
+                        .focusRequester(gamePanelFocusRequester)
+                )
+            }
+
+            LaunchedEffect(Unit) {
+                hideInputBox.value = true
+                gamePanelFocusRequester.requestFocus()
+                keyboardController.show()
+            }
         }
     }
 }

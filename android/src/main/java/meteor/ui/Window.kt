@@ -8,7 +8,7 @@ import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInteropFilter
-import meteor.MainActivity.Companion.image
+import meteor.Game.image
 import meteor.common.ui.components.panel.PanelComposables.Panel
 import meteor.common.ui.UI.configWidth
 import meteor.common.ui.UI.panelOpen
@@ -26,7 +26,7 @@ object Window {
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
-    fun BoxScope.ViewBox() {
+    fun BoxScope.MeteorViewBox() {
         if (image.value == null)
             return
         Row(Modifier.fillMaxSize().pointerInteropFilter {

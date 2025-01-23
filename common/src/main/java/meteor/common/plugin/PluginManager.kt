@@ -14,7 +14,7 @@ object PluginManager {
         plugins.add(MeteorPlugin())
     }
 
-    fun startPlugins() {
+    fun start() {
         val startTime = System.currentTimeMillis()
         for (plugin in plugins) {
             plugin.start()

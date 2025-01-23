@@ -30,7 +30,7 @@ object Main {
         MidiPlayer.init()
         SoundPlayer.init()
         Game.init()
-        PluginManager.startPlugins()
+        PluginManager.start()
 
         val lastPresence = ConfigManager.get<String>("DiscordRPCStatus", "")
         DiscordPresence.update(lastPresence)

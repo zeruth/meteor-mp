@@ -35,12 +35,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.unit.IntSize
-import meteor.MainActivity
+import meteor.Game.fps
+import meteor.Game.image
 import meteor.MainActivity.Companion.clientInstance
-import meteor.MainActivity.Companion.fps
-import meteor.MainActivity.Companion.image
 import meteor.common.Common.eventbus
 import meteor.common.ui.UI.filterQuality
+import meteor.input.KeyboardController.handleKeyEvent
 
 /**
  * This panel will contain the game view & compose overlays eventually
@@ -139,7 +139,7 @@ object GamePanel {
                     clientInstance.keyPressed(java.awt.event.KeyEvent.VK_DOWN, -1)
                 }
                 else
-                    MainActivity.handleKeyEvent(keyEvent.nativeKeyEvent)
+                    handleKeyEvent(keyEvent.nativeKeyEvent)
             }
             else if (keyEvent.type == KeyEventType.KeyUp) {
                 if (keyEvent.key == Key.DirectionLeft) {
@@ -155,10 +155,10 @@ object GamePanel {
                     clientInstance.keyReleased(java.awt.event.KeyEvent.VK_DOWN)
                 }
                 else
-                    MainActivity.handleKeyEvent(keyEvent.nativeKeyEvent)
+                    handleKeyEvent(keyEvent.nativeKeyEvent)
             }
             else
-                MainActivity.handleKeyEvent(keyEvent.nativeKeyEvent)
+                handleKeyEvent(keyEvent.nativeKeyEvent)
 
             true
         }
@@ -185,7 +185,7 @@ object GamePanel {
                     .focusable(true, interactionSource)
                     .focusRequester(focusRequester)
                     .onKeyEvent { keyEvent ->
-                        MainActivity.handleKeyEvent(keyEvent.nativeKeyEvent)
+                        handleKeyEvent(keyEvent.nativeKeyEvent)
                     }
                     .registerKeyListener()
                     .onGloballyPositioned { layoutCoordinates ->

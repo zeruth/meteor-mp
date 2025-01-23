@@ -16,10 +16,10 @@ public class PixMap implements ImageProducer, ImageObserver {
 	public final int[] pixels;
 
 	@OriginalMember(owner = "client.client!qb", name = "c", descriptor = "I")
-	private final int width;
+	public final int width;
 
 	@OriginalMember(owner = "client.client!qb", name = "d", descriptor = "I")
-	private final int height;
+	public final int height;
 
 	@OriginalMember(owner = "client.client!qb", name = "e", descriptor = "Ljava/awt/image/ColorModel;")
 	private final ColorModel colorModel;

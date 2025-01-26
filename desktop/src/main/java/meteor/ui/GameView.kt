@@ -29,6 +29,7 @@ import compose.icons.lineawesomeicons.CompressArrowsAltSolid
 import compose.icons.lineawesomeicons.ExpandArrowsAltSolid
 import compose.icons.lineawesomeicons.LockSolid
 import compose.icons.lineawesomeicons.UnlockSolid
+import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
 import meteor.common.config.ConfigManager
 import meteor.common.ui.UI.filterQuality
@@ -40,7 +41,6 @@ import meteor.ui.MeteorWindow.windowState
 import meteor.ui.buttons.FullscreenToggleButton
 import meteor.ui.buttons.StretchToggleButton
 import java.awt.Dimension
-import meteor.Main.client as clientInstance
 
 object GameView {
 

@@ -9,7 +9,7 @@ import client.client
 import client.events.DrawFinished
 import ext.awt.BufferedImageExt.getPixels
 import jagex2.client.Configuration
-import meteor.MainActivity.Companion.clientInstance
+import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
 import sign.signlink
 import java.lang.Thread.sleep
@@ -66,7 +66,5 @@ object Game {
 
         } catch (_: Exception) {}
     }
-
-
 }
 

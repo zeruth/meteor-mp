@@ -20,10 +20,6 @@ import java.io.File
 
 
 class MainActivity : ComponentActivity() {
-    companion object {
-        lateinit var clientInstance: client
-    }
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         loadMeteor()

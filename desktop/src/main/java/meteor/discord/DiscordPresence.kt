@@ -6,6 +6,7 @@ import io.github.vyfor.kpresence.logger.ILogger
 import io.github.vyfor.kpresence.logger.LogLevel
 import io.github.vyfor.kpresence.rpc.ActivityType
 import meteor.Main
+import meteor.common.Common.clientInstance
 import meteor.common.plugin.PluginManager
 
 object DiscordPresence {
@@ -40,10 +41,10 @@ object DiscordPresence {
         PluginManager.get<DiscordPlugin>()?.let {
             if (!it.enabled())
                 return
-            if (!Main.client.ingame && !it.sendStatusLoggedOut())
+            if (!clientInstance.ingame && !it.sendStatusLoggedOut())
                 state = null
         }
-        val details = if (Main.client.ingame) "Logged in" else "Logged out"
+        val details = if (clientInstance.ingame) "Logged in" else "Logged out"
 
         if (state == null || state!!.length < 2 || state!!.length > 128) {
             update(details = details, state = null)

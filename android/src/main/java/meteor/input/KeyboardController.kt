@@ -3,7 +3,8 @@ package meteor.input
 import android.view.KeyEvent
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.platform.SoftwareKeyboardController
-import meteor.MainActivity.Companion.clientInstance
+import meteor.common.Common.clientInstance
+
 
 object KeyboardController {
     lateinit var keyboardController: SoftwareKeyboardController

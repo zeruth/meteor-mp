@@ -3,6 +3,7 @@ package meteor.audio
 import client.events.MidiPlay
 import client.events.MidiStop
 import meteor.Main
+import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
 import java.io.File
 import java.io.IOException
@@ -28,7 +29,7 @@ object MidiPlayer {
     }
 
     fun playSong(midi: String, forced: Boolean) {
-        if (!Main.client.ingame && preventLoginMusic)
+        if (!clientInstance.ingame && preventLoginMusic)
             return
 
         if (sequencer != null) if (sequencer!!.sequence != null) sequencer!!.start()

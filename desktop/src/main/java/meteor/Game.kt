@@ -6,8 +6,8 @@ import androidx.compose.ui.graphics.toComposeImageBitmap
 import client.client
 import client.events.DrawFinished
 import jagex2.client.Configuration
-import meteor.Main.client as clientInstance
 import jagex2.client.GameShell
+import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
 import sign.signlink
 import java.net.InetAddress

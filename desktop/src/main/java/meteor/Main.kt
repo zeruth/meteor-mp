@@ -9,6 +9,7 @@ import meteor.discord.DiscordPresence.updatingDiscordState
 import meteor.audio.MidiPlayer
 import meteor.audio.SoundPlayer
 import meteor.common.Common
+import meteor.common.Common.logger
 import meteor.common.Configuration
 import meteor.common.config.ConfigManager
 import meteor.common.plugin.PluginManager
@@ -18,9 +19,7 @@ import meteor.ui.buttons.DiscordStatusButton.Companion.showDiscordStatusWindow
 import java.io.File
 
 object Main {
-    lateinit var client: client
-    val gson = GsonBuilder().setPrettyPrinting().create()
-    val logger = Logger("main")
+
     private val startupTime = System.currentTimeMillis()
     private var started = false
 

@@ -11,6 +11,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import meteor.Game.gameImage
@@ -79,7 +80,8 @@ object MeteorWindow {
                 title = "Meteor 225 (2.1.0)",
                 state = windowState.value,
                 undecorated = windowState.value == fullscreenState,
-                resizable = !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState)
+                resizable = !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState),
+                icon = painterResource("Meteor.ico")
             ) {
                 windowInstance = this.window
                 val finalImage = if (gameImage.value != null) gameImage else loadingImage

@@ -34,7 +34,7 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.unit.IntSize
 import meteor.Game.fps
 import meteor.Game.image
-import meteor.MainActivity.Companion.clientInstance
+import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
 import meteor.common.ext.kotlin.MutableStateExt.toggle
 import meteor.common.ui.UI.filterQuality
@@ -233,7 +233,7 @@ object GamePanel {
                     }.pointerInput(Unit) {
                         detectTapGestures(onTap = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
-                            pendingPress = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
+                            pendingTap = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                         }, onLongPress = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                             pendingHold = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()

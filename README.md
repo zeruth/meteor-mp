@@ -34,7 +34,7 @@ Android:
 # Requirements  
 
 Android 11 R device  
-JDK 22  
+JDK 21  
 Latest Android Studio / NDK  
 (These all MUST BE INSTALLED)  
   

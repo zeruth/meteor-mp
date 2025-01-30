@@ -1,5 +1,8 @@
-### Meteor - Multiplatform (Desktop/Android) 
+### Meteor - Multiplatform (Desktop/Android)  
 ---
+**NOTE: Due to recent nefarious actors, 2004scape no longer accepts external client connections.
+Development is halted for now...**
+
 **This connects to 2004scape.org by default and follows their rules diligently**
 ---
 
@@ -32,14 +35,12 @@ Android:
 ![Android](https://github.com/user-attachments/assets/6e875ac6-92f6-4408-af70-750a33c516d4)
   
 # Requirements  
-
 Android 11 R device  
 JDK 21  
 Latest Android Studio / NDK  
 (These all MUST BE INSTALLED)  
   
 # Building  
-
 you can build either platform with gradlew using android:build or desktop:build  
 you can build/run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
 or you can use the output apk at android/build/outputs/apk  

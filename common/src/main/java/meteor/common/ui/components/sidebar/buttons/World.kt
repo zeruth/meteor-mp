@@ -4,7 +4,7 @@ class World(val id: Int, val region: String, val address: String, val portOffset
     companion object {
         val worlds = ArrayList<World>()
         init {
-            worlds.add(World(1, "United States", "https://w1.225.2004scape.org", 0, false))
+            worlds.add(World(1, "United States", "https://172.67.172.1", 0, false))
             worlds.add(World(2, "United States", "https://w2.225.2004scape.org", 3, false))
             worlds.add(World(3, "Germany", "https://w3.225.2004scape.org:8443", 0, false))
             worlds.add(World(4, "Germany", "https://w4.225.2004scape.org:8443", 3, false))

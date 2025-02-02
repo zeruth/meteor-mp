@@ -1,5 +1,6 @@
 package meteor.ui
 
+import androidx.compose.foundation.focusable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -11,6 +12,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
@@ -20,6 +22,8 @@ import meteor.common.ui.components.panel.PanelComposables.Panel
 import meteor.common.ui.UI.panelOpen
 import meteor.common.ui.components.sidebar.SidebarComposables
 import meteor.ui.GameView.GameViewContainer
+import meteor.ui.GameView.focusRequester
+import meteor.ui.GameView.registerKeyListener
 import meteor.ui.GameView.stretchedMode
 import meteor.ui.buttons.CloseMeteorButton
 import meteor.ui.buttons.DiscordStatusButton
@@ -85,7 +89,7 @@ object MeteorWindow {
             ) {
                 windowInstance = this.window
                 val finalImage = if (gameImage.value != null) gameImage else loadingImage
-                Row {
+                Row(modifier = Modifier.focusable().focusRequester(focusRequester).registerKeyListener()) {
                     GameViewContainer(finalImage.value!!)
                     if (panelOpen.value) {
                         Box(Modifier.fillMaxHeight().width(configWidth.value)) {

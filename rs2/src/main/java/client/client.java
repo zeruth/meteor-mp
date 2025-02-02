@@ -569,7 +569,7 @@ public class client extends GameShell {
 	private boolean redrawPrivacySettings = false;
 
 	@OriginalMember(owner = "client.client!client.client", name = "ue", descriptor = "Ljava/math/BigInteger;")
-	public static final BigInteger RSA_EXPONENT = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
+	public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
 
 	@OriginalMember(owner = "client.client!client.client", name = "ve", descriptor = "Z")
 	private boolean errorHost = false;
@@ -968,7 +968,7 @@ public class client extends GameShell {
 	private int lastAddress;
 
 	@OriginalMember(owner = "client.client!client.client", name = "fh", descriptor = "Ljava/math/BigInteger;")
-	public static final BigInteger RSA_MODULUS = new BigInteger("7162900525229798032761816791230527296329313291232324290237849263501208207972894053929065636522363163621000728841182238772712427862772219676577293600221789");
+	public static final BigInteger RSA_MODULUS = new BigInteger("149184533690395714557415933589321685467503318431704719836191445047429438439794379354579187780956594956635370807510296668624257728034957960550725446700263513602303123344358985472777739734541895332256385217608902860664022220983606520159894936373052454391188508500166338113445525599987342199103260313555818901063");
 
 	@OriginalMember(owner = "client.client!client.client", name = "gh", descriptor = "I")
 	private int viewportHoveredInterfaceIndex;
@@ -8072,7 +8072,7 @@ public class client extends GameShell {
 			return signlink.opensocket(port);
 		}
 
-		return new Socket(InetAddress.getByName(this.getCodeBase().getHost()), port);
+		return new Socket(InetAddress.getByAddress(Configuration.WEBSOCKET), port);
 	}
 
 	@OriginalMember(owner = "client.client!client.client", name = "a", descriptor = "(ZIILclient!z;I)V")
@@ -8501,7 +8501,7 @@ public class client extends GameShell {
 	@OriginalMember(owner = "client.client!client.client", name = "getCodeBase", descriptor = "()Ljava/net/URL;")
 	public URL getCodeBase() {
         try {
-            return new URL(Configuration.URL);
+            return new URL(Configuration.CODEBASE);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -11724,7 +11724,7 @@ public class client extends GameShell {
 	}
 
 	public static void updateServerConnection(String URL, int PORT_OFFSET) {
-		Configuration.URL = URL;
+		Configuration.CODEBASE = URL;
 		Configuration.PORT_OFFSET = PORT_OFFSET;
 	}
 }

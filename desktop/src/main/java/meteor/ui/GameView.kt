@@ -69,9 +69,7 @@ object GameView {
     @Composable
     fun RowScope.GameViewContainer(src: ImageBitmap) {
         var mod = Modifier
-            .focusable()
             .defaultMinSize(789.dp, 532.dp)
-            .focusRequester(focusRequester)
             .weight(1f)
             .onSizeChanged { newSize ->
                 if (fixedState.value) {
@@ -106,22 +104,16 @@ object GameView {
             GameViewImage(src)
             Text("FPS: ${fps.intValue}", Modifier.align(Alignment.TopEnd), color = Color.Yellow)
         }
-
-        LaunchedEffect(Unit) {
-            focusRequester.requestFocus()
-        }
     }
 
     @Composable
     fun GameViewImage(src: ImageBitmap) {
         key(windowState.value) {
             var mod = Modifier
-                .focusable()
                 .registerMouseMoveListener()
                 .registerDragListener()
                 .registerLeftClickListener()
                 .registerRightClickListener()
-                .registerKeyListener()
             if (stretchedMode.value) {
                 mod = mod.fillMaxSize()
             }
@@ -132,6 +124,10 @@ object GameView {
                 filterQuality = filterQuality.value.composeValue,
                 modifier = mod
             )
+
+            LaunchedEffect(Unit) {
+                focusRequester.requestFocus()
+            }
         }
     }
 

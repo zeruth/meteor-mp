@@ -7,10 +7,13 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
 import client.client
 import client.events.DrawFinished
+import client.events.WavePlay
 import ext.awt.BufferedImageExt.getPixels
 import jagex2.client.Configuration
+import meteor.audio.SoundPlayer
 import meteor.common.Common.clientInstance
 import meteor.common.Common.eventbus
+import org.rationalityfrontline.kevent.KEVENT
 import sign.signlink
 import java.lang.Thread.sleep
 import java.net.InetAddress

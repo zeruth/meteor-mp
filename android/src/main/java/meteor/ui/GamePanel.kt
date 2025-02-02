@@ -127,8 +127,16 @@ object GamePanel {
         return android.graphics.Point(scaledX, scaledY);
     }
 
+    val volumeKeys = listOf(Key.VolumeUp,  Key.VolumeDown, Key.VolumeMute)
+
+    fun KeyEvent.isVolumeKey(): Boolean {
+        return volumeKeys.contains(this.key)
+    }
+
     fun Modifier.registerKeyListener(): Modifier {
         return this.onKeyEvent { keyEvent: KeyEvent ->
+            if (keyEvent.isVolumeKey())
+                return@onKeyEvent false
             if (keyEvent.type == KeyEventType.KeyDown) {
                 if (keyEvent.key == Key.DirectionLeft) {
                     clientInstance.keyPressed(java.awt.event.KeyEvent.VK_LEFT, -1)

@@ -110,10 +110,12 @@ object GameView {
     fun GameViewImage(src: ImageBitmap) {
         key(windowState.value) {
             var mod = Modifier
+                .focusable()
                 .registerMouseMoveListener()
                 .registerDragListener()
                 .registerLeftClickListener()
                 .registerRightClickListener()
+                .registerKeyListener()
             if (stretchedMode.value) {
                 mod = mod.fillMaxSize()
             }

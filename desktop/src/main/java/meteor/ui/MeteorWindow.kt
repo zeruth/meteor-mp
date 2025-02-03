@@ -89,7 +89,7 @@ object MeteorWindow {
             ) {
                 windowInstance = this.window
                 val finalImage = if (gameImage.value != null) gameImage else loadingImage
-                Row(modifier = Modifier.focusable().focusRequester(focusRequester).registerKeyListener()) {
+                Row(modifier = Modifier.focusable().focusRequester(focusRequester)) {
                     GameViewContainer(finalImage.value!!)
                     if (panelOpen.value) {
                         Box(Modifier.fillMaxHeight().width(configWidth.value)) {

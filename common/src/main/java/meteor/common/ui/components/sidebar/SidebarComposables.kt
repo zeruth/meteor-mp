@@ -3,12 +3,14 @@ package meteor.common.ui.components.sidebar
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
 import meteor.common.ext.kotlin.MutableStateExt.toggle
 import meteor.common.ui.components.panel.PanelComposables.secondaryContent
@@ -70,10 +72,12 @@ object SidebarComposables {
         Row(Modifier.fillMaxWidth().height(buttonSize.value - padding.value)) {
             Box(
                 Modifier.clip(RoundedCornerShape(5.dp)).fillMaxSize().background(sidebarButton.tint.value?: secondary.value )
-                    .clickable {
-                        buttonClick(
-                            sidebarButton
-                        )
+                    .pointerInput(Unit) {
+                        detectTapGestures {
+                            buttonClick(
+                                sidebarButton
+                            )
+                        }
                     }) {
                 sidebarButton.icon.value?.let { Image(it, contentDescription = null) }
             }

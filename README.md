@@ -1,12 +1,10 @@
-### Meteor - Multiplatform (Desktop/Android)  
+### Meteor - Multiplatform (Desktop/Android) Private  
 ---
-**NOTE: Due to recent nefarious actors, 2004scape no longer accepts external client connections.
-Development is halted for now...**
-
 **This connects to 2004scape.org by default and follows their rules diligently**
 ---
 
 # Info
+This private repo contains a proxy that I don't want in public use as it allows java clients to connect to live servers.  
 The project was entirely re-written using a shared code concept using Compose with no reflection / injection  
 This unified code concept is still very new so a lot of things have regressed (input on android)  
 most things have been moved to common already but there is always room for improvement!  
@@ -38,6 +36,7 @@ Android:
 Android 11 R device  
 JDK 21  
 Latest Android Studio / NDK  
+https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/  
 (These all MUST BE INSTALLED)  
   
 # Building  

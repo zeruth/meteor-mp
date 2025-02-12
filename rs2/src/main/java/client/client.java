@@ -1237,10 +1237,6 @@ public class client extends GameShell {
 		}
 	}
 
-	public client() {
-		KEventKt.getKEVENT().post(ResetCredentials.INSTANCE);
-	}
-
 	@OriginalMember(owner = "client", name = "main", descriptor = "([Ljava/lang/String;)V")
 	public static void main(@OriginalArg(0) String[] args) {
 		try {

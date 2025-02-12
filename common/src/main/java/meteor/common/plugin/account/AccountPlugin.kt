@@ -15,19 +15,30 @@ class AccountPlugin : Plugin("Account", cantDisable = true, enabledByDefault = t
 
     init {
         KEVENT.subscribe<ResetCredentials> {
-            clientInstance.username = config.username.get()
-            clientInstance.password = config.password.get()
+            updateCredentials()
         }
+    }
+
+    override fun onStart() {
+        updateCredentials()
     }
 
     override fun onConfigChanged(it: ConfigChanged) {
         if (it.affects(config)) {
+            var update = false
             if (it.item == config.username) {
-                clientInstance.username = config.username.get()
+                update = true
             }
             if (it.item == config.password) {
-                clientInstance.password = config.password.get()
+                update = true
             }
+            if (update)
+                updateCredentials()
         }
+    }
+
+    fun updateCredentials() {
+        clientInstance.username = config.username.get()
+        clientInstance.password = config.password.get()
     }
 }

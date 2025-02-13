@@ -8082,7 +8082,7 @@ public class client extends GameShell {
 			} catch (InterruptedException | URISyntaxException e) {
 				throw new RuntimeException(e);
 			}
-            return new Socket(InetAddress.getLocalHost(), WebSocketProxy.TCP_PORT);
+            return new Socket(InetAddress.getLocalHost(), WebSocketProxy.LOCAL_TCP);
 		} else {
 			return new Socket(InetAddress.getLocalHost(), port);
 		}

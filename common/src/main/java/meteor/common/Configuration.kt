@@ -1,11 +1,9 @@
 package meteor.common
 
-import android.annotation.SuppressLint
 import android.content.Context
 import meteor.common.Common.isAndroid
 import java.io.File
 
-@SuppressLint("StaticFieldLeak")
 object Configuration {
     lateinit var dataDir: File
 

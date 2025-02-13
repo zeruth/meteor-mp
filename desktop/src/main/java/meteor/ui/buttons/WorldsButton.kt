@@ -20,14 +20,14 @@ import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.GlobeSolid
 import compose.icons.lineawesomeicons.StarSolid
 import jagex2.client.Configuration
-import jagex2.client.WebSocketProxy.WEBSOCKET
-import jagex2.client.WebSocketProxy.WORLD
+import jagex2.client.WebSocketProxy.REMOTE_WSS
 import meteor.common.Common
 import meteor.common.ui.Colors
 import meteor.common.ui.components.panel.PanelComposables
 import meteor.common.ui.components.sidebar.SidebarButton
 import meteor.common.ui.components.worlds.World
 import meteor.common.ui.components.worlds.WorldsCommon
+import meteor.common.ui.components.worlds.WorldsCommon.currentWorld
 
 class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
     override fun onClick() {
@@ -35,8 +35,6 @@ class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
     }
 
     companion object {
-        var currentWorld = mutableIntStateOf(1);
-
         fun World.getDesktopFlag(): String {
             if (this.region == "United States") {
                 return "flags/flag_us.png"
@@ -79,13 +77,12 @@ class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
                                     Modifier.height(20.dp)
                                         .background(if (currentWorld.value == world.id) Colors.surfaceDarker.value else Colors.surface.value)
                                         .clickable {
+                                            currentWorld.value = world.id
+                                            nodeId = 9 + world.id
                                             client.client.members = world.members
                                             Configuration.updatePortOffset(world.portOffset)
                                             Configuration.updateModulus(world.modulus)
-                                            WEBSOCKET = world.url
-                                            WORLD = world.id
-                                            nodeId = 9 + world.id
-                                            currentWorld.value = world.id
+                                            REMOTE_WSS = world.url
                                         }) {
                                     Box(modifier = Modifier.fillMaxWidth(.15f)) {
                                         Text(

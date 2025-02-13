@@ -16,18 +16,17 @@ import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import client.client.nodeId
-import com.meteor.android.R
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.GlobeSolid
 import compose.icons.lineawesomeicons.StarSolid
 import jagex2.client.Configuration
-import jagex2.client.WebSocketProxy.WEBSOCKET
-import jagex2.client.WebSocketProxy.WORLD
+import jagex2.client.WebSocketProxy.REMOTE_WSS
 import meteor.common.ui.Colors
 import meteor.common.ui.components.panel.PanelComposables
 import meteor.common.ui.components.sidebar.SidebarButton
 import meteor.common.ui.components.worlds.World
 import meteor.common.ui.components.worlds.WorldsCommon
+import meteor.common.ui.components.worlds.WorldsCommon.currentWorld
 
 class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
     override fun onClick() {
@@ -35,7 +34,6 @@ class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
     }
 
     companion object {
-
         fun World.getAndroidFlag(): Int {
             if (this.region == "United States") {
                 return com.meteor.android.R.drawable.flag_us
@@ -60,8 +58,6 @@ class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
             return com.meteor.android.R.drawable.flag_au
         }
 
-        var currentWorld = mutableIntStateOf(1);
-
         fun WorldsList(): @Composable (() -> Unit)  = @Composable {
             Box(modifier = Modifier.fillMaxSize()) {
                 Row {
@@ -77,15 +73,14 @@ class WorldsButton : SidebarButton(icon = LineAwesomeIcons.GlobeSolid) {
                             for (world in WorldsCommon.worlds) {
                                 Row(
                                     Modifier.height(20.dp)
-                                        .background(if (currentWorld.value == world.id) Colors.surfaceDarker.value else Colors.surface.value)
+                                        .background(if (currentWorld.intValue == world.id) Colors.surfaceDarker.value else Colors.surface.value)
                                         .clickable {
+                                            currentWorld.intValue = world.id
+                                            nodeId = 9 + world.id // Friends list depends on this for local player world #
                                             client.client.members = world.members
                                             Configuration.updatePortOffset(world.portOffset)
                                             Configuration.updateModulus(world.modulus)
-                                            WEBSOCKET = world.url
-                                            WORLD = world.id
-                                            nodeId = 9 + world.id
-                                            currentWorld.value = world.id
+                                            REMOTE_WSS = world.url
                                         }) {
                                     Box(modifier = Modifier.fillMaxWidth(.15f)) {
                                         Text(

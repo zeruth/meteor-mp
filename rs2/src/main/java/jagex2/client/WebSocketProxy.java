@@ -1,6 +1,7 @@
 package jagex2.client;
 
-import android.annotation.SuppressLint;
+import static client.client.nodeId;
+
 import client.events.LoggerMessage;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
@@ -9,19 +10,18 @@ import org.rationalityfrontline.kevent.KEventKt;
 import java.net.*;
 import java.io.*;
 import java.nio.ByteBuffer;
+import java.util.Arrays;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WebSocketProxy {
-    public static final int TCP_PORT = 6666; // The port for your TCP connections
-    public static String WEBSOCKET = "wss://w1-2004.lostcity.rs"; // WebSocket target URI
-    public static int WORLD = 1;
+    public static final int LOCAL_TCP = 6666;
+    public static String REMOTE_WSS = "wss://w1-2004.lostcity.rs";
 
     static Thread proxyThread;
     static Thread tcpProxyThread;
 
     public static void start() throws IOException, InterruptedException, URISyntaxException {
-        // Create a WebSocket client that connects to the wss:// WebSocket server
-        WebSocketClient webSocketClient = new WebSocketClient(new URI(WEBSOCKET)) {
+        WebSocketClient webSocketClient = new WebSocketClient(new URI(REMOTE_WSS)) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
             }
@@ -52,8 +52,7 @@ public class WebSocketProxy {
             proxyThread.interrupt();
         }
         proxyThread = new Thread(() -> {
-            // Create a ServerSocket to accept TCP connections
-            try (ServerSocket serverSocket = new ServerSocket(TCP_PORT)) {
+            try (ServerSocket serverSocket = new ServerSocket(LOCAL_TCP)) {
                 proxyStarted.set(true);
                 Socket tcpSocket = serverSocket.accept();
 
@@ -73,10 +72,10 @@ public class WebSocketProxy {
         while (!proxyStarted.get()) {
             Thread.sleep(5);
         }
-
-        webSocketClient.addHeader("Host", "w" + WORLD +"-2004.lostcity.rs");
-        webSocketClient.addHeader("Origin", "https://w" + WORLD + "-2004.lostcity.rs");
-        webSocketClient.addHeader("Referer", "https://w" + WORLD + "-2004.lostcity.rs/rs2.cgi?plugin=0&world=" + WORLD + "&lowmem=0");
+        int world = nodeId - 9;
+        webSocketClient.addHeader("Host", "w" + world +"-2004.lostcity.rs");
+        webSocketClient.addHeader("Origin", "https://w" + world + "-2004.lostcity.rs");
+        webSocketClient.addHeader("Referer", "https://w" + world + "-2004.lostcity.rs/rs2.cgi?plugin=0&world=" + world + "&lowmem=0");
         webSocketClient.connect();
     }
 
@@ -84,23 +83,26 @@ public class WebSocketProxy {
 
     public static WebSocketClient webSocketClient = null;
 
-    @SuppressLint("NewApi")
     private static void handleTcpConnection(Socket tcpSocket, WebSocketClient webSocketClient) {
         try (InputStream tcpIn = tcpSocket.getInputStream(); OutputStream tcpOut = tcpSocket.getOutputStream()) {
             WebSocketProxy.webSocketClient = webSocketClient;
-            KEventKt.getKEVENT().post(new LoggerMessage("WebSocket", "Set proxy: " + WEBSOCKET + " to localhost:" + TCP_PORT));
+            KEventKt.getKEVENT().post(new LoggerMessage("WebSocket", "Set proxy: " + REMOTE_WSS + " to localhost:" + LOCAL_TCP));
             out = tcpOut;
 
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+
             while (!webSocketClient.isClosed()) {
-                byte[] in = tcpIn.readAllBytes();
-                if (in.length > 0) {
-                    webSocketClient.send(in);
+                bytesRead = tcpIn.read(buffer);
+                if (bytesRead > 0) {
+                    webSocketClient.send(Arrays.copyOf(buffer, bytesRead));
                 }
             }
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
+
 
     private static void forwardToTcpClients(ByteBuffer message) {
         byte[] byteArray = new byte[message.remaining()];

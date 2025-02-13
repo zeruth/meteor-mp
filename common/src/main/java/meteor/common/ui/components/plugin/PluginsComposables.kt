@@ -22,6 +22,7 @@ import meteor.common.plugin.Plugin
 import meteor.common.ui.components.panel.PanelComposables
 import meteor.common.plugin.PluginManager.plugins
 import meteor.common.plugin.PluginManager.runningMap
+import meteor.common.plugin.meteor.MeteorPlugin
 import meteor.common.ui.Colors
 import meteor.common.ui.GeneralComposables.SidedNode
 import meteor.common.ui.UI.favoritesMap
@@ -30,14 +31,17 @@ object PluginsComposables {
 
     fun PluginList() = @Composable {
         Column(Modifier.fillMaxSize()) {
-            val nonHiddenPlugins = plugins.filter { !it.hidden }
+            val meteorPlugin = plugins.filterIsInstance<MeteorPlugin>().first()
+            val nonHiddenPlugins = plugins.filter { it != meteorPlugin && !it.hidden }
             val favorites : List<Plugin> = nonHiddenPlugins.filter {
                 if (!favoritesMap.containsKey(it)) {
                     favoritesMap[it] = ConfigManager.get<Boolean>("plugin.${it.name}.isFavorite", false)
                 }
                 favoritesMap[it] == true
             }.sortedBy { it.name }
-            val nonFavorites : List<Plugin> = nonHiddenPlugins.filter { favoritesMap[it] == false }.sortedBy { it.name }
+            val nonFavorites : List<Plugin> = nonHiddenPlugins.filter { favoritesMap[it] == false }
+            PluginNode(meteorPlugin)
+            Spacer(Modifier.height(2.dp))
             for (plugin in favorites) {
                 PluginNode(plugin)
                 Spacer(Modifier.height(2.dp))

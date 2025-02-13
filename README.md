@@ -34,7 +34,7 @@ Android:
   
 # Requirements  
 Android 11 R device  
-JDK 21  
+JDK 21 (replace jdk at C:\Program Files\Android\Android Studio\jbr with this jdk if you want to package desktop)  
 Latest Android Studio / NDK  
 https://www.techpowerup.com/download/visual-c-redistributable-runtime-package-all-in-one/  
 (These all MUST BE INSTALLED)  

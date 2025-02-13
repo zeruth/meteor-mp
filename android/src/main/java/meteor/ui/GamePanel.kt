@@ -201,8 +201,10 @@ object GamePanel {
             image.value?.let {
                 var it = it
                 if (clientInstance.ingame) {
-                    viewportImage.value?.let { image ->
-                        it = drawViewportOntoImage(image.asAndroidBitmap(), it.asAndroidBitmap()).asImageBitmap()
+                    if (clientInstance.sceneState > 1) {
+                        viewportImage.value?.let { image ->
+                            it = drawViewportOntoImage(image.asAndroidBitmap(), it.asAndroidBitmap()).asImageBitmap()
+                        }
                     }
                 }
 

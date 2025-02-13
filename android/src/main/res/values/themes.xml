@@ -1,6 +1,11 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <style name="Theme.MeteorAndroid" parent="android:Theme.Material.Light.NoActionBar">
+    <!-- Theme with Material Design and support for cutout areas -->
+    <style name="Theme.MeteorAndroid" parent="android:Theme.Material.Light.NoActionBar.Fullscreen">
         <item name="android:windowBackground">@android:color/background_dark</item>
+        <!-- Ensure the content respects the cutout area (e.g., notch) on the short edges -->
+        <item name="android:windowLayoutInDisplayCutoutMode">shortEdges</item>
+        <!-- Enable padding for system UI (status bar, etc.) only on horizontal edges -->
+        <item name="android:fitsSystemWindows">true</item>
     </style>
 </resources>

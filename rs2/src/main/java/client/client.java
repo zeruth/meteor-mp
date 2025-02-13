@@ -1003,7 +1003,7 @@ public class client extends GameShell {
 	private int hintPlayer;
 
 	@OriginalMember(owner = "client", name = "vh", descriptor = "I")
-	private int sceneState;
+	public int sceneState;
 
 	@OriginalMember(owner = "client", name = "wh", descriptor = "[I")
 	private final int[] skillExperience = new int[50];

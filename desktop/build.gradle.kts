@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "meteor"
-version = "2.1.3-SNAPSHOT"
+version = "2.1.3"
 
 dependencies {
     implementation(project(":common"))

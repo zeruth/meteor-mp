@@ -3,7 +3,7 @@ plugins {
     alias(libs.plugins.kotlin.android)
 }
 
-version = "2.1.3"
+version = "2.1.4-SNAPSHOT"
 
 android {
     namespace = "com.meteor.nat.awt"

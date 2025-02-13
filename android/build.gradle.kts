@@ -6,7 +6,7 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
-version = "2.1.3"
+version = "2.1.4-SNAPSHOT"
 
 android {
     namespace = "com.meteor.android"

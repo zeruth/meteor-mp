@@ -1,5 +1,7 @@
 package sign;
 
+import static client.client.isAndroid;
+
 import client.events.MidiPlay;
 import org.openrs2.deob.annotation.OriginalArg;
 import org.openrs2.deob.annotation.OriginalClass;
@@ -446,6 +448,8 @@ public class signlink implements Runnable {
 
 				if (midiplay) {
 					midi = cacheDir + savereq;
+					if (!isAndroid)
+						KEventKt.getKEVENT().post(new MidiPlay(midi));
 					midiplay = false;
 				}
 

@@ -1346,7 +1346,8 @@ public class client extends GameShell {
 	private void setMidi(@OriginalArg(2) String name, @OriginalArg(1) int crc, @OriginalArg(3) int len) {
 		synchronized (this.midiSync) {
 			this.midiSyncName = name;
-			KEventKt.getKEVENT().post(new MidiPlay(midiSyncName));
+			if (isAndroid)
+				KEventKt.getKEVENT().post(new MidiPlay(midiSyncName));
 			this.midiSyncCrc = crc;
 			this.midiSyncLen = len;
 		}

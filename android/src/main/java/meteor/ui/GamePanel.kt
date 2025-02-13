@@ -118,6 +118,10 @@ object GamePanel {
         eventbus.subscribe<client.events.AreaViewportDrawFinished> {
             viewportImage.value = Bitmap.createBitmap(clientInstance.areaViewport.pixels, clientInstance.areaViewport.width, clientInstance.areaViewport.height, Bitmap.Config.RGB_565).asImageBitmap()
         }
+        eventbus.subscribe<client.events.DrawFinished> {
+            if (sceneState.intValue != clientInstance.sceneState)
+                sceneState.intValue = clientInstance.sceneState
+        }
     }
     var viewportImage = mutableStateOf<ImageBitmap?>(null)
 
@@ -188,6 +192,7 @@ object GamePanel {
     lateinit var gamePanelFocusRequester: FocusRequester
     val gameInputText = mutableStateOf("")
     val hideInputBox = mutableStateOf(false)
+    val sceneState = mutableIntStateOf(-1)
 
     @OptIn(ExperimentalComposeUiApi::class)
     @Composable
@@ -202,7 +207,7 @@ object GamePanel {
             image.value?.let {
                 var it = it
                 if (clientInstance.ingame) {
-                    if (clientInstance.sceneState > 1) {
+                    if (sceneState.intValue > 1) {
                         viewportImage.value?.let { image ->
                             it = drawViewportOntoImage(image.asAndroidBitmap(), it.asAndroidBitmap()).asImageBitmap()
                         }

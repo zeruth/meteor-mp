@@ -19,6 +19,7 @@ import meteor.common.Common.eventbus
 import meteor.common.ext.kotlin.MutableStateExt.toggle
 import meteor.common.ui.Colors
 import meteor.ui.GamePanel.containerSize
+import java.awt.event.KeyEvent
 
 object CameraControls {
 
@@ -31,6 +32,30 @@ object CameraControls {
     }
 
     val showControls = mutableStateOf(true)
+
+    var leftPressed = false
+    var rightPressed = false
+    var downPressed = false
+    var upPressed = false
+
+    fun resetKeys() {
+        if (leftPressed) {
+            clientInstance.keyReleased(KeyEvent.VK_LEFT)
+            leftPressed = false
+        }
+        if (rightPressed) {
+            clientInstance.keyReleased(KeyEvent.VK_RIGHT)
+            rightPressed = false
+        }
+        if (downPressed) {
+            clientInstance.keyReleased(KeyEvent.VK_DOWN)
+            downPressed = false
+        }
+        if (upPressed) {
+            clientInstance.keyReleased(KeyEvent.VK_UP)
+            upPressed = false
+        }
+    }
 
     @Composable
     fun BoxScope.CameraControls() {
@@ -52,9 +77,11 @@ object CameraControls {
                     Box(modifier = Modifier.size(40.dp).align(Alignment.CenterStart).pointerInput(Unit) {
                         detectTapGestures(
                             onPress = {
+                                leftPressed = true
                                 clientInstance.keyPressed(java.awt.event.KeyEvent.VK_LEFT, -1)
                             },
                             onTap = {
+                                leftPressed = false
                                 clientInstance.keyReleased(java.awt.event.KeyEvent.VK_LEFT)
                             }
                         )
@@ -64,9 +91,11 @@ object CameraControls {
                     Box(modifier = Modifier.size(40.dp).align(Alignment.TopCenter).pointerInput(Unit) {
                         detectTapGestures(
                             onPress = {
+                                upPressed = true
                                 clientInstance.keyPressed(java.awt.event.KeyEvent.VK_UP, -1)
                             },
                             onTap = {
+                                upPressed = false
                                 clientInstance.keyReleased(java.awt.event.KeyEvent.VK_UP)
                             }
                         )
@@ -76,9 +105,11 @@ object CameraControls {
                     Box(modifier = Modifier.size(40.dp).align(Alignment.CenterEnd).pointerInput(Unit) {
                         detectTapGestures(
                             onPress = {
+                                rightPressed = true
                                 clientInstance.keyPressed(java.awt.event.KeyEvent.VK_RIGHT, -1)
                             },
                             onTap = {
+                                rightPressed = false
                                 clientInstance.keyReleased(java.awt.event.KeyEvent.VK_RIGHT)
                             }
                         )
@@ -88,9 +119,11 @@ object CameraControls {
                     Box(modifier = Modifier.size(40.dp).align(Alignment.BottomCenter).pointerInput(Unit) {
                         detectTapGestures(
                             onPress = {
+                                downPressed = true
                                 clientInstance.keyPressed(java.awt.event.KeyEvent.VK_DOWN, -1)
                             },
                             onTap = {
+                                downPressed = true
                                 clientInstance.keyReleased(java.awt.event.KeyEvent.VK_DOWN)
                             }
                         )

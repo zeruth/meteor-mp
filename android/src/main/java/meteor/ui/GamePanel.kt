@@ -41,6 +41,7 @@ import meteor.common.ui.UI.filterQuality
 import meteor.input.KeyboardController.handleKeyEvent
 import meteor.input.KeyboardController.keyboardController
 import meteor.ui.CameraControls.CameraControls
+import meteor.ui.CameraControls.resetKeys
 
 /**
  * This panel will contain the game view & compose overlays eventually
@@ -227,6 +228,7 @@ object GamePanel {
                         touchScaleX.value = containerSize.value.width.toFloat() / 789
                         touchScaleY.value = containerSize.value.height.toFloat() / 532
                     }.pointerInteropFilter { change ->
+                        resetKeys()
                         clientInstance.mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
                         false
                     }.pointerInput(Unit) {

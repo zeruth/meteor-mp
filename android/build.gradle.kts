@@ -6,7 +6,7 @@ plugins {
     id("com.google.firebase.crashlytics")
 }
 
-version = "2.1.1-SNAPSHOT"
+version = "2.1.2"
 
 android {
     namespace = "com.meteor.android"
@@ -17,7 +17,7 @@ android {
         minSdk = 30
         targetSdk = 35
         versionCode = 1
-        versionName = "2.1.1"
+        versionName = "2.1.2"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {

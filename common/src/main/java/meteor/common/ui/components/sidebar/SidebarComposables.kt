@@ -88,7 +88,10 @@ object SidebarComposables {
         }
         Row(Modifier.fillMaxWidth().height(buttonSize.value - padding.value)) {
             Box(mod) {
-                sidebarButton.icon.value?.let { Image(it, contentDescription = null) }
+                if (sidebarButton.content() != null) {
+                    sidebarButton.content()?.invoke(this)
+                } else
+                    sidebarButton.icon?.let { Image(it.value, contentDescription = null) }
             }
         }
         Spacer(Modifier.height(padding.value))

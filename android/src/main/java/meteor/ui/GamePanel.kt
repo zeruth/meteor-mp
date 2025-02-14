@@ -257,7 +257,6 @@ object GamePanel {
                         })
                     })
             }
-            Text("FPS: ${fps.intValue}", color = Color.Yellow, modifier = Modifier.align(Alignment.TopEnd))
             CameraControls()
 
             /**

@@ -1,13 +1,11 @@
 package meteor.ui
 
-import android.util.Log
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.Composable
-import androidx.compose.ui.ExperimentalComposeUiApi
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.pointerInteropFilter
+import meteor.platform.BatteryFpsDisplayButton
 import meteor.Game.image
 import meteor.common.ui.components.panel.PanelComposables.Panel
 import meteor.common.ui.UI.configWidth
@@ -24,7 +22,7 @@ import meteor.input.KeyboardButton
  */
 object Window {
 
-    val sidebarButtons = arrayOf(KeyboardButton(), WorldsButton())
+    val sidebarButtons = arrayOf(WorldsButton(), KeyboardButton(), BatteryFpsDisplayButton())
 
     @Composable
     fun BoxScope.MeteorViewBox() {

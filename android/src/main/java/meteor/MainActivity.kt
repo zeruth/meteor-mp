@@ -1,6 +1,8 @@
 package meteor
 
 import JinglePlayer
+import android.content.Intent
+import android.content.IntentFilter
 import android.os.Build
 import android.os.Bundle
 import android.os.Handler
@@ -28,8 +30,11 @@ import meteor.audio.SongPlayer
 import meteor.audio.SoundPlayer
 import meteor.common.Common
 import meteor.common.Common.clientInstance
+import meteor.common.Common.eventbus
 import meteor.common.plugin.PluginManager
 import meteor.input.KeyboardController.keyboardController
+import meteor.platform.BatteryReceiver
+import meteor.platform.events.BatteryLevelChanged
 import meteor.ui.Window.MeteorViewBox
 import org.rationalityfrontline.kevent.KEVENT
 import java.io.File
@@ -39,6 +44,8 @@ class MainActivity : ComponentActivity() {
 
     private val mainHandler = Handler(Looper.getMainLooper())
     var preventReplay = true
+
+    private lateinit var batteryReceiver: BatteryReceiver
 
     companion object {
         fun onlyPlayJingles(): Boolean {
@@ -122,6 +129,7 @@ class MainActivity : ComponentActivity() {
             }
         }
     }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         requestWindowFeature(Window.FEATURE_NO_TITLE);
@@ -129,6 +137,10 @@ class MainActivity : ComponentActivity() {
             WindowManager.LayoutParams.FLAG_FULLSCREEN);
 
         window.attributes.layoutInDisplayCutoutMode = WindowManager.LayoutParams.LAYOUT_IN_DISPLAY_CUTOUT_MODE_SHORT_EDGES;
+
+        batteryReceiver = BatteryReceiver { batteryLevel ->
+            eventbus.post(BatteryLevelChanged(batteryLevel))
+        }
 
         loadMeteor()
         setContent {
@@ -140,6 +152,13 @@ class MainActivity : ComponentActivity() {
                 MeteorViewBox()
             }
         }
+    }
+
+    override fun onStart() {
+        super.onStart()
+
+        val filter = IntentFilter(Intent.ACTION_BATTERY_CHANGED)
+        registerReceiver(batteryReceiver, filter)
     }
 
     private fun loadMeteor() {

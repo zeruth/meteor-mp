@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableStateSetOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
@@ -23,6 +24,7 @@ import meteor.platform.desktop.Game.gameImage
 import meteor.platform.desktop.Game.loadingImage
 import meteor.platform.common.ui.components.panel.PanelComposables.Panel
 import meteor.platform.common.ui.UI.panelOpen
+import meteor.platform.common.ui.components.sidebar.SidebarButton
 import meteor.platform.common.ui.components.sidebar.SidebarComposables
 import meteor.platform.desktop.ui.GameView.GameViewContainer
 import meteor.platform.desktop.ui.GameView.focusRequester
@@ -83,16 +85,19 @@ object MeteorWindow {
     val density = mutableFloatStateOf(1f)
     val pendingResize = mutableStateOf(false)
 
+    val platformButtons = mutableStateSetOf(discordStatusButton, worldsButton, fpsButton, fullscreenToggleButton)
+
     @Composable
     fun ApplicationScope.MeteorWindow() {
         key(windowState.value) {
             density.floatValue = LocalDensity.current.density
+            var resizable = pendingResize.value || !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState)
             Window(
                 onCloseRequest = ::exitApplication,
                 title = "Meteor 225 (2.1.0)",
                 state = windowState.value,
                 undecorated = windowState.value == fullscreenState,
-                resizable = pendingResize.value || !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState),
+                resizable = if (windowState.value == fullscreenState) false else resizable,
                 icon = painterResource("Meteor.ico")
             ) {
                 if (pendingResize.value)
@@ -108,16 +113,21 @@ object MeteorWindow {
                             Panel()
                         }
                     }
-                    val currentButtons = mutableSetOf(discordStatusButton, worldsButton, fpsButton, fullscreenToggleButton)
-                    if (density.floatValue == 1f)
-                        currentButtons.add(stretchToggleButton)
-                    if (windowState.value != fullscreenState) {
-                        SidebarComposables.remove(closeMeteorButton)
-                    } else {
-                        currentButtons.add(closeMeteorButton)
+
+                    if (density.floatValue == 1f) {
+                        if (windowState.value != fullscreenState)
+                            platformButtons.add(stretchToggleButton)
+                        else
+                            platformButtons.remove(stretchToggleButton)
                     }
 
-                    SidebarComposables.Sidebar(*currentButtons.toTypedArray())
+                    if (windowState.value != fullscreenState) {
+                        platformButtons.remove(closeMeteorButton)
+                    } else {
+                        platformButtons.add(closeMeteorButton)
+                    }
+
+                    SidebarComposables.Sidebar(*platformButtons.toTypedArray())
                 }
             }
 

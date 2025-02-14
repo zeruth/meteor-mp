@@ -40,7 +40,9 @@ import meteor.platform.desktop.ui.MeteorWindow.density
 import meteor.platform.desktop.ui.MeteorWindow.fixedState
 import meteor.platform.desktop.ui.MeteorWindow.fixedWindowSize
 import meteor.platform.desktop.ui.MeteorWindow.pendingResize
+import meteor.platform.desktop.ui.MeteorWindow.platformButtons
 import meteor.platform.desktop.ui.MeteorWindow.resetWindowSize
+import meteor.platform.desktop.ui.MeteorWindow.stretchToggleButton
 import meteor.platform.desktop.ui.MeteorWindow.windowState
 import meteor.platform.desktop.ui.buttons.FullscreenToggleButton
 import meteor.platform.desktop.ui.buttons.StretchToggleButton
@@ -193,7 +195,7 @@ object GameView {
             stretchedMode.value = true
             fixedState.value = false
             windowState.value = MeteorWindow.fullscreenState
-            SidebarComposables.getButton<FullscreenToggleButton>().icon!!.value = LineAwesomeIcons.CompressArrowsAltSolid
+            SidebarComposables.getButton<FullscreenToggleButton>()?.icon?.value = LineAwesomeIcons.CompressArrowsAltSolid
             ConfigManager.set("meteor.fullscreen", true)
         } else {
             windowState.value = MeteorWindow.floatingState
@@ -203,7 +205,7 @@ object GameView {
                 fixedState.value = false
             }
             stretchedMode.value = wasStretched
-            SidebarComposables.getButton<FullscreenToggleButton>().icon!!.value = LineAwesomeIcons.ExpandArrowsAltSolid
+            SidebarComposables.getButton<FullscreenToggleButton>()?.icon?.value = LineAwesomeIcons.ExpandArrowsAltSolid
             ConfigManager.set("meteor.fullscreen", false)
             resetWindowSize()
         }
@@ -223,11 +225,11 @@ object GameView {
                                 fixedState.value = false
                                 stretchedMode.value = true
                                 windowState.value = MeteorWindow.floatingState
-                                SidebarComposables.getButton<StretchToggleButton>().icon!!.value = LineAwesomeIcons.LockSolid
+                                SidebarComposables.getButton<StretchToggleButton>()?.icon?.value = LineAwesomeIcons.LockSolid
                             } else {
                                 stretchedMode.value = false
                                 fixedState.value = true
-                                SidebarComposables.getButton<StretchToggleButton>().icon!!.value = LineAwesomeIcons.UnlockSolid
+                                SidebarComposables.getButton<StretchToggleButton>()?.icon?.value = LineAwesomeIcons.UnlockSolid
                                 resetWindowSize()
                             }
                         }

@@ -22,31 +22,18 @@ import meteor.platform.common.ui.UI.sidebarWidth
 import meteor.platform.common.ui.components.sidebar.buttons.PluginsButton
 
 object SidebarComposables {
-    val sidebarButtons = arrayListOf<SidebarButton>(PluginsButton())
+    val sidebarButtons = mutableSetOf<SidebarButton>(PluginsButton())
     val padding = mutableStateOf(5.dp)
     val buttonSize = mutableStateOf(sidebarWidth.value - padding.value)
     var lastButtonClicked = mutableStateOf<SidebarButton?>(null)
 
-    inline fun<reified T> getButton(): T {
-        return sidebarButtons.filterIsInstance<T>().first()
-    }
-
-    fun add(sidebarButton: SidebarButton) {
-        if (!sidebarButtons.contains(sidebarButton)) {
-            sidebarButtons.add(sidebarButton)
-        }
-    }
-
-    fun remove(sidebarButton: SidebarButton) {
-        if (sidebarButtons.contains(sidebarButton)) {
-            sidebarButtons.remove(sidebarButton)
-        }
+    inline fun<reified T> getButton(): T? {
+        return sidebarButtons.filterIsInstance<T>().firstOrNull()
     }
 
     @Composable
     fun Sidebar(vararg platformButtons: SidebarButton) {
         val allButtons = platformButtons.toMutableSet()
-        platformButtons.forEach { add(it) }
         allButtons.addAll(sidebarButtons)
         //Sidebar
         Box(Modifier.width(sidebarWidth.value).fillMaxHeight().background(surfaceDark.value)) {

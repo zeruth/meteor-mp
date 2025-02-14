@@ -1,4 +1,0 @@
-package meteor
-
-object Util {
-}

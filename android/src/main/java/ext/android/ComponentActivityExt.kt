@@ -5,7 +5,7 @@ import android.view.View
 import androidx.activity.ComponentActivity
 import androidx.activity.addCallback
 import androidx.activity.enableEdgeToEdge
-import meteor.input.KeyboardController.showTextInput
+import meteor.platform.android.input.KeyboardController.showTextInput
 
 object ComponentActivityExt {
     fun ComponentActivity.hideSystemUI() {

@@ -23,11 +23,9 @@ object PluginManager {
     }
 
     fun start() {
-        val startTime = System.currentTimeMillis()
         for (plugin in plugins) {
             plugin.start()
         }
-        logger.info("Loaded ${plugins.size} plugins (${System.currentTimeMillis() - startTime}ms)")
     }
 
     inline fun <reified P : Plugin> get(): P? {

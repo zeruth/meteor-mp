@@ -9,6 +9,7 @@ import meteor.platform.desktop.audio.MidiPlayer
 import meteor.platform.desktop.audio.SoundPlayer
 import meteor.platform.common.Common
 import meteor.platform.common.Common.logger
+import meteor.platform.common.Common.startupTime
 import meteor.platform.common.Configuration
 import meteor.platform.common.config.ConfigManager
 import meteor.platform.common.plugin.PluginManager
@@ -21,7 +22,6 @@ import org.rationalityfrontline.kevent.KEVENT
 import java.io.File
 
 object Main {
-    private val startupTime = System.currentTimeMillis()
     private var started = false
 
     private val volatileLogger = Logger("")
@@ -36,6 +36,8 @@ object Main {
         MidiPlayer.init()
         SoundPlayer.init()
         Game.init()
+        val gameInit = System.currentTimeMillis() - startupTime
+        logger.info("Game init @ ${gameInit}ms")
         PluginManager.addAll(DiscordPlugin())
         PluginManager.start()
 
@@ -44,6 +46,8 @@ object Main {
             val lastPresence = ConfigManager.get<String>("DiscordRPCStatus", "")
             DiscordPresence.update(lastPresence)
         }
+        val pluginsInit = System.currentTimeMillis() - startupTime
+        logger.info("PluginManager init @ ${pluginsInit}ms")
     }
 
     @JvmStatic
@@ -56,12 +60,9 @@ object Main {
         }
 
         if (!started) {
-            val gameInit = System.currentTimeMillis() - startupTime
-            logger.info("Game init: ${gameInit}ms")
-
             LaunchedEffect(Unit) {
                 val composeInit = System.currentTimeMillis() - startupTime
-                logger.info("Compose init: ${composeInit}ms")
+                logger.info("Meteor started @ ${composeInit}ms")
             }
             started = true
         }

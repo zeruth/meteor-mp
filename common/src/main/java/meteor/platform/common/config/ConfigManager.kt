@@ -3,7 +3,9 @@ package meteor.platform.common.config
 import meteor.platform.common.Common.gson
 import meteor.platform.common.Configuration
 import meteor.Logger
+import meteor.platform.common.Common
 import meteor.platform.common.Common.eventbus
+import meteor.platform.common.Common.startupTime
 import meteor.platform.common.events.ConfigChanged
 import java.io.File
 
@@ -15,9 +17,9 @@ object ConfigManager {
 
     init {
         if (configFile.exists()) {
-            val startTime = System.currentTimeMillis()
             properties = gson.fromJson(configFile.reader(), Properties::class.java)
-            logger.info("Loaded ${properties.properties.size} config properties (${System.currentTimeMillis() - startTime}ms)")
+            val configsLoaded = System.currentTimeMillis() - startupTime
+            Common.logger.info("ConfigManager init @ ${configsLoaded}ms")
         }
     }
 

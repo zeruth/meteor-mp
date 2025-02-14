@@ -2,7 +2,7 @@ plugins {
     id("java")
 }
 
-version = "2.1.4-SNAPSHOT"
+version = "2.1.4"
 
 dependencies {
     compileOnly(files("../lib/android-35.jar"))

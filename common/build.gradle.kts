@@ -4,7 +4,7 @@ plugins {
     kotlin("jvm")
 }
 
-version = "2.1.4-SNAPSHOT"
+version = "2.1.4"
 
 java {
     sourceCompatibility = JavaVersion.VERSION_21

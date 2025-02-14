@@ -46,7 +46,6 @@ java {
 
 compose.desktop {
     application {
-        jvmArgs("-Dsun.java2d.uiScale=1.0")
         mainClass = "meteor.platform.desktop.Main"
         version = "2.1.4"
 

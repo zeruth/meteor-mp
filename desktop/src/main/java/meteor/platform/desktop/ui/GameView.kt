@@ -50,7 +50,7 @@ object GameView {
     var scaleY = -1f
 
     val focusRequester = FocusRequester()
-    val stretchedMode = mutableStateOf(ConfigManager.get<Boolean>("meteor.stretched", false))
+    val stretchedMode = mutableStateOf(ConfigManager.get<Boolean>("meteor.stretched", true))
     var fps = mutableIntStateOf(0)
     var recentDraws = ArrayList<Long>()
 
@@ -104,7 +104,6 @@ object GameView {
 
         Box(mod) {
             GameViewImage(src)
-            Text("FPS: ${fps.intValue}", Modifier.align(Alignment.TopEnd), color = Color.Yellow)
         }
     }
 

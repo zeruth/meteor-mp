@@ -6,6 +6,7 @@ import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import meteor.platform.common.Common.logger
 import meteor.platform.common.ui.components.panel.PanelComposables
 
 open class SidebarButton(
@@ -25,6 +26,5 @@ open class SidebarButton(
 
     open fun onClick() {
         PanelComposables.content.value = null
-        println("${javaClass.name} button click")
     }
 }

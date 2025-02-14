@@ -26,6 +26,7 @@ import meteor.platform.desktop.ui.GameView.focusRequester
 import meteor.platform.desktop.ui.GameView.stretchedMode
 import meteor.platform.desktop.ui.buttons.CloseMeteorButton
 import meteor.platform.desktop.ui.buttons.DiscordStatusButton
+import meteor.platform.desktop.ui.buttons.FpsDisplayButton
 import meteor.platform.desktop.ui.buttons.FullscreenToggleButton
 import meteor.platform.desktop.ui.buttons.StretchToggleButton
 import meteor.platform.desktop.ui.buttons.WorldsButton
@@ -35,7 +36,7 @@ object MeteorWindow {
     val sidebarWidth = mutableStateOf(40.dp)
     val configWidth = mutableStateOf(300.dp)
     var fixedWindowSize = Dimension(789 + sidebarWidth.value.value.toInt(), 532)
-    var fixedState = mutableStateOf(true)
+    var fixedState = mutableStateOf(false)
     val floatingState = WindowState(
         position = WindowPosition(Alignment.Center),
         placement = WindowPlacement.Floating)
@@ -75,6 +76,7 @@ object MeteorWindow {
     val fullscreenToggleButton = FullscreenToggleButton()
     val stretchToggleButton = StretchToggleButton()
     val worldsButton = WorldsButton()
+    val fpsButton = FpsDisplayButton()
 
 
     @Composable
@@ -99,7 +101,7 @@ object MeteorWindow {
                             Panel()
                         }
                     }
-                    val currentButtons = mutableSetOf(discordStatusButton, worldsButton, stretchToggleButton, fullscreenToggleButton)
+                    val currentButtons = mutableSetOf(discordStatusButton, worldsButton, fpsButton, stretchToggleButton, fullscreenToggleButton)
                     if (windowState.value != fullscreenState) {
                         SidebarComposables.remove(closeMeteorButton)
                     } else {

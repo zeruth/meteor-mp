@@ -7,7 +7,7 @@ plugins {
 }
 
 group = "meteor"
-version = "2.1.4"
+version = "2.1.5-SNAPSHOT"
 
 dependencies {
     implementation(project(":common"))
@@ -47,12 +47,12 @@ java {
 compose.desktop {
     application {
         mainClass = "meteor.platform.desktop.Main"
-        version = "2.1.4"
+        version = "2.1.5"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "meteor"
-            packageVersion = "2.1.4"
+            packageVersion = "2.1.5"
             windows {
 
                 console = true

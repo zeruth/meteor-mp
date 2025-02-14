@@ -123,6 +123,7 @@ object ConfigComposables {
                 fontSize = 16.sp
             ),
             colors = OutlinedTextFieldDefaults.colors(
+                cursorColor = Colors.secondary.value,
                 focusedBorderColor = Colors.secondary.value,
                 unfocusedBorderColor = Colors.secondary.value)
         )

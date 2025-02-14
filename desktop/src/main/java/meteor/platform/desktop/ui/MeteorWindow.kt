@@ -8,12 +8,15 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.ComposeWindow
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
 import meteor.platform.desktop.Game.gameImage
@@ -42,7 +45,7 @@ object MeteorWindow {
         placement = WindowPlacement.Floating)
     var fullscreenState = WindowState(
         position = WindowPosition(Alignment.Center),
-        placement = WindowPlacement.Fullscreen)
+        placement = WindowPlacement.Maximized)
     val windowState = mutableStateOf(floatingState)
     lateinit var windowInstance: ComposeWindow
 
@@ -77,19 +80,23 @@ object MeteorWindow {
     val stretchToggleButton = StretchToggleButton()
     val worldsButton = WorldsButton()
     val fpsButton = FpsDisplayButton()
-
+    val density = mutableFloatStateOf(1f)
+    val pendingResize = mutableStateOf(false)
 
     @Composable
     fun ApplicationScope.MeteorWindow() {
         key(windowState.value) {
+            density.floatValue = LocalDensity.current.density
             Window(
                 onCloseRequest = ::exitApplication,
                 title = "Meteor 225 (2.1.0)",
                 state = windowState.value,
                 undecorated = windowState.value == fullscreenState,
-                resizable = !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState),
+                resizable = pendingResize.value || !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState),
                 icon = painterResource("Meteor.ico")
             ) {
+                if (pendingResize.value)
+                    pendingResize.value = false
                 windowInstance = this.window
                 val finalImage = if (gameImage.value != null) gameImage else loadingImage
                 Row(modifier = Modifier.focusable().focusRequester(focusRequester)) {
@@ -101,7 +108,9 @@ object MeteorWindow {
                             Panel()
                         }
                     }
-                    val currentButtons = mutableSetOf(discordStatusButton, worldsButton, fpsButton, stretchToggleButton, fullscreenToggleButton)
+                    val currentButtons = mutableSetOf(discordStatusButton, worldsButton, fpsButton, fullscreenToggleButton)
+                    if (density.floatValue == 1f)
+                        currentButtons.add(stretchToggleButton)
                     if (windowState.value != fullscreenState) {
                         SidebarComposables.remove(closeMeteorButton)
                     } else {

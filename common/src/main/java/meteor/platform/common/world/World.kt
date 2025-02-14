@@ -1,4 +1,4 @@
-package meteor.platform.common.ui.worlds
+package meteor.platform.common.world
 
 import java.math.BigInteger
 

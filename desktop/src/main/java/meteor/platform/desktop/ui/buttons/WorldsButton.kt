@@ -25,9 +25,9 @@ import meteor.platform.common.Common
 import meteor.platform.common.ui.Colors
 import meteor.platform.common.ui.components.panel.PanelComposables
 import meteor.platform.common.ui.components.sidebar.SidebarButton
-import meteor.platform.common.ui.worlds.World
-import meteor.platform.common.ui.worlds.WorldsCommon
-import meteor.platform.common.ui.worlds.WorldsCommon.currentWorld
+import meteor.platform.common.world.World
+import meteor.platform.common.world.WorldsCommon
+import meteor.platform.common.world.WorldsCommon.currentWorld
 
 class WorldsButton : SidebarButton(icon = mutableStateOf(LineAwesomeIcons.GlobeSolid)) {
     override fun onClick() {

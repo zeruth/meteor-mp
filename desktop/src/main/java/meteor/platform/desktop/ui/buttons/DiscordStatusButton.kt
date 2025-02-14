@@ -87,7 +87,7 @@ class DiscordStatusButton : SidebarButton(
             if (windowState.value == MeteorWindow.fullscreenState) {
                 MeteorWindow.fullscreenState = WindowState(
                     position = WindowPosition(Alignment.Center),
-                    placement = WindowPlacement.Fullscreen)
+                    placement = WindowPlacement.Maximized)
                 windowState.value = MeteorWindow.fullscreenState
             }
         }

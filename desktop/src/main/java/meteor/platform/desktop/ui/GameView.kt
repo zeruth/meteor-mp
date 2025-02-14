@@ -36,8 +36,10 @@ import meteor.platform.common.Common.eventbus
 import meteor.platform.common.config.ConfigManager
 import meteor.platform.common.ui.UI.filterQuality
 import meteor.platform.common.ui.components.sidebar.SidebarComposables
+import meteor.platform.desktop.ui.MeteorWindow.density
 import meteor.platform.desktop.ui.MeteorWindow.fixedState
 import meteor.platform.desktop.ui.MeteorWindow.fixedWindowSize
+import meteor.platform.desktop.ui.MeteorWindow.pendingResize
 import meteor.platform.desktop.ui.MeteorWindow.resetWindowSize
 import meteor.platform.desktop.ui.MeteorWindow.windowState
 import meteor.platform.desktop.ui.buttons.FullscreenToggleButton
@@ -50,7 +52,7 @@ object GameView {
     var scaleY = -1f
 
     val focusRequester = FocusRequester()
-    val stretchedMode = mutableStateOf(ConfigManager.get<Boolean>("meteor.stretched", true))
+    val stretchedMode = mutableStateOf(true)
     var fps = mutableIntStateOf(0)
     var recentDraws = ArrayList<Long>()
 
@@ -179,19 +181,28 @@ object GameView {
         }
     }
 
+    var wasStretched = false
+
     fun toggleFullscreen() {
         if (windowState.value == MeteorWindow.floatingState) {
             MeteorWindow.fullscreenState = WindowState(
                 position = WindowPosition(Alignment.Center),
-                placement = WindowPlacement.Fullscreen)
-            windowState.value = MeteorWindow.fullscreenState
+                placement = WindowPlacement.Maximized)
+            pendingResize.value = true
+            wasStretched = stretchedMode.value
             stretchedMode.value = true
+            fixedState.value = false
+            windowState.value = MeteorWindow.fullscreenState
             SidebarComposables.getButton<FullscreenToggleButton>().icon!!.value = LineAwesomeIcons.CompressArrowsAltSolid
             ConfigManager.set("meteor.fullscreen", true)
         } else {
             windowState.value = MeteorWindow.floatingState
-            stretchedMode.value = false
-            fixedState.value = true
+            if (density.floatValue == 1f) {
+                fixedState.value = true
+            } else {
+                fixedState.value = false
+            }
+            stretchedMode.value = wasStretched
             SidebarComposables.getButton<FullscreenToggleButton>().icon!!.value = LineAwesomeIcons.ExpandArrowsAltSolid
             ConfigManager.set("meteor.fullscreen", false)
             resetWindowSize()

@@ -12,7 +12,7 @@ import ext.awt.BufferedImageExt.getPixels
 import jagex2.client.Configuration
 import meteor.platform.common.Common.clientInstance
 import meteor.platform.common.Common.eventbus
-import meteor.platform.common.ui.worlds.WorldsCommon.worlds
+import meteor.platform.common.world.WorldsCommon.worlds
 import sign.signlink
 import java.lang.Thread.sleep
 import java.net.InetAddress

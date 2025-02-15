@@ -11550,7 +11550,7 @@ public class Client extends GameShell {
 		long crc = calculateCRC(src);
 		MidiJinglePlay event = new MidiJinglePlay(crc);
 		post(event);
-		System.out.println("Jingle CRC: " + crc);
+		//System.out.println("Jingle CRC: " + crc);
 	}
 
 	@OriginalMember(owner = "client", name = "s", descriptor = "(B)V")

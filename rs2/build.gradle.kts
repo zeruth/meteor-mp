@@ -11,12 +11,17 @@ dependencies {
 dependencies {
 
     with(libs) {
-        implementation(java.websocket)
+        compileOnly(java.websocket)
         compileOnly(eventbus)
     }
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_17
-    targetCompatibility = JavaVersion.VERSION_17
+    sourceCompatibility = JavaVersion.VERSION_1_6
+    targetCompatibility = JavaVersion.VERSION_1_6
+
+    disableAutoTargetJvm()
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(8)
+    }
 }

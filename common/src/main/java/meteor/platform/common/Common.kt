@@ -1,5 +1,6 @@
 package meteor.platform.common
 
+import client.Client
 import com.google.gson.GsonBuilder
 import meteor.Logger
 import org.rationalityfrontline.kevent.KEVENT
@@ -11,7 +12,7 @@ object Common {
      */
     var isAndroid by Delegates.notNull<Boolean>()
     val startupTime = System.currentTimeMillis()
-    lateinit var clientInstance: client.client
+    lateinit var clientInstance: net.runelite.api.Client
     val gson = GsonBuilder().setPrettyPrinting().create()
     val eventbus = KEVENT
     val logger = Logger("main")

@@ -9,5 +9,5 @@
 .cxx
 local.properties
 /desktop/build
-
+/buildSrc/build
 *.salive

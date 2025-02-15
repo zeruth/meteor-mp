@@ -18,7 +18,8 @@ kotlin {
 dependencies {
 
     compileOnly(files("../lib/android-35.jar"))
-
+    compileOnly(project(":api"))
+    compileOnly(project(":api-rs"))
     compileOnly(project(":rs2"))
 
     with(compose) {

@@ -1,17 +1,40 @@
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import nulled.InjectTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.jetbrainsCompose)
     alias(libs.plugins.compose.compiler)
     kotlin("jvm")
+    id("nulled.injector")
 }
+
 
 group = "meteor"
 version = "2.1.5-SNAPSHOT"
 
+tasks.withType<InjectTask> {
+    outputs.upToDateWhen {
+        false
+    }
+    dependsOn(":api-rs:build")
+    dependsOn(":mixins:build")
+    dependsOn(":rs2:build")
+    api = "${project.layout.projectDirectory}/../api-rs/build/classes/java/main/net/runelite/rs/api/"
+    mixins = "${project.layout.projectDirectory}/../mixins/build/libs/mixins-$version.jar"
+    target = "${project.layout.projectDirectory}/../rs2/build/libs/rs2-$version.jar"
+    output = "${project.layout.projectDirectory}/lib/injected-client.jar"
+}
+
+tasks.withType<KotlinCompile> {
+    dependsOn("inject")
+}
+
 dependencies {
     implementation(project(":common"))
-    implementation(project(":rs2"))
+    implementation(project(":api"))
+    implementation(project(":api-rs"))
+    implementation(files("./lib/injected-client.jar"))
 
     with(compose) {
         implementation(runtime)
@@ -20,6 +43,7 @@ dependencies {
     }
 
     with(libs) {
+        implementation(java.websocket)
         implementation(eventbus)
         implementation(logger)
         implementation(kotlin.reflect)
@@ -30,6 +54,7 @@ dependencies {
         implementation(java.websocket)
         implementation(logback.classic)
         implementation(slf4j.api)
+        implementation("org.ow2.asm:asm:9.7.1")
     }
 }
 

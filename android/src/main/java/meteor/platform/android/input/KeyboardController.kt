@@ -25,10 +25,10 @@ object KeyboardController {
         }
 
         if (event.action == KeyEvent.ACTION_DOWN) {
-            clientInstance.keyPressed(asciiKey, -1)
+            clientInstance.`keyPressed$api`(asciiKey, -1)
         } else if (event.action == KeyEvent.ACTION_UP) {
-            clientInstance.keyReleased(asciiKey)
-            clientInstance.keyTyped(asciiKey)
+            clientInstance.`keyReleased$api`(asciiKey)
+            clientInstance.`keyTyped$api`(asciiKey)
         }
 
         return false

@@ -12,7 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.unit.dp
-import client.client.isAndroid
+import client.Client.isAndroid
 import meteor.platform.common.ext.kotlin.MutableStateExt.toggle
 import meteor.platform.common.ui.components.panel.PanelComposables.secondaryContent
 import meteor.platform.common.ui.Colors.secondary

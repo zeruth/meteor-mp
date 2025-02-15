@@ -1,12 +1,34 @@
+import com.android.build.gradle.internal.tasks.BaseTask
+import nulled.InjectTask
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.compose.compiler)
     id("com.google.gms.google-services")
     id("com.google.firebase.crashlytics")
+    id("nulled.injector")
 }
 
 version = "2.1.5-SNAPSHOT"
+
+tasks.withType<InjectTask> {
+    outputs.upToDateWhen {
+        false
+    }
+    dependsOn(":api-rs:build")
+    dependsOn(":mixins:build")
+    dependsOn(":rs2:build")
+    api = "${project.layout.projectDirectory}/../api-rs/build/classes/java/main/net/runelite/rs/api/"
+    mixins = "${project.layout.projectDirectory}/../mixins/build/libs/mixins-$version.jar"
+    target = "${project.layout.projectDirectory}/../rs2/build/libs/rs2-$version.jar"
+    output = "${project.layout.projectDirectory}/lib/injected-client.jar"
+}
+
+tasks.withType<BaseTask> {
+    dependsOn("inject")
+}
 
 android {
     namespace = "com.meteor.android"
@@ -58,8 +80,10 @@ val acraVersion = "5.11.4"
 
 dependencies {
     implementation(project(":common"))
-    implementation(project(":rs2"))
+    implementation(project(":api"))
+    implementation(project(":api-rs"))
     implementation(project(":android-awt"))
+    implementation(files("./lib/injected-client.jar"))
 
     with(libs) {
         implementation(logger)
@@ -71,6 +95,7 @@ dependencies {
         implementation(kotlin.reflect)
         implementation(line.awesome)
         implementation(gson)
+        implementation(java.websocket)
         implementation(androidx.core.ktx)
         implementation(androidx.lifecycle.runtime.ktx)
         implementation(androidx.activity.compose)

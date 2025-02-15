@@ -1,13 +1,13 @@
 package sign;
 
-import static client.client.isAndroid;
+import static client.Client.isAndroid;
 
+import client.Client;
 import client.events.MidiPlay;
 import org.openrs2.deob.annotation.OriginalArg;
 import org.openrs2.deob.annotation.OriginalClass;
 import org.openrs2.deob.annotation.OriginalMember;
 import org.openrs2.deob.annotation.Pc;
-import org.rationalityfrontline.kevent.KEventKt;
 
 import java.io.*;
 import java.net.InetAddress;
@@ -24,7 +24,7 @@ public class signlink implements Runnable {
 	public static int uid;
 
 	@OriginalMember(owner = "client.client!sign/signlink", name = "mainapp", descriptor = "Ljava/applet/Applet;")
-	public static client.client mainapp;
+	public static Client mainapp;
 
 	@OriginalMember(owner = "client.client!sign/signlink", name = "sunjava", descriptor = "Z")
 	public static boolean sunjava;
@@ -449,7 +449,7 @@ public class signlink implements Runnable {
 				if (midiplay) {
 					midi = cacheDir + savereq;
 					if (!isAndroid)
-						KEventKt.getKEVENT().post(new MidiPlay(midi));
+						Client.client.post(new MidiPlay(midi));
 					midiplay = false;
 				}
 

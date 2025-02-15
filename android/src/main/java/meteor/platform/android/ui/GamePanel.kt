@@ -78,7 +78,7 @@ object GamePanel {
         }
         eventbus.subscribe<client.events.DrawFinished> {
             pendingMove?.let {
-                clientInstance.mouseMoved(it.x, it.y)
+                clientInstance.`mouseMoved$api`(it.x, it.y)
                 mouseDown = true
                 pendingMove = null
             }
@@ -87,7 +87,7 @@ object GamePanel {
             pendingPress?.let {
                 if (!mouseDown || waitFrame == 0)
                     return@let
-                clientInstance.mousePressed(it.x, it.y, 1, false)
+                clientInstance.`mousePressed$api`(it.x, it.y, 1, false)
                 pendingPress = null
             }
         }
@@ -95,8 +95,8 @@ object GamePanel {
             pendingTap?.let {
                 if (waitTapFrame == 0)
                     return@let
-                clientInstance.mousePressed(it.x, it.y, 1, false)
-                clientInstance.mouseReleased(1, false)
+                clientInstance.`mousePressed$api`(it.x, it.y, 1, false)
+                clientInstance.`mouseReleased$api`(1, false)
                 pendingTap = null
             }
         }
@@ -104,8 +104,8 @@ object GamePanel {
             pendingHold?.let {
                 if (!mouseDown || waitFrame == 0)
                     return@let
-                clientInstance.mousePressed(it.x, it.y, 3, false)
-                clientInstance.mouseReleased(3, false)
+                clientInstance.`mousePressed$api`(it.x, it.y, 3, false)
+                clientInstance.`mouseReleased$api`(3, false)
                 pendingHold = null
             }
         }
@@ -138,32 +138,32 @@ object GamePanel {
                 return@onKeyEvent false
             if (keyEvent.type == KeyEventType.KeyDown) {
                 if (keyEvent.key == Key.DirectionLeft) {
-                    clientInstance.keyPressed(java.awt.event.KeyEvent.VK_LEFT, -1)
+                    clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_LEFT, -1)
                 }
                 else if (keyEvent.key == Key.DirectionRight) {
-                    clientInstance.keyPressed(java.awt.event.KeyEvent.VK_RIGHT, -1)
+                    clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_RIGHT, -1)
                 }
                 else if (keyEvent.key == Key.DirectionUp) {
-                    clientInstance.keyPressed(java.awt.event.KeyEvent.VK_UP, -1)
+                    clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_UP, -1)
                 }
                 else if (keyEvent.key == Key.DirectionDown) {
-                    clientInstance.keyPressed(java.awt.event.KeyEvent.VK_DOWN, -1)
+                    clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_DOWN, -1)
                 }
                 else
                     handleKeyEvent(keyEvent.nativeKeyEvent)
             }
             else if (keyEvent.type == KeyEventType.KeyUp) {
                 if (keyEvent.key == Key.DirectionLeft) {
-                    clientInstance.keyReleased(java.awt.event.KeyEvent.VK_LEFT)
+                    clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_LEFT)
                 }
                 else if (keyEvent.key == Key.DirectionRight) {
-                    clientInstance.keyReleased(java.awt.event.KeyEvent.VK_RIGHT)
+                    clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_RIGHT)
                 }
                 else if (keyEvent.key == Key.DirectionUp) {
-                    clientInstance.keyReleased(java.awt.event.KeyEvent.VK_UP)
+                    clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_UP)
                 }
                 else if (keyEvent.key == Key.DirectionDown) {
-                    clientInstance.keyReleased(java.awt.event.KeyEvent.VK_DOWN)
+                    clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_DOWN)
                 }
                 else
                     handleKeyEvent(keyEvent.nativeKeyEvent)
@@ -200,7 +200,7 @@ object GamePanel {
         Box(modifier = Modifier.fillMaxSize()) {
             image.value?.let {
                 var it = it
-                if (clientInstance.ingame) {
+                if (clientInstance.inGame()) {
                     if (sceneState.intValue > 1) {
                         viewportImage.value?.let { image ->
                             it = drawViewportOntoImage(image.asAndroidBitmap(), it.asAndroidBitmap()).asImageBitmap()
@@ -228,16 +228,16 @@ object GamePanel {
                         touchScaleY.value = containerSize.value.height.toFloat() / 532
                     }.pointerInteropFilter { change ->
                         resetKeys()
-                        clientInstance.mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
+                        clientInstance.`mouseMoved$api`((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
                         false
                     }.pointerInput(Unit) {
                         detectDragGestures(onDragStart = {
                             pendingMove = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                             pendingPress = android.graphics.Point(it.x.toInt(), it.y.toInt()).scaled()
                         }, onDragCancel = {
-                            clientInstance.mouseReleased()
+                            clientInstance.`mouseReleased$api`()
                         }, onDragEnd = {
-                            clientInstance.mouseReleased()
+                            clientInstance.`mouseReleased$api`()
                         }) { change, dragAmount ->
                             pendingMove = android.graphics.Point(change.position.x.toInt(), change.position.y.toInt()).scaled()
                         }

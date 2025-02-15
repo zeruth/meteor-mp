@@ -1,6 +1,6 @@
 package jagex2.client;
 
-import static client.client.isAndroid;
+import static client.Client.isAndroid;
 
 import android.graphics.Typeface;
 

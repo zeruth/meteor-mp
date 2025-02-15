@@ -27,7 +27,7 @@ object CameraControls {
 
     init {
         eventbus.subscribe<DrawFinished> {
-            ingame.value = clientInstance.ingame
+            ingame.value = clientInstance.inGame()
         }
     }
 
@@ -40,19 +40,19 @@ object CameraControls {
 
     fun resetKeys() {
         if (leftPressed) {
-            clientInstance.keyReleased(KeyEvent.VK_LEFT)
+            clientInstance.`keyReleased$api`(KeyEvent.VK_LEFT)
             leftPressed = false
         }
         if (rightPressed) {
-            clientInstance.keyReleased(KeyEvent.VK_RIGHT)
+            clientInstance.`keyReleased$api`(KeyEvent.VK_RIGHT)
             rightPressed = false
         }
         if (downPressed) {
-            clientInstance.keyReleased(KeyEvent.VK_DOWN)
+            clientInstance.`keyReleased$api`(KeyEvent.VK_DOWN)
             downPressed = false
         }
         if (upPressed) {
-            clientInstance.keyReleased(KeyEvent.VK_UP)
+            clientInstance.`keyReleased$api`(KeyEvent.VK_UP)
             upPressed = false
         }
     }
@@ -79,11 +79,11 @@ object CameraControls {
                         detectTapGestures(
                             onPress = {
                                 leftPressed = true
-                                clientInstance.keyPressed(java.awt.event.KeyEvent.VK_LEFT, -1)
+                                clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_LEFT, -1)
                             },
                             onTap = {
                                 leftPressed = false
-                                clientInstance.keyReleased(java.awt.event.KeyEvent.VK_LEFT)
+                                clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_LEFT)
                             }
                         )
                     }) {
@@ -94,11 +94,11 @@ object CameraControls {
                         detectTapGestures(
                             onPress = {
                                 upPressed = true
-                                clientInstance.keyPressed(java.awt.event.KeyEvent.VK_UP, -1)
+                                clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_UP, -1)
                             },
                             onTap = {
                                 upPressed = false
-                                clientInstance.keyReleased(java.awt.event.KeyEvent.VK_UP)
+                                clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_UP)
                             }
                         )
                     }) {
@@ -109,11 +109,11 @@ object CameraControls {
                         detectTapGestures(
                             onPress = {
                                 rightPressed = true
-                                clientInstance.keyPressed(java.awt.event.KeyEvent.VK_RIGHT, -1)
+                                clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_RIGHT, -1)
                             },
                             onTap = {
                                 rightPressed = false
-                                clientInstance.keyReleased(java.awt.event.KeyEvent.VK_RIGHT)
+                                clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_RIGHT)
                             }
                         )
                     }) {
@@ -124,11 +124,11 @@ object CameraControls {
                         detectTapGestures(
                             onPress = {
                                 downPressed = true
-                                clientInstance.keyPressed(java.awt.event.KeyEvent.VK_DOWN, -1)
+                                clientInstance.`keyPressed$api`(java.awt.event.KeyEvent.VK_DOWN, -1)
                             },
                             onTap = {
                                 downPressed = true
-                                clientInstance.keyReleased(java.awt.event.KeyEvent.VK_DOWN)
+                                clientInstance.`keyReleased$api`(java.awt.event.KeyEvent.VK_DOWN)
                             }
                         )
                     }) {

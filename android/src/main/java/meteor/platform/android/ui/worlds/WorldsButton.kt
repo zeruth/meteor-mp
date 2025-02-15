@@ -15,7 +15,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
-import client.client.nodeId
+import client.Client
+import client.Client.nodeId
 import compose.icons.LineAwesomeIcons
 import compose.icons.lineawesomeicons.GlobeSolid
 import compose.icons.lineawesomeicons.StarSolid
@@ -77,7 +78,7 @@ class WorldsButton : SidebarButton(icon = mutableStateOf(LineAwesomeIcons.GlobeS
                                         .clickable {
                                             currentWorld.intValue = world.id
                                             nodeId = 9 + world.id // Friends list depends on this for local player world #
-                                            client.client.members = world.members
+                                            Client.members = world.members
                                             Configuration.updatePortOffset(world.portOffset)
                                             Configuration.updateModulus(world.modulus)
                                             REMOTE_WSS = world.url

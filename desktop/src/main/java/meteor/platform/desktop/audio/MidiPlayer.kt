@@ -28,7 +28,7 @@ object MidiPlayer {
     }
 
     fun playSong(midi: String, forced: Boolean) {
-        if (!clientInstance.ingame && preventLoginMusic)
+        if (!clientInstance.inGame() && preventLoginMusic)
             return
 
         if (sequencer != null) if (sequencer!!.sequence != null) sequencer!!.start()

@@ -45,10 +45,10 @@ object DiscordPresence {
         PluginManager.get<DiscordPlugin>()?.let {
             if (!it.enabled())
                 return
-            if (!clientInstance.ingame && !it.sendStatusLoggedOut())
+            if (!clientInstance.inGame() && !it.sendStatusLoggedOut())
                 state = null
         }
-        val details = if (clientInstance.ingame) "Logged in" else "Logged out"
+        val details = if (clientInstance.inGame()) "Logged in" else "Logged out"
 
         if (state == null || state!!.length < 2 || state!!.length > 128) {
             update(details = details, state = null)

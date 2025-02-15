@@ -38,7 +38,7 @@ public class PixMap implements ImageProducer, ImageObserver {
 		DataBufferInt buffer = new DataBufferInt(pixels, pixels.length);
 		this.colorModel = new DirectColorModel(32, 0xff0000, 0xff00, 0xff);
 		WritableRaster raster = Raster.createWritableRaster(colorModel.createCompatibleSampleModel(width, height), buffer, null);
-		this.image = new BufferedImage(colorModel, raster, false, new Hashtable<>());
+		this.image = new BufferedImage(colorModel, raster, false, new Hashtable());
 		this.bind();
 	}
 

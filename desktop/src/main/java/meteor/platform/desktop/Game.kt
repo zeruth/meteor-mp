@@ -3,8 +3,8 @@ package meteor.platform.desktop
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import client.client
-import client.client.RSA_MODULUS
+import client.Client
+import client.Client.RSA_MODULUS
 import client.events.DrawFinished
 import jagex2.client.Configuration
 import jagex2.client.GameShell
@@ -43,14 +43,15 @@ object Game {
     }
 
     fun init() {
-        clientInstance = client()
-        client.nodeId = 10
-        client.portOffset = 0
-        client.setHighMemory()
-        client.members = false
+        clientInstance = Client() as net.runelite.api.Client
+        clientInstance.setCallbacks(Hooks)
+        Client.nodeId = 10
+        Client.portOffset = 0
+        Client.setHighMemory()
+        Client.members = false
         signlink.startpriv(InetAddress.getByName("localhost"))
         Configuration.INTERCEPT_GRAPHICS = true
-        clientInstance.initApplication(789, 532)
+        clientInstance.`initApplication$api`(789, 532)
         loadingDrawThread.start()
     }
 }

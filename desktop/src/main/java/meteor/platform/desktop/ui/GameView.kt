@@ -143,9 +143,9 @@ object GameView {
             detectDragGestures(onDragStart = {
                 sendLeftClick(it.x.toInt(), it.y.toInt(), false)
             }, onDragCancel = {
-                clientInstance.mouseReleased(false)
+                clientInstance.`mouseReleased$api`(false)
             }, onDragEnd = {
-                clientInstance.mouseReleased(false)
+                clientInstance.`mouseReleased$api`(false)
             }) { change, dragAmount ->
                 sendMouseMove(change.position.x.toInt(), change.position.y.toInt())
             }
@@ -158,9 +158,9 @@ object GameView {
             detectTapGestures(matcher = PointerMatcher.mouse(PointerButton.Secondary), onTap = { offset ->
                 val adjustedX = (offset.x * scaleX)
                 val adjustedY = (offset.y * scaleY)
-                clientInstance.mouseMoved(adjustedX.toInt(), adjustedY.toInt())
-                clientInstance.mousePressed(3, false, adjustedX.toInt(), adjustedY.toInt())
-                clientInstance.mouseReleased(false)
+                clientInstance.`mouseMoved$api`(adjustedX.toInt(), adjustedY.toInt())
+                clientInstance.`mousePressed$api`(adjustedX.toInt(), adjustedY.toInt(), 3, false)
+                clientInstance.`mouseReleased$api`(false)
             })
         }
     }
@@ -235,10 +235,10 @@ object GameView {
                         }
                         return@onKeyEvent true
                     }
-                    clientInstance.keyPressed(it)
+                    clientInstance.`keyPressed$api`(it)
                 }
                 if (keyEvent.type == KeyEventType.KeyUp) {
-                    clientInstance.keyReleased(it)
+                    clientInstance.`keyReleased$api`(it)
                 }
             }
             true
@@ -249,15 +249,15 @@ object GameView {
         val offset = Offset(x.toFloat(), y.toFloat())
         val adjustedX = (offset.x * scaleX)
         val adjustedY = (offset.y * scaleY)
-        clientInstance.mouseMoved(adjustedX.toInt(), adjustedY.toInt())
+        clientInstance.`mouseMoved$api`(adjustedX.toInt(), adjustedY.toInt())
     }
 
     fun sendLeftClick(x: Int, y: Int, release: Boolean = true) {
         val adjustedX = (x * scaleX)
         val adjustedY = (y * scaleY)
-        clientInstance.mouseMoved(adjustedX.toInt(), adjustedY.toInt())
-        clientInstance.mousePressed(1, false, adjustedX.toInt(), adjustedY.toInt())
+        clientInstance.`mouseMoved$api`(adjustedX.toInt(), adjustedY.toInt())
+        clientInstance.`mousePressed$api`(adjustedX.toInt(), adjustedY.toInt(), 1, false)
         if (release)
-            clientInstance.mouseReleased(false)
+            clientInstance.`mouseReleased$api`(false)
     }
 }

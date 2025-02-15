@@ -97,11 +97,11 @@ class Main : ComponentActivity() {
                 var prevSong = lastSong
                 lastSong = it.data.name
                 if (it.data.name == "scape_main") {
-                    if (muteLoginMusic || (clientInstance.ingame && onlyPlayJingles()) || prevSong == "scape_main") {
+                    if (muteLoginMusic || (clientInstance.inGame() && onlyPlayJingles()) || prevSong == "scape_main") {
                         return@post
                     }
                 }
-                if (clientInstance.ingame) {
+                if (clientInstance.inGame()) {
                     if (!onlyPlayJingles()) {
                         songPlayer?.release()
                         songPlayer = SongPlayer(it.data.name, applicationContext)

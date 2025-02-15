@@ -23,7 +23,6 @@ import org.openrs2.deob.annotation.OriginalArg;
 import org.openrs2.deob.annotation.OriginalClass;
 import org.openrs2.deob.annotation.OriginalMember;
 import org.openrs2.deob.annotation.Pc;
-import org.rationalityfrontline.kevent.KEventKt;
 import sign.signlink;
 
 import java.awt.*;
@@ -35,7 +34,8 @@ import java.util.zip.CRC32;
 
 
 @OriginalClass("client")
-public class client extends GameShell {
+public class Client extends GameShell {
+	public static Client client;
 	public static boolean isAndroid = false;
 	public boolean showDebug = false;
 	public boolean showPerformance = false;
@@ -1237,6 +1237,10 @@ public class client extends GameShell {
 		}
 	}
 
+	public Client() {
+		client = this;
+	}
+
 	@OriginalMember(owner = "client", name = "main", descriptor = "([Ljava/lang/String;)V")
 	public static void main(@OriginalArg(0) String[] args) {
 		try {
@@ -1269,7 +1273,7 @@ public class client extends GameShell {
 
 			signlink.startpriv(InetAddress.getByName("localhost"));
 
-			@Pc(82) client c = new client();
+			@Pc(82) Client c = new Client();
 			c.initApplication(789, 532);
 		} catch (@Pc(89) Exception _ex) {
 		}
@@ -1347,7 +1351,7 @@ public class client extends GameShell {
 		synchronized (this.midiSync) {
 			this.midiSyncName = name;
 			if (isAndroid)
-				KEventKt.getKEVENT().post(new MidiPlay(midiSyncName));
+				post(new MidiPlay(midiSyncName));
 			this.midiSyncCrc = crc;
 			this.midiSyncLen = len;
 		}
@@ -1690,7 +1694,7 @@ public class client extends GameShell {
 	private void stopMidi() {
 		signlink.midifade = 0;
 		signlink.midi = "stop";
-		KEventKt.getKEVENT().post(MidiStop.INSTANCE);
+		post(MidiStop.INSTANCE);
 	}
 
 	@OriginalMember(owner = "client", name = "f", descriptor = "(I)V")
@@ -2351,7 +2355,7 @@ public class client extends GameShell {
 		this.draw3DEntityElements();
 		if (isAndroid) {
 			this.areaViewport.setPixels();
-			KEventKt.getKEVENT().post(AreaViewportDrawFinished.INSTANCE);
+			post(AreaViewportDrawFinished.INSTANCE);
 		}
 		else {
 			this.areaViewport.draw(super.graphics, 8, 11);
@@ -3066,7 +3070,7 @@ public class client extends GameShell {
 								WordPack.pack(this.out, this.socialInput);
 								this.out.psize1(this.out.pos - start);
 								this.socialInput = JString.toSentenceCase(this.socialInput);
-								this.socialInput = WordFilter.filter(this.socialInput);
+								//this.socialInput = WordFilter.filter(this.socialInput);
 								this.addMessage(6, this.socialInput, JString.formatName(JString.fromBase37(this.socialName37)));
 								if (this.privateChatSetting == 2) {
 									this.privateChatSetting = 1;
@@ -3238,7 +3242,7 @@ public class client extends GameShell {
 								this.out.psize1(this.out.pos - start);
 
 								this.chatTyped = JString.toSentenceCase(this.chatTyped);
-								this.chatTyped = WordFilter.filter(this.chatTyped);
+								//this.chatTyped = WordFilter.filter(this.chatTyped);
 								this.localPlayer.chat = this.chatTyped;
 								this.localPlayer.chatColor = color;
 								this.localPlayer.chatStyle = effect;
@@ -3283,7 +3287,7 @@ public class client extends GameShell {
 
 			this.dragCycles = 0;
 		}
-		KEventKt.getKEVENT().post(DrawFinished.INSTANCE);
+		post(DrawFinished.INSTANCE);
 	}
 
 	@OriginalMember(owner = "client", name = "e", descriptor = "(B)V")
@@ -3333,7 +3337,7 @@ public class client extends GameShell {
 				this.titleScreenState = 0;
 				this.username = "";
 				this.password = "";
-				KEventKt.getKEVENT().post(ResetCredentials.INSTANCE);
+				post(ResetCredentials.INSTANCE);
 			}
 
 			while (true) {
@@ -4373,11 +4377,11 @@ public class client extends GameShell {
 
 		this.stream = null;
 		this.ingame = false;
-		KEventKt.getKEVENT().post(new InGameChanged(this.ingame));
+		post(new InGameChanged(this.ingame));
 		this.titleScreenState = 0;
 		this.username = "";
 		this.password = "";
-		KEventKt.getKEVENT().post(ResetCredentials.INSTANCE);
+		post(ResetCredentials.INSTANCE);
 
 		InputTracking.setDisabled();
 		this.clearCaches();
@@ -6311,14 +6315,14 @@ public class client extends GameShell {
 	@OriginalMember(owner = "client", name = "a", descriptor = "([BII)Z")
 	private boolean saveWave(@OriginalArg(0) byte[] src, @OriginalArg(1) int length) {
 		boolean success = src == null || signlink.wavesave(src, length);
-		KEventKt.getKEVENT().post(new WavePlay(src, length));
+		post(new WavePlay(src, length));
 		return success;
 	}
 
 	@OriginalMember(owner = "client", name = "u", descriptor = "(I)Z")
 	private boolean replayWave() {
 		boolean success = signlink.wavereplay();
-		KEventKt.getKEVENT().post(WaveReplay.INSTANCE);
+		post(WaveReplay.INSTANCE);
 		return success;
 	}
 
@@ -6790,7 +6794,7 @@ public class client extends GameShell {
 			}
 
 			World3D.init(512, 334, 500, 800, distance);
-			WordFilter.unpack(wordenc);
+			//WordFilter.unpack(wordenc);
 		} catch (@Pc(1357) Exception ex) {
 			ex.printStackTrace();
 			this.errorLoading = true;
@@ -7667,7 +7671,7 @@ public class client extends GameShell {
 				InputTracking.setDisabled();
 
 				this.ingame = true;
-				KEventKt.getKEVENT().post(new InGameChanged(this.ingame));
+				post(new InGameChanged(this.ingame));
 				this.out.pos = 0;
 				this.in.pos = 0;
 				this.packetType = -1;
@@ -7797,7 +7801,7 @@ public class client extends GameShell {
 				this.loginMessage1 = "Please wait 1 minute and try again.";
 			} else if (reply == 15) {
 				this.ingame = true;
-				KEventKt.getKEVENT().post(new InGameChanged(this.ingame));
+				post(new InGameChanged(this.ingame));
 				this.out.pos = 0;
 				this.in.pos = 0;
 				this.packetType = -1;
@@ -8079,7 +8083,9 @@ public class client extends GameShell {
 		if (Configuration.PROXY_WSS) {
 			try {
 				WebSocketProxy.start();
-			} catch (InterruptedException | URISyntaxException e) {
+			} catch (InterruptedException e) {
+				throw new RuntimeException(e);
+			} catch (URISyntaxException e) {
 				throw new RuntimeException(e);
 			}
             return new Socket(InetAddress.getLocalHost(), WebSocketProxy.LOCAL_TCP);
@@ -9390,7 +9396,7 @@ public class client extends GameShell {
 			this.flagSceneTileX = 0;
 			@Pc(60) ClientStream stream = this.stream;
 			this.ingame = false;
-			KEventKt.getKEVENT().post(new InGameChanged(this.ingame));
+			post(new InGameChanged(this.ingame));
 			this.login(this.username, this.password, true);
 			if (!this.ingame) {
 				this.logout();
@@ -11543,7 +11549,7 @@ public class client extends GameShell {
 	private void alertJingle(byte[] src) {
 		long crc = calculateCRC(src);
 		MidiJinglePlay event = new MidiJinglePlay(crc);
-		KEventKt.getKEVENT().post(event);
+		post(event);
 		System.out.println("Jingle CRC: " + crc);
 	}
 
@@ -11673,7 +11679,7 @@ public class client extends GameShell {
 				if (!ignored && this.overrideChat == 0) {
 					try {
 						@Pc(244) String uncompressed = WordPack.unpack(buf, length);
-						@Pc(248) String filtered = WordFilter.filter(uncompressed);
+						@Pc(248) String filtered = uncompressed; //WordFilter.filter(uncompressed);
 						player.chat = filtered;
 						player.chatColor = colorEffect >> 8;
 						player.chatStyle = colorEffect & 0xFF;
@@ -11756,5 +11762,9 @@ public class client extends GameShell {
 	public static void updateServerConnection(String URL, int PORT_OFFSET) {
 		Configuration.CODEBASE = URL;
 		Configuration.PORT_OFFSET = PORT_OFFSET;
+	}
+
+	public void post(Object event) {
+
 	}
 }

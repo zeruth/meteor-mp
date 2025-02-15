@@ -2,7 +2,7 @@ package jagex2.client;
 
 import java.math.BigInteger;
 
-import static client.client.RSA_MODULUS;
+import static client.Client.RSA_MODULUS;
 
 public class Configuration {
     public static String CODEBASE = "https://w1-2004.lostcity.rs";

@@ -1,11 +1,11 @@
 package jagex2.client;
 
-import static client.client.nodeId;
+import static client.Client.nodeId;
 
+import client.Client;
 import client.events.LoggerMessage;
 import org.java_websocket.client.WebSocketClient;
 import org.java_websocket.handshake.ServerHandshake;
-import org.rationalityfrontline.kevent.KEventKt;
 
 import java.net.*;
 import java.io.*;
@@ -21,7 +21,7 @@ public class WebSocketProxy {
     static Thread tcpProxyThread;
 
     public static void start() throws IOException, InterruptedException, URISyntaxException {
-        WebSocketClient webSocketClient = new WebSocketClient(new URI(REMOTE_WSS)) {
+        final WebSocketClient webSocketClient = new WebSocketClient(new URI(REMOTE_WSS)) {
             @Override
             public void onOpen(ServerHandshake handshakedata) {
             }
@@ -46,25 +46,39 @@ public class WebSocketProxy {
             }
         };
 
-        AtomicBoolean proxyStarted = new AtomicBoolean(false);
+        final AtomicBoolean proxyStarted = new AtomicBoolean(false);
 
         if (proxyThread != null) {
             proxyThread.interrupt();
         }
-        proxyThread = new Thread(() -> {
-            try (ServerSocket serverSocket = new ServerSocket(LOCAL_TCP)) {
-                proxyStarted.set(true);
-                Socket tcpSocket = serverSocket.accept();
+        final Socket[] tcpSocket = {null};
 
-                if (tcpProxyThread != null) {
-                    tcpProxyThread.interrupt();
+        tcpProxyThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    handleTcpConnection(tcpSocket[0], webSocketClient);
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
                 }
-                tcpProxyThread = new Thread(() -> {
-                    handleTcpConnection(tcpSocket, webSocketClient);
-                });
-                tcpProxyThread.start();
-            } catch (IOException ex) {
-                ex.printStackTrace();
+            }
+        });
+        Thread proxyThread = new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                    ServerSocket serverSocket = new ServerSocket(LOCAL_TCP);
+
+                    proxyStarted.set(true);
+                    tcpSocket[0] = serverSocket.accept();
+
+                    if (tcpProxyThread != null) {
+                        tcpProxyThread.interrupt();
+                    }
+                    tcpProxyThread.start();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
             }
         });
         proxyThread.start();
@@ -83,10 +97,13 @@ public class WebSocketProxy {
 
     public static WebSocketClient webSocketClient = null;
 
-    private static void handleTcpConnection(Socket tcpSocket, WebSocketClient webSocketClient) {
-        try (InputStream tcpIn = tcpSocket.getInputStream(); OutputStream tcpOut = tcpSocket.getOutputStream()) {
+    private static void handleTcpConnection(Socket tcpSocket, WebSocketClient webSocketClient) throws IOException {
+        InputStream tcpIn = tcpSocket.getInputStream();
+        OutputStream tcpOut = tcpSocket.getOutputStream();
+
+        try {
             WebSocketProxy.webSocketClient = webSocketClient;
-            KEventKt.getKEVENT().post(new LoggerMessage("WebSocket", "Set proxy: " + REMOTE_WSS + " to localhost:" + LOCAL_TCP));
+            Client.client.post(new LoggerMessage("WebSocket", "Set proxy: " + REMOTE_WSS + " to localhost:" + LOCAL_TCP));
             out = tcpOut;
 
             byte[] buffer = new byte[1024];

@@ -5,8 +5,8 @@ import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.asImageBitmap
-import client.client
-import client.client.RSA_MODULUS
+import client.Client
+import client.Client.RSA_MODULUS
 import client.events.DrawFinished
 import ext.awt.BufferedImageExt.getPixels
 import jagex2.client.Configuration
@@ -33,18 +33,19 @@ object Game {
     }
 
     fun start() {
-        clientInstance = client()
-        client.isAndroid = true
-        client.nodeId = 10
-        client.portOffset = 0
-        client.setHighMemory()
-        client.members = false
+        clientInstance = Client() as net.runelite.api.Client
+        clientInstance.callbacks = Hooks
+        Client.isAndroid = true
+        Client.nodeId = 10
+        Client.portOffset = 0
+        Client.setHighMemory()
+        Client.members = false
         Thread {
             signlink.startpriv(InetAddress.getByName("localhost"))
         }.start()
         sleep(500)
         Configuration.INTERCEPT_GRAPHICS = true
-        clientInstance.initApplication(789, 532)
+        clientInstance.`initApplication$api`(789, 532)
 
         //Draws while loading (stuck in while loop during cache loading with no draw reporting)
         Thread {
@@ -56,7 +57,7 @@ object Game {
 
     fun updateGameImage() {
         try {
-            image.value = Bitmap.createBitmap(client.image.getPixels(), client.image.width, client.image.height, Bitmap.Config.RGB_565).asImageBitmap()
+            image.value = Bitmap.createBitmap(Client.image.getPixels(), Client.image.width, Client.image.height, Bitmap.Config.RGB_565).asImageBitmap()
             recentDraws += System.currentTimeMillis()
             val expiredTimes = ArrayList<Long>()
             for (renderTime in recentDraws) {

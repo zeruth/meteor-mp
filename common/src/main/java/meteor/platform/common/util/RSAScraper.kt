@@ -11,9 +11,13 @@ import org.openqa.selenium.chrome.ChromeOptions
  */
 object RSAScraper {
     val rsaMap = HashMap<Int, String>()
-
+    val options: ChromeOptions
+    val driver: ChromeDriver
     init {
         System.setProperty("webdriver.chrome.driver", "C:\\chromedriver-win64\\chromedriver.exe")
+        options = ChromeOptions()
+        options.addArguments("--remote-allow-origins=*", "--headless", "--no-sandbox", "--disable-dev-shm-usage")
+        driver = ChromeDriver(options)
     }
     @JvmStatic
     fun main(args: Array<String>) {
@@ -24,28 +28,28 @@ object RSAScraper {
         }
     }
 
-    fun gatherKeys() {
-        val options = ChromeOptions()
-        options.addArguments("--remote-allow-origins=*", "--headless", "--no-sandbox", "--disable-dev-shm-usage")
-        val driver: WebDriver = ChromeDriver(options)
-
-        for (world in 1..10) {
-            val url = "https://w$world-2004.lostcity.rs/client/client.js"
-
+    fun gatherKey(world: Int) {
+        val url = "https://w$world-2004.lostcity.rs/client/client.js"
+        val start = System.currentTimeMillis()
+        try {
             driver.get(url)
             driver.pageSource?.let {
                 val document = Jsoup.parse(it)
-                try {
-                    rsaMap[world] = document.body().text()
-                        .split("\"6553")[1]
-                        .split("BigInt(\"")[1]
-                        .split("\"")[0]
-                } catch (e: Exception) {
-                    rsaMap[world] = "Failed to gather key (Make sure chrome is open)"
-                }
+                rsaMap[world] = document.body().text()
+                    .split("\"6553")[1]
+                    .split("BigInt(\"")[1]
+                    .split("\"")[0]
+                println("Gathered key: $world in ${System.currentTimeMillis() - start}ms")
             }
+        }catch (e:Exception){
+            rsaMap[world] = "Failed collecting $world key (Make sure chrome is open) retrying..."
         }
+    }
 
+    fun gatherKeys() {
+        for (world in 1..10) {
+            gatherKey(world)
+        }
         driver.quit()
     }
 }

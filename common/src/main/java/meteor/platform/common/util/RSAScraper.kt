@@ -42,7 +42,8 @@ object RSAScraper {
                 println("Gathered key: $world in ${System.currentTimeMillis() - start}ms")
             }
         }catch (e:Exception){
-            rsaMap[world] = "Failed collecting $world key (Make sure chrome is open) retrying..."
+            println("Failed collecting $world key (Make sure chrome is open) retrying...")
+            gatherKey(world)
         }
     }
 

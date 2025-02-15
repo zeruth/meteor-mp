@@ -26,9 +26,10 @@ public class InterfaceInjector extends AbstractInjector
 		super(inject);
 	}
 
+	public static ArrayList<ClassFile> injected = new ArrayList<ClassFile>();
+
 	public void inject()
 	{
-		ArrayList<ClassFile> injected = new ArrayList<ClassFile>();
 		// forEachPair performs actions on a deob-vanilla pair, which is what's needed here
 		inject.forEachPair((deobCf, vanillaCf) -> {
 			final String fullName = API_BASE + deobCf.getClassName();

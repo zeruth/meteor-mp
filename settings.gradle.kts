@@ -26,4 +26,5 @@ include(":common")
 include(":desktop")
 include(":mixins")
 include(":rs2")
+include(":rs2-protected")
 

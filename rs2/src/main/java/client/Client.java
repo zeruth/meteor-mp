@@ -17,7 +17,6 @@ import jagex2.datastruct.LinkList;
 import jagex2.graphics.*;
 import jagex2.io.*;
 import jagex2.sound.Wave;
-import jagex2.wordenc.WordFilter;
 import jagex2.wordenc.WordPack;
 import org.openrs2.deob.annotation.OriginalArg;
 import org.openrs2.deob.annotation.OriginalClass;
@@ -3070,7 +3069,9 @@ public class Client extends GameShell {
 								WordPack.pack(this.out, this.socialInput);
 								this.out.psize1(this.out.pos - start);
 								this.socialInput = JString.toSentenceCase(this.socialInput);
-								//this.socialInput = WordFilter.filter(this.socialInput);
+								WordFilter event = new WordFilter(this.socialInput);
+								post(event);
+								this.socialInput = event.output;
 								this.addMessage(6, this.socialInput, JString.formatName(JString.fromBase37(this.socialName37)));
 								if (this.privateChatSetting == 2) {
 									this.privateChatSetting = 1;
@@ -3242,7 +3243,9 @@ public class Client extends GameShell {
 								this.out.psize1(this.out.pos - start);
 
 								this.chatTyped = JString.toSentenceCase(this.chatTyped);
-								//this.chatTyped = WordFilter.filter(this.chatTyped);
+								WordFilter event = new WordFilter(this.chatTyped);
+								post(event);
+								this.chatTyped = event.output;
 								this.localPlayer.chat = this.chatTyped;
 								this.localPlayer.chatColor = color;
 								this.localPlayer.chatStyle = effect;
@@ -6794,7 +6797,8 @@ public class Client extends GameShell {
 			}
 
 			World3D.init(512, 334, 500, 800, distance);
-			//WordFilter.unpack(wordenc);
+			WordFilterUnpack event = new WordFilterUnpack(wordenc);
+			post(event);
 		} catch (@Pc(1357) Exception ex) {
 			ex.printStackTrace();
 			this.errorLoading = true;
@@ -11190,7 +11194,9 @@ public class Client extends GameShell {
 						this.messageIds[this.privateMessageCount] = messageId;
 						this.privateMessageCount = (this.privateMessageCount + 1) % 100;
 						@Pc(2721) String uncompressed = WordPack.unpack(this.in, this.packetSize - 13);
-						@Pc(2725) String filtered = uncompressed; //WordFilter.filter(uncompressed);
+						WordFilter event = new WordFilter(uncompressed);
+						post(event);
+						@Pc(2725) String filtered = event.output;
 						if (staffModLevel > 1) {
 							this.addMessage(7, filtered, JString.formatName(JString.fromBase37(from)));
 						} else {
@@ -11679,7 +11685,9 @@ public class Client extends GameShell {
 				if (!ignored && this.overrideChat == 0) {
 					try {
 						@Pc(244) String uncompressed = WordPack.unpack(buf, length);
-						@Pc(248) String filtered = uncompressed; //WordFilter.filter(uncompressed);
+						WordFilter event = new WordFilter(uncompressed);
+						post(event);
+						@Pc(248) String filtered = event.output;
 						player.chat = filtered;
 						player.chatColor = colorEffect >> 8;
 						player.chatStyle = colorEffect & 0xFF;

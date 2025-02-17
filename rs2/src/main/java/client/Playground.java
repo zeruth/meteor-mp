@@ -1,12 +1,12 @@
 package client;
 
+import client.events.WordFilterUnpack;
 import jagex2.client.GameShell;
 import jagex2.config.Component;
 import jagex2.config.*;
 import jagex2.graphics.*;
 import jagex2.io.*;
 import jagex2.sound.Wave;
-import jagex2.wordenc.WordFilter;
 import sign.signlink;
 
 import java.io.DataInputStream;
@@ -132,7 +132,7 @@ public class Playground extends GameShell {
 			PixFont[] fonts = new PixFont[] { this.fontPlain11, this.fontPlain12, this.fontBold12, this.fontQuill8 };
 			Component.unpack(inter, media, fonts);
 
-            WordFilter.unpack(wordenc);
+			Client.client.post(new WordFilterUnpack(wordenc));
 
             this.drawArea.bind();
             Pix3D.init2D();

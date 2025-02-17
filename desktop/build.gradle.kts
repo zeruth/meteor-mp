@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     implementation(project(":api-rs"))
+    implementation(project(":rs2-protected"))
     implementation(files("./lib/injected-client.jar"))
 
     with(compose) {

@@ -82,6 +82,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     implementation(project(":api-rs"))
+    implementation(project(":rs2-protected"))
     implementation(project(":android-awt"))
     implementation(files("./lib/injected-client.jar"))
 

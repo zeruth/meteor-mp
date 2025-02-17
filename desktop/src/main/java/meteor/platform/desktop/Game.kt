@@ -8,9 +8,11 @@ import client.Client.RSA_MODULUS
 import client.events.DrawFinished
 import jagex2.client.Configuration
 import jagex2.client.GameShell
+import jagex2.wordenc.WordFilter
 import meteor.platform.common.Common.clientInstance
 import meteor.platform.common.Common.eventbus
 import meteor.platform.common.world.WorldsCommon.worlds
+import net.runelite.rs.api.RSClient
 import sign.signlink
 import java.net.InetAddress
 
@@ -39,6 +41,12 @@ object Game {
         RSA_MODULUS = worlds.first.modulus
         eventbus.subscribe<DrawFinished> {
             gameImage.value = GameShell.image.toComposeImageBitmap()
+        }
+        eventbus.subscribe<client.events.WordFilter> {
+            it.data.output = WordFilter.filter(it.data.input)
+        }
+        eventbus.subscribe<client.events.WordFilterUnpack> {
+            WordFilter.unpack(it.data.wordenc)
         }
     }
 

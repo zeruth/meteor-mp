@@ -8,13 +8,9 @@ import org.openrs2.deob.annotation.OriginalMember;
 import org.openrs2.deob.annotation.Pc;
 
 // name taken from rsc
-
-/**
- * Protected from injector due to a hard to trace bug in this class only.
- * will look into it more.
- */
 @OriginalClass("client.client!mc")
 public class WordFilter {
+
 	@OriginalMember(owner = "client.client!mc", name = "j", descriptor = "[I")
 	private static int[] fragments;
 

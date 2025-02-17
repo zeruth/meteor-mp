@@ -76,8 +76,17 @@ public class InvokeVirtual extends Instruction implements InvokeInstruction
 	@Override
 	public void accept(MethodVisitor visitor)
 	{
+		/**
+		 * This fix is for older revisions of rs2 that use char.clone() for word filtering
+		 */
+		String name = method.getClazz().getName();
+		if (method.getName().contains("clone")) {
+			if (method.getClazz().getName().equals("C"))
+				name = "[C";
+		}
+
 		visitor.visitMethodInsn(this.getType().getCode(),
-			method.getClazz().getName(),
+			name,
 			method.getName(),
 			method.getType().toString(),
 			false);

@@ -15,8 +15,8 @@ object DiscordPresence {
     var updatingDiscordState = mutableStateOf(false)
 
     init {
-        discordClient.logger = ILogger.default(level = LogLevel.ERROR)
-        discordClient.connect(shouldBlock = true)
+        //discordClient.logger = ILogger.default(level = LogLevel.ERROR)
+        //discordClient.connect(shouldBlock = true)
     }
 
     fun refresh() {
@@ -27,7 +27,7 @@ object DiscordPresence {
         type: ActivityType = ActivityType.GAME,
         details: String? = null,
         state: String? = null,) {
-        discordClient.update {
+/*        discordClient.update {
             this.type = type
             this.details = details
             this.state = state
@@ -37,7 +37,7 @@ object DiscordPresence {
             }
 
             button("Play 2004scape", "https://2004scape.org/")
-        }
+        }*/
     }
 
     fun update(state: String?) {

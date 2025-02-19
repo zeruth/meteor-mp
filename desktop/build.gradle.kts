@@ -35,6 +35,7 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":api-rs"))
     implementation(files("./lib/injected-client.jar"))
+    implementation(project(":rs2-mapview"))
 
     with(compose) {
         implementation(runtime)

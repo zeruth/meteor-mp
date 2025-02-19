@@ -16,6 +16,7 @@ import meteor.platform.common.plugin.PluginManager
 import meteor.platform.desktop.discord.DiscordPlugin
 import meteor.platform.desktop.discord.DiscordPresence
 import meteor.platform.desktop.discord.DiscordPresence.updatingDiscordState
+import meteor.platform.desktop.ui.MapView
 import meteor.platform.desktop.ui.MeteorWindow.MeteorWindow
 import meteor.platform.desktop.ui.buttons.DiscordStatusButton.Companion.showDiscordStatusWindow
 import org.rationalityfrontline.kevent.KEVENT
@@ -58,6 +59,8 @@ object Main {
             if (updatingDiscordState.value)
                 showDiscordStatusWindow()
         }
+
+        MapView.MapView()
 
         if (!started) {
             LaunchedEffect(Unit) {

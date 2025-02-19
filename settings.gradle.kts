@@ -24,6 +24,8 @@ include(":api")
 include(":api-rs")
 include(":common")
 include(":desktop")
+include(":eventbus")
 include(":mixins")
 include(":rs2")
+include(":rs2-mapview")
 

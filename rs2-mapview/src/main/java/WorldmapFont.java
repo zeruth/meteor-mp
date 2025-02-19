@@ -65,8 +65,6 @@ public final class WorldmapFont extends Pix2DMapView {
 		this.fontCharInfo = chars;
 	}
 
-	public static BufferedFrame frame = null;
-
 	private void load( Font font, FontMetrics metrics, char c, int id, boolean offset, mapview shell) {
 		int width = metrics.charWidth(c);
 		int initialWidth = width;
@@ -87,9 +85,6 @@ public final class WorldmapFont extends Pix2DMapView {
 		int maxAscent = metrics.getMaxAscent();
 		int totalDescent = metrics.getMaxAscent() + metrics.getMaxDescent();
 		int height = metrics.getHeight();
-
-		if (frame == null)
-			frame = new BufferedFrame(shell);
 
 		Graphics g = GameShellMapView.image.getGraphics();
 		Image image = GameShellMapView.image;

@@ -12,7 +12,7 @@ dependencies {
 dependencies {
     with(libs) {
         compileOnly(java.websocket)
-        compileOnly(project(":eventbus"))
+        implementation(project(":eventbus"))
     }
 }
 

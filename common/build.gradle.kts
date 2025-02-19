@@ -21,6 +21,7 @@ dependencies {
     compileOnly(project(":api"))
     compileOnly(project(":api-rs"))
     compileOnly(project(":rs2"))
+    compileOnly(project(":eventbus"))
 
     with(compose) {
         compileOnly(runtime)
@@ -35,7 +36,6 @@ dependencies {
         implementation(libs.androidx.annotation.jvm)
         compileOnly(kotlin.reflect)
         compileOnly(logger)
-        compileOnly(eventbus)
         compileOnly(gson)
         compileOnly(material3)
         compileOnly(line.awesome)

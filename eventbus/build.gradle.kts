@@ -11,7 +11,8 @@ dependencies {
 
 dependencies {
     implementation(project(":api"))
-    implementation("nulled:annotations:1.0")
+    implementation(libs.annotations)
+    implementation(libs.logger)
     with (libs) {
         implementation(kotlin.coroutines)
     }

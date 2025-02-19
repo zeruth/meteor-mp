@@ -83,11 +83,11 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":api-rs"))
     implementation(project(":android-awt"))
+    implementation(project(":eventbus"))
     implementation(files("./lib/injected-client.jar"))
 
     with(libs) {
         implementation(logger)
-        implementation(eventbus)
         implementation(exoplayer)
         implementation(firebase.analytics)
         implementation(firebase.crashlytics)

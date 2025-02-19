@@ -8,8 +8,7 @@ class BufferedFrame(mapview: mapview?) : JFrame() {
     var mapWidth = 635
     var mapHeight = 503
     init {
-/*        size = Dimension(mapWidth, mapHeight)
-        isUndecorated = true
+        size = Dimension(mapWidth, mapHeight)
         isVisible = true
         addKeyListener(mapview)
         addMouseListener(mapview)
@@ -18,14 +17,14 @@ class BufferedFrame(mapview: mapview?) : JFrame() {
 
         KEVENT.subscribe<MapViewUpdate> {
             paint(graphics)
-        }*/
+        }
     }
 
-/*    override fun paint(g: Graphics) {
+    override fun paint(g: Graphics) {
         g.drawImage(GameShellMapView.image, 0, 0, this)
     }
 
     override fun update(g: Graphics) {
         g.drawImage(GameShellMapView.image, 0, 0, this)
-    }*/
+    }
 }

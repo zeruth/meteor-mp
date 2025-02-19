@@ -191,6 +191,8 @@ public final class mapview extends GameShellMapView {
 
 	private String[] keyNames = new String[] { "General Store", "Sword Shop", "Magic Shop", "Axe Shop", "Helmet Shop", "Bank", "Quest Start", "Amulet Shop", "Mining Site", "Furnace", "Anvil", "Combat Training", "Dungeon", "Staff Shop", "Platebody Shop", "Platelegs Shop", "Scimitar Shop", "Archery Shop", "Shield Shop", "Altar", "Herbalist", "Jewelery", "Gem Shop", "Crafting Shop", "Candle Shop", "Fishing Shop", "Fishing Spot", "Clothes Shop", "Apothecary", "Silk Trader", "Kebab Seller", "Pub/Bar", "Mace Shop", "Tannery", "Rare Trees", "Spinning Wheel", "Food Shop", "Cookery Shop", "???", "Water Source", "Cooking Range", "Skirt Shop", "Potters Wheel", "Windmill", "Mining Shop", "Chainmail Shop", "Silver Shop", "Fur Trader", "Spice Shop" };
 
+	public static BufferedFrame frame = null;
+
 	public static void main( String[] args) throws UnknownHostException {
 		mapview app = new mapview();
 		Client.nodeId = 10;
@@ -199,6 +201,7 @@ public final class mapview extends GameShellMapView {
 		Client.members = false;
 		signlink.startpriv(InetAddress.getByName("localhost"));
 		Configuration.INTERCEPT_GRAPHICS = true;
+		frame = new BufferedFrame(app);
 		app.initApplication(635, 503);
 	}
 

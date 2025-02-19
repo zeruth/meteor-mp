@@ -156,7 +156,6 @@ object MapView {
     }
 
     fun sendLeftClick(x: Int, y: Int, release: Boolean = true) {
-        println("Lclick-pre")
         val adjustedX = (x * mapScaleX)
         val adjustedY = (y * mapScaleY)
         mapview.mouseMoved(adjustedX.toInt(), adjustedY.toInt())

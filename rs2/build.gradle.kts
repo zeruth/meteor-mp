@@ -9,10 +9,9 @@ dependencies {
 }
 
 dependencies {
-
+    compileOnly(project(":eventbus"))
     with(libs) {
         compileOnly(java.websocket)
-        compileOnly(eventbus)
     }
 }
 

@@ -316,7 +316,6 @@ public class GameShellMapView extends Component implements Runnable, MouseListen
 	}
 
 	public final void mousePressed(int x, int y, int button, boolean isMetaDown) {
-		System.out.println("Lclick");
 		this.idleCycles = 0;
 		this.mouseClickX = x;
 		this.mouseClickY = y;

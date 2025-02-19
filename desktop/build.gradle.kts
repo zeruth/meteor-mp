@@ -34,6 +34,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":api"))
     implementation(project(":api-rs"))
+    implementation(project(":eventbus"))
     implementation(files("./lib/injected-client.jar"))
     implementation(project(":rs2-mapview"))
 
@@ -45,7 +46,6 @@ dependencies {
 
     with(libs) {
         implementation(java.websocket)
-        implementation(eventbus)
         implementation(logger)
         implementation(kotlin.reflect)
         implementation(line.awesome)

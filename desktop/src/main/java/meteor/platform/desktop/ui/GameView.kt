@@ -39,6 +39,8 @@ import meteor.platform.common.ui.components.sidebar.SidebarComposables
 import meteor.platform.desktop.ui.MeteorWindow.density
 import meteor.platform.desktop.ui.MeteorWindow.fixedState
 import meteor.platform.desktop.ui.MeteorWindow.fixedWindowSize
+import meteor.platform.desktop.ui.MeteorWindow.floatingState
+import meteor.platform.desktop.ui.MeteorWindow.fullscreenState
 import meteor.platform.desktop.ui.MeteorWindow.pendingResize
 import meteor.platform.desktop.ui.MeteorWindow.platformButtons
 import meteor.platform.desktop.ui.MeteorWindow.resetWindowSize
@@ -215,16 +217,21 @@ object GameView {
         return this.onKeyEvent { keyEvent: KeyEvent ->
             keyEvent.awtEventOrNull?.let {
                 if (keyEvent.type == KeyEventType.KeyDown) {
+                    if (keyEvent.key == Key.Escape) {
+                        if (windowState.value == fullscreenState) {
+                            windowState.value = floatingState
+                        }
+                    }
                     if (keyEvent.key == Key.F11) {
                         toggleFullscreen()
                         return@onKeyEvent true
                     }
                     if (keyEvent.key == Key.F12) {
-                        if (windowState.value == MeteorWindow.floatingState) {
+                        if (windowState.value == floatingState) {
                             if (!stretchedMode.value) {
                                 fixedState.value = false
                                 stretchedMode.value = true
-                                windowState.value = MeteorWindow.floatingState
+                                windowState.value = floatingState
                                 SidebarComposables.getButton<StretchToggleButton>()?.icon?.value = LineAwesomeIcons.LockSolid
                             } else {
                                 stretchedMode.value = false

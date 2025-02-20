@@ -44,3 +44,16 @@ you can build either platform with gradlew using android:build or desktop:build
 you can build/run either platform via Android Studio or IntelliJ (with the Android plugin) with the included run configurations  
 or you can use the output apk at android/build/outputs/apk  
 or you can create a distributable using the included run configuration if you replace the jbr runtime with an oracle 21 runtime  
+
+# Modules  
+android-awt: java.swing native port allowing java.awt access for android  
+android: android specific client code / main  
+api-rs: deob level injected interfaces  
+api: client level injected interfaces  
+buildSrc: injector gradle plugin  
+common: platform agnostic client code  
+desktop: desktop specific client code / main  
+eventbus: KEvent bases eventbus  
+mixins: client injected code  
+rs2-mapview: modified mapview applet  
+rs2: injection target  

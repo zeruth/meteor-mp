@@ -22,7 +22,7 @@ package org.rationalityfrontline.kevent
 import kotlinx.coroutines.*
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.consumeAsFlow
-import meteor.Logger
+import meteor.logger.Logger
 import java.util.*
 import java.util.concurrent.ConcurrentHashMap
 import kotlin.coroutines.CoroutineContext
@@ -163,7 +163,7 @@ class KEvent(
     var defaultThreadMode: SubscriberThreadMode = SubscriberThreadMode.POSTING,
 ) {
 
-    private val logger = Logger("EventBus")
+    private val logger = Logger("eventbus")
 
     private val scope = CoroutineScope(Dispatchers.Default + CoroutineName("KEvent") + SupervisorJob())
 

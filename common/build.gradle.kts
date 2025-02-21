@@ -35,7 +35,7 @@ dependencies {
         implementation(libs.jsoup)
         implementation(libs.androidx.annotation.jvm)
         compileOnly(kotlin.reflect)
-        compileOnly(logger)
+        compileOnly(project(":logger"))
         compileOnly(gson)
         compileOnly(material3)
         compileOnly(line.awesome)

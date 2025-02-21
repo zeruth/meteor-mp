@@ -24,7 +24,6 @@ import client.events.MidiStop
 import client.events.WavePlay
 import client.events.WaveReplay
 import ext.android.ComponentActivityExt.setupActivity
-import meteor.Logger
 import meteor.platform.android.audio.SongPlayer
 import meteor.platform.android.audio.SoundPlayer
 import meteor.platform.common.Common
@@ -170,7 +169,6 @@ class Main : ComponentActivity() {
 
     private fun setupMeteor() {
         Common.isAndroid = true
-        Logger.logFile = File(dataDir, "log.txt")
         Configuration.init(applicationContext)
     }
 }

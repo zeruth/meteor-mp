@@ -1,8 +1,8 @@
 package meteor.platform.common.config
 
+import meteor.logger.Logger
 import meteor.platform.common.Common.gson
 import meteor.platform.common.Configuration
-import meteor.Logger
 import meteor.platform.common.Common
 import meteor.platform.common.Common.eventbus
 import meteor.platform.common.Common.startupTime
@@ -10,7 +10,7 @@ import meteor.platform.common.events.ConfigChanged
 import java.io.File
 
 object ConfigManager {
-    val logger = Logger("ConfigManager")
+    val logger = Logger("config")
     val configFile = File(Configuration.dataDir, "properties")
     var properties = Properties()
     val configItems = ArrayList<ConfigItem<*>>()

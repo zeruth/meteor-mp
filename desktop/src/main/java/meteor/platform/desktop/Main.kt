@@ -4,7 +4,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.ui.window.application
 import client.events.LoggerMessage
-import meteor.Logger
+import meteor.logger.Logger
 import meteor.platform.desktop.audio.MidiPlayer
 import meteor.platform.desktop.audio.SoundPlayer
 import meteor.platform.common.Common
@@ -25,15 +25,15 @@ import java.io.File
 object Main {
     private var started = false
 
-    private val volatileLogger = Logger("")
+    private val volatileLogger = Logger()
 
     init {
         KEVENT.subscribe<LoggerMessage> {
-            volatileLogger.name = it.data.header
+            volatileLogger.scope = it.data.header
             volatileLogger.debug(it.data.message)
         }
         Common.isAndroid = false
-        Logger.logFile = File(Configuration.dataDir, "log.txt")
+/*        Logger.logFile = File(Configuration.dataDir, "log.txt")*/
         MidiPlayer.init()
         SoundPlayer.init()
         Game.init()

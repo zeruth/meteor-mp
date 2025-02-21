@@ -20,7 +20,6 @@ composeBom = "2025.01.01"
 jetbrainsKotlinJvm = "2.1.0"
 appcompat = "1.7.0"
 lineAwesome = "1.1.1"
-logger = "1.2"
 material = "1.12.0"
 material3 = "1.7.3"
 sfntly = "1.0.1"
@@ -72,7 +71,6 @@ androidx-appcompat = { group = "androidx.appcompat", name = "appcompat", version
 jxbrowser-win64 = { module = "com.teamdev.jxbrowser:jxbrowser-win64", version.ref = "jxbrowserWin64" }
 kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
 line-awesome = { module = "br.com.devsrsouza.compose.icons:line-awesome", version.ref = "lineAwesome" }
-logger = { module = "nulled:logger", version.ref = "logger" }
 material = { group = "com.google.android.material", name = "material", version.ref = "material" }
 material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "material3" }
 sfntly = { module = "com.jaredrummler:sfntly", version.ref = "sfntly" }

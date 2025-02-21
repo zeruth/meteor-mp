@@ -11,8 +11,8 @@ dependencies {
 
 dependencies {
     implementation(project(":api"))
+    implementation(project(":logger"))
     implementation(libs.annotations)
-    implementation(libs.logger)
     with (libs) {
         implementation(kotlin.coroutines)
     }

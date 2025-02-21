@@ -11,7 +11,12 @@ class SoundPlayer(stream: AudioInputStream, delay: Int) {
         init {
             eventbus.subscribe<WavePlay> {
                 Thread {
-                    SoundPlayer(AudioSystem.getAudioInputStream(it.data.soundStream), 0)
+                    try {
+                        SoundPlayer(AudioSystem.getAudioInputStream(it.data.soundStream), 0)
+                    }
+                    catch (_: UnsupportedAudioFileException) {
+
+                    }
                 }.start()
 
             }
@@ -50,7 +55,8 @@ class SoundPlayer(stream: AudioInputStream, delay: Int) {
             sound!!.start()
             sound!!.drain()
             sound!!.flush()
-        } catch (e: Exception) {
+        }
+        catch (e: Exception) {
             e.printStackTrace()
         }
     }

@@ -1771,7 +1771,6 @@ public final class mapview extends GameShellMapView {
 	}
 
 	private byte[] updateWorldmap() {
-		System.out.println("Updating");
 		this.drawProgress("Requesting map", 0);
 
 		try {

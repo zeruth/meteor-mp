@@ -28,17 +28,22 @@ object RSAScraper {
         }
     }
 
+    val keyMap = ArrayList<String>()
+
     fun gatherKey(world: Int) {
+        keyMap.clear()
         val url = "https://w$world-2004.lostcity.rs/client/client.js"
         val start = System.currentTimeMillis()
         try {
             driver.get(url)
             driver.pageSource?.let {
                 val document = Jsoup.parse(it)
-                rsaMap[world] = document.body().text()
-                    .split("\"6553")[1]
-                    .split("BigInt(\"")[1]
-                    .split("\"")[0]
+                for (idx in document.body().text()
+                    .split("BigInt(\"")) {
+                    keyMap.add(idx.split("\"")[0])
+                }
+                val key = keyMap.sortedBy { it.length }.reversed().first()
+                rsaMap[world] = key
                 println("Gathered key: $world in ${System.currentTimeMillis() - start}ms")
             }
         }catch (e:Exception){

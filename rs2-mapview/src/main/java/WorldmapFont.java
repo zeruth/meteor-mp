@@ -223,6 +223,9 @@ public final class WorldmapFont extends Pix2DMapView {
 	}
 
 	private void load( Font font, FontMetrics metrics, char c, int id, boolean offset, mapview shell) {
+		if (isAndroid) {
+			return;
+		}
 		int width = metrics.charWidth(c);
 		int initialWidth = width;
 
@@ -242,18 +245,6 @@ public final class WorldmapFont extends Pix2DMapView {
 		int maxAscent = metrics.getMaxAscent();
 		int totalDescent = metrics.getMaxAscent() + metrics.getMaxDescent();
 		int height = metrics.getHeight();
-
-/*		if (isAndroid) {
-			android.graphics.Paint paint = new android.graphics.Paint();
-			paint.setTextSize(font.getSize());
-			paint.setTypeface(Typeface.create("Helvetica", Typeface.NORMAL));
-			width = (int) paint.measureText("" + c);
-			initialWidth = width;
-			android.graphics.Paint.FontMetrics ametrics = paint.getFontMetrics();
-			maxAscent = (int) ametrics.ascent;  // Maximum ascent (distance from baseline to top)
-			totalDescent = (int) (ametrics.ascent + ametrics.descent);  // Total height from baseline to bottom
-			height = (int) (ametrics.top - ametrics.bottom);  // Total height of the character
-		}*/
 
 		Graphics g = GameShellMapView.image.getGraphics();
 		Image image = GameShellMapView.image;

@@ -22,7 +22,6 @@ package org.apache.harmony.awt.gl.font;
 import org.apache.harmony.awt.Utils;
 
 import java.awt.*;
-import java.awt.font.sfntly.SfntlyFontPeer;
 import java.awt.peer.FontPeer;
 import java.io.File;
 import java.io.FileInputStream;
@@ -520,7 +519,7 @@ public class FontManager {
      * @param size  font size
      */
     public FontPeer createPhysicalFontPeer(String name, int style, int size) {
-        return new SfntlyFontPeer(name, style, size);
+        return new java.awt.font.sfntly.FontPeer(name, style, size);
     }
 
     /**
@@ -564,7 +563,7 @@ public class FontManager {
      * @param size  size of the font
      */
     public FontPeer createDefaultFont(int style, int size) {
-        return new SfntlyFontPeer("/font/runescape", style, size);
+        return new java.awt.font.sfntly.FontPeer("/font/runescape", style, size);
     }
 
     /**

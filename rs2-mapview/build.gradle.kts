@@ -7,6 +7,7 @@ version = "2.1.5-SNAPSHOT"
 
 dependencies {
     compileOnly(files("../lib/android-35.jar"))
+    compileOnly(project(":rs2"))
 }
 
 dependencies {

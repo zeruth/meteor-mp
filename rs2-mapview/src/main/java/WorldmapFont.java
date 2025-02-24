@@ -1,3 +1,8 @@
+import static client.Client.isAndroid;
+
+import android.graphics.Bitmap;
+import android.graphics.Typeface;
+
 import jagex2.client.GameShellMapView;
 import jagex2.graphics.Pix2DMapView;
 
@@ -33,6 +38,19 @@ public final class WorldmapFont extends Pix2DMapView {
 		Font font = new Font("Helvetica", bold ? Font.BOLD : Font.PLAIN, size);
 		FontMetrics metrics = shell.getFontMetrics(font);
 
+/*		if (isAndroid) {
+			android.graphics.Paint paint = new android.graphics.Paint();
+			paint.setTextSize(size);
+			paint.setTypeface(Typeface.create("Helvetica", Typeface.NORMAL));
+
+			for (int i = 0; i < 95; i++) {
+				this.load(paint, CHARSET.charAt(i), i, false, shell);
+			}
+		} else {
+			for (int i = 0; i < 95; i++) {
+				this.load(font, metrics, CHARSET.charAt(i), i, false, shell);
+			}
+		}*/
 		for (int i = 0; i < 95; i++) {
 			this.load(font, metrics, CHARSET.charAt(i), i, false, shell);
 		}
@@ -43,6 +61,19 @@ public final class WorldmapFont extends Pix2DMapView {
 
 			font = new Font("Helvetica", Font.PLAIN, size);
 			metrics = shell.getFontMetrics(font);
+/*			if (isAndroid) {
+				android.graphics.Paint paint = new android.graphics.Paint();
+				paint.setTextSize(size);
+				paint.setTypeface(Typeface.create("Helvetica", Typeface.NORMAL));
+
+				for (int i = 0; i < 95; i++) {
+					this.load(paint, CHARSET.charAt(i), i, false, shell);
+				}
+			} else {
+				for (int i = 0; i < 95; i++) {
+					this.load(font, metrics, CHARSET.charAt(i), i, false, shell);
+				}
+			}*/
 
 			for (int i = 0; i < 95; i++) {
 				this.load(font, metrics, CHARSET.charAt(i), i, false, shell);
@@ -52,9 +83,19 @@ public final class WorldmapFont extends Pix2DMapView {
 				this.fontCharPos = 855;
 				this.fontCharFlagged = false;
 
-				for (int i = 0; i < 95; i++) {
-					this.load(font, metrics, CHARSET.charAt(i), i, true, shell);
-				}
+/*				if (isAndroid) {
+					android.graphics.Paint paint = new android.graphics.Paint();
+					paint.setTextSize(size);
+					paint.setTypeface(Typeface.create("Helvetica", Typeface.NORMAL));
+
+					for (int i = 0; i < 95; i++) {
+						this.load(paint, CHARSET.charAt(i), i, false, shell);
+					}
+				} else {
+					for (int i = 0; i < 95; i++) {
+						this.load(font, metrics, CHARSET.charAt(i), i, true, shell);
+					}
+				}*/
 			}
 		}
 
@@ -63,6 +104,122 @@ public final class WorldmapFont extends Pix2DMapView {
 			chars[i] = this.fontCharInfo[i];
 		}
 		this.fontCharInfo = chars;
+	}
+
+	private void load(android.graphics.Paint paint, char c, int id, boolean offset, mapview shell) {
+		// Measure the width of the character using Paint
+		float width = paint.measureText(String.valueOf(c));
+		float initialWidth = width;
+
+		// Handle the offset condition for specific characters
+		if (offset) {
+			if (c == '/') {
+				offset = false;
+			}
+
+			if (c == 'f' || c == 't' || c == 'w' || c == 'v' || c == 'k' || c == 'x' || c == 'y' || c == 'A' || c == 'V' || c == 'W') {
+				width++;
+			}
+		}
+
+		// Get the font metrics for the Paint object
+		android.graphics.Paint.FontMetrics metrics = paint.getFontMetrics();
+		float maxAscent = metrics.ascent;  // Maximum ascent (distance from baseline to top)
+		float totalDescent = metrics.ascent + metrics.descent;  // Total height from baseline to bottom
+		float height = metrics.bottom - metrics.top;  // Total height of the character
+
+		// Create a Bitmap to draw the character onto a Canvas
+		Bitmap bitmap = Bitmap.createBitmap((int) width, (int) height, Bitmap.Config.RGB_565);
+		android.graphics.Canvas canvas = new android.graphics.Canvas(bitmap);
+
+		// Set the paint color to black and fill the background
+		canvas.drawColor(android.graphics.Color.BLACK);
+
+		// Set the paint color to white and draw the character
+		paint.setColor(android.graphics.Color.WHITE);
+		canvas.drawText(String.valueOf(c), 0, -maxAscent, paint);
+
+		if (offset) {
+			// Apply offset if needed
+			canvas.drawText(String.valueOf(c), 1, -maxAscent, paint);
+		}
+
+		// Get the pixels from the bitmap
+		int[] pixels = new int[bitmap.getWidth() * bitmap.getHeight()];
+		bitmap.getPixels(pixels, 0, bitmap.getWidth(), 0, 0, bitmap.getWidth(), bitmap.getHeight());
+
+		int left = 0;
+		int top = 0;
+		int right = (int) width;
+		int bottom = (int) totalDescent;
+
+		// Find top
+		for (int y = 0; y < totalDescent; y++) {
+			for (int x = 0; x < width; x++) {
+				int color = pixels[x + y * (int) width];
+				if ((color & 0xFFFFFF) != 0) {
+					top = y;
+					break;
+				}
+			}
+		}
+
+		// Find left
+		for (int x = 0; x < width; x++) {
+			for (int y = 0; y < totalDescent; y++) {
+				int color = pixels[x + y * (int) width];
+				if ((color & 0xFFFFFF) != 0) {
+					left = x;
+					break;
+				}
+			}
+		}
+
+		// Find bottom
+		for (int y = (int) totalDescent - 1; y >= 0; y--) {
+			for (int x = 0; x < width; x++) {
+				int color = pixels[x + y * (int) width];
+				if ((color & 0xFFFFFF) != 0) {
+					bottom = y + 1;
+					break;
+				}
+			}
+		}
+
+		// Find right
+		for (int x = (int) width - 1; x >= 0; x--) {
+			for (int y = 0; y < totalDescent; y++) {
+				int color = pixels[x + y * (int) width];
+				if ((color & 0xFFFFFF) != 0) {
+					right = x + 1;
+					break;
+				}
+			}
+		}
+
+		// Store the font character information (this part remains the same)
+		this.fontCharInfo[id * 9] = (byte) (this.fontCharPos / 0x4000);
+		this.fontCharInfo[id * 9 + 1] = (byte) (this.fontCharPos / 0x80 & 0x7F);
+		this.fontCharInfo[id * 9 + 2] = (byte) (this.fontCharPos & 0x7F);
+		this.fontCharInfo[id * 9 + 3] = (byte) (right - left);
+		this.fontCharInfo[id * 9 + 4] = (byte) (bottom - top);
+		this.fontCharInfo[id * 9 + 5] = (byte) left;
+		this.fontCharInfo[id * 9 + 6] = (byte) (maxAscent - top);
+		this.fontCharInfo[id * 9 + 7] = (byte) initialWidth;
+		this.fontCharInfo[id * 9 + 8] = (byte) height;
+
+		// Process pixel data for the character
+		for (int y = top; y < bottom; y++) {
+			for (int x = left; x < right; x++) {
+				int color = pixels[x + y * (int) width] & 0xFF;
+
+				if (color > 30 && color < 230) {
+					this.fontCharFlagged = true;
+				}
+
+				this.fontCharInfo[this.fontCharPos++] = (byte) color;
+			}
+		}
 	}
 
 	private void load( Font font, FontMetrics metrics, char c, int id, boolean offset, mapview shell) {
@@ -85,6 +242,18 @@ public final class WorldmapFont extends Pix2DMapView {
 		int maxAscent = metrics.getMaxAscent();
 		int totalDescent = metrics.getMaxAscent() + metrics.getMaxDescent();
 		int height = metrics.getHeight();
+
+/*		if (isAndroid) {
+			android.graphics.Paint paint = new android.graphics.Paint();
+			paint.setTextSize(font.getSize());
+			paint.setTypeface(Typeface.create("Helvetica", Typeface.NORMAL));
+			width = (int) paint.measureText("" + c);
+			initialWidth = width;
+			android.graphics.Paint.FontMetrics ametrics = paint.getFontMetrics();
+			maxAscent = (int) ametrics.ascent;  // Maximum ascent (distance from baseline to top)
+			totalDescent = (int) (ametrics.ascent + ametrics.descent);  // Total height from baseline to bottom
+			height = (int) (ametrics.top - ametrics.bottom);  // Total height of the character
+		}*/
 
 		Graphics g = GameShellMapView.image.getGraphics();
 		Image image = GameShellMapView.image;

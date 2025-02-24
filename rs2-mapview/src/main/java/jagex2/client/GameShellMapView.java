@@ -1,9 +1,11 @@
 package jagex2.client;
 
+
 import static client.Client.isAndroid;
 
 import android.graphics.Typeface;
 
+import client.Client;
 import jagex2.graphics.Pix32MapView;
 import jagex2.graphics.PixMapMapView;
 import org.openrs2.deob.annotation.OriginalArg;
@@ -50,7 +52,7 @@ public class GameShellMapView extends Component implements Runnable, MouseListen
 	private final Pix32MapView[] temp = new Pix32MapView[6];
 
 	@OriginalMember(owner = "client.client!a", name = "q", descriptor = "Lclient!b;")
-	protected ViewBox frame;
+	protected ViewBoxMapView frame;
 
 	@OriginalMember(owner = "client.client!a", name = "r", descriptor = "Z")
 	private boolean refresh = true;
@@ -98,13 +100,11 @@ public class GameShellMapView extends Component implements Runnable, MouseListen
 
 	@OriginalMember(owner = "client.client!a", name = "a", descriptor = "(III)V")
 	public final void initApplication(@OriginalArg(1) int width, @OriginalArg(0) int height) {
-		this.screenWidth = width;
-		this.screenHeight = height;
+		this.screenWidth = Client.client.screenWidth;
+		this.screenHeight = Client.client.screenHeight;
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_RGB);
-		this.frame = new ViewBox(this, this.screenWidth, this.screenHeight);
-		this.graphics = getBaseComponent().getGraphics();
-		if (Configuration.INTERCEPT_GRAPHICS)
-			this.graphics = image.getGraphics();
+		this.frame = new ViewBoxMapView(this, this.screenWidth, this.screenHeight);
+		this.graphics = image.getGraphics();
 		this.drawArea = new PixMapMapView(this.getBaseComponent(), this.screenWidth, this.screenHeight);
 		this.startThread(this, 1);
 	}
@@ -113,7 +113,7 @@ public class GameShellMapView extends Component implements Runnable, MouseListen
 	public final void initApplet(@OriginalArg(2) int width, @OriginalArg(0) int height) {
 		this.screenWidth = width;
 		this.screenHeight = height;
-		this.graphics = getBaseComponent().getGraphics();
+		this.graphics = image.getGraphics();
 		this.drawArea = new PixMapMapView(this.getBaseComponent(), this.screenWidth, this.screenHeight);
 		this.startThread(this, 1);
 	}
@@ -708,21 +708,23 @@ public class GameShellMapView extends Component implements Runnable, MouseListen
 
 	@OriginalMember(owner = "client.client!a", name = "a", descriptor = "(ZLjava/lang/String;I)V")
 	protected void drawProgress(@OriginalArg(1) String message, @OriginalArg(2) int progress) {
-		if (!isAndroid) {
-			while (this.graphics == null) {
-				this.graphics = this.image.getGraphics();
 
+		while (this.graphics == null) {
+			this.graphics = this.image.getGraphics();
+			if (!isAndroid) {
 				try {
 					this.getBaseComponent().repaint();
 				} catch (@Pc(22) Exception ignored) {
 				}
-
-				try {
-					Thread.sleep(1000L);
-				} catch (@Pc(26) Exception ignored) {
-				}
 			}
 
+			try {
+				Thread.sleep(1000L);
+			} catch (@Pc(26) Exception ignored) {
+			}
+		}
+
+		if (!isAndroid) {
 			@Pc(37) Font bold = new Font("Helvetica", Font.BOLD, 13);
 			@Pc(44) FontMetrics boldMetrics = this.getBaseComponent().getFontMetrics(bold);
 			@Pc(51) Font plain = new Font("Helvetica", Font.PLAIN, 13);

@@ -1,5 +1,6 @@
 package jagex2.graphics;
 
+
 import static client.Client.isAndroid;
 
 import android.graphics.Bitmap;

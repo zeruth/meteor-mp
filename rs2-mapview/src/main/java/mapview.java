@@ -1,6 +1,12 @@
+import static client.Client.isAndroid;
+
+import android.annotation.SuppressLint;
+import android.content.Context;
+import android.content.res.AssetManager;
+
 import org.rationalityfrontline.kevent.KEventKt;
 
-import client.Client;
+import client.ClientMapView;
 import jagex2.client.Configuration;
 import jagex2.client.GameShellMapView;
 import jagex2.graphics.Pix2DMapView;
@@ -9,7 +15,7 @@ import jagex2.graphics.Pix8MapView;
 import jagex2.graphics.PixFontMapView;
 import jagex2.io.Jagfile;
 import jagex2.io.Packet;
-import sign.signlink;
+import sign.signlinkMapView;
 
 import java.awt.image.BufferedImage;
 import java.io.*;
@@ -18,6 +24,9 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 
 public final class mapview extends GameShellMapView {
+
+	@SuppressLint("StaticFieldLeak")
+    public static Context androidContext;
 
 	private static final boolean shouldDrawBorders = false;
 	private static final boolean shouldDrawLabels = true;
@@ -195,11 +204,11 @@ public final class mapview extends GameShellMapView {
 
 	public static void main( String[] args) throws UnknownHostException {
 		mapview app = new mapview();
-		Client.nodeId = 10;
-		Client.portOffset = 0;
-		Client.setHighMemory();
-		Client.members = false;
-		signlink.startpriv(InetAddress.getByName("localhost"));
+		ClientMapView.nodeId = 10;
+		ClientMapView.portOffset = 0;
+		ClientMapView.setHighMemory();
+		ClientMapView.members = false;
+		signlinkMapView.startpriv(InetAddress.getByName("localhost"));
 		Configuration.INTERCEPT_GRAPHICS = true;
 		frame = new BufferedFrame(app);
 		app.initApplication(635, 503);
@@ -1779,13 +1788,13 @@ public final class mapview extends GameShellMapView {
 				uriSha += sig.sha[i];
 			}
 
-			DataInputStream stream;
-			stream = new DataInputStream(ClassLoader.getSystemResourceAsStream("worldmap.jag"));
-/*			if (super.frame == null) {
-				stream = new DataInputStream((new URL(this.getCodeBase(), "worldmap" + uriSha + ".jag")).openStream());
-			} else {
 
-			}*/
+			DataInputStream stream;
+			if (isAndroid) {
+				AssetManager assetManager = androidContext.getAssets();
+				stream = new DataInputStream(assetManager.open("worldmap.jag"));
+			} else
+				stream = new DataInputStream(ClassLoader.getSystemResourceAsStream("worldmap.jag"));
 
 			int lastProgress = 0;
 			int offset = 0;

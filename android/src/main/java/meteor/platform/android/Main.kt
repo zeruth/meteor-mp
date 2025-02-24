@@ -36,6 +36,7 @@ import meteor.platform.android.ui.Window.MeteorViewBox
 import meteor.platform.android.ui.batteryfps.BatteryReceiver
 import meteor.platform.common.Configuration
 import org.rationalityfrontline.kevent.KEVENT
+import java.awt.font.sfntly.FontPeer
 import java.io.File
 
 
@@ -106,6 +107,7 @@ class Main : ComponentActivity() {
                         songPlayer = SongPlayer(it.data.name, applicationContext)
                     }
                 } else {
+                    Log.d("AUDIO", "PlaySong")
                     songPlayer?.release()
                     songPlayer = SongPlayer(it.data.name, applicationContext)
                 }
@@ -131,6 +133,8 @@ class Main : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        FontPeer.androidContext = applicationContext
+        mapview.androidContext = applicationContext
         requestWindowFeature(Window.FEATURE_NO_TITLE);
         window.setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
             WindowManager.LayoutParams.FLAG_FULLSCREEN);

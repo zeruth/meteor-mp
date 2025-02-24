@@ -33,9 +33,9 @@ object Game {
     }
 
     fun start() {
+        Client.isAndroid = true
         clientInstance = Client() as net.runelite.api.Client
         clientInstance.callbacks = Hooks
-        Client.isAndroid = true
         Client.nodeId = 10
         Client.portOffset = 0
         Client.setHighMemory()

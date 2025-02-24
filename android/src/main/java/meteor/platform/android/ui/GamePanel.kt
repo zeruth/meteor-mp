@@ -267,12 +267,6 @@ object GamePanel {
                         .focusRequester(gamePanelFocusRequester)
                 )
             }
-
-            LaunchedEffect(Unit) {
-                hideInputBox.value = true
-                gamePanelFocusRequester.requestFocus()
-                keyboardController.show()
-            }
         }
     }
 }

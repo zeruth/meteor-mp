@@ -12,19 +12,8 @@ android {
     defaultConfig {
         minSdk = 30
         lint.targetSdk = 35
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
-        consumerProguardFiles("consumer-rules.pro")
     }
 
-    buildTypes {
-        release {
-            isMinifyEnabled = false
-            proguardFiles(
-                getDefaultProguardFile("proguard-android-optimize.txt"),
-                "proguard-rules.pro"
-            )
-        }
-    }
     //Note we must always use 1_8 here as it's the only version where we can spoof the java.awt classes
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_1_8
@@ -38,6 +27,8 @@ android {
             path = file("src/main/cpp/CMakeLists.txt")
         }
     }
+    buildToolsVersion = "36.0.0 rc5"
+    ndkVersion = "28.0.13004108"
 }
 
 dependencies {

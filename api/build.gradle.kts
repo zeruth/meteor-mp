@@ -3,7 +3,7 @@ plugins {
     kotlin("jvm")
 }
 
-version = "2.1.5-SNAPSHOT"
+version = "2.1.5"
 
 dependencies {
     compileOnly(files("../lib/android-35.jar"))

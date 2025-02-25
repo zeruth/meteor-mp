@@ -11,7 +11,7 @@ plugins {
 
 
 group = "meteor"
-version = "2.1.5-SNAPSHOT"
+version = "2.1.5"
 
 tasks.withType<InjectTask> {
     outputs.upToDateWhen {

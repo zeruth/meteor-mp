@@ -11,7 +11,7 @@ plugins {
 
 
 group = "meteor"
-version = "2.1.5"
+version = "2.1.6-SNAPSHOT"
 
 tasks.withType<InjectTask> {
     outputs.upToDateWhen {
@@ -69,12 +69,12 @@ java {
 compose.desktop {
     application {
         mainClass = "meteor.platform.desktop.Main"
-        version = "2.1.5"
+        version = "2.1.6"
 
         nativeDistributions {
             targetFormats(TargetFormat.Dmg, TargetFormat.Exe, TargetFormat.Deb)
             packageName = "meteor"
-            packageVersion = "2.1.5"
+            packageVersion = "2.1.6"
             windows {
 
                 console = true

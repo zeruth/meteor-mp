@@ -11,7 +11,7 @@ plugins {
     id("nulled.injector")
 }
 
-version = "2.1.5"
+version = "2.1.6-SNAPSHOT"
 
 tasks.withType<InjectTask> {
     outputs.upToDateWhen {

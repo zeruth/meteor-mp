@@ -26,10 +26,6 @@ tasks.withType<InjectTask> {
     output = "${project.layout.projectDirectory}/lib/injected-client.jar"
 }
 
-tasks.withType<KotlinCompile> {
-    dependsOn("inject")
-}
-
 dependencies {
     implementation(project(":common"))
     implementation(project(":api"))

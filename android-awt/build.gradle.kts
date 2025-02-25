@@ -37,8 +37,5 @@ dependencies {
         implementation(androidx.core.ktx)
         implementation(androidx.appcompat)
         implementation(material)
-        testImplementation(junit)
-        androidTestImplementation(androidx.junit)
-        androidTestImplementation(androidx.espresso.core)
     }
 }

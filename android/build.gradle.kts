@@ -26,10 +26,6 @@ tasks.withType<InjectTask> {
     output = "${project.layout.projectDirectory}/lib/injected-client.jar"
 }
 
-tasks.withType<BaseTask> {
-    dependsOn("inject")
-}
-
 android {
     namespace = "com.meteor.android"
     compileSdk = 35
@@ -41,7 +37,6 @@ android {
         versionCode = 1
         versionName = "2.1.2"
 
-        testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
         vectorDrawables {
             useSupportLibrary = true
         }
@@ -92,19 +87,9 @@ dependencies {
         implementation(androidx.activity.compose)
         implementation(androidx.ui)
         implementation(androidx.ui.graphics)
-        implementation(androidx.ui.tooling.preview)
+        implementation(androidx.ui.tooling)
         implementation(androidx.material3)
         implementation(platform(firebase.bom))
         implementation(platform(androidx.compose.bom))
-
-        testImplementation(junit)
-
-        androidTestImplementation(androidx.junit)
-        androidTestImplementation(androidx.espresso.core)
-        androidTestImplementation(androidx.ui.test.junit4)
-        androidTestImplementation(platform(androidx.compose.bom))
-
-        debugImplementation(androidx.ui.tooling)
-        debugImplementation(androidx.ui.test.manifest)
     }
 }

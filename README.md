@@ -40,7 +40,7 @@ api: client level injected interfaces
 buildSrc: injector gradle plugin  
 common: platform agnostic client code  
 desktop: desktop specific client code / main  
-eventbus: KEvent bases eventbus  
+eventbus: KEvent based eventbus  
 mixins: client injected code  
 rs2-mapview: modified mapview applet  
 rs2: injection target  

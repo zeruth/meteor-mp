@@ -1,29 +1,16 @@
 ### Meteor - Multiplatform (Desktop/Android) Private  
 ---
-**This connects to 2004scape.org by default and follows their rules diligently**
+**This connects to 04lite.com by default**
 ---
 
 # Info
-This private repo contains a proxy that I don't want in public use as it allows java clients to connect to live servers.  
 The project was entirely re-written using a shared code concept using Compose with no reflection / injection  
 This unified code concept is still very new so a lot of things have regressed (input on android)  
 most things have been moved to common already but there is always room for improvement!  
 
 ```
-Forbidden features (unless otherwise permitted by Lost-City):  
+Forbidden features:  
     artificial input of any kind  
-    camera zoom / middle mouse rotate  
-    menu entry swapping (including changing menu entry text)
-    overlays of any kind over the game
-    visual game state tracking in UI form be it swing or compose
-
-    Per Pazaz:
-    "in general: don’t give yourself an advantage that forces a new meta on the community.
-        The original experience should be a viable option for people to play with"
-
-    Per Zeruth:
-    "We will absolutely be respecting the project here, if things change regarding content
-        that is forbidden or not, it will be reflected here."
 ```
 
 Desktop:  

@@ -1,4 +1,4 @@
-### Meteor - Multiplatform (Desktop/Android) Private  
+### Meteor - Multiplatform (Desktop/Android)
 ---
 **This connects to 04lite.com by default**
 ---

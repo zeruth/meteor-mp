@@ -20,6 +20,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Density
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.*
+import jagex2.client.GameShellMapView
 import meteor.platform.desktop.Game.gameImage
 import meteor.platform.desktop.Game.loadingImage
 import meteor.platform.common.ui.components.panel.PanelComposables.Panel
@@ -29,6 +30,7 @@ import meteor.platform.common.ui.components.sidebar.SidebarComposables
 import meteor.platform.desktop.ui.GameView.GameViewContainer
 import meteor.platform.desktop.ui.GameView.focusRequester
 import meteor.platform.desktop.ui.GameView.stretchedMode
+import meteor.platform.desktop.ui.MapView.mapVisible
 import meteor.platform.desktop.ui.buttons.CloseMeteorButton
 import meteor.platform.desktop.ui.buttons.DiscordStatusButton
 import meteor.platform.desktop.ui.buttons.FpsDisplayButton
@@ -107,8 +109,12 @@ object MeteorWindow {
                 windowInstance = this.window
                 val finalImage = if (gameImage.value != null) gameImage else loadingImage
                 Row(modifier = Modifier.focusable().focusRequester(focusRequester)) {
-                    finalImage.value?.let {
-                        GameViewContainer(it)
+                    if (mapVisible.value) {
+                        MapView.MapView()
+                    } else {
+                        finalImage.value?.let {
+                            GameViewContainer(it)
+                        }
                     }
                     if (panelOpen.value) {
                         Box(Modifier.fillMaxHeight().width(configWidth.value)) {

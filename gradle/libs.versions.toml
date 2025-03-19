@@ -11,7 +11,7 @@ compose-compiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "
 
 [versions]
 
-agp = "8.10.0-alpha06"
+agp = "8.10.0-alpha08"
 annotations = "1.0"
 asm = "9.7.1"
 exoplayer = "2.19.1"

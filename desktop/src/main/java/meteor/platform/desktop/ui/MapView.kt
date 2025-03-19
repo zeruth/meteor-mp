@@ -13,7 +13,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.key
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Alignment
@@ -26,27 +25,15 @@ import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ColorFilter
 import androidx.compose.ui.graphics.toComposeImageBitmap
-import androidx.compose.ui.input.key.Key
-import androidx.compose.ui.input.key.KeyEventType
-import androidx.compose.ui.input.key.key
-import androidx.compose.ui.input.key.onKeyEvent
-import androidx.compose.ui.input.key.type
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.onSizeChanged
-import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.unit.DpSize
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.window.Window
-import androidx.compose.ui.window.WindowPlacement
-import androidx.compose.ui.window.WindowPosition
-import androidx.compose.ui.window.WindowState
 import client.events.DrawFinished
 import compose.icons.LineAwesomeIcons
-import compose.icons.lineawesomeicons.CrossSolid
 import compose.icons.lineawesomeicons.WindowCloseSolid
 import jagex2.client.GameShellMapView
 import mapview
@@ -60,6 +47,7 @@ object MapView {
     var mapPendingStart = false
     val updateImage = mutableStateOf(false)
     lateinit var mapview: mapview
+
     init {
         KEVENT.subscribe<DrawFinished> {
             if (mapPendingStart) {
@@ -76,41 +64,43 @@ object MapView {
     var mapScaleX = 0f
     var mapScaleY = 0f
 
-    val undecorated = mutableStateOf(true)
     val focusRequester = FocusRequester()
 
     @Composable
     fun MapView() {
-        val density = LocalDensity.current
-        val mapWidthAdjusted = (635 * density.density).toInt()
-        val mapHeightAdjusted = (503 * density.density).toInt()
-
         key(mapVisible.value) {
             key(mapLoaded.value) {
                 if (mapVisible.value && !mapLoaded.value)
                     mapPendingStart = true
                 if (mapVisible.value && mapLoaded.value) {
-                    Window({}, state = WindowState(WindowPlacement.Maximized,
-                        false, WindowPosition.Aligned(Alignment.Center)),
-                        undecorated = undecorated.value, transparent = undecorated.value, resizable = true) {
-                        if (!this.window.windowListeners.contains(mapview))
-                            this.window.addWindowListener(mapview)
-                        Box(modifier = Modifier.focusable().fillMaxSize().focusRequester(focusRequester).registerDragListener().registerLeftClickListener().registerMouseMoveListener().onSizeChanged {
-                            mapScaleX = (635f / it.width)
-                            mapScaleY = (503f / it.height)
-                        }) {
-                            key(updateImage.value) {
-                                Image(GameShellMapView.image.toComposeImageBitmap(), "map", contentScale = ContentScale.FillBounds, modifier = Modifier.fillMaxSize())
-                            }
-                            Image(LineAwesomeIcons.WindowCloseSolid, "Exit", colorFilter = ColorFilter.tint(
-                                Color.Red), modifier = Modifier.size(50.dp).background(Colors.surface.value).clip(RoundedCornerShape(10.dp)).align(Alignment.TopEnd).clickable {
-                                mapVisible.value = false
-                            })
+                    Box(
+                        modifier = Modifier.focusable().fillMaxSize().focusRequester(focusRequester)
+                            .registerDragListener().registerLeftClickListener()
+                            .registerMouseMoveListener().onSizeChanged {
+                                mapScaleX = (635f / it.width)
+                                mapScaleY = (503f / it.height)
+                            }) {
+                        key(updateImage.value) {
+                            Image(
+                                GameShellMapView.image.toComposeImageBitmap(),
+                                "map",
+                                contentScale = ContentScale.FillBounds,
+                                modifier = Modifier.fillMaxSize()
+                            )
                         }
-                        LaunchedEffect(Unit) {
-                            focusRequester.requestFocus()
-                        }
+                        Image(
+                            LineAwesomeIcons.WindowCloseSolid,
+                            "Exit",
+                            colorFilter = ColorFilter.tint(
+                                Color.Red
+                            ),
+                            modifier = Modifier.size(50.dp).background(Colors.surface.value)
+                                .clip(RoundedCornerShape(10.dp)).align(Alignment.TopEnd).clickable {
+                                    mapVisible.value = false
+                                })
                     }
+                } else {
+                    Box(modifier = Modifier.fillMaxSize().background(Color.Black))
                 }
             }
         }
@@ -133,10 +123,12 @@ object MapView {
     @OptIn(ExperimentalFoundationApi::class)
     fun Modifier.registerLeftClickListener(): Modifier {
         return this.pointerInput(Unit) {
-            detectTapGestures(matcher = PointerMatcher.mouse(PointerButton.Primary), onTap = { offset ->
-                focusRequester.requestFocus()
-                sendLeftClick(offset.x.toInt(), offset.y.toInt())
-            })
+            detectTapGestures(
+                matcher = PointerMatcher.mouse(PointerButton.Primary),
+                onTap = { offset ->
+                    focusRequester.requestFocus()
+                    sendLeftClick(offset.x.toInt(), offset.y.toInt())
+                })
         }
     }
 

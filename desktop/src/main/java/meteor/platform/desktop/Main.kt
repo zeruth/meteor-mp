@@ -60,8 +60,6 @@ object Main {
                 showDiscordStatusWindow()
         }
 
-        MapView.MapView()
-
         if (!started) {
             LaunchedEffect(Unit) {
                 val composeInit = System.currentTimeMillis() - startupTime

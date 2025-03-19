@@ -15,7 +15,7 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 public class WebSocketProxy {
     public static final int LOCAL_TCP = 6666;
-    public static String REMOTE_WSS = "wss://w1-2004.lostcity.rs";
+    public static String REMOTE_WSS = "ws://w1.04lite.com";
 
     static Thread proxyThread;
     static Thread tcpProxyThread;
@@ -87,9 +87,7 @@ public class WebSocketProxy {
             Thread.sleep(5);
         }
         int world = nodeId - 9;
-        webSocketClient.addHeader("Host", "w" + world +"-2004.lostcity.rs");
-        webSocketClient.addHeader("Origin", "https://w" + world + "-2004.lostcity.rs");
-        webSocketClient.addHeader("Referer", "https://w" + world + "-2004.lostcity.rs/rs2.cgi?plugin=0&world=" + world + "&lowmem=0");
+        webSocketClient.addHeader("Host", "w" + world +".04lite.com");
         webSocketClient.connect();
     }
 

@@ -39,7 +39,7 @@ object Game {
         Client.nodeId = 10
         Client.portOffset = 0
         Client.setHighMemory()
-        Client.members = false
+        Client.members = true
         Thread {
             signlink.startpriv(InetAddress.getByName("localhost"))
         }.start()

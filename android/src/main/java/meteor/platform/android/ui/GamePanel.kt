@@ -217,10 +217,6 @@ object GamePanel {
                         // Handle focus state changes if needed
                     }.fillMaxSize()
                     .focusable(true, interactionSource)
-                    .onKeyEvent { keyEvent ->
-                        handleKeyEvent(keyEvent.nativeKeyEvent)
-                        false
-                    }
                     .registerKeyListener()
                     .onGloballyPositioned { layoutCoordinates ->
                         containerSize.value = layoutCoordinates.size
@@ -252,21 +248,6 @@ object GamePanel {
                     })
             }
             CameraControls()
-
-            /**
-             * TODO: This is a cheeky workaround for showing the keyboard
-             */
-            if (!hideInputBox.value) {
-                BasicTextField(
-                    value = "",
-                    onValueChange = { },
-                    keyboardOptions = KeyboardOptions.Default.copy(),
-                    keyboardActions = KeyboardActions(),
-                    modifier = Modifier
-                        // This is how we trick it into showing keyboard the first time
-                        .focusRequester(gamePanelFocusRequester)
-                )
-            }
         }
     }
 }

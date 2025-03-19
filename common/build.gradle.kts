@@ -30,8 +30,6 @@ dependencies {
     }
 
     with(libs) {
-        implementation("org.seleniumhq.selenium:selenium-java:4.28.1")
-        implementation("org.seleniumhq.selenium:selenium-chrome-driver:4.28.1")
         implementation(libs.jsoup)
         implementation(libs.androidx.annotation.jvm)
         compileOnly(kotlin.reflect)

@@ -98,7 +98,7 @@ object MeteorWindow {
             var resizable = pendingResize.value || !fixedState.value || (stretchedMode.value && windowState.value != fullscreenState)
             Window(
                 onCloseRequest = ::exitApplication,
-                title = "Meteor 225 (2.1.0)",
+                title = "Meteor 225 (2.1.6-SNAPSHOT)",
                 state = windowState.value,
                 undecorated = windowState.value == fullscreenState,
                 resizable = if (windowState.value == fullscreenState) false else resizable,

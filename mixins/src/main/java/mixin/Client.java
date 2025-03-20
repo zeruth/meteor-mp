@@ -1,6 +1,7 @@
 package mixin;
 
 import net.runelite.api.Callbacks;
+import net.runelite.api.events.PreTooltip;
 import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;
 
@@ -29,5 +30,11 @@ abstract class Client implements RSClient {
     @Replace("post")
     public void post(Object event) {
         callbacks.post(event);
+    }
+
+    @MethodHook(value = "drawWildyLevel", end = true)
+    @Inject
+    private void drawWildyLevel$tail() {
+        client.getCallbacks().post(PreTooltip.INSTANCE);
     }
 }

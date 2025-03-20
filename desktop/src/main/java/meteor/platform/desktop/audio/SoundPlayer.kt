@@ -3,6 +3,7 @@ package meteor.platform.desktop.audio
 import client.events.WavePlay
 import client.events.WaveReplay
 import meteor.platform.common.Common.eventbus
+import java.io.ByteArrayInputStream
 import java.io.InputStream
 import javax.sound.sampled.*
 
@@ -21,9 +22,10 @@ class SoundPlayer(stream: AudioInputStream, delay: Int) {
 
             }
             eventbus.subscribe<WaveReplay> {
+                val sound = WavePlay.lastWave.readAllBytes()
+                WavePlay.lastWave.reset()
                 Thread {
-                    WavePlay.lastWave.reset()
-                    SoundPlayer(AudioSystem.getAudioInputStream(WavePlay.lastWave), 0)
+                    SoundPlayer(AudioSystem.getAudioInputStream(ByteArrayInputStream(sound)), 0)
                 }.start()
             }
         }

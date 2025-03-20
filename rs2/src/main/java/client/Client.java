@@ -8479,6 +8479,8 @@ public class Client extends GameShell {
 		}
 	}
 
+	public boolean shiftPressed = false;
+
 	@OriginalMember(owner = "client", name = "k", descriptor = "(Z)V")
 	private void drawTooltip() {
 		if (this.menuSize < 2 && this.objSelected == 0 && this.spellSelected == 0) {
@@ -8491,7 +8493,12 @@ public class Client extends GameShell {
 		} else if (this.spellSelected == 1 && this.menuSize < 2) {
 			tooltip = this.spellCaption + "...";
 		} else {
-			tooltip = this.menuOption[this.menuSize - 1];
+			if (shiftPressed
+					&& this.menuOption[this.menuSize] != null
+					&& this.menuOption[this.menuSize].startsWith("Drop"))
+				tooltip = this.menuOption[this.menuSize];
+			else
+				tooltip = this.menuOption[this.menuSize - 1];
 		}
 
 		if (this.menuSize > 2) {

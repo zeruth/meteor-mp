@@ -1,5 +1,7 @@
 package net.runelite.api;
 
+import net.runelite.mapping.Import;
+
 import java.awt.event.KeyEvent;
 
 public interface Client extends GameShell {
@@ -34,4 +36,23 @@ public interface Client extends GameShell {
     int getSceneState();
 
     PixMap getAreaViewport();
+
+    int getCameraPitch();
+    int getCameraYaw();
+    void setCameraPitch(int pitch);
+    void setCameraYaw(int yaw);
+    String[] getMenuOptions();
+    void setMenuOptions(String[] options);
+    int getMenuSize();
+    void setMenuSize(int size);
+    int[] getMenuActions();
+    void setMenuActions(int[] actions);
+    int[] getMenuParamAs();
+    void setMenuParamAs(int[] paramAs);
+    int[] getMenuParamBs();
+    void setMenuParamBs(int[] paramBs);
+    int[] getMenuParamCs();
+    void setMenuParamCs(int[] paramCs);
+    boolean getShiftPressed();
+    void setShiftPressed(boolean pressed);
 }

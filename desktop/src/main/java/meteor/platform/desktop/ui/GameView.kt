@@ -4,7 +4,6 @@ import androidx.compose.foundation.*
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
-import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.ExperimentalComposeUiApi
@@ -12,7 +11,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.awt.awtEventOrNull
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerButton
@@ -42,9 +40,7 @@ import meteor.platform.desktop.ui.MeteorWindow.fixedWindowSize
 import meteor.platform.desktop.ui.MeteorWindow.floatingState
 import meteor.platform.desktop.ui.MeteorWindow.fullscreenState
 import meteor.platform.desktop.ui.MeteorWindow.pendingResize
-import meteor.platform.desktop.ui.MeteorWindow.platformButtons
 import meteor.platform.desktop.ui.MeteorWindow.resetWindowSize
-import meteor.platform.desktop.ui.MeteorWindow.stretchToggleButton
 import meteor.platform.desktop.ui.MeteorWindow.windowState
 import meteor.platform.desktop.ui.buttons.FullscreenToggleButton
 import meteor.platform.desktop.ui.buttons.StretchToggleButton
@@ -122,6 +118,7 @@ object GameView {
                 .registerDragListener()
                 .registerLeftClickListener()
                 .registerRightClickListener()
+                .registerMiddleMouseClickListener()
                 .registerKeyListener()
             if (stretchedMode.value) {
                 mod = mod.fillMaxSize()
@@ -167,6 +164,43 @@ object GameView {
         }
     }
 
+    var movingCamera = false
+
+    @OptIn(ExperimentalFoundationApi::class)
+    fun Modifier.registerMiddleMouseClickListener(): Modifier {
+        var downPos: Offset
+        return this.pointerInput(Unit) {
+            //TODO: Camera zoom
+/*            detectTransformGestures { _, pan, _, _ ->
+                if (pan.y < 0) {
+                    scrollDirection = "Scroll Down"
+                } else if (pan.y > 0) {
+                    scrollDirection = "Scroll Up"
+                }
+            }*/
+            detectDragGestures(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onDragStart = { offset ->
+                downPos = offset
+            }, onDrag = { offset ->
+                if (clientInstance.inGame()) {
+                    clientInstance.cameraYaw -= offset.x.toInt()
+                    clientInstance.cameraYaw = clientInstance.cameraYaw and 0x7FF
+                    clientInstance.cameraPitch += offset.y.toInt()
+                    if (clientInstance.cameraPitch < 128) {
+                        clientInstance.cameraPitch = 128
+                    }
+
+                    if (clientInstance.cameraPitch > 383) {
+                        clientInstance.cameraPitch = 383
+                    }
+                }
+            }, onDragEnd = {
+                movingCamera = false
+            }, onDragCancel = {
+                movingCamera = false
+            })
+        }
+    }
+
     @OptIn(ExperimentalFoundationApi::class)
     fun Modifier.registerLeftClickListener(): Modifier {
         return this.pointerInput(Unit) {
@@ -188,19 +222,19 @@ object GameView {
     var wasStretched = false
 
     fun toggleFullscreen() {
-        if (windowState.value == MeteorWindow.floatingState) {
-            MeteorWindow.fullscreenState = WindowState(
+        if (windowState.value == floatingState) {
+            fullscreenState = WindowState(
                 position = WindowPosition(Alignment.Center),
                 placement = WindowPlacement.Maximized)
             pendingResize.value = true
             wasStretched = stretchedMode.value
             stretchedMode.value = true
             fixedState.value = false
-            windowState.value = MeteorWindow.fullscreenState
+            windowState.value = fullscreenState
             SidebarComposables.getButton<FullscreenToggleButton>()?.icon?.value = LineAwesomeIcons.CompressArrowsAltSolid
             ConfigManager.set("meteor.fullscreen", true)
         } else {
-            windowState.value = MeteorWindow.floatingState
+            windowState.value = floatingState
             if (density.floatValue == 1f) {
                 fixedState.value = true
             } else {
@@ -242,9 +276,15 @@ object GameView {
                         }
                         return@onKeyEvent true
                     }
+                    if (keyEvent.key == Key.ShiftLeft || keyEvent.key == Key.ShiftRight) {
+                        clientInstance.shiftPressed = true
+                    }
                     clientInstance.`keyPressed$api`(it)
                 }
                 if (keyEvent.type == KeyEventType.KeyUp) {
+                    if (keyEvent.key == Key.ShiftLeft || keyEvent.key == Key.ShiftRight) {
+                        clientInstance.shiftPressed = false
+                    }
                     clientInstance.`keyReleased$api`(it)
                 }
             }

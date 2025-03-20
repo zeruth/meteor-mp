@@ -27,4 +27,58 @@ public interface RSClient extends Client, RSGameShell {
 
     @Import("areaViewport")
     RSPixMap getAreaViewport();
+
+    @Import("orbitCameraPitch")
+    int getCameraPitch();
+
+    @Import("orbitCameraYaw")
+    int getCameraYaw();
+
+    @Import("orbitCameraPitch")
+    void setCameraPitch(int pitch);
+
+    @Import("orbitCameraYaw")
+    void setCameraYaw(int yaw);
+
+    @Import("menuOption")
+    String[] getMenuOptions();
+
+    @Import("menuOption")
+    void setMenuOptions(String[] options);
+
+    @Import("menuSize")
+    int getMenuSize();
+
+    @Import("menuSize")
+    void setMenuSize(int size);
+
+    @Import("menuAction")
+    int[] getMenuActions();
+
+    @Import("menuAction")
+    void setMenuActions(int[] actions);
+
+    @Import("menuParamA")
+    int[] getMenuParamAs();
+
+    @Import("menuParamA")
+    void setMenuParamAs(int[] paramAs);
+
+    @Import("menuParamB")
+    int[] getMenuParamBs();
+
+    @Import("menuParamB")
+    void setMenuParamBs(int[] paramBs);
+
+    @Import("menuParamC")
+    int[] getMenuParamCs();
+
+    @Import("menuParamC")
+    void setMenuParamCs(int[] paramCs);
+
+    @Import("shiftPressed")
+    boolean getShiftPressed();
+
+    @Import("shiftPressed")
+    void setShiftPressed(boolean pressed);
 }

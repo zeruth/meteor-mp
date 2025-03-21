@@ -2254,6 +2254,8 @@ public class Client extends GameShell {
 		return y - this.cameraY >= 800 || (this.levelTileFlags[this.currentLevel][this.cameraX >> 7][this.cameraZ >> 7] & 0x4) == 0 ? 3 : this.currentLevel;
 	}
 
+	public int orbitCameraZoom = 600;
+
 	@OriginalMember(owner = "client", name = "i", descriptor = "(I)V")
 	private void drawScene() {
 		this.sceneCycle++;
@@ -2275,7 +2277,7 @@ public class Client extends GameShell {
 			}
 
 			int yaw = this.orbitCameraYaw + this.cameraAnticheatAngle & 0x7FF;
-			this.orbitCamera(this.orbitCameraX, this.getHeightmapY(this.currentLevel, this.localPlayer.x, this.localPlayer.z) - 50, this.orbitCameraZ, yaw, pitch, pitch * 3 + 600);
+			this.orbitCamera(this.orbitCameraX, this.getHeightmapY(this.currentLevel, this.localPlayer.x, this.localPlayer.z) - 50, this.orbitCameraZ, yaw, pitch, pitch * 3 + orbitCameraZoom);
 
 			cyclelogic2++;
 			if (cyclelogic2 > 1802) {

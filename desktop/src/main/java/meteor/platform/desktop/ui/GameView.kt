@@ -1,8 +1,11 @@
 package meteor.platform.desktop.ui
 
 import androidx.compose.foundation.*
+import androidx.compose.foundation.gestures.awaitEachGesture
 import androidx.compose.foundation.gestures.detectDragGestures
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.detectTransformGestures
+import androidx.compose.foundation.gestures.forEachGesture
 import androidx.compose.foundation.layout.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
@@ -15,6 +18,7 @@ import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.input.key.*
 import androidx.compose.ui.input.pointer.PointerButton
 import androidx.compose.ui.input.pointer.PointerEventType
+import androidx.compose.ui.input.pointer.PointerType
 import androidx.compose.ui.input.pointer.onPointerEvent
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -120,6 +124,7 @@ object GameView {
                 .registerRightClickListener()
                 .registerMiddleMouseClickListener()
                 .registerKeyListener()
+                .registerZoomListener()
             if (stretchedMode.value) {
                 mod = mod.fillMaxSize()
             }
@@ -133,6 +138,25 @@ object GameView {
 
             LaunchedEffect(Unit) {
                 focusRequester.requestFocus()
+            }
+        }
+    }
+
+    fun Modifier.registerZoomListener(): Modifier {
+        return this.pointerInput(Unit) {
+            awaitEachGesture {
+                val event = awaitPointerEvent()
+
+                event.changes.forEach { change ->
+                    if (change.scrollDelta.y != 0f) {
+                        val newChange = change.scrollDelta.y.toInt() * 100
+                        clientInstance.orbitCameraZoom += newChange
+                        if (clientInstance.orbitCameraZoom < 1)
+                            clientInstance.orbitCameraZoom = 1
+                        if (clientInstance.orbitCameraZoom > 4000)
+                            clientInstance.orbitCameraZoom = 4000
+                    }
+                }
             }
         }
     }
@@ -164,23 +188,10 @@ object GameView {
         }
     }
 
-    var movingCamera = false
-
     @OptIn(ExperimentalFoundationApi::class)
     fun Modifier.registerMiddleMouseClickListener(): Modifier {
-        var downPos: Offset
         return this.pointerInput(Unit) {
-            //TODO: Camera zoom
-/*            detectTransformGestures { _, pan, _, _ ->
-                if (pan.y < 0) {
-                    scrollDirection = "Scroll Down"
-                } else if (pan.y > 0) {
-                    scrollDirection = "Scroll Up"
-                }
-            }*/
-            detectDragGestures(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onDragStart = { offset ->
-                downPos = offset
-            }, onDrag = { offset ->
+            detectDragGestures(matcher = PointerMatcher.mouse(PointerButton.Tertiary), onDrag = { offset ->
                 if (clientInstance.inGame()) {
                     clientInstance.cameraYaw -= offset.x.toInt()
                     clientInstance.cameraYaw = clientInstance.cameraYaw and 0x7FF
@@ -193,10 +204,6 @@ object GameView {
                         clientInstance.cameraPitch = 383
                     }
                 }
-            }, onDragEnd = {
-                movingCamera = false
-            }, onDragCancel = {
-                movingCamera = false
             })
         }
     }

@@ -81,4 +81,10 @@ public interface RSClient extends Client, RSGameShell {
 
     @Import("shiftPressed")
     void setShiftPressed(boolean pressed);
+
+    @Import("orbitCameraZoom")
+    int getOrbitCameraZoom();
+
+    @Import("orbitCameraZoom")
+    void setOrbitCameraZoom(int zoom);
 }

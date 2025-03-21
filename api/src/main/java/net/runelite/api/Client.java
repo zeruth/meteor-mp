@@ -55,4 +55,6 @@ public interface Client extends GameShell {
     void setMenuParamCs(int[] paramCs);
     boolean getShiftPressed();
     void setShiftPressed(boolean pressed);
+    int getOrbitCameraZoom();
+    void setOrbitCameraZoom(int zoom);
 }

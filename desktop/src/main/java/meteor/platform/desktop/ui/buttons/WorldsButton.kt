@@ -69,7 +69,7 @@ class WorldsButton : SidebarButton(icon = mutableStateOf(LineAwesomeIcons.GlobeS
                     ) {
                         Column(modifier = Modifier.fillMaxSize()) {
                             Text(
-                                "2004Scape.org",
+                                "04lite.com",
                                 color = Color.White,
                                 modifier = Modifier.align(Alignment.CenterHorizontally).height(20.dp)
                             )

@@ -13,6 +13,18 @@ Forbidden features:
     artificial input of any kind  
 ```
 
+```
+Features:  
+    RuneLite based Injector
+    Camera middle mouse support (rotation / zoom)
+    Shift-dropping
+    Occluders disabled (click npcs inside a building you are not in)
+
+    Built-in world map
+    Stretching / fullscreen
+    World switcher
+```
+
 Desktop:  
 ![Desktop](https://github.com/user-attachments/assets/93781112-0ca6-4798-8363-247b903f7b9a)
   

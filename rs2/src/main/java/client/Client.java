@@ -8081,7 +8081,7 @@ public class Client extends GameShell {
 
 	@OriginalMember(owner = "client", name = "A", descriptor = "(I)Ljava/net/Socket;")
 	private Socket openSocket(@OriginalArg(0) int port) throws IOException {
-		return new Socket(InetAddress.getLocalHost(), port);
+		return new Socket(InetAddress.getByName(this.getCodeBase().getHost()), port);
 	}
 
 	@OriginalMember(owner = "client", name = "a", descriptor = "(ZIILclient!z;I)V")

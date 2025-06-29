@@ -22,7 +22,7 @@ import static jagex2.client.Configuration.IP_ADDRESS;
 public class Playground extends GameShell {
     public static void main(String[] args) {
         try {
-            signlink.startpriv(InetAddress.getByName(IP_ADDRESS));
+            signlink.startpriv(InetAddress.getByName("localhost"));
 
             Playground app = new Playground();
             app.initApplication(789, 532);

@@ -22,7 +22,7 @@ import static jagex2.client.Configuration.IP_ADDRESS;
 public class PlaygroundMapView extends GameShellMapView {
     public static void main(String[] args) {
         try {
-            signlinkMapView.startpriv(InetAddress.getByName(IP_ADDRESS));
+            signlinkMapView.startpriv(InetAddress.getByName("localhost"));
 
             PlaygroundMapView app = new PlaygroundMapView();
             app.initApplication(789, 532);

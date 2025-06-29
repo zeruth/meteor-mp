@@ -28,12 +28,12 @@ tasks.withType<InjectTask> {
 
 android {
     namespace = "com.meteor.android"
-    compileSdk = 35
+    compileSdk = 36
 
     defaultConfig {
         applicationId = "com.meteor.android"
         minSdk = 30
-        targetSdk = 35
+        targetSdk = 36
         versionCode = 1
         versionName = "2.1.2"
 

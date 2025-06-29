@@ -16,10 +16,13 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.zip.CRC32;
 
+import static jagex2.client.Configuration.CODEBASE;
+import static jagex2.client.Configuration.IP_ADDRESS;
+
 public class PlaygroundMapView extends GameShellMapView {
     public static void main(String[] args) {
         try {
-            signlinkMapView.startpriv(InetAddress.getByName("w1.225.2004scape.org"));
+            signlinkMapView.startpriv(InetAddress.getByName(IP_ADDRESS));
 
             PlaygroundMapView app = new PlaygroundMapView();
             app.initApplication(789, 532);
@@ -32,7 +35,7 @@ public class PlaygroundMapView extends GameShellMapView {
 
 	public URL getCodeBase() {
         try {
-            return new URL("http://w1.225.2004scape.org:" + (portOffset + 80));
+            return new URL(CODEBASE + ":" + (portOffset + 80));
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }

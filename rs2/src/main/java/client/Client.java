@@ -4,7 +4,6 @@ import client.events.*;
 import jagex2.client.Configuration;
 import jagex2.client.GameShell;
 import jagex2.client.InputTracking;
-import jagex2.client.WebSocketProxy;
 import jagex2.config.Component;
 import jagex2.config.*;
 import jagex2.dash3d.CollisionMap;
@@ -31,6 +30,8 @@ import java.io.IOException;
 import java.math.BigInteger;
 import java.net.*;
 import java.util.zip.CRC32;
+
+import static jagex2.client.Configuration.CODEBASE;
 
 
 @OriginalClass("client")
@@ -568,7 +569,7 @@ public class Client extends GameShell {
 	private boolean redrawPrivacySettings = false;
 
 	@OriginalMember(owner = "client", name = "ue", descriptor = "Ljava/math/BigInteger;")
-	public static final BigInteger RSA_EXPONENT = new BigInteger("65537");
+	public static final BigInteger RSA_EXPONENT = new BigInteger("58778699976184461502525193738213253649000149147835990136706041084440742975821");
 
 	@OriginalMember(owner = "client", name = "ve", descriptor = "Z")
 	private boolean errorHost = false;
@@ -6050,7 +6051,7 @@ public class Client extends GameShell {
 
 	@OriginalMember(owner = "client", name = "s", descriptor = "(I)Ljava/lang/String;")
 	private String getHost() {
-		return "https://w1.225.2004scape.org";
+		return CODEBASE;
 	}
 
 	@OriginalMember(owner = "client", name = "t", descriptor = "(I)V")
@@ -8080,18 +8081,7 @@ public class Client extends GameShell {
 
 	@OriginalMember(owner = "client", name = "A", descriptor = "(I)Ljava/net/Socket;")
 	private Socket openSocket(@OriginalArg(0) int port) throws IOException {
-		if (Configuration.PROXY_WSS) {
-			try {
-				WebSocketProxy.start();
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e);
-			}
-            return new Socket(InetAddress.getLocalHost(), WebSocketProxy.LOCAL_TCP);
-		} else {
-			return new Socket(InetAddress.getLocalHost(), port);
-		}
+		return new Socket(InetAddress.getLocalHost(), port);
 	}
 
 	@OriginalMember(owner = "client", name = "a", descriptor = "(ZIILclient!z;I)V")
@@ -8520,7 +8510,7 @@ public class Client extends GameShell {
 	@OriginalMember(owner = "client", name = "getCodeBase", descriptor = "()Ljava/net/URL;")
 	public URL getCodeBase() {
         try {
-            return new URL(Configuration.CODEBASE);
+            return new URL(CODEBASE);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -11760,7 +11750,7 @@ public class Client extends GameShell {
 	}
 
 	public static void updateServerConnection(String URL, int PORT_OFFSET) {
-		Configuration.CODEBASE = URL;
+		CODEBASE = URL;
 		Configuration.PORT_OFFSET = PORT_OFFSET;
 	}
 

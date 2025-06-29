@@ -10,7 +10,6 @@ import jagex2.client.Configuration
 import jagex2.client.GameShell
 import meteor.platform.common.Common.clientInstance
 import meteor.platform.common.Common.eventbus
-import meteor.platform.common.world.WorldsCommon.worlds
 import sign.signlink
 import java.net.InetAddress
 
@@ -36,7 +35,6 @@ object Game {
     }
 
     init {
-        RSA_MODULUS = worlds.first.modulus
         eventbus.subscribe<DrawFinished> {
             gameImage.value = GameShell.image.toComposeImageBitmap()
         }

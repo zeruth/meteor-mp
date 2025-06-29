@@ -1,12 +1,12 @@
 package client;
 
 import static client.Client.isAndroid;
+import static jagex2.client.Configuration.CODEBASE;
 
 import client.events.*;
 import jagex2.client.Configuration;
 import jagex2.client.GameShellMapView;
 import jagex2.client.InputTracking;
-import jagex2.client.WebSocketProxy;
 import jagex2.config.ComponentMapView;
 import jagex2.config.*;
 import jagex2.dash3d.CollisionMap;
@@ -6051,7 +6051,7 @@ public class ClientMapView extends GameShellMapView {
 
 	@OriginalMember(owner = "client", name = "s", descriptor = "(I)Ljava/lang/String;")
 	private String getHost() {
-		return "https://w1.225.2004scape.org";
+		return CODEBASE;
 	}
 
 	@OriginalMember(owner = "client", name = "t", descriptor = "(I)V")
@@ -8081,18 +8081,7 @@ public class ClientMapView extends GameShellMapView {
 
 	@OriginalMember(owner = "client", name = "A", descriptor = "(I)Ljava/net/Socket;")
 	private Socket openSocket(@OriginalArg(0) int port) throws IOException {
-		if (Configuration.PROXY_WSS) {
-			try {
-				WebSocketProxy.start();
-			} catch (InterruptedException e) {
-				throw new RuntimeException(e);
-			} catch (URISyntaxException e) {
-				throw new RuntimeException(e);
-			}
-            return new Socket(InetAddress.getLocalHost(), WebSocketProxy.LOCAL_TCP);
-		} else {
-			return new Socket(InetAddress.getLocalHost(), port);
-		}
+		return new Socket(InetAddress.getLocalHost(), port);
 	}
 
 	@OriginalMember(owner = "client", name = "a", descriptor = "(ZIILclient!z;I)V")
@@ -8521,7 +8510,7 @@ public class ClientMapView extends GameShellMapView {
 	@OriginalMember(owner = "client", name = "getCodeBase", descriptor = "()Ljava/net/URL;")
 	public URL getCodeBase() {
         try {
-            return new URL(Configuration.CODEBASE);
+            return new URL(CODEBASE);
         } catch (MalformedURLException e) {
             throw new RuntimeException(e);
         }
@@ -11761,7 +11750,7 @@ public class ClientMapView extends GameShellMapView {
 	}
 
 	public static void updateServerConnection(String URL, int PORT_OFFSET) {
-		Configuration.CODEBASE = URL;
+		CODEBASE = URL;
 		Configuration.PORT_OFFSET = PORT_OFFSET;
 	}
 

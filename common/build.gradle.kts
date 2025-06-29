@@ -26,7 +26,6 @@ dependencies {
     with(compose) {
         compileOnly(runtime)
         compileOnly(ui)
-        compileOnly(desktop.currentOs)
     }
 
     with(libs) {

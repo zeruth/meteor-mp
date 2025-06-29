@@ -12,7 +12,6 @@ import ext.awt.BufferedImageExt.getPixels
 import jagex2.client.Configuration
 import meteor.platform.common.Common.clientInstance
 import meteor.platform.common.Common.eventbus
-import meteor.platform.common.world.WorldsCommon.worlds
 import sign.signlink
 import java.lang.Thread.sleep
 import java.net.InetAddress
@@ -25,7 +24,6 @@ object Game {
 
     //Draws when game reports a frame
     init {
-        RSA_MODULUS = worlds.toTypedArray()[0].modulus
         eventbus.subscribe<DrawFinished> {
             receivedDraw = true
             updateGameImage()

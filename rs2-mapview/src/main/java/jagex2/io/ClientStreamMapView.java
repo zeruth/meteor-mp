@@ -15,8 +15,6 @@ import java.io.OutputStream;
 import java.net.Socket;
 import java.nio.ByteBuffer;
 
-import static jagex2.client.WebSocketProxy.webSocketClient;
-
 @OriginalClass("client.client!d")
 public class ClientStreamMapView implements Runnable {
 
@@ -174,10 +172,7 @@ public class ClientStreamMapView implements Runnable {
 
 			if (len > 0) {
 				try {
-					if (Configuration.PROXY_WSS)
-						webSocketClient.send(ByteBuffer.wrap(this.buf, off, len));
-					else
-						this.out.write(this.buf, off, len);
+					this.out.write(this.buf, off, len);
 				} catch (@Pc(62) Exception ignored) {
 					this.ioerror = true;
 				}

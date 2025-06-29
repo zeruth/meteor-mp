@@ -35,7 +35,6 @@ import meteor.platform.desktop.ui.buttons.FpsDisplayButton
 import meteor.platform.desktop.ui.buttons.FullscreenToggleButton
 import meteor.platform.desktop.ui.buttons.MapViewButton
 import meteor.platform.desktop.ui.buttons.StretchToggleButton
-import meteor.platform.desktop.ui.buttons.WorldsButton
 import java.awt.Dimension
 
 object MeteorWindow {
@@ -81,13 +80,13 @@ object MeteorWindow {
     val discordStatusButton = DiscordStatusButton()
     val fullscreenToggleButton = FullscreenToggleButton()
     val stretchToggleButton = StretchToggleButton()
-    val worldsButton = WorldsButton()
+
     val fpsButton = FpsDisplayButton()
     val mapViewButton = MapViewButton()
     val density = mutableFloatStateOf(1f)
     val pendingResize = mutableStateOf(false)
 
-    val platformButtons = mutableStateSetOf(discordStatusButton, worldsButton, mapViewButton, fpsButton, fullscreenToggleButton)
+    val platformButtons = mutableStateSetOf(discordStatusButton, mapViewButton, fpsButton, fullscreenToggleButton)
 
     @Composable
     fun ApplicationScope.MeteorWindow() {

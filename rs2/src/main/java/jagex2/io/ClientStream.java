@@ -1,6 +1,5 @@
 package jagex2.io;
 
-import jagex2.client.Configuration;
 import jagex2.client.GameShell;
 import org.openrs2.deob.annotation.OriginalArg;
 import org.openrs2.deob.annotation.OriginalClass;
@@ -11,9 +10,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.Socket;
-import java.nio.ByteBuffer;
-
-import static jagex2.client.WebSocketProxy.webSocketClient;
 
 @OriginalClass("client.client!d")
 public class ClientStream implements Runnable {
@@ -172,10 +168,7 @@ public class ClientStream implements Runnable {
 
 			if (len > 0) {
 				try {
-					if (Configuration.PROXY_WSS)
-						webSocketClient.send(ByteBuffer.wrap(this.buf, off, len));
-					else
-						this.out.write(this.buf, off, len);
+					this.out.write(this.buf, off, len);
 				} catch (@Pc(62) Exception ignored) {
 					this.ioerror = true;
 				}

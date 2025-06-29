@@ -18,14 +18,13 @@ import meteor.platform.common.ui.components.sidebar.UISide
 import meteor.platform.android.input.KeyboardButton
 import meteor.platform.android.ui.map.MapView
 import meteor.platform.android.ui.map.MapViewButton
-import meteor.platform.android.ui.worlds.WorldsButton
 
 /**
  * The main entry point to the Compose UI
  */
 object Window {
 
-    val sidebarButtons = arrayOf(WorldsButton(), MapViewButton(), KeyboardButton(), BatteryFpsDisplayButton())
+    val sidebarButtons = arrayOf(MapViewButton(), KeyboardButton(), BatteryFpsDisplayButton())
 
     @Composable
     fun BoxScope.MeteorViewBox() {

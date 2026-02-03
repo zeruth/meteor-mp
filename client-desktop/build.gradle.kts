@@ -23,6 +23,10 @@ tasks.withType<InjectTask> {
     output = File("${project.layout.projectDirectory}/lib/injected-client.jar")
 }
 
+tasks.withType<JavaCompile> {
+    dependsOn(tasks.withType<InjectTask>())
+}
+
 tasks.withType<KotlinCompile> {
     dependsOn(tasks.withType<InjectTask>())
 }

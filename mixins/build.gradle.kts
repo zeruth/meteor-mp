@@ -18,8 +18,3 @@ dependencies {
     implementation(project(":api"))
     implementation(project(":api-rs"))
 }
-
-java {
-    sourceCompatibility = JavaVersion.VERSION_21
-    targetCompatibility = JavaVersion.VERSION_21
-}

@@ -3,25 +3,12 @@ package jagex2.client;
 import deob.ObfuscatedName;
 import jagex2.graphics.Pix32;
 import jagex2.graphics.PixMap;
+import meteor.context.PlatformContext;
+import meteor.context.platform.android.AndroidPlatform;
+import meteor.context.platform.headless.AndroidHeadlessPlatform;
+import org.jetbrains.annotations.NotNull;
 
-import java.applet.Applet;
-import java.awt.Color;
-import java.awt.Component;
-import java.awt.Dimension;
-import java.awt.Font;
-import java.awt.FontMetrics;
-import java.awt.Graphics;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
-import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
-import java.awt.event.MouseMotionListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
-
-public class GameShell extends Applet implements Runnable, MouseListener, MouseMotionListener, KeyListener, FocusListener, WindowListener {
+public class GameShell extends AndroidPlatform implements Runnable {
 
 	public static boolean isAndroid = false;
 
@@ -114,43 +101,27 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 	@ObfuscatedName("JWWAIQPI.o")
 	public PixMap drawArea;
 
-	@ObfuscatedName("JWWAIQPI.n")
-	public Graphics graphics;
-
 	@ObfuscatedName("JWWAIQPI.a(III)V")
 	public void initApplication(int height, int width) {
-		this.setPreferredSize(new Dimension(width, height));
-
 		this.canvasWidth = width;
 		this.canvasHeight = height;
-		this.frame = new ViewBox(this.canvasHeight, this, this.canvasWidth);
-		this.graphics = this.getBaseComponent().getGraphics();
-		this.drawArea = new PixMap(this.canvasHeight, this.getBaseComponent(), this.canvasWidth);
 
-		this.startThread(this, 1);
-	}
+		System.out.println("here");
+		this.frame = createViewBox(canvasWidth, canvasHeight);
 
-	@ObfuscatedName("JWWAIQPI.b(III)V")
-	public void initApplet(int width, int height) {
-		this.setPreferredSize(new Dimension(width, height));
+		System.out.println("here1");
+		setViewbox(frame);
+		this.drawArea = createPixmap(this.canvasWidth, this.canvasHeight);
 
-		this.canvasWidth = width;
-		this.canvasHeight = height;
-		this.graphics = this.getBaseComponent().getGraphics();
-		this.drawArea = new PixMap(this.canvasHeight, this.getBaseComponent(), this.canvasWidth);
-
+		System.out.println("here");
 		this.startThread(this, 1);
 	}
 
 	public void run() {
-		this.getBaseComponent().addMouseListener(this);
-		this.getBaseComponent().addMouseMotionListener(this);
-		this.getBaseComponent().addKeyListener(this);
-		this.getBaseComponent().addFocusListener(this);
 
-		if (this.frame != null) {
+/*		if (this.frame != null) {
 			this.frame.addWindowListener(this);
-		}
+		}*/
 
 		this.drawProgress(0, "Loading...");
 		this.load();
@@ -290,376 +261,6 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 		this.deltime = 1000 / fps;
 	}
 
-	public void start() {
-		if (this.state >= 0) {
-			this.state = 0;
-		}
-	}
-
-	public void stop() {
-		if (this.state >= 0) {
-			this.state = 4000 / this.deltime;
-		}
-	}
-
-	public void destroy() {
-		this.state = -1;
-
-		try {
-			Thread.sleep(10000L);
-		} catch (Exception ignore) {
-		}
-
-		if (this.state == -1) {
-			this.shutdown();
-		}
-	}
-
-	public void update(Graphics g) {
-		if (this.graphics == null) {
-			this.graphics = g;
-		}
-
-		this.redrawScreen = true;
-		this.refresh();
-	}
-
-	public void paint(Graphics g) {
-		if (this.graphics == null) {
-			this.graphics = g;
-		}
-
-		this.redrawScreen = true;
-		this.refresh();
-	}
-
-	public void mousePressed(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-
-		this.idleCycles = 0;
-		this.nextMouseClickX = x;
-		this.nextMouseClickY = y;
-		this.nextMouseClickTime = System.currentTimeMillis();
-
-		try {
-			// Java >8 no longer uses "isMetaDown" for right clicks
-			if (e.getButton() == MouseEvent.BUTTON3) {
-				this.nextMouseClickButton = 2;
-				this.mouseButton = 2;
-			} else {
-				this.nextMouseClickButton = 1;
-				this.mouseButton = 1;
-			}
-		} catch (NoSuchMethodError ex) {
-			if (e.isMetaDown()) {
-				this.nextMouseClickButton = 2;
-				this.mouseButton = 2;
-			} else {
-				this.nextMouseClickButton = 1;
-				this.mouseButton = 1;
-			}
-		}
-	}
-
-	public void mousePressed(int x, int y, int button, boolean isMetaDown) {
-
-		this.idleCycles = 0;
-		this.nextMouseClickX = x;
-		this.nextMouseClickY = y;
-		this.nextMouseClickTime = System.currentTimeMillis();
-
-		try {
-			// Java >8 no longer uses "isMetaDown" for right clicks
-			if (button == MouseEvent.BUTTON3) {
-				this.nextMouseClickButton = 2;
-				this.mouseButton = 2;
-			} else {
-				this.nextMouseClickButton = 1;
-				this.mouseButton = 1;
-			}
-		} catch (NoSuchMethodError ex) {
-			if (isMetaDown) {
-				this.nextMouseClickButton = 2;
-				this.mouseButton = 2;
-			} else {
-				this.nextMouseClickButton = 1;
-				this.mouseButton = 1;
-			}
-		}
-	}
-
-	public void mouseReleased(MouseEvent e) {
-		this.idleCycles = 0;
-		this.mouseButton = 0;
-	}
-
-	public void mouseReleased() {
-		this.idleCycles = 0;
-		this.mouseButton = 0;
-	}
-
-	public void mouseClicked(MouseEvent e) {
-	}
-
-	public void mouseEntered(MouseEvent e) {
-	}
-
-	public void mouseExited(MouseEvent e) {
-		this.idleCycles = 0;
-		this.mouseX = -1;
-		this.mouseY = -1;
-	}
-
-	public void mouseDragged(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-
-		this.idleCycles = 0;
-		this.mouseX = x;
-		this.mouseY = y;
-	}
-
-	public void mouseMoved(MouseEvent e) {
-		int x = e.getX();
-		int y = e.getY();
-
-		this.idleCycles = 0;
-		this.mouseX = x;
-		this.mouseY = y;
-	}
-
-	public void mouseMoved(int x, int y) {
-		this.idleCycles = 0;
-		this.mouseX = x;
-		this.mouseY = y;
-	}
-
-	public void keyPressed(KeyEvent e) {
-		this.idleCycles = 0;
-
-		int code = e.getKeyCode();
-		int ch = e.getKeyChar();
-
-		if (ch < 30) {
-			ch = 0;
-		}
-
-		if (code == 37) {
-			ch = 1;
-		} else if (code == 39) {
-			ch = 2;
-		} else if (code == 38) {
-			ch = 3;
-		} else if (code == 40) {
-			ch = 4;
-		} else if (code == 17) {
-			ch = 5;
-		} else if (code == 8) {
-			ch = 8;
-		} else if (code == 127) {
-			ch = 8;
-		} else if (code == 9) {
-			ch = 9;
-		} else if (code == 10) {
-			ch = 10;
-		} else if (code >= 112 && code <= 123) {
-			ch = code + 1008 - 112;
-		} else if (code == 36) {
-			ch = 1000;
-		} else if (code == 35) {
-			ch = 1001;
-		} else if (code == 33) {
-			ch = 1002;
-		} else if (code == 34) {
-			ch = 1003;
-		}
-
-		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 1;
-		}
-
-		if (ch > 4) {
-			this.keyQueue[this.keyQueueWritePos] = ch;
-			this.keyQueueWritePos = this.keyQueueWritePos + 1 & 0x7F;
-		}
-	}
-
-	public final void keyPressed(int keyCode, int keyChar) {
-		this.idleCycles = 0;
-
-		int code = keyCode;
-		int ch = keyChar;
-
-		if (ch == -1)
-			ch = keyCode;
-
-		if (ch < 30) {
-			ch = 0;
-		}
-
-		if (code == 37) {
-			// KEY_LEFT
-			ch = 1;
-		} else if (code == 39) {
-			// KEY_RIGHT
-			ch = 2;
-		} else if (code == 38) {
-			// KEY_UP
-			ch = 3;
-		} else if (code == 40) {
-			// KEY_DOWN
-			ch = 4;
-		} else if (code == 17) {
-			// CONTROL
-			ch = 5;
-		} else if (code == 16) {
-			// SHIFT
-			ch = 6; // (custom)
-		} else if (code == 18) {
-			// ALT
-			ch = 7; // (custom)
-		} else if (code == 8) {
-			// BACKSPACE
-			ch = 8;
-		} else if (code == 127) {
-			// DELETE
-			ch = 8;
-		} else if (code == 9) {
-			ch = 9;
-		} else if (code == 10) {
-			// ENTER
-			ch = 10;
-		}
-		if (!isAndroid) {
-			if (code >= 112 && code <= 123) {
-				ch = code + 1008 - 112;
-			} else if (code == 36) {
-				ch = 1000;
-			} else if (code == 35) {
-				ch = 1001;
-			} else if (code == 33) {
-				ch = 1002;
-			} else if (code == 34) {
-				ch = 1003;
-			}
-		}
-
-		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 1;
-		}
-
-		if (ch > 4) {
-			this.keyQueue[this.keyQueueWritePos] = ch;
-			this.keyQueueWritePos = this.keyQueueWritePos + 1 & 0x7F;
-		}
-	}
-
-	public void keyReleased(KeyEvent e) {
-		this.idleCycles = 0;
-
-		int code = e.getKeyCode();
-		char ch = e.getKeyChar();
-
-		if (ch < 30) {
-			ch = 0;
-		}
-
-		if (code == 37) {
-			ch = 1;
-		} else if (code == 39) {
-			ch = 2;
-		} else if (code == 38) {
-			ch = 3;
-		} else if (code == 40) {
-			ch = 4;
-		} else if (code == 17) {
-			ch = 5;
-		} else if (code == 8) {
-			ch = '\b';
-		} else if (code == 127) {
-			ch = '\b';
-		} else if (code == 9) {
-			ch = '\t';
-		} else if (code == 10) {
-			ch = '\n';
-		}
-
-		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 0;
-		}
-	}
-
-	public final void keyReleased(int keycode) {
-
-		this.idleCycles = 0;
-
-		int code = keycode;
-		int ch = keycode;
-
-		if (ch < 30) {
-			ch = 0;
-		}
-
-		if (code == 37) {
-			// KEY_LEFT
-			ch = 1;
-		} else if (code == 39) {
-			// KEY_RIGHT
-			ch = 2;
-		} else if (code == 38) {
-			// KEY_UP
-			ch = 3;
-		} else if (code == 40) {
-			// KEY_DOWN
-			ch = 4;
-		} else if (code == 17) {
-			// CONTROL
-			ch = 5;
-		} else if (code == 16) {
-			// SHIFT
-			ch = 6; // (custom)
-		} else if (code == 18) {
-			// ALT
-			ch = 7; // (custom)
-		} else if (code == 8) {
-			// BACKSPACE
-			ch = 8;
-		} else if (code == 127) {
-			// DELETE
-			ch = 8;
-		} else if (code == 9) {
-			ch = 9;
-		} else if (code == 10) {
-			// ENTER
-			ch = 10;
-		}
-		if (!isAndroid) {
-			if (code >= 112 && code <= 123) {
-				ch = code + 1008 - 112;
-			} else if (code == 36) {
-				ch = 1000;
-			} else if (code == 35) {
-				ch = 1001;
-			} else if (code == 33) {
-				ch = 1002;
-			} else if (code == 34) {
-				ch = 1003;
-			}
-		}
-
-		if (ch > 0 && ch < 128) {
-			this.actionKey[ch] = 0;
-		}
-	}
-
-	public void keyTyped(KeyEvent e) {
-	}
-
-	public void keyTyped(int i) {
-	}
-
-
 	@ObfuscatedName("JWWAIQPI.a(I)I")
 	public int pollKey() {
 		int key = -1;
@@ -668,41 +269,6 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 			this.keyQueueReadPos = this.keyQueueReadPos + 1 & 0x7F;
 		}
 		return key;
-	}
-
-	public void focusGained(FocusEvent e) {
-		this.hasFocus = true;
-		this.redrawScreen = true;
-		this.refresh();
-	}
-
-	public void focusLost(FocusEvent e) {
-		this.hasFocus = false;
-		for (int i = 0; i < 128; i++) {
-			this.actionKey[i] = 0;
-		}
-	}
-
-	public void windowActivated(WindowEvent e) {
-	}
-
-	public void windowClosed(WindowEvent e) {
-	}
-
-	public void windowClosing(WindowEvent e) {
-		this.destroy();
-	}
-
-	public void windowDeactivated(WindowEvent e) {
-	}
-
-	public void windowDeiconified(WindowEvent e) {
-	}
-
-	public void windowIconified(WindowEvent e) {
-	}
-
-	public void windowOpened(WindowEvent e) {
 	}
 
 	@ObfuscatedName("JWWAIQPI.a()V")
@@ -726,7 +292,7 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 	}
 
 	@ObfuscatedName("JWWAIQPI.d(I)Ljava/awt/Component;")
-	public Component getBaseComponent() {
+	public PlatformContext getBaseComponent() {
 		return this;
 	}
 
@@ -738,45 +304,5 @@ public class GameShell extends Applet implements Runnable, MouseListener, MouseM
 	}
 
 	@ObfuscatedName("JWWAIQPI.a(IZLjava/lang/String;)V")
-	public void drawProgress(int percent, String message) {
-		while (this.graphics == null) {
-			this.graphics = this.getBaseComponent().getGraphics();
-
-			try {
-				this.getBaseComponent().repaint();
-			} catch (Exception ignore) {
-			}
-
-			try {
-				Thread.sleep(1000L);
-			} catch (Exception ignore) {
-			}
-		}
-
-		Font bold = new Font("Helvetica", Font.BOLD, 13);
-		FontMetrics boldMetrics = this.getBaseComponent().getFontMetrics(bold);
-
-		Font plain = new Font("Helvetica", Font.PLAIN, 13);
-		FontMetrics plainMetrics = this.getBaseComponent().getFontMetrics(plain);
-
-		if (this.redrawScreen) {
-			this.graphics.setColor(Color.black);
-			this.graphics.fillRect(0, 0, this.canvasWidth, this.canvasHeight);
-			this.redrawScreen = false;
-		}
-
-		Color background = new Color(140, 17, 17);
-
-		int y = this.canvasHeight / 2 - 18;
-		this.graphics.setColor(background);
-		this.graphics.drawRect(this.canvasWidth / 2 - 152, y, 304, 34);
-		this.graphics.fillRect(this.canvasWidth / 2 - 150, y + 2, percent * 3, 30);
-
-		this.graphics.setColor(Color.black);
-		this.graphics.fillRect(percent * 3 + (this.canvasWidth / 2 - 150), y + 2, 300 - percent * 3, 30);
-
-		this.graphics.setFont(bold);
-		this.graphics.setColor(Color.white);
-		this.graphics.drawString(message, (this.canvasWidth - boldMetrics.stringWidth(message)) / 2, y + 22);
-	}
+	public void drawProgress(int percent, @NotNull String message) {}
 }

@@ -36,8 +36,8 @@ public class Pix2D extends DoublyLinkable {
 	public static int[] data;
 
 	@ObfuscatedName("LFYNQWSZ.a(ZII[I)V")
-	public static void bind(int width, int height, int[] src) {
-		data = src;
+	public static void setPixels(int[] data, int width, int height) {
+		Pix2D.data = data;
 		width2d = width;
 		height2d = height;
 		setClipping(0, 0, height, width);

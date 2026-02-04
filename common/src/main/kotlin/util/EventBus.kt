@@ -164,6 +164,7 @@ class EventBus(
     }
 }
 
+@JvmField
 @Suppress("UNUSED")
 /** Main sub/pub handler */
 val GlobalEventBus = EventBus(name = "main")

@@ -74,8 +74,6 @@ public class Execution
 
 		for (ClassFile cf : group.getClasses())
 		{
-			boolean extendsApplet = extendsApplet(cf);
-
 			for (Method m : cf.getMethods())
 			{
 				if (!m.getName().equals("<init>"))
@@ -87,11 +85,6 @@ public class Execution
 					}
 
 					methods.add(m); // I guess this method name is overriding a jre interface (init, run, ?).
-				}
-
-				if (m.getName().equals("<init>") && extendsApplet)
-				{
-					methods.add(m);
 				}
 			}
 		}

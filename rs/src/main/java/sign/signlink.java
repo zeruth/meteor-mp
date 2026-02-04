@@ -1,8 +1,9 @@
 package sign;
 
-import javax.sound.midi.MidiSystem;
-import javax.sound.sampled.*;
-import java.applet.Applet;
+import meteor.context.PlatformContext;
+import meteor.context.events.*;
+import util.EventBusKt;
+
 import java.io.DataInputStream;
 import java.io.DataOutputStream;
 import java.io.File;
@@ -22,7 +23,7 @@ public class signlink implements Runnable {
 
 	public static RandomAccessFile[] cache_idx = new RandomAccessFile[5];
 
-	public static Applet mainapp = null;
+	public static Runnable mainapp = null;
 
 	public static Socket socket = null;
 
@@ -111,10 +112,6 @@ public class signlink implements Runnable {
 		String var1 = findcachedir();
 		uid = getuid(var1);
 		try {
-			midiPlayer = new MidiPlayer();
-		} catch (Exception ex) {
-		}
-		try {
 			File var2 = new File(var1 + "main_file_cache.dat");
 			if (var2.exists() && var2.length() > 52428800L) {
 				System.out.println("Deleted?");
@@ -169,7 +166,7 @@ public class signlink implements Runnable {
 				savereq = null;
 			} else if (urlreq != null) {
 				try {
-					urlstream = new DataInputStream((new URL(mainapp.getCodeBase(), urlreq)).openStream());
+					urlstream = new DataInputStream((new URL(((PlatformContext)mainapp).getCodeBase(), urlreq)).openStream());
 				} catch (Exception var10) {
 					urlstream = null;
 				}
@@ -183,7 +180,7 @@ public class signlink implements Runnable {
 		}
 	}
 
-	private static void deleteRecursively(File file) throws IOException {
+	public static void deleteRecursively(File file) throws IOException {
 		if (file.isDirectory()) {
 			File[] children = file.listFiles();
 			if (children != null) {
@@ -198,51 +195,7 @@ public class signlink implements Runnable {
 	}
 
 	public static String findcachedir() {
-		String s = System.getProperty("user.home") + "/meteor-377/cache/";
-				System.out.println("[Cache] " + s);
-		File f = new File(s);
-		if (false && f.exists()) {
-            try {
-                deleteRecursively(f);
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-            if (!f.exists()) {
-				System.out.println("Wiped Cache!");
-			}
-		}
-
-		if (!f.exists() && !f.mkdirs()) {
-            try {
-                throw new IOException("Failed to create cache directory: " + f.getAbsolutePath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }
-
-		return s;
-/*		String[] var0 = new String[] { "c:/windows/", "c:/winnt/", "d:/windows/", "d:/winnt/", "e:/windows/", "e:/winnt/", "f:/windows/", "f:/winnt/", "c:/", "~/", "/tmp/", "", "c:/rscache", "/rscache" };
-		if (storeid < 32 || storeid > 34) {
-			storeid = 32;
-		}
-		String var1 = ".file_store_" + storeid;
-		for (int var2 = 0; var2 < var0.length; var2++) {
-			try {
-				String var3 = var0[var2];
-				if (var3.length() > 0) {
-					File var4 = new File(var3);
-					if (!var4.exists()) {
-						continue;
-					}
-				}
-				File var5 = new File(var3 + var1);
-				if (var5.exists() || var5.mkdir()) {
-					return var3 + var1 + "/";
-				}
-			} catch (Exception var6) {
-			}
-		}
-		return null;*/
+		return PlatformContext.Companion.getCacheDir();
 	}
 
 	public static int getuid(String arg0) {
@@ -357,20 +310,21 @@ public class signlink implements Runnable {
 		}
 	}
 
-	private MidiPlayer midiPlayer;
 	public boolean midiFadingIn = false;
 	public boolean midiFadingOut = false;
 	public int midiFadeVol = 0;
 	private final Position curPosition = Position.NORMAL;
 
-	enum Position {
+	public enum Position {
 		LEFT, RIGHT, NORMAL
 	}
 
 	public void playMidi(String music) {
+		MidiPlayerRunning check = new MidiPlayerRunning();
+		EventBusKt.GlobalEventBus.publish(check);
 		if (midiFadingOut) {
 			return;
-		} else if (!midiFadingIn && midifade != 0 && midiPlayer.running()) {
+		} else if (!midiFadingIn && midifade != 0 && check.running) {
 			midiFadingOut = true;
 			midiFadeVol = midivol;
 			return;
@@ -380,9 +334,11 @@ public class signlink implements Runnable {
 			if (midifade != 0 && midiFadingIn) {
 				midiFadingOut = false;
 				midiFadeVol = 0;
-				midiPlayer.play(MidiSystem.getSequence(new File(music)), midifade, midiFadeVol);
+				MidiPlayerPlay context = new MidiPlayerPlay(new File(music), midifade, midiFadeVol);
+				EventBusKt.GlobalEventBus.publish(context);
 			} else {
-				midiPlayer.play(MidiSystem.getSequence(new File(music)), midifade, midivol);
+				MidiPlayerPlay context = new MidiPlayerPlay(new File(music), midifade, midivol);
+				EventBusKt.GlobalEventBus.publish(context);
 			}
 		} catch (Exception ignore) {
 		}
@@ -395,7 +351,7 @@ public class signlink implements Runnable {
 			if (midiFadeVol > midivol) {
 				midiFadeVol = midivol;
 			}
-			midiPlayer.setVolume(0, midiFadeVol);
+			EventBusKt.GlobalEventBus.publish(new MidiPlayerSetVolume(0, midiFadeVol));
 			if (midiFadeVol == midivol) {
 				midiFadingIn = false;
 			}
@@ -404,7 +360,7 @@ public class signlink implements Runnable {
 			if (midiFadeVol < 0) {
 				midiFadeVol = 0;
 			}
-			midiPlayer.setVolume(0, midiFadeVol);
+			EventBusKt.GlobalEventBus.publish(new MidiPlayerSetVolume(0, midiFadeVol));
 			if (midiFadeVol == 0) {
 				midiFadingOut = false;
 				midiFadingIn = true;
@@ -413,9 +369,9 @@ public class signlink implements Runnable {
 
 		if (!midi.equals("none")) {
 			if (midi.equals("stop")) {
-				midiPlayer.stop();
+				EventBusKt.GlobalEventBus.publish(new MidiPlayerStop());
 			} else if (midi.equals("voladjust")) {
-				midiPlayer.setVolume(0, midivol);
+				EventBusKt.GlobalEventBus.publish(new MidiPlayerSetVolume(0, midivol));
 			} else {
 				playMidi(midi);
 			}
@@ -426,52 +382,8 @@ public class signlink implements Runnable {
 		}
 
 		if (!wave.equals("none")) {
-			AudioInputStream audioInputStream;
-
-			try {
-				audioInputStream = AudioSystem.getAudioInputStream(new File(wave));
-			} catch (Exception ignore) {
-				return;
-			}
-
-			AudioFormat format = audioInputStream.getFormat();
-			SourceDataLine auline;
-			DataLine.Info info = new DataLine.Info(SourceDataLine.class, format);
-
-			try {
-				auline = (SourceDataLine) AudioSystem.getLine(info);
-				auline.open(format);
-			} catch (Exception ignore) {
-				return;
-			}
-
-			if (auline.isControlSupported(FloatControl.Type.PAN)) {
-				FloatControl pan = (FloatControl) auline.getControl(FloatControl.Type.PAN);
-				if (curPosition == Position.RIGHT) {
-					pan.setValue(1.0f);
-				} else if (curPosition == Position.LEFT) {
-					pan.setValue(-1.0f);
-				}
-			}
-
-			auline.start();
-			int nBytesRead = 0;
-			int EXTERNAL_BUFFER_SIZE = 524288;
-			byte[] abData = new byte[EXTERNAL_BUFFER_SIZE];
-
-			try {
-				while (nBytesRead != -1) {
-					nBytesRead = audioInputStream.read(abData, 0, abData.length);
-					if (nBytesRead >= 0) {
-						auline.write(abData, 0, nBytesRead);
-					}
-				}
-			} catch (IOException ignore) {
-			} finally {
-				auline.drain();
-				auline.close();
-			}
-
+			File waveFile = new File(wave);
+			EventBusKt.GlobalEventBus.publish(new WavePlay(waveFile, curPosition));
 			wave = "none";
 		}
 	}

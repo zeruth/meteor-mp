@@ -554,7 +554,7 @@ public class ObjType {
 		int var19 = Pix2D.top;
 		int var20 = Pix2D.bottom;
 		Pix3D.jagged = false;
-		Pix2D.bind(32, 32, var10.pixels);
+		Pix2D.setPixels(var10.pixels, 32, 32);
 		Pix2D.fillRect(32, 0, 0, 32, 0);
 		Pix3D.method545();
 		int var21 = var5.field851;
@@ -619,7 +619,7 @@ public class ObjType {
 		if (arg1 == 0) {
 			field828.put(var10, (long) arg3);
 		}
-		Pix2D.bind(var15, var16, var14);
+		Pix2D.setPixels(var14, var15, var16);
 		Pix2D.setClipping(var19, var17, var20, var18);
 		Pix3D.centerX = var11;
 		Pix3D.centerY = var12;

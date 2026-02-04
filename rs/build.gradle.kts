@@ -1,5 +1,5 @@
 plugins {
-    id("java")
+    kotlin("jvm")
     id("application")
 }
 
@@ -11,11 +11,23 @@ repositories {
 }
 
 dependencies {
-    compileOnly(project(":common"))
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation(project(":common"))
+    compileOnly(files("../lib/android-36.jar"))
 }
 
 application {
     mainClass.set("jagex2.client.Client")
+}
+
+kotlin {
+    jvmToolchain {
+        (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
+    }
+}
+
+tasks.withType<JavaExec> {
+    jvmArgs = listOf("-Dsun.java2d.uiScale=1.0", "-Dsun.java2d.dpiaware=true")
 }
 
 java {

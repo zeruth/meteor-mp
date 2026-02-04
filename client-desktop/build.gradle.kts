@@ -36,6 +36,7 @@ repositories {
 }
 
 dependencies {
+    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
     implementation(files(tasks.withType<InjectTask>().first().output))
     implementation(project(":api"))
     implementation(project(":api-rs"))

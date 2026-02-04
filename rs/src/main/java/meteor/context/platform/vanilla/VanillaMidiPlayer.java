@@ -1,16 +1,16 @@
-package sign;
+package meteor.context.platform.vanilla;
 
 import javax.sound.midi.*;
 import java.io.ByteArrayInputStream;
 
-public final class MidiPlayer implements Receiver {
+public final class VanillaMidiPlayer implements Receiver {
 	private final int[] channels = new int[16];
 	private final Receiver receiver;
 	private final Sequencer sequencer;
 	private final Synthesizer synth;
 	private int volume;
 
-	public MidiPlayer() throws Exception {
+	public VanillaMidiPlayer() throws Exception {
 		resetChannels();
 		synth = MidiSystem.getSynthesizer();
 		synth.open();

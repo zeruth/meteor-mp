@@ -3,11 +3,6 @@ package jagex2.graphics;
 import deob.ObfuscatedName;
 import jagex2.io.Jagfile;
 import jagex2.io.Packet;
-import java.awt.Component;
-import java.awt.Image;
-import java.awt.MediaTracker;
-import java.awt.Toolkit;
-import java.awt.image.PixelGrabber;
 
 public class Pix32 extends Pix2D {
 
@@ -32,33 +27,13 @@ public class Pix32 extends Pix2D {
 	@ObfuscatedName("EPQDEJTO.L")
 	public int xof;
 
+	public Pix32() {}
+
 	public Pix32(int width, int height) {
 		this.pixels = new int[width * height];
 		this.wi = this.owi = width;
 		this.hi = this.ohi = height;
 		this.xof = this.yof = 0;
-	}
-
-	public Pix32(byte[] src, Component c) {
-		try {
-			Image image = Toolkit.getDefaultToolkit().createImage(src);
-			MediaTracker tracker = new MediaTracker(c);
-			tracker.addImage(image, 0);
-			tracker.waitForAll();
-
-			this.wi = image.getWidth(c);
-			this.hi = image.getHeight(c);
-			this.owi = this.wi;
-			this.ohi = this.hi;
-			this.xof = 0;
-			this.yof = 0;
-			this.pixels = new int[this.hi * this.wi];
-
-			PixelGrabber grabber = new PixelGrabber(image, 0, 0, this.wi, this.hi, this.pixels, 0, this.wi);
-			grabber.grabPixels();
-		} catch (Exception ignore) {
-			System.out.println("Error converting jpg");
-		}
 	}
 
 	public Pix32(Jagfile jag, String name, int sprite) {
@@ -108,7 +83,7 @@ public class Pix32 extends Pix2D {
 
 	@ObfuscatedName("EPQDEJTO.a(Z)V")
 	public void bind() {
-		Pix2D.bind(this.wi, this.hi, this.pixels);
+		Pix2D.setPixels(this.pixels, this.wi, this.hi);
 	}
 
 	@ObfuscatedName("EPQDEJTO.a(IIII)V")

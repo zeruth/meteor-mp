@@ -63,8 +63,10 @@ import java.util.Date;
 import java.util.zip.CRC32;
 
 import meteor.context.PlatformContext;
+import meteor.context.events.Draw;
 import org.jetbrains.annotations.NotNull;
 import sign.signlink;
+import util.EventBusKt;
 
 public class Client extends GameShell {
 	public static Client client;
@@ -319,10 +321,10 @@ public class Client extends GameShell {
 	public int[] waveIds = new int[50];
 
 	@ObfuscatedName("client.Gf")
-	public String username = "";
+	public String username = "asdasdasd";
 
 	@ObfuscatedName("client.Hf")
-	public String password = "";
+	public String password = "asdasdasd";
 
 	@ObfuscatedName("client.Lf")
 	public boolean errorHost = false;
@@ -1351,7 +1353,7 @@ public class Client extends GameShell {
 	public Socket field520;
 
 	@ObfuscatedName("client.pb")
-	public static boolean displayFps;
+	public static boolean displayFps = true;
 
 	@ObfuscatedName("client.vc")
 	public static boolean lowMem;
@@ -2108,6 +2110,8 @@ public class Client extends GameShell {
 		}
 
 		this.dragCycles = 0;
+
+		EventBusKt.GlobalEventBus.publish(Draw.INSTANCE);
 	}
 
 	@ObfuscatedName("client.b(I)V")
@@ -2503,8 +2507,8 @@ public class Client extends GameShell {
 			int var8 = super.canvasWidth / 2 + 80;
 			if (super.mouseClickButton == 1 && super.mouseClickX >= var8 - 75 && super.mouseClickX <= var8 + 75 && super.mouseClickY >= var17 - 20 && super.mouseClickY <= var17 + 20) {
 				this.titleScreenState = 0;
-				this.username = "";
-				this.password = "";
+				this.username = "asdasdasd";
+				this.password = "asdasdasd";
 			}
 			while (true) {
 				int var9 = this.pollKey();
@@ -2845,8 +2849,8 @@ public class Client extends GameShell {
 		this.stream = null;
 		this.ingame = false;
 		this.titleScreenState = 0;
-		this.username = "";
-		this.password = "";
+		this.username = "asdasdasd";
+		this.password = "asdasdasd";
 		this.clearCache();
 		this.scene.method274();
 		for (int var2 = 0; var2 < 4; var2++) {

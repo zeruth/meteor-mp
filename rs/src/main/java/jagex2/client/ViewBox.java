@@ -7,5 +7,7 @@ public class ViewBox {
 	@ObfuscatedName("IEJCKZCR.a")
 	public GameShell shell;
 
-	public ViewBox(GameShell shell, int width, int height) {}
+	public ViewBox(GameShell shell, int width, int height) {
+		this.shell = shell;
+	}
 }

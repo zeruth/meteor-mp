@@ -1,7 +1,9 @@
 package meteor.context.platform.vanilla
 
 import jagex2.client.Client
+import jagex2.client.ViewBox
 import jagex2.graphics.Pix32
+import jagex2.graphics.PixMap
 import meteor.context.PlatformContext
 import meteor.context.events.*
 import sign.signlink
@@ -17,12 +19,37 @@ import java.io.IOException
 import javax.imageio.ImageIO
 import javax.sound.midi.MidiSystem
 import javax.sound.sampled.*
+import kotlin.reflect.KClass
 
 open class VanillaPlatform : PlatformContext() {
-    init {
-        viewBoxImplementation = VanillaViewBox::class
-        pixMapImplementation = VanillaPixMap::class
+    override var viewBoxImplementation: KClass<out ViewBox> = VanillaViewBox::class
+    override var pixMapImplementation: KClass<out PixMap> = VanillaPixMap::class
+    override var getCacheDirImpl: () -> String = {
+        val cacheDir = System.getProperty("user.home") + "/meteor-377/cache/"
+        println("[Cache] " + cacheDir.replace("/", "\\"))
+        val f = File(cacheDir)
+        if (wipeCache && f.exists()) {
+            try {
+                signlink.deleteRecursively(f)
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            }
+            if (!f.exists()) {
+                println("Wiped Cache!")
+            }
+        }
 
+        if (!f.exists() && !f.mkdirs()) {
+            try {
+                throw IOException("Failed to create cache directory: " + f.absolutePath)
+            } catch (e: IOException) {
+                throw RuntimeException(e)
+            }
+        }
+
+        cacheDir
+    }
+    init {
         GlobalEventBus.subscribe<MidiPlayerRunning> {
             it.payload.running = vanillaMidiPlayer.running()
         }
@@ -93,40 +120,10 @@ open class VanillaPlatform : PlatformContext() {
     companion object {
         private var vanillaMidiPlayer = VanillaMidiPlayer()
         val wipeCache: Boolean = false
-
-        init {
-            getCacheDirImpl = ::getCacheDirImpl
-        }
-
-        fun getCacheDirImpl(): String {
-            val s = System.getProperty("user.home") + "/meteor-377/cache/"
-            println("[Cache] " + s.replace("/", "\\"))
-            val f = File(s)
-            if (wipeCache && f.exists()) {
-                try {
-                    signlink.deleteRecursively(f)
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
-                if (!f.exists()) {
-                    println("Wiped Cache!")
-                }
-            }
-
-            if (!f.exists() && !f.mkdirs()) {
-                try {
-                    throw IOException("Failed to create cache directory: " + f.absolutePath)
-                } catch (e: IOException) {
-                    throw RuntimeException(e)
-                }
-            }
-
-            return s
-        }
     }
 
     fun getGraphics(): Graphics? {
-        return (viewbox as VanillaViewBox).getGraphics()
+        return (Client.client.frame as? VanillaViewBox)?.getGraphics()
     }
 
     open fun drawProgress(progress: Int, message: String?) {
@@ -233,7 +230,6 @@ open class VanillaPlatform : PlatformContext() {
                 var2.drawString("1: Try closing ALL open web-browser windows, and reloading", 30, var12);
                 val var14 = var12 + 30;
                 var2.drawString("2: Try rebooting your computer, and reloading", 30, var14);
-                val var15 = var14 + 30;
             }
         }
     }

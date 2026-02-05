@@ -58,12 +58,15 @@ import java.math.BigInteger;
 import java.net.InetAddress;
 import java.net.Socket;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
 
 import meteor.context.PlatformContext;
 import meteor.context.events.Draw;
+import meteor.context.platform.android.AndroidPlatform;
+import meteor.context.platform.vanilla.VanillaPlatform;
 import org.jetbrains.annotations.NotNull;
 import sign.signlink;
 import util.EventBusKt;
@@ -1478,22 +1481,27 @@ public class Client extends GameShell {
 				Client app = new Client();
 				app.initApplication(503, 765);
 			} else if (args.length == 0) {
-				// default args: 10 0 highmem members 32
-				nodeId = 10;
-				portOffset = 0;
-				setHighMem();
-				membersWorld = true;
-
-				signlink.storeid = 32;
-				signlink.startpriv(InetAddress.getLocalHost());
-
-				Client app = new Client();
-				app.initApplication(503, 765);
+				GameShell.context = new VanillaPlatform();
+				vanillaMain();
 			} else {
 				System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
 			}
 		} catch (Exception ignore) {
 		}
+	}
+
+	public static void vanillaMain() throws UnknownHostException {
+		// default args: 10 0 highmem members 32
+		nodeId = 10;
+		portOffset = 0;
+		setHighMem();
+		membersWorld = true;
+
+		signlink.storeid = 32;
+		signlink.startpriv(InetAddress.getLocalHost());
+
+		Client app = new Client();
+		app.initApplication(503, 765);
 	}
 
 	public void run() {
@@ -1524,19 +1532,22 @@ public class Client extends GameShell {
 
 	public URL getCodeBase() {
 		try {
-			return new URL("http://127.0.0.1:" + (portOffset + 80));
+			if (GameShell.context instanceof VanillaPlatform)
+				return new URL("http://127.0.0.1:" + (portOffset + 80));
+			else if (GameShell.context instanceof AndroidPlatform)
+				return new URL("http://10.0.2.2:" + (portOffset + 80));
 		} catch (Exception var1) {
 		}
 		throw new RuntimeException("");
 	}
 
 	public String getParameter(String arg0) {
-		return signlink.mainapp == null ? super.getParameter(arg0) : ((PlatformContext)signlink.mainapp).getParameter(arg0);
+		return GameShell.context.getParameter(arg0);
 	}
 
 	@ObfuscatedName("client.d(I)Ljava/awt/Component;")
 	public PlatformContext getBaseComponent() {
-		return this;
+		return GameShell.context;
 	}
 
 	@ObfuscatedName("client.b(Ljava/lang/String;)Ljava/io/DataInputStream;")
@@ -1919,39 +1930,39 @@ public class Client extends GameShell {
 			}
 
 			Pix32 backleft1 = new Pix32(jagMedia, "backleft1", 0);
-			this.areaBackleft1 = createPixmap(backleft1.wi, backleft1.hi);
+			this.areaBackleft1 = GameShell.context.createPixmap(backleft1.wi, backleft1.hi);
 			backleft1.quickPlotSprite(0, 0);
 
 			Pix32 backleft2 = new Pix32(jagMedia, "backleft2", 0);
-			this.areaBackleft2 = createPixmap(backleft2.wi, backleft2.hi);
+			this.areaBackleft2 = GameShell.context.createPixmap(backleft2.wi, backleft2.hi);
 			backleft2.quickPlotSprite(0, 0);
 
 			Pix32 backright1 = new Pix32(jagMedia, "backright1", 0);
-			this.areaBackright1 = createPixmap(backright1.wi, backright1.hi);
+			this.areaBackright1 = GameShell.context.createPixmap(backright1.wi, backright1.hi);
 			backright1.quickPlotSprite(0, 0);
 
 			Pix32 backright2 = new Pix32(jagMedia, "backright2", 0);
-			this.areaBackright2 = createPixmap(backright2.wi, backright2.hi);
+			this.areaBackright2 = GameShell.context.createPixmap(backright2.wi, backright2.hi);
 			backright2.quickPlotSprite(0, 0);
 
 			Pix32 backtop1 = new Pix32(jagMedia, "backtop1", 0);
-			this.areaBacktop1 = createPixmap(backtop1.wi, backtop1.hi);
+			this.areaBacktop1 = GameShell.context.createPixmap(backtop1.wi, backtop1.hi);
 			backtop1.quickPlotSprite(0, 0);
 
 			Pix32 backvmid1 = new Pix32(jagMedia, "backvmid1", 0);
-			this.areaBackvmid1 = createPixmap(backvmid1.wi, backvmid1.hi);
+			this.areaBackvmid1 = GameShell.context.createPixmap(backvmid1.wi, backvmid1.hi);
 			backvmid1.quickPlotSprite(0, 0);
 
 			Pix32 backvmid2 = new Pix32(jagMedia, "backvmid2", 0);
-			this.areaBackvmid2 = createPixmap(backvmid2.wi, backvmid2.hi);
+			this.areaBackvmid2 = GameShell.context.createPixmap(backvmid2.wi, backvmid2.hi);
 			backvmid2.quickPlotSprite(0, 0);
 
 			Pix32 backvmid3 = new Pix32(jagMedia, "backvmid3", 0);
-			this.areaBackvmid3 = createPixmap(backvmid3.wi, backvmid3.hi);
+			this.areaBackvmid3 = GameShell.context.createPixmap(backvmid3.wi, backvmid3.hi);
 			backvmid3.quickPlotSprite(0, 0);
 
 			Pix32 backhmid2 = new Pix32(jagMedia, "backhmid2", 0);
-			this.areaBackhmid2 = createPixmap(backhmid2.wi, backhmid2.hi);
+			this.areaBackhmid2 = GameShell.context.createPixmap(backhmid2.wi, backhmid2.hi);
 			backhmid2.quickPlotSprite(0, 0);
 
 			int randR = (int) (Math.random() * 21.0D) - 10;
@@ -2295,7 +2306,7 @@ public class Client extends GameShell {
 
 	@ObfuscatedName("client.G(I)V")
 	public void drawError() {
-		super.drawError();
+		super.context.drawError();
 	}
 
 	@ObfuscatedName("client.a(IILjava/lang/String;IILjava/lang/String;)LATJMVOZR;")
@@ -2890,16 +2901,16 @@ public class Client extends GameShell {
 		this.imageTitle6 = null;
 		this.imageTitle7 = null;
 		this.imageTitle8 = null;
-		this.areaChatback = createPixmap(479, 96);
-		this.areaMapback = createPixmap(172, 156);
+		this.areaChatback = GameShell.context.createPixmap(479, 96);
+		this.areaMapback = GameShell.context.createPixmap(172, 156);
 		Pix2D.cls();
 		this.imageMapback.plotSprite(0, 0);
-		this.areaSidebar = createPixmap(190, 261);
-		this.areaViewport = createPixmap(512, 334);
+		this.areaSidebar = GameShell.context.createPixmap(190, 261);
+		this.areaViewport = GameShell.context.createPixmap(512, 334);
 		Pix2D.cls();
-		this.areaBackbase1 = createPixmap(496, 50);
-		this.areaBackbase2 = createPixmap(269, 37);
-		this.areaBackmid1 = createPixmap(249, 45);
+		this.areaBackbase1 = GameShell.context.createPixmap(496, 50);
+		this.areaBackbase2 = GameShell.context.createPixmap(269, 37);
+		this.areaBackmid1 = GameShell.context.createPixmap(249, 45);
 		this.redrawFrame = true;
 		this.areaViewport.setPixels();
 		Pix3D.lineOffset = this.areaViewportOffset;
@@ -5339,23 +5350,23 @@ public class Client extends GameShell {
 		this.areaBackbase1 = null;
 		this.areaBackbase2 = null;
 		this.areaBackmid1 = null;
-		this.imageTitle0 = createPixmap(128, 265);
+		this.imageTitle0 = GameShell.context.createPixmap(128, 265);
 		Pix2D.cls();
-		this.imageTitle1 = createPixmap(128, 265);
+		this.imageTitle1 = GameShell.context.createPixmap(128, 265);
 		Pix2D.cls();
-		this.imageTitle2 = createPixmap(509, 171);
+		this.imageTitle2 = GameShell.context.createPixmap(509, 171);
 		Pix2D.cls();
-		this.imageTitle3 = createPixmap(360, 132);
+		this.imageTitle3 = GameShell.context.createPixmap(360, 132);
 		Pix2D.cls();
-		this.imageTitle4 = createPixmap(360, 200);
+		this.imageTitle4 = GameShell.context.createPixmap(360, 200);
 		Pix2D.cls();
-		this.imageTitle5 = createPixmap(202, 238);
+		this.imageTitle5 = GameShell.context.createPixmap(202, 238);
 		Pix2D.cls();
-		this.imageTitle6 = createPixmap(203, 238);
+		this.imageTitle6 = GameShell.context.createPixmap(203, 238);
 		Pix2D.cls();
-		this.imageTitle7 = createPixmap(74, 94);
+		this.imageTitle7 = GameShell.context.createPixmap(74, 94);
 		Pix2D.cls();
-		this.imageTitle8 = createPixmap(75, 94);
+		this.imageTitle8 = GameShell.context.createPixmap(75, 94);
 		Pix2D.cls();
 		if (this.jagTitle != null) {
 			this.loadTitleBackground();
@@ -5367,7 +5378,7 @@ public class Client extends GameShell {
 	@ObfuscatedName("client.r(Z)V")
 	public void loadTitleBackground() {
 		byte[] var2 = this.jagTitle.read("title.dat", null);
-		Pix32 var3 = createPix32(var2);
+		Pix32 var3 = GameShell.context.createPix32(var2);
 		this.imageTitle0.setPixels();
 		var3.quickPlotSprite(0, 0);
 		this.imageTitle1.setPixels();
@@ -12705,7 +12716,7 @@ public class Client extends GameShell {
 	public void showError(String err) {
 		System.out.println(err);
 		try {
-			showDocument(new URL(this.getCodeBase(), "loaderror_" + err + ".html"));
+			GameShell.context.showDocument(new URL(this.getCodeBase(), "loaderror_" + err + ".html"));
 		} catch (Exception ex) {
 			ex.printStackTrace();
 		}
@@ -12860,7 +12871,7 @@ public class Client extends GameShell {
 		this.areaBackbase1 = null;
 		this.areaBackbase2 = null;
 		this.areaBackmid1 = null;
-		super.drawArea = createPixmap(765, 503);
+		super.drawArea = GameShell.context.createPixmap(765, 503);
 		this.redrawFrame = true;
 	}
 }

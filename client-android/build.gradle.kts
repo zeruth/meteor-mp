@@ -1,12 +1,10 @@
-import nulled.InjectTask
+import com.android.build.gradle.internal.tasks.DexFileDependenciesTask
 import org.gradle.kotlin.dsl.withType
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.application")
     alias(libs.plugins.compose.compiler)
-    id("nulled.injector")
 }
 
 
@@ -18,20 +16,11 @@ repositories {
     mavenCentral()
 }
 
-tasks.withType<InjectTask> {
-    outputs.upToDateWhen {
-        false
+tasks.configureEach {
+    if (name.contains("Dependencies") || name.contains("merge") || name.contains("lint") || name.contains("generate")) {
+        dependsOn(":injected-client:injectMultiplatform")
     }
-    dependsOn(":api-rs:build")
-    dependsOn(":mixins:build")
-    dependsOn(":rs:build")
-    api = "${project.layout.projectDirectory}/../api-rs/build/classes/java/main/net/runelite/rs/api/"
-    mixins = "${project.layout.projectDirectory}/../mixins/build/libs/mixins-$version.jar"
-    target = "${project.layout.projectDirectory}/../rs/build/libs/rs-$version.jar"
-    output = File("${project.layout.projectDirectory}/lib/injected-client.jar")
 }
-
-val injectTask = tasks.withType<InjectTask>().named("inject")
 
 dependencies {
     //Project
@@ -40,11 +29,7 @@ dependencies {
     implementation(project(":common"))
     implementation(project(":client-common"))
 
-    //Injected rs
-    implementation(
-        files(injectTask.map { it.output })
-            .builtBy(injectTask)
-    )
+    implementation(files("../lib/injected-client.jar"))
 
     //AndroidX Compose
     implementation(libs.androidx.activity.compose)

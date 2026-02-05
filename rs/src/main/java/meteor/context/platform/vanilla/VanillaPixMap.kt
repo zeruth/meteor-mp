@@ -1,7 +1,6 @@
 package meteor.context.platform.vanilla
 
 import jagex2.graphics.PixMap
-import meteor.context.PlatformContext
 import meteor.context.events.VanillaPixMapDraw
 import util.GlobalEventBus
 import java.awt.Image
@@ -10,7 +9,7 @@ import java.awt.image.DataBufferInt
 import java.awt.image.DirectColorModel
 import java.awt.image.Raster
 
-class VanillaPixMap(width: Int, height: Int, ctx: PlatformContext) : PixMap(width, height, ctx) {
+class VanillaPixMap(width: Int, height: Int) : PixMap(width, height) {
     val colorModel = DirectColorModel(32, 16711680, 65280, 255)
     var image: Image? = null
 

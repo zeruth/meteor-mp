@@ -22,9 +22,14 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
+import androidx.core.view.WindowCompat
+import androidx.core.view.WindowInsetsCompat
+import androidx.core.view.WindowInsetsControllerCompat
 import jagex2.client.Client
+import jagex2.client.GameShell
 import meteor.context.events.AndroidPixMapDraw
 import meteor.context.events.Draw
+import meteor.context.platform.android.AndroidPlatform
 import meteor.context.platform.android.AndroidViewBox
 import util.GlobalEventBus
 
@@ -121,13 +126,20 @@ class MainActivity : ComponentActivity() {
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
+        WindowCompat.setDecorFitsSystemWindows(window, false)
+        WindowInsetsControllerCompat(window, window.decorView).let { controller ->
+            controller.hide(WindowInsetsCompat.Type.systemBars())
+            controller.systemBarsBehavior =
+                WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
+        }
         Thread {
             Client.context = applicationContext
-            Client.main(emptyArray<String>())
+            GameShell.context = AndroidPlatform()
+            Client.vanillaMain()
         }.start()
         setContent {
             state.value
-            GameSurface(Client.client.viewbox as? AndroidViewBox)
+            GameSurface(Client.client.frame as? AndroidViewBox)
         }
     }
 

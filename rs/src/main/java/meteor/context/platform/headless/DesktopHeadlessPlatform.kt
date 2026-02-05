@@ -1,23 +1,16 @@
 package meteor.context.platform.headless
 
+import jagex2.client.ViewBox
 import jagex2.graphics.Pix32
+import jagex2.graphics.PixMap
 import meteor.context.PlatformContext
+import kotlin.reflect.KClass
 
 open class DesktopHeadlessPlatform : PlatformContext() {
-    init {
-        viewBoxImplementation = HeadlessViewBox::class
-        pixMapImplementation = HeadlessPixMap::class
-    }
-
-    companion object {
-        init {
-            getCacheDirImpl = ::getCacheDirImpl
-        }
-
-        fun getCacheDirImpl(): String {
-            val s = System.getProperty("user.home") + "/meteor-377/cache/"
-            return s
-        }
+    override var viewBoxImplementation: KClass<out ViewBox> = HeadlessViewBox::class
+    override var pixMapImplementation: KClass<out PixMap> = HeadlessPixMap::class
+    override var getCacheDirImpl: () -> String = {
+        System.getProperty("user.home") + "/meteor-377/cache/"
     }
 
     override fun createPix32(src: ByteArray): Pix32 {

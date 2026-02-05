@@ -1,5 +1,7 @@
 package sign;
 
+import jagex2.client.Client;
+import jagex2.client.GameShell;
 import meteor.context.PlatformContext;
 import meteor.context.events.*;
 import util.EventBusKt;
@@ -195,7 +197,7 @@ public class signlink implements Runnable {
 	}
 
 	public static String findcachedir() {
-		return PlatformContext.Companion.getCacheDir();
+		return GameShell.context.getCacheDir();
 	}
 
 	public static int getuid(String arg0) {

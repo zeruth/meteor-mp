@@ -11,26 +11,19 @@ import jagex2.graphics.PixMap
 import meteor.context.PlatformContext
 import meteor.context.events.AndroidPixMapDraw
 import util.GlobalEventBus
+import kotlin.reflect.KClass
 
 open class AndroidPlatform : PlatformContext() {
-    init {
-        viewBoxImplementation = AndroidViewBox::class
-        pixMapImplementation = AndroidPixMap::class
-    }
-
-    companion object {
-        init {
-            getCacheDirImpl = ::getCacheDirImpl
+    override var viewBoxImplementation: KClass<out ViewBox> = AndroidViewBox::class
+    override var pixMapImplementation: KClass<out PixMap> = AndroidPixMap::class
+    override var getCacheDirImpl: () -> String = {
+        var cacheDir = ""
+        Client.context!!.dataDir!!.resolve("meteor-377/cache/").let {
+            if (!it.exists())
+                it.mkdirs()
+            cacheDir = it.absolutePath
         }
-
-        fun getCacheDirImpl(): String {
-            Client.context?.dataDir?.resolve("meteor-377/cache/")?.let {
-                if (!it.exists())
-                    it.mkdirs()
-                return it.absolutePath
-            }
-            throw RuntimeException("Could not locate suitable cache dir")
-        }
+        cacheDir
     }
 
     override fun createPix32(src: ByteArray): Pix32 {
@@ -55,7 +48,7 @@ open class AndroidPlatform : PlatformContext() {
     }
 }
 
-class AndroidViewBox(width: Int, height: Int, shell: GameShell) : ViewBox(shell, width, height) {
+class AndroidViewBox(width: Int, height: Int) : ViewBox(Client.client, width, height) {
     val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
     private val canvas = Canvas(bitmap)
 
@@ -72,7 +65,7 @@ class AndroidViewBox(width: Int, height: Int, shell: GameShell) : ViewBox(shell,
     }
 }
 
-class AndroidPixMap(width: Int, height: Int, ctx: PlatformContext) : PixMap(width, height, ctx) {
+class AndroidPixMap(width: Int, height: Int) : PixMap(width, height) {
     val bitmap: Bitmap =
         Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
 

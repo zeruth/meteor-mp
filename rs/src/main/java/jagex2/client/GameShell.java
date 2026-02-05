@@ -4,13 +4,11 @@ import deob.ObfuscatedName;
 import jagex2.graphics.Pix32;
 import jagex2.graphics.PixMap;
 import meteor.context.PlatformContext;
-import meteor.context.platform.android.AndroidPlatform;
-import meteor.context.platform.headless.AndroidHeadlessPlatform;
 import org.jetbrains.annotations.NotNull;
 
-public class GameShell extends AndroidPlatform implements Runnable {
+public class GameShell implements Runnable{
 
-	public static boolean isAndroid = false;
+	public static PlatformContext context = null;
 
 	//---
 
@@ -107,11 +105,10 @@ public class GameShell extends AndroidPlatform implements Runnable {
 		this.canvasHeight = height;
 
 		System.out.println("here");
-		this.frame = createViewBox(canvasWidth, canvasHeight);
+		this.frame = context.createViewBox(canvasWidth, canvasHeight);
 
 		System.out.println("here1");
-		setViewbox(frame);
-		this.drawArea = createPixmap(this.canvasWidth, this.canvasHeight);
+		this.drawArea = context.createPixmap(this.canvasWidth, this.canvasHeight);
 
 		System.out.println("here");
 		this.startThread(this, 1);
@@ -293,7 +290,7 @@ public class GameShell extends AndroidPlatform implements Runnable {
 
 	@ObfuscatedName("JWWAIQPI.d(I)Ljava/awt/Component;")
 	public PlatformContext getBaseComponent() {
-		return this;
+		return context;
 	}
 
 	@ObfuscatedName("JWWAIQPI.a(Ljava/lang/Runnable;I)V")

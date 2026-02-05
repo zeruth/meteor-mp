@@ -3,6 +3,7 @@ package meteor.context.platform.vanilla
 import jagex2.client.Client
 import jagex2.client.GameShell
 import jagex2.client.ViewBox
+import meteor.context.PlatformContext
 import meteor.context.events.VanillaPixMapDraw
 import sign.signlink
 import util.GlobalEventBus
@@ -17,16 +18,14 @@ import javax.swing.JFrame
 import javax.swing.JPanel
 import javax.swing.SwingUtilities
 
-class VanillaViewBox(width: Int, height: Int, shell: GameShell) : ViewBox(shell, width, height) {
+class VanillaViewBox(width: Int, height: Int) : ViewBox(Client.client, width, height) {
     private val frame = JFrame()
     private val panel: JPanel
 
     companion object {
         private var buffer: BufferedImage? = null
-
     }
     init {
-        this.shell = shell
         if (buffer == null)
             buffer = BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB)
         panel = object : JPanel() {
@@ -37,13 +36,14 @@ class VanillaViewBox(width: Int, height: Int, shell: GameShell) : ViewBox(shell,
         panel.addComponentListener(object : ComponentAdapter() {
             override fun componentResized(e: ComponentEvent) {
                 if (panel.width > 0 && panel.height > 0) {
-                    val client = shell as Client
-                    shell.redrawScreen = true
-                    client.redrawSideicons = true
-                    client.redrawFrame = true
-                    client.redrawSidebar = true
-                    client.redrawChatback = true
-                    client.redrawPrivacySettings = true
+                    with(shell as Client) {
+                        redrawScreen = true
+                        redrawSideicons = true
+                        redrawFrame = true
+                        redrawSidebar = true
+                        redrawChatback = true
+                        redrawPrivacySettings = true
+                    }
                 }
             }
         })

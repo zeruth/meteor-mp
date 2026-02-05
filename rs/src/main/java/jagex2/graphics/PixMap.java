@@ -14,10 +14,7 @@ public class PixMap {
 	@ObfuscatedName("ISZGOOMR.b")
 	public int[] data;
 
-	public PlatformContext ctx;
-
-	public PixMap(int width, int height, PlatformContext ctx) {
-		this.ctx = ctx;
+	public PixMap(int width, int height) {
 		this.width = width;
 		this.height = height;
 		this.data = new int[height * width];

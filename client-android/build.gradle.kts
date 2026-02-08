@@ -36,7 +36,7 @@ dependencies {
     implementation(platform(libs.androidx.compose.bom))
     implementation(libs.androidx.material3)
 
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation(libs.kotlin.reflect)
 }
 
 android {

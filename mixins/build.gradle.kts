@@ -1,3 +1,6 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     id("java")
 }
@@ -9,11 +12,19 @@ repositories {
     mavenCentral()
 }
 
-dependencies {
-    compileOnly(files("../lib/android-36.jar"))
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
 }
 
+val androidSdkDir = localProperties["sdk.dir"] as String
+
 dependencies {
+    compileOnly(files(
+        "$androidSdkDir/platforms/android-36/android.jar"
+    ))
     implementation(project(":common"))
     implementation(project(":api"))
     implementation(project(":api-rs"))

@@ -9,11 +9,7 @@ kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 
 [versions]
 
-kotlin = "2.3.0"
-##  ⬆ = "2.3.10-RC"
-##  ⬆ = "2.3.10-RC2"
-##  ⬆ = "2.3.20-Beta1"
-##  ⬆ = "2.3.20-Beta2"
+kotlin = "2.3.10"
 compose-plugin = "1.10.0"
 ##          ⬆ = "1.11.0-alpha01"
 ##          ⬆ = "1.11.0-alpha02"
@@ -21,8 +17,12 @@ compose-plugin = "1.10.0"
 agp = "9.0.0"
 activityCompose = "1.12.3"
 composeBom = "2026.01.01"
+kotlinReflect = "2.3.10"
+kotlinReflectVersion = "2.3.0"
 
 [libraries]
 androidx-activity-compose = { group = "androidx.activity", name = "activity-compose", version.ref = "activityCompose" }
 androidx-compose-bom = { group = "androidx.compose", name = "compose-bom", version.ref = "composeBom" }
 androidx-material3 = { group = "androidx.compose.material3", name = "material3" }
+kotlin-reflect = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflect" }
+kotlin-reflect-v230 = { module = "org.jetbrains.kotlin:kotlin-reflect", version.ref = "kotlinReflectVersion" }

@@ -1,3 +1,6 @@
+import java.util.Properties
+import kotlin.apply
+
 plugins {
     kotlin("jvm")
     id("application")
@@ -10,10 +13,21 @@ repositories {
     mavenCentral()
 }
 
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+val androidSdkDir = localProperties["sdk.dir"] as String
+
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    compileOnly(files(
+        "$androidSdkDir/platforms/android-36/android.jar"
+    ))
+    implementation(libs.kotlin.reflect.v230)
     implementation(project(":common"))
-    compileOnly(files("../lib/android-36.jar"))
 }
 
 application {

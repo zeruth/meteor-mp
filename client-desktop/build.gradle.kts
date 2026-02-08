@@ -21,7 +21,7 @@ tasks.configureEach {
 }
 
 dependencies {
-    implementation("org.jetbrains.kotlin:kotlin-reflect:2.3.0")
+    implementation(libs.kotlin.reflect)
 
     implementation(project(":api"))
     implementation(project(":api-rs"))

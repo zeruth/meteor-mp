@@ -1,8 +1,11 @@
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import java.util.Properties
 
 plugins {
     id("java-gradle-plugin")
-    kotlin("jvm") version "2.3.0"
+    with (libs) {
+        alias(plugins.org.jetbrains.kotlin.jvm)
+    }
 }
 
 version = "1.0.0-SNAPSHOT"
@@ -25,14 +28,27 @@ repositories {
     maven { url = uri("https://raw.githubusercontent.com/zeruth/repo/main/") }
 }
 
+val localProperties = Properties().apply {
+    val file = rootProject.file("local.properties")
+    if (file.exists()) {
+        file.inputStream().use { load(it) }
+    }
+}
+
+val androidSdkDir = localProperties["sdk.dir"] as String
+
 dependencies {
-    compileOnly(files("../lib/android-36.jar"))
-    compileOnly("org.projectlombok:lombok:1.18.42")
-    annotationProcessor("org.projectlombok:lombok:1.18.42")
-    implementation("org.ow2.asm:asm:9.9.1")
-    implementation("org.ow2.asm:asm-util:9.9.1")
-    implementation("com.google.code.gson:gson:2.11.0")
-    implementation("com.google.guava:guava:33.4.0-jre")
+    compileOnly(files(
+        "$androidSdkDir/platforms/android-36/android.jar"
+    ))
+    with (libs) {
+        implementation(asm)
+        implementation(asm.util)
+        implementation(gson)
+        implementation(guava)
+        annotationProcessor(lombok)
+        compileOnly(lombok)
+    }
 }
 
 java {

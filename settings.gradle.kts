@@ -22,7 +22,7 @@ dependencyResolutionManagement {
     }
 }
 
-rootProject.name = "meteor"
+rootProject.name = "meteor-mp"
 
 includeBuild("injector")
 

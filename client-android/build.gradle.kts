@@ -1,6 +1,3 @@
-import com.android.build.gradle.internal.tasks.DexFileDependenciesTask
-import org.gradle.kotlin.dsl.withType
-
 plugins {
     id("org.jetbrains.kotlin.android")
     id("com.android.application")
@@ -66,7 +63,7 @@ android {
 }
 
 tasks.configureEach {
-    if (name.contains("Dependencies") || name.contains("merge") || name.contains("lint") || name.contains("generate")) {
+    if (name.contains("compile") || name.contains("Dependencies") || name.contains("merge") || name.contains("lint") || name.contains("generate")) {
         dependsOn(":injected-client:injectMultiplatform")
     }
 }

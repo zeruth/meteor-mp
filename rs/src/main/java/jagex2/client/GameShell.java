@@ -103,14 +103,8 @@ public class GameShell implements Runnable{
 	public void initApplication(int height, int width) {
 		this.canvasWidth = width;
 		this.canvasHeight = height;
-
-		System.out.println("here");
 		this.frame = context.createViewBox(canvasWidth, canvasHeight);
-
-		System.out.println("here1");
 		this.drawArea = context.createPixmap(this.canvasWidth, this.canvasHeight);
-
-		System.out.println("here");
 		this.startThread(this, 1);
 	}
 

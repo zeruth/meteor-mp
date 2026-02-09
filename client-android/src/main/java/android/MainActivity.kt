@@ -1,13 +1,14 @@
-package meteor
+package android
 
 import android.graphics.Paint
 import android.graphics.Point
+import android.graphics.Rect
 import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.background
-import androidx.compose.foundation.gestures.detectDragGestures
+import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -15,25 +16,46 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.drawIntoCanvas
 import androidx.compose.ui.graphics.nativeCanvas
+import androidx.compose.ui.input.pointer.PointerInputScope
+import androidx.compose.ui.input.pointer.changedToUp
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.input.pointer.pointerInteropFilter
+import androidx.compose.ui.input.pointer.positionChange
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.unit.IntSize
 import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
+import common.ui.WindowImpl
 import jagex2.client.Client
 import jagex2.client.GameShell
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.asCoroutineDispatcher
+import kotlinx.coroutines.launch
 import meteor.context.events.AndroidPixMapDraw
 import meteor.context.events.Draw
 import meteor.context.platform.android.AndroidPlatform
 import meteor.context.platform.android.AndroidViewBox
 import util.GlobalEventBus
+import java.util.concurrent.Executors
 
 class MainActivity : ComponentActivity() {
+
+    companion object {
+        private val clientDispatcher = Executors.newSingleThreadExecutor().asCoroutineDispatcher()
+        private val clientScope = CoroutineScope(clientDispatcher + SupervisorJob())
+
+        fun Client.invoke(task: suspend Client.() -> Unit) {
+            clientScope.launch {
+                task(this@invoke)
+            }
+        }
+    }
     val paint = Paint()
     var loaded = false
 
@@ -124,6 +146,7 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         WindowCompat.setDecorFitsSystemWindows(window, false)
@@ -132,14 +155,16 @@ class MainActivity : ComponentActivity() {
             controller.systemBarsBehavior =
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
-        Thread {
+        clientScope.launch {
             Client.context = applicationContext
             GameShell.context = AndroidPlatform()
             Client.vanillaMain()
-        }.start()
+        }
         setContent {
             state.value
-            GameSurface(Client.client.frame as? AndroidViewBox)
+            WindowImpl.Window {
+                GameSurface(Client.client.frame as? AndroidViewBox)
+            }
         }
     }
 
@@ -153,48 +178,124 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    suspend fun PointerInputScope.detectOneFingerDrag(
+        onDrag: (offset: Offset) -> Unit
+    ) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent()
+                val pointers = event.changes
+
+                if (pointers.size == 1) {
+                    pendingPress = null
+                    pendingTap = null
+                    val delta = pointers[0].positionChange()
+
+                    if (delta != Offset.Companion.Zero) {
+                        onDrag(delta)
+                        pointers.forEach { it.consume() }
+                    }
+                }
+            }
+        }
+    }
+
+    var twoFingers = false
+
+    suspend fun PointerInputScope.detectTwoFingerDrag(
+        onDrag: (offset: Offset) -> Unit
+    ) {
+        awaitPointerEventScope {
+            while (true) {
+                val event = awaitPointerEvent()
+                val pointers = event.changes
+
+                if (pointers.size == 2) {
+                    twoFingers = true
+                    val delta0 = pointers[0].positionChange()
+                    val delta1 = pointers[1].positionChange()
+                    val averageDelta = (delta0 + delta1) / 2f
+
+                    if (averageDelta != Offset.Companion.Zero) {
+                        onDrag(averageDelta)
+                        pointers.forEach { it.consume() }
+                    }
+                } else
+                    twoFingers = false
+            }
+        }
+    }
+
     @Composable
     fun GameSurface(viewBox: AndroidViewBox?) {
         viewBox ?: return
-        Box(modifier = Modifier
+        Box(
+            modifier = Modifier.Companion
             .fillMaxSize()
-            .background(Color.Black)
+            .background(Color.Companion.Black)
             .onGloballyPositioned { layoutCoordinates ->
                 containerSize.value = layoutCoordinates.size
                 touchScaleX.value = containerSize.value.width.toFloat() / 765
                 touchScaleY.value = containerSize.value.height.toFloat() / 503
             }
+            .pointerInteropFilter { change ->
+                mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
+                false
+            }
+            .pointerInput(Unit) {
+                detectTwoFingerDrag { delta ->
+                    Client.client.invoke {
+                        orbitCameraYaw -= delta.x.toInt()
+                        orbitCameraPitch += delta.y.toInt()
+                    }
+                }
+            }
             .pointerInput(Unit) {
                 detectTapGestures(
                     onTap = {
                         pendingMove = Point(it.x.toInt(), it.y.toInt()).scaled()
-                        pendingTap = Point(it.x.toInt(), it.y.toInt()).scaled() },
+                        pendingTap = Point(it.x.toInt(), it.y.toInt()).scaled()
+                    },
                     onLongPress = {
                         pendingMove = Point(it.x.toInt(), it.y.toInt()).scaled()
-                        pendingHold = Point(it.x.toInt(), it.y.toInt()).scaled() }
+                        pendingHold = Point(it.x.toInt(), it.y.toInt()).scaled()
+                    }
                 )
             }
-            .pointerInteropFilter { change ->
-                mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
-                false
-            }.pointerInput(Unit) {
-                detectDragGestures(onDragStart = {
-                    pendingMove = Point(it.x.toInt(), it.y.toInt()).scaled()
-                    pendingPress = Point(it.x.toInt(), it.y.toInt()).scaled()
-                }, onDragCancel = {
-                    mouseReleased()
-                }, onDragEnd = {
-                    mouseReleased()
-                }) { change, dragAmount ->
-                    pendingMove = Point(change.position.x.toInt(), change.position.y.toInt()).scaled()
+            .pointerInput(Unit) {
+                awaitPointerEventScope {
+                    while (true) {
+                        if (twoFingers) break
+
+                        val down = awaitFirstDown()
+                        pendingMove = pendingPress
+
+                        val pointerId = down.id
+                        var lastPoint: Point? = null
+                        while (true) {
+                            if (twoFingers) break
+
+                            val event = awaitPointerEvent()
+                            val dragChange = event.changes.firstOrNull { it.id == pointerId } ?: break
+                            lastPoint = Point(dragChange.position.x.toInt(), dragChange.position.y.toInt()).scaled()
+                            pendingMove = lastPoint
+
+                            if (dragChange.changedToUp()) {
+                                mouseReleased()
+                                break
+                            }
+                            dragChange.consume()
+                        }
+                        pendingTap = lastPoint
+                    }
                 }
             }
         ) {
-            Canvas(modifier = Modifier.fillMaxSize().background(Color.Black)) {
+            Canvas(modifier = Modifier.Companion.fillMaxSize().background(Color.Companion.Black)) {
                 drawIntoCanvas { canvas ->
                     state.value
 
-                    val destRect = android.graphics.Rect(
+                    val destRect = Rect(
                         0, 0,
                         size.width.toInt(), size.height.toInt()
                     )
@@ -221,4 +322,3 @@ class MainActivity : ComponentActivity() {
         return Point(scaledX, scaledY)
     }
 }
-

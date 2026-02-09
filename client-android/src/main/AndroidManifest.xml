@@ -13,7 +13,7 @@
             android:supportsRtl="true"
             android:theme="@style/Theme.MeteorAndroid">
         <activity
-                android:name="meteor.MainActivity"
+                android:name="android.MainActivity"
                 android:exported="true"
                 android:label="@string/app_name"
                 android:theme="@style/Theme.MeteorAndroid"

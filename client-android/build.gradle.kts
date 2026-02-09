@@ -7,21 +7,6 @@ plugins {
     alias(libs.plugins.compose.compiler)
 }
 
-
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    google()
-    mavenCentral()
-}
-
-tasks.configureEach {
-    if (name.contains("Dependencies") || name.contains("merge") || name.contains("lint") || name.contains("generate")) {
-        dependsOn(":injected-client:injectMultiplatform")
-    }
-}
-
 dependencies {
     //Project
     implementation(project(":api"))
@@ -79,3 +64,10 @@ android {
         }
     }
 }
+
+tasks.configureEach {
+    if (name.contains("Dependencies") || name.contains("merge") || name.contains("lint") || name.contains("generate")) {
+        dependsOn(":injected-client:injectMultiplatform")
+    }
+}
+

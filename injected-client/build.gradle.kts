@@ -6,13 +6,6 @@ plugins {
     id("nulled.injector")
 }
 
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 val injectTask = tasks.register<InjectTask>("injectMultiplatform") {
     outputs.upToDateWhen { false }
 

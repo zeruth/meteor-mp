@@ -5,13 +5,6 @@ plugins {
     id("java")
 }
 
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.exists()) {
@@ -34,4 +27,8 @@ java {
     sourceCompatibility = JavaVersion.VERSION_1_8
     targetCompatibility = JavaVersion.VERSION_1_8
     disableAutoTargetJvm()
+}
+
+tasks.withType<JavaCompile>().configureEach {
+    options.compilerArgs.add("-Xlint:-options")
 }

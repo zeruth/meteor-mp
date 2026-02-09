@@ -17,7 +17,7 @@ class VanillaPixMap(width: Int, height: Int) : PixMap(width, height) {
         val buffer = DataBufferInt(data, data.size)
         val raster = Raster.createWritableRaster(colorModel.createCompatibleSampleModel(width, height), buffer, null)
         image = BufferedImage(colorModel, raster, false, null)
-		setPixels()
+        setPixels()
     }
 
     override fun draw(y: Int, x: Int) {

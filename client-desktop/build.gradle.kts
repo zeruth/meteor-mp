@@ -3,23 +3,6 @@ plugins {
     id("application")
 }
 
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
-application {
-    mainClass.set("desktop.Main")
-}
-
-tasks.configureEach {
-    if (name.contains("startScripts") || name == "run") {
-        dependsOn(":injected-client:injectMultiplatform")
-    }
-}
-
 dependencies {
     implementation(libs.kotlin.reflect)
 
@@ -31,5 +14,15 @@ dependencies {
     //Not ideal but it works...
     implementation(project(":injected-client"))
     implementation(files("../lib/injected-client.jar"))
+}
+
+application {
+    mainClass.set("desktop.Main")
+}
+
+tasks.configureEach {
+    if (name.contains("startScripts") || name == "run") {
+        dependsOn(":injected-client:injectMultiplatform")
+    }
 }
 

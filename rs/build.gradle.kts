@@ -6,13 +6,6 @@ plugins {
     id("application")
 }
 
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 val localProperties = Properties().apply {
     val file = rootProject.file("local.properties")
     if (file.exists()) {
@@ -34,6 +27,12 @@ application {
     mainClass.set("jagex2.client.Client")
 }
 
+java {
+    sourceCompatibility = JavaVersion.VERSION_1_8
+    targetCompatibility = JavaVersion.VERSION_1_8
+    disableAutoTargetJvm()
+}
+
 kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))
@@ -44,8 +43,3 @@ tasks.withType<JavaExec> {
     jvmArgs = listOf("-Dsun.java2d.uiScale=1.0", "-Dsun.java2d.dpiaware=true")
 }
 
-java {
-    sourceCompatibility = JavaVersion.VERSION_1_8
-    targetCompatibility = JavaVersion.VERSION_1_8
-    disableAutoTargetJvm()
-}

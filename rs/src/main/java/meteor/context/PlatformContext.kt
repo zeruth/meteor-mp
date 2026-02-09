@@ -6,7 +6,6 @@ import jagex2.graphics.PixMap
 import java.awt.Font
 import java.awt.FontMetrics
 import java.net.URL
-import kotlin.invoke
 import kotlin.reflect.KClass
 
 open class PlatformContext{
@@ -16,19 +15,17 @@ open class PlatformContext{
 
     fun getCacheDir(): String = getCacheDirImpl.invoke()
 
-    fun showDocument(url: URL) {}
+    open fun showDocument(url: URL) { throw Exception() }
 
-    open fun drawError() {}
+    open fun drawError() { throw Exception() }
 
-    fun getFontMetrics(font: Font): FontMetrics = throw Exception()
+    open fun getFontMetrics(font: Font): FontMetrics = throw Exception()
 
-    open fun getCodeBase() : URL? = null
+    open fun getCodeBase() : URL? = throw Exception()
 
-    fun getDocumentBase() : URL? = null
+    open fun getParameter(key: String) : String? = throw Exception()
 
-    open fun getParameter(key: String) : String? = null
-
-    open fun createPix32(src: ByteArray): Pix32? = null
+    open fun createPix32(src: ByteArray): Pix32? = throw Exception()
 
     fun createViewBox(width: Int, height: Int): ViewBox {
         return viewBoxImplementation.create(width, height)

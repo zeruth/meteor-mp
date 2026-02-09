@@ -1,10 +1,10 @@
 package meteor.context.platform.android
 
 import android.graphics.Bitmap
+import android.graphics.Bitmap.createBitmap
 import android.graphics.BitmapFactory
 import android.graphics.Canvas
 import jagex2.client.Client
-import jagex2.client.GameShell
 import jagex2.client.ViewBox
 import jagex2.graphics.Pix32
 import jagex2.graphics.PixMap
@@ -49,7 +49,7 @@ open class AndroidPlatform : PlatformContext() {
 }
 
 class AndroidViewBox(width: Int, height: Int) : ViewBox(Client.client, width, height) {
-    val bitmap = Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    val bitmap = createBitmap(width, height, Bitmap.Config.RGB_565)
     private val canvas = Canvas(bitmap)
 
     init {
@@ -66,8 +66,7 @@ class AndroidViewBox(width: Int, height: Int) : ViewBox(Client.client, width, he
 }
 
 class AndroidPixMap(width: Int, height: Int) : PixMap(width, height) {
-    val bitmap: Bitmap =
-        Bitmap.createBitmap(width, height, Bitmap.Config.RGB_565)
+    val bitmap: Bitmap = createBitmap(width, height, Bitmap.Config.RGB_565)
 
     init {
         setPixels()

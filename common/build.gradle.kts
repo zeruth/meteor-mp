@@ -2,13 +2,6 @@ plugins {
     kotlin("jvm")
 }
 
-group = "io.github.nullpops"
-version = "1.0-SNAPSHOT"
-
-repositories {
-    mavenCentral()
-}
-
 kotlin {
     jvmToolchain {
         (this as JavaToolchainSpec).languageVersion.set(JavaLanguageVersion.of(8))

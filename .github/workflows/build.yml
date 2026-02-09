@@ -1,0 +1,35 @@
+name: Build
+
+on:
+  push:
+    branches: [ main ]
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v3
+
+      # Setup JDK
+      - uses: actions/setup-java@v3
+        with:
+          distribution: oracle
+          java-version: 21
+
+      - name: Setup Android SDK manager
+        uses: android-actions/setup-android@v3
+        with:
+          # install default tools + platform tools (the bare minimum)
+          packages: "platform-tools"
+
+      - name: Setup Android SDK platform
+        run: |
+          yes | sdkmanager "platforms;android-36" "build-tools;36.0.0"
+
+      # Optional: set environment variables if you want local.properties-like behavior
+      - name: Set ANDROID_SDK_ROOT
+        run: echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}" >> $GITHUB_ENV
+
+      - name: Build
+        run: ./gradlew build

@@ -12,12 +12,20 @@ val localProperties = Properties().apply {
     }
 }
 
-val androidSdkDir = localProperties["sdk.dir"] as String
+val androidSdkDir: String? = System.getenv("ANDROID_SDK_ROOT") ?: System.getenv("ANDROID_HOME")
+
+val androidSdkLocalDir = localProperties["sdk.dir"] as String?
 
 dependencies {
-    compileOnly(files(
-        "$androidSdkDir/platforms/android-36/android.jar"
-    ))
+    if (androidSdkLocalDir != null) {
+        compileOnly(files(
+            "$androidSdkLocalDir/platforms/android-36/android.jar"
+        ))
+    } else
+        compileOnly(files(
+            "$androidSdkDir/platforms/android-36/android.jar"
+        ))
+
     implementation(project(":common"))
     implementation(project(":api"))
     implementation(project(":api-rs"))

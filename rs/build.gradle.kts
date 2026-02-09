@@ -31,7 +31,7 @@ dependencies {
 }
 
 application {
-    mainClass.set("jagex2.client.Client")
+    mainClass.set("jagex3.client.Client")
 }
 
 java {

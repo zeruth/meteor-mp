@@ -33,5 +33,8 @@ jobs:
       - name: Set ANDROID_SDK_ROOT
         run: echo "ANDROID_SDK_ROOT=${ANDROID_SDK_ROOT}" >> $GITHUB_ENV
 
+      - name: Make Gradle wrapper executable
+        run: chmod +x gradlew
+
       - name: Build
         run: ./gradlew build

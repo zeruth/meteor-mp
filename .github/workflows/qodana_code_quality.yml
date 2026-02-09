@@ -24,6 +24,12 @@ jobs:
           ref: ${{ github.event.pull_request.head.sha }}
           fetch-depth: 0
 
+      - name: Setup Android SDK manager
+        uses: android-actions/setup-android@v3
+        with:
+          # install default tools + platform tools (the bare minimum)
+          packages: "platform-tools"
+
       - name: Setup Android SDK platform
         run: |
           yes | sdkmanager "platforms;android-36" "build-tools;36.0.0"

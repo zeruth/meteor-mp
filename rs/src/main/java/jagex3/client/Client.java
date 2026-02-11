@@ -45,6 +45,8 @@ import jagex3.util.MonotonicTime;
 import jagex3.var.VarCache;
 import jagex3.wordfilter2.Huffman;
 import jagex3.wordfilter2.WordPack;
+import meteor.platform.headless.HeadlessContext;
+import meteor.platform.vanilla.VanillaContext;
 
 import java.awt.*;
 import java.io.IOException;
@@ -1226,14 +1228,11 @@ public class Client extends GameShell {
 	@Override
 	public URL getCodeBase() {
 		try {
-			if (GameShell.frame != null) {
-				return new URL("http://localhost:7001");
-			}
+			return new URL("http://localhost:7001");
 		} catch (Exception ignore) {
+			throw new RuntimeException("Could not get valid host");
 		}
-
-		return super.getDocumentBase();
-	}
+    }
 
 	// custom
 	@Override
@@ -1260,6 +1259,7 @@ public class Client extends GameShell {
 
 	// custom
 	public static void main(String[] args) {
+		GameShell.context = new VanillaContext();
 		Client app = new Client();
 		app.startApplication(765, 503, 1);
 	}
@@ -5313,11 +5313,9 @@ public class Client extends GameShell {
 
 		LocType.mc1.clear();
 
-		if (GameShell.frame != null) {
-			// WINDOW_STATUS
-			out.p1Enc(210);
-			out.p4(1057001181);
-		}
+		// WINDOW_STATUS
+		out.p1Enc(210);
+		out.p4(1057001181);
 
 		if (!regionmode) {
 			int var72 = (mapBuildCenterZoneX - 6) / 8;

@@ -9,17 +9,14 @@ import jagex3.graphics.JavaSafePixMap;
 import jagex3.graphics.PixMap;
 import jagex3.jstring.StringTools;
 import jagex3.util.*;
+import meteor.platform.Context;
 
 import java.applet.Applet;
 import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.WindowEvent;
-import java.awt.event.WindowListener;
 import java.net.URL;
 
 @ObfuscatedName("dj")
-public abstract class GameShell extends Applet implements Runnable, FocusListener, WindowListener {
+public abstract class GameShell extends Applet implements Runnable {
 
 	@ObfuscatedName("dj.r")
 	public static SignLink signlink;
@@ -87,9 +84,6 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 	@ObfuscatedName("dj.o")
 	public static PixMap drawArea;
 
-	@ObfuscatedName("a.a")
-	public static Frame frame;
-
 	@ObfuscatedName("c.h")
 	public static Canvas canvas;
 
@@ -111,19 +105,12 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 	@ObfuscatedName("z.ap")
 	public static boolean focus;
 
+	public static Context context = null;
+
 	// com.jagex.game.runetek6.client.GameShell3.startApplication
 	// "custom"
 	public final void startApplication(int width, int height, int revision) {
-		frame = new Frame();
-		frame.setTitle("Jagex");
-		frame.setResizable(false);
-		frame.setBackground(Color.BLACK);
-		frame.addWindowListener(this);
-		frame.setVisible(true);
-		frame.toFront();
-		Insets insets = frame.getInsets();
-		frame.setSize(width + insets.left + insets.right, height + insets.top + insets.bottom);
-
+		context.startApplication(width, height);
 		this.init();
 	}
 
@@ -162,28 +149,7 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 	// com.jagex.game.runetek6.client.GameShell3.addcanvas
 	@ObfuscatedName("dj.g(I)V")
 	public final synchronized void addcanvas() {
-		Container var1;
-		if (frame == null) {
-			var1 = this;
-		} else {
-			var1 = frame;
-		}
-		if (canvas != null) {
-			canvas.removeFocusListener(this);
-			var1.remove(canvas);
-		}
-		canvas = new GameCanvas(this);
-		var1.add(canvas);
-		canvas.setSize(sWid, sHei);
-		canvas.setVisible(true);
-		if (frame != null) {
-			Insets var2 = frame.getInsets();
-			canvas.setLocation(var2.left, var2.top);
-		} else {
-			canvas.setLocation(0, 0);
-		}
-		canvas.addFocusListener(this);
-		canvas.requestFocus();
+		context.addcanvas();
 		fullredraw = true;
 		canvasReplaceRecommended = false;
 		lastCanvasReplace = MonotonicTime.currentTime();
@@ -341,14 +307,7 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 			redrawNum -= 50;
 
 			fullredraw = true;
-			canvas.setSize(sWid, sHei);
-			canvas.setVisible(true);
-			if (frame == null) {
-				canvas.setLocation(0, 0);
-			} else {
-				Insets var6 = frame.getInsets();
-				canvas.setLocation(var6.left, var6.top);
-			}
+			context.mainredrawwrapper();
 		}
 
 		this.mainredraw();
@@ -363,22 +322,7 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 
 		alreadyshutdown = true;
 
-		try {
-			canvas.removeFocusListener(this);
-		} catch (Exception ignore) {
-		}
-
-		try {
-			this.mainquit();
-		} catch (Exception ignore) {
-		}
-
-		if (frame != null) {
-			try {
-				System.exit(0);
-			} catch (Throwable ignore) {
-			}
-		}
+		context.shutdown();
 
 		if (signlink != null) {
 			try {
@@ -454,46 +398,6 @@ public abstract class GameShell extends Applet implements Runnable, FocusListene
 				canvasReplaceRecommended = true;
 			}
 		}
-	}
-
-	@Override
-	public final void focusGained(FocusEvent e) {
-		focus_in = true;
-		fullredraw = true;
-	}
-
-	@Override
-	public final void focusLost(FocusEvent e) {
-		focus_in = false;
-	}
-
-	@Override
-	public final void windowActivated(WindowEvent e) {
-	}
-
-	@Override
-	public final void windowClosed(WindowEvent e) {
-	}
-
-	@Override
-	public final void windowClosing(WindowEvent e) {
-		this.destroy();
-	}
-
-	@Override
-	public final void windowDeactivated(WindowEvent e) {
-	}
-
-	@Override
-	public final void windowDeiconified(WindowEvent e) {
-	}
-
-	@Override
-	public final void windowIconified(WindowEvent e) {
-	}
-
-	@Override
-	public final void windowOpened(WindowEvent e) {
 	}
 
 	// com.jagex.game.runetek6.client.GameShell3.error

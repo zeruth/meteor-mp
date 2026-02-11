@@ -128,11 +128,11 @@ public class TitleScreen {
 
 	// jag::oldscape::TitleScreen::m_loginUser
 	@ObfuscatedName("g.an")
-	public static String loginUser = "";
+	public static String loginUser = "asdasdasd";
 
 	// jag::oldscape::TitleScreen::m_loginPass
 	@ObfuscatedName("g.ah")
-	public static String loginPass = "";
+	public static String loginPass = "asdasdasd";
 
 	// // jag::oldscape::TitleScreen::m_loginSelect
 	@ObfuscatedName("g.ay")
@@ -342,8 +342,8 @@ public class TitleScreen {
 			short var17 = 462;
 			if (var8 == 1 && var9 >= var17 - 75 && var9 <= var17 + 75 && var10 >= var16 - 20 && var10 <= var16 + 20) {
 				loginscreen = 0;
-				loginUser = "";
-				loginPass = "";
+				loginUser = "asdasdasd";
+				loginPass = "asdasdasd";
 			}
 
 			while (ClientKeyboardListener.pollKey()) {
@@ -1060,7 +1060,7 @@ public class TitleScreen {
 			}
 			String var7 = "http://" + var5.host + var6 + "/j" + Client.js;
 			try {
-				shell.getAppletContext().showDocument(new URL(var7), "_self");
+				GameShell.context.showDocument(new URL(var7), "_self");
 			} catch (Exception ignore) {
 			}
 		}
@@ -1293,8 +1293,8 @@ public class TitleScreen {
 		flameBuffer3 = new int[32768];
 
 		loginscreen = 0;
-		loginUser = "";
-		loginPass = "";
+		loginUser = "asdasdasd";
+		loginPass = "asdasdasd";
 
 		switchScreen = false;
 

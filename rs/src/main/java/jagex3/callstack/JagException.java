@@ -1,6 +1,7 @@
 package jagex3.callstack;
 
 import deob.ObfuscatedName;
+import jagex3.client.GameShell;
 import jagex3.client.applet.SignLink;
 
 import java.applet.Applet;
@@ -12,7 +13,7 @@ import java.net.URL;
 public class JagException extends RuntimeException {
 
 	@ObfuscatedName("fa.r")
-	public static Applet applet;
+	public static GameShell applet;
 
 	@ObfuscatedName("fa.d")
 	public static String username;
@@ -94,7 +95,7 @@ public class JagException extends RuntimeException {
 			if (applet == null) {
 				return;
 			}
-			URL var26 = new URL(applet.getCodeBase(), "clienterror.ws?c=" + revision + "&u=" + username + "&v1=" + SignLink.javaVendor + "&v2=" + SignLink.javaVersion + "&e=" + var25);
+			URL var26 = new URL(GameShell.context.getCodeBase(), "clienterror.ws?c=" + revision + "&u=" + username + "&v1=" + SignLink.javaVendor + "&v2=" + SignLink.javaVersion + "&e=" + var25);
 			DataInputStream var27 = new DataInputStream(var26.openStream());
 			var27.read();
 			var27.close();

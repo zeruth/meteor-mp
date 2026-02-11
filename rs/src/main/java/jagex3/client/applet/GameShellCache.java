@@ -2,6 +2,7 @@ package jagex3.client.applet;
 
 import deob.ObfuscatedName;
 import jagex3.callstack.JagException;
+import jagex3.client.GameShell;
 import jagex3.io.BufferedRandomAccessFile;
 import jagex3.io.CacheUtil;
 import jagex3.io.FileOnDisk;
@@ -292,11 +293,10 @@ public class GameShellCache {
 			}
 			osName = osNameRaw.toLowerCase();
 			try {
-				homeDir = System.getProperty("user.home");
-				if (homeDir != null) {
-					homeDir = homeDir + "/";
-				}
-			} catch (Exception ignore) {
+				homeDir = GameShell.context.getCacheDirectory() + "/";
+            } catch (Exception ignore) {
+				ignore.printStackTrace();
+				throw new RuntimeException("Couldn't Load cache");
 			}
 			try {
 				if (osName.startsWith("win")) {

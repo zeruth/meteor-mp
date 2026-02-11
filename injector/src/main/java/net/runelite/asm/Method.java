@@ -158,7 +158,13 @@ public class Method implements Annotated, Named
 				}
 			}
 
-			visitor.visitMaxs(code.getMaxStack(), code.getMaxLocals());
+			try {
+				visitor.visitMaxs(code.getMaxStack(), code.getMaxLocals());
+			} catch (IllegalStateException e) {
+				if (e.toString().contains("Empty try catch block handler range")) {
+					System.out.println("ERROR: Empty try catch block: " + code.getMethod().classFile.getName() + ":" + code.getMethod().getName());
+				}
+			}
 		}
 
 		visitor.visitEnd();

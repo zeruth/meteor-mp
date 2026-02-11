@@ -3,12 +3,13 @@ package mixin;
 import net.runelite.api.Callbacks;
 import net.runelite.api.mixins.*;
 import net.runelite.rs.api.RSClient;
+import net.runelite.rs.api.RSGameShell;
 
 @SuppressWarnings("ALL")
 @Mixin(RSClient.class)
 abstract class Client implements RSClient {
-    @Shadow("client")
-    public static RSClient client;
+    @Shadow("shell")
+    public static RSGameShell shell;
 
     @Inject
     public Callbacks callbacks;
@@ -25,9 +26,9 @@ abstract class Client implements RSClient {
         this.callbacks = callbacks;
     }
 
-    @Copy("post")
-    @Replace("post")
-    public void post(Object event) {
+    @Inject
+    @Override
+    public void publish(Object event) {
         callbacks.post(event);
     }
 }

@@ -7,13 +7,14 @@ import jagex3.client.applet.SignLink;
 import jagex3.graphics.PixMap;
 import jagex3.jstring.StringTools;
 import jagex3.util.*;
+import meteor.events.Draw;
 import meteor.platform.Context;
+import util.EventBusKt;
 
-import java.applet.Applet;
 import java.net.URL;
 
 @ObfuscatedName("dj")
-public abstract class GameShell extends Applet implements Runnable {
+public abstract class GameShell implements Runnable {
 
 	@ObfuscatedName("dj.r")
 	public static SignLink signlink;
@@ -111,7 +112,7 @@ public abstract class GameShell extends Applet implements Runnable {
 					return;
 				}
 
-				this.getAppletContext().showDocument(this.getDocumentBase(), "_self");
+				GameShell.context.showDocument(GameShell.context.getCodeBase(), "_self");
 				return;
 			}
 
@@ -147,7 +148,7 @@ public abstract class GameShell extends Applet implements Runnable {
 			return true;
 		}
 
-		String var1 = this.getDocumentBase().getHost().toLowerCase();
+		String var1 = context.getCodeBase().getHost().toLowerCase();
 		if (var1.equals("jagex.com") || var1.endsWith(".jagex.com")) {
 			return true;
 		} else if (var1.equals("runescape.com") || var1.endsWith(".runescape.com")) {
@@ -207,14 +208,14 @@ public abstract class GameShell extends Applet implements Runnable {
 				}
 			}
 
-			this.setFocusCycleRoot(true);
+			//this.setFocusCycleRoot(true);
 			this.addcanvas();
 
 			// todo: inlined
 			int wid = sWid;
 			int hei = sHei;
 
-            drawArea = GameShell.context.createPixMap(wid, hei);
+			drawArea = GameShell.context.createPixMap(wid, hei);
 
 			this.maininit();
 
@@ -276,14 +277,20 @@ public abstract class GameShell extends Applet implements Runnable {
 			fps = ((var5 >> 1) + 32000) / var5;
 		}
 
-		if (++redrawNum - 1 > 50) {
+		//TODO: Investigate why this block tanks android fps
+		//Forcing fullredraw always has no dire effect on desktop and gets us full fps on android
+/*		if (++redrawNum - 1 > 50) {
 			redrawNum -= 50;
 
 			fullredraw = true;
 			context.mainredrawwrapper();
-		}
+		}*/
+
+		fullredraw = true;
+		context.mainredrawwrapper();
 
 		this.mainredraw();
+		EventBusKt.GlobalEventBus.publish(Draw.INSTANCE);
 	}
 
 	// com.jagex.game.runetek6.client.GameShell3.shutdown
@@ -323,7 +330,6 @@ public abstract class GameShell extends Applet implements Runnable {
 		updateCount = 0;
 	}
 
-	@Override
 	public void start() {
 		if (shell != this || alreadyshutdown) {
 			return;
@@ -332,7 +338,6 @@ public abstract class GameShell extends Applet implements Runnable {
 		killtime = 0L;
 	}
 
-	@Override
 	public void stop() {
 		if (shell != this || alreadyshutdown) {
 			return;
@@ -341,7 +346,7 @@ public abstract class GameShell extends Applet implements Runnable {
 		killtime = MonotonicTime.currentTime() + 4000L;
 	}
 
-	@Override
+
 	public void destroy() {
 		if (shell != this || alreadyshutdown) {
 			return;
@@ -385,7 +390,7 @@ public abstract class GameShell extends Applet implements Runnable {
 		System.out.println("error_game_" + err);
 
 		try {
-			this.getAppletContext().showDocument(new URL(this.getCodeBase(), "error_game_" + err + ".ws"), "_self");
+			context.showDocument(new URL(context.getCodeBase(), "error_game_" + err + ".ws"), "_self");
 		} catch (Exception ignore) {
 		}
 	}
@@ -405,7 +410,6 @@ public abstract class GameShell extends Applet implements Runnable {
 	@ObfuscatedName("dj.b(I)V")
 	public abstract void mainredraw();
 
-	@Override
 	public abstract void init();
 
 	public static void drawProgress(int progress, String message) {

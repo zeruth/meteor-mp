@@ -1,16 +1,25 @@
 package meteor.platform.vanilla
 
 import jagex3.client.GameShell
+import jagex3.client.applet.GameShellCache
 import jagex3.client.input.keyboard.ClientKeyboardListener
 import jagex3.client.input.mouse.ClientMouseListener
 import jagex3.client.input.mouse.ClientMouseWheelListener
 import jagex3.graphics.Pix32
 import jagex3.graphics.PixMap
+import jagex3.io.FileOnDisk
+import jagex3.io.Packet
 import jagex3.jstring.Cp1252
+import jagex3.sound.JavaPcmPlayer
 import jagex3.util.MonotonicTime
 import meteor.platform.Context
+import meteor.platform.ContextCommon
 import java.awt.*
 import java.awt.event.*
+import java.io.File
+import java.io.IOException
+import java.io.RandomAccessFile
+import java.net.URL
 import kotlin.system.exitProcess
 
 class VanillaContext :
@@ -21,6 +30,8 @@ class VanillaContext :
     private var progressFont: Font? = null
     private var progressBar: Image? = null
     private var progressFontMetrics: FontMetrics? = null
+
+    fun graphics(): Graphics = canvas!!.graphics
 
     override fun startApplication(width: Int, height: Int) {
         val context = this
@@ -141,7 +152,7 @@ class VanillaContext :
     }
 
     override fun createPixMap(width: Int, height: Int): PixMap {
-        return VanillaPixMap(this).apply {
+        return VanillaPixMap(this, width, height).apply {
             create(width, height)
         }
     }
@@ -151,23 +162,15 @@ class VanillaContext :
     }
 
     override fun repaintCanvas() {
-        try {
+/*        try {
             GameShell.drawArea.draw(0, 0)
         } catch (var25: java.lang.Exception) {
             canvas?.repaint()
-        }
-    }
-
-    override fun update() {
-        GameShell.shell.update(canvas?.graphics)
-    }
-
-    override fun paint() {
-        GameShell.shell.paint(canvas?.graphics)
+        }*/
     }
 
     override fun repaint() {
-        canvas?.repaint()
+        //canvas?.repaint()
     }
 
     override fun drawProgress(progress: Int, message: String) {
@@ -231,6 +234,32 @@ class VanillaContext :
         progressBar = null
         progressFont = null
         progressFontMetrics = null
+    }
+
+    override fun showDocument(url: URL, sub: String) {
+        TODO("Not yet implemented")
+    }
+
+    override fun keepThreadAlive() = false
+
+    override fun getCodeBase(): URL {
+        return ContextCommon.getCodeBase()
+    }
+
+    override fun getParameter(name: String): String? {
+       return ContextCommon.getParameter(name)
+    }
+
+    override fun getCacheDirectory(): String {
+        return System.getProperty("user.home") + "/.meteor-os1"
+    }
+
+    override fun createPcmPlayer(): JavaPcmPlayer {
+        return VanillaPcmPlayer()
+    }
+
+    override fun onDraw() {
+
     }
 
     //FocusListener

@@ -45,6 +45,7 @@ import jagex3.util.MonotonicTime;
 import jagex3.var.VarCache;
 import jagex3.wordfilter2.Huffman;
 import jagex3.wordfilter2.WordPack;
+import meteor.platform.headless.HeadlessContext;
 import meteor.platform.vanilla.VanillaContext;
 
 import java.io.IOException;
@@ -1223,41 +1224,22 @@ public class Client extends GameShell {
 	}
 
 	// custom
-	@Override
 	public URL getCodeBase() {
-		try {
-			return new URL("http://localhost:7001");
-		} catch (Exception ignore) {
-			throw new RuntimeException("Could not get valid host");
-		}
+		return GameShell.context.getCodeBase();
     }
 
 	// custom
-	@Override
-	public URL getDocumentBase() {
-		return this.getCodeBase();
-	}
-
-	// custom
-	@Override
 	public String getParameter(String name) {
-		if (name.equals(JavConfigParameter.MODEWHAT.id)) {
-			return String.valueOf(ModeWhat.WIP.id);
-		} else if (name.equals(JavConfigParameter.MODEWHERE.id)) {
-			// todo: modewhere enum?
-			return "2";
-		} else if (name.equals(JavConfigParameter.MEMBERS.id)) {
-			return "true";
-		} else if (name.equals(JavConfigParameter.WORLDLIST_URL.id)) {
-			return "http://localhost:7001/slr.ws?order=LPWM";
-		}
-
-		return null;
+		return GameShell.context.getParameter(name);
 	}
 
 	// custom
 	public static void main(String[] args) {
 		GameShell.context = new VanillaContext();
+		vanillaMain();
+	}
+
+	public static void vanillaMain() {
 		Client app = new Client();
 		app.startApplication(765, 503, 1);
 	}
@@ -1266,7 +1248,8 @@ public class Client extends GameShell {
 	public final void onKilled() {
 	}
 
-	@Override
+	@SuppressWarnings({"InfiniteLoopStatement", "BusyWait"})
+    @Override
 	public final void init() {
 		if (!this.checkhost()) {
 			return;
@@ -1569,13 +1552,14 @@ public class Client extends GameShell {
 		}
 
 		if (Js5Net.ioErrorCount >= 4) {
-			if (state <= 5) {
+			Js5Net.ioErrorCount = 3;
+/*			if (state <= 5) {
 				this.error("js5io");
 				state = 1000;
 				return;
 			}
 			js5ConnectCooldown = 3000;
-			Js5Net.ioErrorCount = 3;
+			Js5Net.ioErrorCount = 3;*/
 		}
 
 		if (--js5ConnectCooldown + 1 > 0) {

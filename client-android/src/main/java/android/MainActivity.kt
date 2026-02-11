@@ -31,16 +31,18 @@ import androidx.core.view.WindowCompat
 import androidx.core.view.WindowInsetsCompat
 import androidx.core.view.WindowInsetsControllerCompat
 import common.ui.WindowImpl
-import jagex2.client.Client
-import jagex2.client.GameShell
+import jagex3.client.Client
+import jagex3.client.Client.orbitCameraPitch
+import jagex3.client.Client.orbitCameraYaw
+import jagex3.client.GameShell
+import jagex3.client.input.mouse.ClientMouseListener
+import jagex3.util.MonotonicTime
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import meteor.context.events.AndroidPixMapDraw
-import meteor.context.events.Draw
-import meteor.context.platform.android.AndroidPlatform
-import meteor.context.platform.android.AndroidViewBox
+import meteor.events.Draw
+import meteor.platform.android.AndroidContext
 import util.GlobalEventBus
 import java.util.concurrent.Executors
 
@@ -57,7 +59,6 @@ class MainActivity : ComponentActivity() {
         }
     }
     val paint = Paint()
-    var loaded = false
 
     val state = mutableStateOf(false)
     var mouseDown = false
@@ -70,15 +71,19 @@ class MainActivity : ComponentActivity() {
     var containerSize = mutableStateOf(IntSize(-1, -1))
     var touchScaleX = mutableFloatStateOf(0f)
     var touchScaleY = mutableFloatStateOf(0f)
+    var draws = ArrayList<Long>()
+    var lastCheck = System.currentTimeMillis()
 
     init {
-        GlobalEventBus.subscribe<AndroidPixMapDraw> {
-            if (!loaded)
-                state.value = !state.value
-        }
         GlobalEventBus.subscribe<Draw> {
             state.value = !state.value
-            loaded = true
+            draws += System.currentTimeMillis()
+
+            if (System.currentTimeMillis() - lastCheck > 1000) {
+                lastCheck = System.currentTimeMillis()
+                println("FPS: ${draws.size}")
+                draws.clear()
+            }
         }
         GlobalEventBus.subscribe<Draw>(priority = Int.MAX_VALUE) {
             if (mouseDown)
@@ -121,29 +126,23 @@ class MainActivity : ComponentActivity() {
     }
 
     fun mouseMoved(x: Int, y: Int) {
-        with(Client.client) {
-            idleCycles = 0
-            mouseX = x
-            mouseY = y
-        }
+        ClientMouseListener.idleTimer = 0
+        ClientMouseListener.nextMouseX = x
+        ClientMouseListener.nextMouseY = y
     }
 
     fun mousePressed(x: Int, y: Int, button: Int) {
-        with(Client.client) {
-            idleCycles = 0
-            nextMouseClickX = x
-            nextMouseClickY = y
-            nextMouseClickTime = System.currentTimeMillis()
-            nextMouseClickButton = button
-            mouseButton = button
-        }
+        ClientMouseListener.idleTimer = 0
+        ClientMouseListener.nextMouseClickX = x
+        ClientMouseListener.nextMouseClickY = y
+        ClientMouseListener.nextMouseClickTime = MonotonicTime.currentTime()
+        ClientMouseListener.nextMouseClickButton = button
+        ClientMouseListener.nextMouseButton = button
     }
 
     fun mouseReleased() {
-        with(Client.client) {
-            idleCycles = 0
-            mouseButton = 0
-        }
+        ClientMouseListener.idleTimer = 0
+        ClientMouseListener.nextMouseButton = 0
     }
 
 
@@ -156,26 +155,28 @@ class MainActivity : ComponentActivity() {
                 WindowInsetsControllerCompat.BEHAVIOR_SHOW_TRANSIENT_BARS_BY_SWIPE
         }
         clientScope.launch {
-            Client.context = applicationContext
-            GameShell.context = AndroidPlatform()
+/*            //Client.context = applicationContext
+*//*            GameShell.context = AndroidPlatform()
+            Client.vanillaMain()*/
+            GameShell.context = AndroidContext(this@MainActivity)
             Client.vanillaMain()
         }
         setContent {
             state.value
             WindowImpl.Window {
-                GameSurface(Client.client.frame as? AndroidViewBox)
+                GameSurface()
             }
         }
     }
 
     override fun onResume() {
         super.onResume()
-        Client.client?.let {
+/*        Client.client?.let {
             Client.client.redrawFrame = true
             Client.client.redrawSidebar = true
             Client.client.redrawSideicons = true
             Client.client.redrawChatback = true
-        }
+        }*/
     }
 
     suspend fun PointerInputScope.detectOneFingerDrag(
@@ -227,28 +228,19 @@ class MainActivity : ComponentActivity() {
     }
 
     @Composable
-    fun GameSurface(viewBox: AndroidViewBox?) {
-        viewBox ?: return
+    fun GameSurface() {
         Box(
-            modifier = Modifier.Companion
+            modifier = Modifier
             .fillMaxSize()
-            .background(Color.Companion.Black)
+            .background(Color.Black)
             .onGloballyPositioned { layoutCoordinates ->
                 containerSize.value = layoutCoordinates.size
-                touchScaleX.value = containerSize.value.width.toFloat() / 765
-                touchScaleY.value = containerSize.value.height.toFloat() / 503
+                touchScaleX.floatValue = containerSize.value.width.toFloat() / 765
+                touchScaleY.floatValue = containerSize.value.height.toFloat() / 503
             }
             .pointerInteropFilter { change ->
                 mouseMoved((change.x / touchScaleX.value).toInt(), (change.y / touchScaleY.value).toInt())
                 false
-            }
-            .pointerInput(Unit) {
-                detectTwoFingerDrag { delta ->
-                    Client.client.invoke {
-                        orbitCameraYaw -= delta.x.toInt()
-                        orbitCameraPitch += delta.y.toInt()
-                    }
-                }
             }
             .pointerInput(Unit) {
                 detectTapGestures(
@@ -262,36 +254,44 @@ class MainActivity : ComponentActivity() {
                     }
                 )
             }
-            .pointerInput(Unit) {
-                awaitPointerEventScope {
-                    while (true) {
-                        if (twoFingers) break
-
-                        val down = awaitFirstDown()
-                        pendingMove = pendingPress
-
-                        val pointerId = down.id
-                        var lastPoint: Point? = null
+                .pointerInput(Unit) {
+                    detectTwoFingerDrag { delta ->
+                        (GameShell.shell as Client).invoke {
+                            orbitCameraYaw -= delta.x.toInt()
+                            orbitCameraPitch += delta.y.toInt()
+                        }
+                    }
+                }
+                .pointerInput(Unit) {
+                    awaitPointerEventScope {
                         while (true) {
                             if (twoFingers) break
 
-                            val event = awaitPointerEvent()
-                            val dragChange = event.changes.firstOrNull { it.id == pointerId } ?: break
-                            lastPoint = Point(dragChange.position.x.toInt(), dragChange.position.y.toInt()).scaled()
-                            pendingMove = lastPoint
+                            val down = awaitFirstDown()
+                            pendingMove = pendingPress
 
-                            if (dragChange.changedToUp()) {
-                                mouseReleased()
-                                break
+                            val pointerId = down.id
+                            var lastPoint: Point? = null
+                            while (true) {
+                                if (twoFingers) break
+
+                                val event = awaitPointerEvent()
+                                val dragChange = event.changes.firstOrNull { it.id == pointerId } ?: break
+                                lastPoint = Point(dragChange.position.x.toInt(), dragChange.position.y.toInt()).scaled()
+                                pendingMove = lastPoint
+
+                                if (dragChange.changedToUp()) {
+                                    mouseReleased()
+                                    break
+                                }
+                                dragChange.consume()
                             }
-                            dragChange.consume()
+                            pendingTap = lastPoint
                         }
-                        pendingTap = lastPoint
                     }
                 }
-            }
         ) {
-            Canvas(modifier = Modifier.Companion.fillMaxSize().background(Color.Companion.Black)) {
+            Canvas(modifier = Modifier.fillMaxSize().background(Color.Black)) {
                 drawIntoCanvas { canvas ->
                     state.value
 
@@ -301,7 +301,7 @@ class MainActivity : ComponentActivity() {
                     )
 
                     canvas.nativeCanvas.drawBitmap(
-                        viewBox.bitmap,
+                        (GameShell.context as AndroidContext).bitmap,
                         null,
                         destRect,
                         paint

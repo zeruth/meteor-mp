@@ -1,6 +1,7 @@
 package jagex3.sound;
 
 import deob.ObfuscatedName;
+import jagex3.client.GameShell;
 import jagex3.client.applet.SignLink;
 import jagex3.util.ArrayUtil;
 import jagex3.util.MonotonicTime;
@@ -91,7 +92,7 @@ public class PcmPlayer {
 			if (arg3 < 256) {
 				arg3 = 256;
 			}
-			JavaPcmPlayer var4 = new JavaPcmPlayer();
+			JavaPcmPlayer var4 = GameShell.context.createPcmPlayer();
 			var4.samples = new int[(stereo ? 2 : 1) * 256];
 			var4.initialTargetSampledQueued = arg3;
 			var4.init();
@@ -99,11 +100,7 @@ public class PcmPlayer {
 			if (var4.capacity > 16384) {
 				var4.capacity = 16384;
 			}
-            try {
-                var4.open(var4.capacity);
-            } catch (LineUnavailableException e) {
-                throw new RuntimeException(e);
-            }
+			var4.open(var4.capacity);
             if (threadPriority > 0 && thread == null) {
 				thread = new AudioThread();
 				thread.signLink = signLink;

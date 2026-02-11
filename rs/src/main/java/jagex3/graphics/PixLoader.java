@@ -196,6 +196,7 @@ public class PixLoader {
 	// jag::oldscape::graphics::pixloader::Makepix32
 	@ObfuscatedName("bi.z(I)Lfq;")
 	public static Pix32 makePix32() {
+
 		Pix32 var0 = new Pix32();
 		var0.owi = owi;
 		var0.ohi = ohi;

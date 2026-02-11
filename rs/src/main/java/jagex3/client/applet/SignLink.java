@@ -1,6 +1,7 @@
 package jagex3.client.applet;
 
 import deob.ObfuscatedName;
+import jagex3.client.GameShell;
 import jagex3.sound.AudioSource;
 import java.io.DataInputStream;
 import java.net.InetAddress;
@@ -86,7 +87,8 @@ public class SignLink implements Runnable {
 					req.result = new Socket(InetAddress.getByName((String) req.objArg), req.intArg);
 				} else if (type == 2) {
 					Thread var6 = new Thread((Runnable) req.objArg);
-					var6.setDaemon(true);
+					boolean daemon = !GameShell.context.keepThreadAlive();
+					var6.setDaemon(daemon);
 					var6.start();
 					var6.setPriority(req.intArg);
 					req.result = var6;

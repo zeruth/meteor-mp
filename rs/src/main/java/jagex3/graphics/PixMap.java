@@ -14,6 +14,12 @@ public abstract class PixMap {
 	@ObfuscatedName("ab.l")
 	public int height;
 
+	public PixMap(int width, int height) {
+		this.width = width;
+		this.height = height;
+		this.data = new int[width * height + 1];
+	}
+
 	@ObfuscatedName("ab.d(I)V")
 	public final void bind() {
 		Pix2D.setPixels(this.data, this.width, this.height);

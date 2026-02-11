@@ -1,29 +1,23 @@
 package jagex3.client.input.mouse;
 
 import deob.ObfuscatedName;
+import jagex3.client.GameShell;
 
-import java.awt.*;
-import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 
 @ObfuscatedName("dh")
-public class ClientMouseWheelListener extends MouseWheelInterface implements MouseWheelListener {
+public class ClientMouseWheelListener extends MouseWheelInterface {
 
 	@ObfuscatedName("dh.r")
 	public int rotation = 0;
 
 	@ObfuscatedName("dh.d(Ljava/awt/Component;I)V")
-	public void addListeners(Component c) {
-		c.addMouseWheelListener(this);
+	public void addListeners() {
+		GameShell.context.addMouseWheelListener(this);
 	}
 
 	@ObfuscatedName("dh.l(Ljava/awt/Component;B)V")
-	public void removeListeners(Component c) {
-		c.removeMouseWheelListener(this);
-	}
-
-	public synchronized void mouseWheelMoved(MouseWheelEvent e) {
-		this.rotation += e.getWheelRotation();
+	public void removeListeners() {
+		GameShell.context.removeMouseWheelListener(this);
 	}
 
 	@ObfuscatedName("dh.m(I)I")

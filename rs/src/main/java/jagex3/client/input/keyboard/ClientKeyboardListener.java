@@ -1,18 +1,13 @@
 package jagex3.client.input.keyboard;
 
 import deob.ObfuscatedName;
+import jagex3.client.GameShell;
 import jagex3.client.applet.SignLink;
-import jagex3.jstring.Cp1252;
 
-import java.awt.*;
-import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
-import java.awt.event.KeyEvent;
-import java.awt.event.KeyListener;
 
 // jag::oldscape::input::ClientKeyboardListener
 @ObfuscatedName("az")
-public class ClientKeyboardListener implements KeyListener, FocusListener {
+public class ClientKeyboardListener {
 
 	@ObfuscatedName("az.r")
 	public static ClientKeyboardListener instance = new ClientKeyboardListener();
@@ -78,17 +73,13 @@ public class ClientKeyboardListener implements KeyListener, FocusListener {
 	};
 
 	@ObfuscatedName("n.r(Ljava/awt/Component;I)V")
-	public static void addListeners(Component c) {
-		c.setFocusTraversalKeysEnabled(false);
-		c.addKeyListener(instance);
-		c.addFocusListener(instance);
+	public static void addListeners() {
+		GameShell.context.addKeyListeners();
 	}
 
 	@ObfuscatedName("cw.d(Ljava/awt/Component;B)V")
-	public static void removeListeners(Component c) {
-		c.removeKeyListener(instance);
-		c.removeFocusListener(instance);
-
+	public static void removeListeners() {
+		GameShell.context.removeKeyListeners();
 		keyHeldReadPos = -1;
 	}
 
@@ -132,101 +123,8 @@ public class ClientKeyboardListener implements KeyListener, FocusListener {
 		}
 	}
 
-	public final synchronized void keyPressed(KeyEvent e) {
-		if (instance == null) {
-			return;
-		}
-
-		idleTimer = 0;
-
-		int code = e.getKeyCode();
-		int ch;
-		if (code >= 0 && code < KEY_CODE_MAP.length) {
-			ch = KEY_CODE_MAP[code];
-			if ((ch & 0x80) != 0) {
-				ch = -1;
-			}
-		} else {
-			ch = -1;
-		}
-
-		if (keyHeldReadPos >= 0 && ch >= 0) {
-			keyHeldBuffer[keyHeldReadPos] = ch;
-			keyHeldReadPos = keyHeldReadPos + 1 & 0x7F;
-
-			if (keyHeldWritePos == keyHeldReadPos) {
-				keyHeldReadPos = -1;
-			}
-		}
-
-		if (ch >= 0) {
-			int next = keyWritePos + 1 & 0x7F;
-			if (keyReadPos != next) {
-				keyCodeBuffer[keyWritePos] = ch;
-				keyChBuffer[keyWritePos] = 0;
-				keyWritePos = next;
-			}
-		}
-
-		int mod = e.getModifiers();
-		if ((mod & 0xA) != 0 || ch == 85 || ch == 10) {
-			e.consume();
-		}
-	}
-
-	public final synchronized void keyReleased(KeyEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			int code = e.getKeyCode();
-			int ch;
-			if (code >= 0 && code < KEY_CODE_MAP.length) {
-				ch = KEY_CODE_MAP[code] & 0xFFFFFF7F;
-			} else {
-				ch = -1;
-			}
-
-			if (keyHeldReadPos >= 0 && ch >= 0) {
-				keyHeldBuffer[keyHeldReadPos] = ~ch;
-				keyHeldReadPos = keyHeldReadPos + 1 & 0x7F;
-
-				if (keyHeldWritePos == keyHeldReadPos) {
-					keyHeldReadPos = -1;
-				}
-			}
-		}
-
-		e.consume();
-	}
-
-	// jag::oldscape::input::ClientKeyboardListener::HandleKeyChar
-	public final void keyTyped(KeyEvent e) {
-		if (instance != null) {
-			char ch = e.getKeyChar();
-			if (ch != 0 && ch != 65535 && Cp1252.canEncodeToCp1252(ch)) {
-				int next = keyWritePos + 1 & 0x7F;
-				if (keyReadPos != next) {
-					keyCodeBuffer[keyWritePos] = -1;
-					keyChBuffer[keyWritePos] = ch;
-					keyWritePos = next;
-				}
-			}
-		}
-
-		e.consume();
-	}
-
-	public final void focusGained(FocusEvent e) {
-	}
-
-	public final synchronized void focusLost(FocusEvent e) {
-		if (instance != null) {
-			keyHeldReadPos = -1;
-		}
-	}
-
 	public static void setupKeyCodeMap() {
-		if (SignLink.javaVendor.toLowerCase().indexOf("microsoft") == -1) {
+		if (!SignLink.javaVendor.toLowerCase().contains("microsoft")) {
 			KEY_CODE_MAP[44] = 71;
 			KEY_CODE_MAP[45] = 26;
 			KEY_CODE_MAP[46] = 72;

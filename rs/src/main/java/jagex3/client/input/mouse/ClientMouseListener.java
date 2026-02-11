@@ -1,14 +1,11 @@
 package jagex3.client.input.mouse;
 
 import deob.ObfuscatedName;
-import jagex3.util.MonotonicTime;
-
-import java.awt.*;
-import java.awt.event.*;
+import jagex3.client.GameShell;
 
 // jag::oldscape::input::ClientMouseListener
 @ObfuscatedName("an")
-public class ClientMouseListener implements MouseListener, MouseMotionListener, FocusListener {
+public class ClientMouseListener {
 
 	@ObfuscatedName("an.r")
 	public static ClientMouseListener instance = new ClientMouseListener();
@@ -59,10 +56,13 @@ public class ClientMouseListener implements MouseListener, MouseMotionListener, 
 	public static long mouseClickTime = 0L;
 
 	@ObfuscatedName("v.r(Ljava/awt/Component;I)V")
-	public static void addListeners(Component c) {
-		c.addMouseListener(instance);
-		c.addMouseMotionListener(instance);
-		c.addFocusListener(instance);
+	public static void addListeners() {
+		GameShell.context.addMouseListeners();
+	}
+
+	public static void removeListeners() {
+		GameShell.context.removeMouseListeners();
+		nextMouseButton = 0;
 	}
 
 	@ObfuscatedName("ek.d(II)V")
@@ -83,99 +83,6 @@ public class ClientMouseListener implements MouseListener, MouseMotionListener, 
 
 			nextMouseClickButton = 0;
 		}
-	}
-
-	public final synchronized void mousePressed(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseClickX = e.getX();
-			nextMouseClickY = e.getY();
-			nextMouseClickTime = MonotonicTime.currentTime();
-
-			if (e.getButton() == MouseEvent.BUTTON3) {
-				nextMouseClickButton = 2;
-				nextMouseButton = 2;
-			} else {
-				nextMouseClickButton = 1;
-				nextMouseButton = 1;
-			}
-		}
-
-		if (e.isPopupTrigger()) {
-			e.consume();
-		}
-	}
-
-	public final synchronized void mouseReleased(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseButton = 0;
-		}
-
-		if (e.isPopupTrigger()) {
-			e.consume();
-		}
-	}
-
-	public final void mouseClicked(MouseEvent e) {
-		if (e.isPopupTrigger()) {
-			e.consume();
-		}
-	}
-
-	public final synchronized void mouseEntered(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseX = e.getX();
-			nextMouseY = e.getY();
-		}
-	}
-
-	public final synchronized void mouseExited(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseX = -1;
-			nextMouseY = -1;
-		}
-	}
-
-	public final synchronized void mouseDragged(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseX = e.getX();
-			nextMouseY = e.getY();
-		}
-	}
-
-	public final synchronized void mouseMoved(MouseEvent e) {
-		if (instance != null) {
-			idleTimer = 0;
-
-			nextMouseX = e.getX();
-			nextMouseY = e.getY();
-		}
-	}
-
-	public final void focusGained(FocusEvent e) {
-	}
-
-	public final synchronized void focusLost(FocusEvent e) {
-		if (instance != null) {
-			nextMouseButton = 0;
-		}
-	}
-
-	public static void removeListeners(Canvas c) {
-		c.removeMouseListener(instance);
-		c.removeMouseMotionListener(instance);
-		c.removeFocusListener(instance);
-
-		nextMouseButton = 0;
 	}
 
 	public static void shutdown() {

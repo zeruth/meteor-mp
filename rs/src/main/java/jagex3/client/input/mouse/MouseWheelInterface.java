@@ -2,8 +2,6 @@ package jagex3.client.input.mouse;
 
 import deob.ObfuscatedName;
 
-import java.awt.*;
-
 @ObfuscatedName("ac")
 public abstract class MouseWheelInterface {
 
@@ -17,10 +15,10 @@ public abstract class MouseWheelInterface {
 	}
 
 	@ObfuscatedName("ac.d(Ljava/awt/Component;I)V")
-	public abstract void addListeners(Component c);
+	public abstract void addListeners();
 
 	@ObfuscatedName("ac.l(Ljava/awt/Component;B)V")
-	public abstract void removeListeners(Component c);
+	public abstract void removeListeners();
 
 	@ObfuscatedName("ac.m(I)I")
 	public abstract int getRotation();

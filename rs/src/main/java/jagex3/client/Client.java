@@ -45,7 +45,6 @@ import jagex3.util.MonotonicTime;
 import jagex3.var.VarCache;
 import jagex3.wordfilter2.Huffman;
 import jagex3.wordfilter2.WordPack;
-import meteor.platform.headless.HeadlessContext;
 import meteor.platform.vanilla.VanillaContext;
 
 import java.awt.*;
@@ -1345,13 +1344,13 @@ public class Client extends GameShell {
 		PlayerModel.recol2d = RecolsRunescape.recol2d;
 
 		ClientKeyboardListener.setupKeyCodeMap();
-		ClientKeyboardListener.addListeners(GameShell.canvas);
+		ClientKeyboardListener.addListeners();
 
-		ClientMouseListener.addListeners(GameShell.canvas);
+		ClientMouseListener.addListeners();
 
 		mouseWheel = MouseWheelInterface.getProvider();
 		if (mouseWheel != null) {
-			mouseWheel.addListeners(GameShell.canvas);
+			mouseWheel.addListeners();
 		}
 
 		masterIndex = new DataFile(255, GameShellCache.cacheDat, GameShellCache.masterIndex, 500000);
@@ -1409,18 +1408,18 @@ public class Client extends GameShell {
 		}
 
 		if (canvasReplaceRecommended) {
-			ClientKeyboardListener.removeListeners(GameShell.canvas);
-			ClientMouseListener.removeListeners(GameShell.canvas);
+			ClientKeyboardListener.removeListeners();
+			ClientMouseListener.removeListeners();
 			if (mouseWheel != null) {
-				mouseWheel.removeListeners(GameShell.canvas);
+				mouseWheel.removeListeners();
 			}
 
 			this.addcanvas();
 
-			ClientKeyboardListener.addListeners(GameShell.canvas);
-			ClientMouseListener.addListeners(GameShell.canvas);
+			ClientKeyboardListener.addListeners();
+			ClientMouseListener.addListeners();
 			if (mouseWheel != null) {
-				mouseWheel.addListeners(GameShell.canvas);
+				mouseWheel.addListeners();
 			}
 		}
 

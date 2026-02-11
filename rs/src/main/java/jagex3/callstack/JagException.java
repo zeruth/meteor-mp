@@ -33,6 +33,8 @@ public class JagException extends RuntimeException {
 
 	@ObfuscatedName("dy.r(Ljava/lang/String;Ljava/lang/Throwable;I)V")
 	public static void report(String arg0, Throwable arg1) {
+		if (arg1 != null)
+			arg1.printStackTrace();
 		try {
 			String var2 = "";
 			if (arg1 != null) {

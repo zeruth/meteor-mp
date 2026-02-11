@@ -16,13 +16,16 @@ class HeadlessContext : Context {
     override fun removeMouseListeners() {}
     override fun addMouseWheelListener(iface: ClientMouseWheelListener) {}
     override fun removeMouseWheelListener(iface: ClientMouseWheelListener) {}
+    override fun repaintCanvas() {}
+    override fun update() {}
+    override fun paint() {}
+    override fun repaint() {}
+    override fun drawProgress(progress: Int, message: String) {}
+    override fun resetProgress() {}
+
     override fun createPixMap(width: Int, height: Int): PixMap {
         TODO("Not yet implemented")
     }
 
-    override fun createPix32(data: ByteArray): Pix32 {
-        TODO("Not yet implemented")
-    }
-
-    override fun repaintCanvas() {}
+    override fun createPix32(data: ByteArray) = Pix32()
 }

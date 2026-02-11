@@ -47,7 +47,6 @@ import jagex3.wordfilter2.Huffman;
 import jagex3.wordfilter2.WordPack;
 import meteor.platform.vanilla.VanillaContext;
 
-import java.awt.*;
 import java.io.IOException;
 import java.net.Socket;
 import java.net.URL;
@@ -1424,7 +1423,7 @@ public class Client extends GameShell {
 		}
 
 		if (state == 0) {
-			GameShell.drawProgress(TitleScreen.loadPos, TitleScreen.loadString, null);
+			GameShell.drawProgress(TitleScreen.loadPos, TitleScreen.loadString);
 		} else if (state == 5) {
 			TitleScreen.draw(b12, p11);
 		} else if (state == 10) {
@@ -1457,7 +1456,6 @@ public class Client extends GameShell {
 
 		if (state == 30 && componentDrawMode == 0 && !fullredraw) {
 			try {
-				Graphics g = GameShell.canvas.getGraphics();
 				for (int i = 0; i < componentDrawCount; i++) {
 					if (componentRedrawRequested2[i]) {
 						GameShell.drawArea.draw(componentDrawX[i], componentDrawY[i], componentDrawWidth[i], componentDrawHeight[i]);
@@ -1465,18 +1463,17 @@ public class Client extends GameShell {
 					}
 				}
 			} catch (Exception ex) {
-				GameShell.canvas.repaint();
+				GameShell.context.repaint();
 			}
 		} else if (state > 0) {
 			try {
-				Graphics g = GameShell.canvas.getGraphics();
 				GameShell.drawArea.draw(0, 0);
 				fullredraw = false;
 				for (int i = 0; i < componentDrawCount; i++) {
 					componentRedrawRequested2[i] = false;
 				}
 			} catch (Exception ex) {
-				GameShell.canvas.repaint();
+				GameShell.context.repaint();
 			}
 		}
 	}
@@ -4063,10 +4060,9 @@ public class Client extends GameShell {
 
 		if (arg1) {
 			try {
-				Graphics var7 = GameShell.canvas.getGraphics();
 				GameShell.drawArea.draw(0, 0);
 			} catch (Exception var14) {
-				GameShell.canvas.repaint();
+				GameShell.context.repaint();
 			}
 			return;
 		}

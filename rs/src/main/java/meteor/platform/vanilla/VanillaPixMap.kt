@@ -27,15 +27,15 @@ class VanillaPixMap(val context: VanillaContext) : PixMap() {
     }
 
     override fun draw(x: Int, y: Int) {
-        val g = GameShell.canvas.graphics
-        g.drawImage(this.image, x, y, GameShell.canvas)
+        val g = context.canvas!!.graphics
+        g.drawImage(this.image, x, y, context.canvas)
     }
 
     override fun draw(x: Int, y: Int, w: Int, h: Int) {
-        val g = GameShell.canvas.graphics
+        val g = context.canvas!!.graphics
         val save: Shape? = g.clip
         g.clipRect(x, y, w, h)
-        g.drawImage(this.image, 0, 0, GameShell.canvas)
+        g.drawImage(this.image, 0, 0, context.canvas)
         g.clip = save
     }
 

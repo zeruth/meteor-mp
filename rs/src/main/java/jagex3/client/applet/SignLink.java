@@ -2,10 +2,6 @@ package jagex3.client.applet;
 
 import deob.ObfuscatedName;
 import jagex3.sound.AudioSource;
-import jagex3.util.ThreadSleep;
-
-import java.awt.*;
-import java.awt.event.ActionEvent;
 import java.io.DataInputStream;
 import java.net.InetAddress;
 import java.net.Socket;
@@ -35,9 +31,6 @@ public class SignLink implements Runnable {
 	@ObfuscatedName("ak.j")
 	public boolean isClosed = false;
 
-	@ObfuscatedName("ak.z")
-	public EventQueue eventQueue;
-
 	public SignLink() {
 		javaVendor = "Unknown";
 		javaVersion = "1.1";
@@ -45,10 +38,6 @@ public class SignLink implements Runnable {
 			javaVendor = System.getProperty("java.vendor");
 			javaVersion = System.getProperty("java.version");
 		} catch (Exception var4) {
-		}
-		try {
-			this.eventQueue = Toolkit.getDefaultToolkit().getSystemEventQueue();
-		} catch (Throwable var3) {
 		}
 		this.isClosed = false;
 		this.thread = new Thread(this);
@@ -157,19 +146,5 @@ public class SignLink implements Runnable {
 	@ObfuscatedName("ak.q(I)Lw;")
 	public final AudioSource getAudio() {
 		return this.audio;
-	}
-
-	public static void flushEvents(SignLink handler, Object source) {
-		if (handler.eventQueue == null) {
-			return;
-		}
-
-		for (int i = 0; i < 50 && handler.eventQueue.peekEvent() != null; i++) {
-			ThreadSleep.sleepPrecise(1L);
-		}
-
-		if (source != null) {
-			handler.eventQueue.postEvent(new ActionEvent(source, 1001, "dummy"));
-		}
 	}
 }

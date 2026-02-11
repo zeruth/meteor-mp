@@ -1,6 +1,5 @@
 package meteor.platform.vanilla
 
-import jagex3.client.GameCanvas
 import jagex3.client.GameShell
 import jagex3.client.input.keyboard.ClientKeyboardListener
 import jagex3.client.input.mouse.ClientMouseListener
@@ -10,16 +9,18 @@ import jagex3.graphics.PixMap
 import jagex3.jstring.Cp1252
 import jagex3.util.MonotonicTime
 import meteor.platform.Context
-import java.awt.Color
-import java.awt.Container
-import java.awt.Frame
-import java.awt.Graphics
+import java.awt.*
 import java.awt.event.*
 import kotlin.system.exitProcess
 
 class VanillaContext :
     Context, FocusListener, WindowListener, KeyListener, MouseListener, MouseMotionListener, MouseWheelListener {
+
     var frame = Frame()
+    var canvas: Canvas? = null
+    private var progressFont: Font? = null
+    private var progressBar: Image? = null
+    private var progressFontMetrics: FontMetrics? = null
 
     override fun startApplication(width: Int, height: Int) {
         val context = this
@@ -38,34 +39,38 @@ class VanillaContext :
     override fun addcanvas() {
         val context = this
         val var1: Container = frame
-        if (GameShell.canvas != null) {
-            GameShell.canvas.removeFocusListener(context)
-            var1.remove(GameShell.canvas)
+        if (canvas != null) {
+            canvas?.removeFocusListener(context)
+            var1.remove(canvas)
         }
-        GameShell.canvas = GameCanvas(GameShell.shell) //TODO: this
-        with (GameShell.canvas) {
-            var1.add(this)
-            setSize(GameShell.sWid, GameShell.sHei)
-            isVisible = true
-            val var2 = frame.insets
-            setLocation(var2.left, var2.top)
-            addFocusListener(context)
-            requestFocus()
+        canvas = Canvas() //TODO: this
+        canvas?.let {
+            with (it) {
+                var1.add(this)
+                setSize(GameShell.sWid, GameShell.sHei)
+                isVisible = true
+                val var2 = frame.insets
+                setLocation(var2.left, var2.top)
+                addFocusListener(context)
+                requestFocus()
+            }
         }
     }
 
     override fun mainredrawwrapper() {
-        with (GameShell.canvas) {
-            setSize(GameShell.sWid, GameShell.sHei)
-            isVisible = true
-            val var6 = frame.insets
-            setLocation(var6.left, var6.top)
+        canvas?.let {
+            with (it) {
+                setSize(GameShell.sWid, GameShell.sHei)
+                isVisible = true
+                val var6 = frame.insets
+                setLocation(var6.left, var6.top)
+            }
         }
     }
 
     override fun shutdown() {
         try {
-            GameShell.canvas.removeFocusListener(this)
+            canvas?.removeFocusListener(this)
         } catch (ignore: Exception) {
         }
 
@@ -82,36 +87,44 @@ class VanillaContext :
 
     override fun addKeyListeners() {
         val context = this
-        with (GameShell.canvas) {
-            setFocusTraversalKeysEnabled(false)
-            addKeyListener(context)
-            addFocusListener(context)
+        canvas?.let {
+            with (it) {
+                setFocusTraversalKeysEnabled(false)
+                addKeyListener(context)
+                addFocusListener(context)
+            }
         }
     }
 
     override fun removeKeyListeners() {
         val context = this
-        with (GameShell.canvas) {
-            removeKeyListener(context)
-            removeFocusListener(context)
+        canvas?.let {
+            with (it) {
+                removeKeyListener(context)
+                removeFocusListener(context)
+            }
         }
     }
 
     override fun addMouseListeners() {
         val context = this
-        with (GameShell.canvas) {
-            addMouseListener(context)
-            addMouseMotionListener(context)
-            addFocusListener(context)
+        canvas?.let {
+            with (it) {
+                addMouseListener(context)
+                addMouseMotionListener(context)
+                addFocusListener(context)
+            }
         }
     }
 
     override fun removeMouseListeners() {
         val context = this
-        with (GameShell.canvas) {
-            removeMouseListener(context)
-            removeMouseMotionListener(context)
-            removeFocusListener(context)
+        canvas?.let {
+            with (it) {
+                removeMouseListener(context)
+                removeMouseMotionListener(context)
+                removeFocusListener(context)
+            }
         }
     }
 
@@ -119,12 +132,12 @@ class VanillaContext :
 
     override fun addMouseWheelListener(iface: ClientMouseWheelListener) {
         mouseWheelListeners.add(iface)
-        GameShell.canvas.addMouseWheelListener(this)
+        canvas?.addMouseWheelListener(this)
     }
 
     override fun removeMouseWheelListener(iface: ClientMouseWheelListener) {
         mouseWheelListeners.remove(iface)
-        GameShell.canvas.removeMouseWheelListener(this)
+        canvas?.removeMouseWheelListener(this)
     }
 
     override fun createPixMap(width: Int, height: Int): PixMap {
@@ -134,15 +147,90 @@ class VanillaContext :
     }
 
     override fun createPix32(data: ByteArray): Pix32 {
-        return VanillaPix32(data)
+        return VanillaPix32(data, this)
     }
 
     override fun repaintCanvas() {
         try {
             GameShell.drawArea.draw(0, 0)
         } catch (var25: java.lang.Exception) {
-            GameShell.canvas.repaint()
+            canvas?.repaint()
         }
+    }
+
+    override fun update() {
+        GameShell.shell.update(canvas?.graphics)
+    }
+
+    override fun paint() {
+        GameShell.shell.paint(canvas?.graphics)
+    }
+
+    override fun repaint() {
+        canvas?.repaint()
+    }
+
+    override fun drawProgress(progress: Int, message: String) {
+        try {
+            val color = Color(140, 17, 17)
+            val g = canvas?.graphics!!
+
+            if (progressFont == null) {
+                progressFont = Font("Helvetica", Font.BOLD, 13)
+                progressFontMetrics = canvas?.getFontMetrics(progressFont)
+            }
+
+            if (GameShell.fullredraw) {
+                GameShell.fullredraw = false
+                g.color = Color.black
+                g.fillRect(0, 0, GameShell.sWid, GameShell.sHei)
+            }
+
+            try {
+                if (progressBar == null) {
+                    progressBar = canvas?.createImage(304, 34)
+                }
+
+                val bar = progressBar!!.graphics
+
+                bar.color = color
+                bar.drawRect(0, 0, 303, 33)
+                bar.fillRect(2, 2, progress * 3, 30)
+
+                bar.color = Color.black
+                bar.drawRect(1, 1, 301, 31)
+                bar.fillRect(progress * 3 + 2, 2, 300 - progress * 3, 30)
+
+                bar.font = progressFont
+                bar.color = Color.white
+                bar.drawString(message, (304 - progressFontMetrics!!.stringWidth(message)) / 2, 22)
+
+                g.drawImage(progressBar, GameShell.sWid / 2 - 152, GameShell.sHei / 2 - 18, null)
+            } catch (ex: java.lang.Exception) {
+                val x = GameShell.sWid / 2 - 152
+                val y = GameShell.sHei / 2 - 18
+
+                g.color = color
+                g.drawRect(x, y, 303, 33)
+                g.fillRect(x + 2, y + 2, progress * 3, 30)
+
+                g.color = Color.black
+                g.drawRect(x + 1, y + 1, 301, 31)
+                g.fillRect(progress * 3 + x + 2, y + 2, 300 - progress * 3, 30)
+
+                g.font = progressFont
+                g.color = Color.white
+                g.drawString(message, x + (304 - progressFontMetrics!!.stringWidth(message)) / 2, y + 22)
+            }
+        } catch (ex: java.lang.Exception) {
+            canvas?.repaint()
+        }
+    }
+
+    override fun resetProgress() {
+        progressBar = null
+        progressFont = null
+        progressFontMetrics = null
     }
 
     //FocusListener

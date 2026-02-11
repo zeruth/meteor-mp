@@ -1,16 +1,15 @@
 package meteor.platform.vanilla
 
-import jagex3.client.GameShell
 import jagex3.graphics.Pix32
 import java.awt.Image
 import java.awt.MediaTracker
 import java.awt.Toolkit
 import java.awt.image.PixelGrabber
 
-class VanillaPix32(data: ByteArray) : Pix32(data) {
+class VanillaPix32(data: ByteArray, context: VanillaContext) : Pix32(data) {
     init {
         try {
-            val c = GameShell.canvas
+            val c = context.canvas
             val var3: Image = Toolkit.getDefaultToolkit().createImage(data)
             val var4 = MediaTracker(c)
             var4.addImage(var3, 0)

@@ -10,7 +10,6 @@ import jagex3.util.*;
 import meteor.platform.Context;
 
 import java.applet.Applet;
-import java.awt.*;
 import java.net.URL;
 
 @ObfuscatedName("dj")
@@ -70,20 +69,8 @@ public abstract class GameShell extends Applet implements Runnable {
 	@ObfuscatedName("ao.t")
 	public static int sHei;
 
-	@ObfuscatedName("cd.ad")
-	public static Image progressBar;
-
-	@ObfuscatedName("ca.f")
-	public static Font progressFont;
-
-	@ObfuscatedName("fr.k")
-	public static FontMetrics progressFontMetrics;
-
 	@ObfuscatedName("dj.o")
 	public static PixMap drawArea;
-
-	@ObfuscatedName("c.h")
-	public static Canvas canvas;
 
 	@ObfuscatedName("dj.p")
 	public static volatile boolean fullredraw = true;
@@ -248,8 +235,6 @@ public abstract class GameShell extends Applet implements Runnable {
 				}
 
 				this.mainredrawwrapper();
-
-				SignLink.flushEvents(signlink, canvas);
 			}
 		} catch (Exception ex) {
 			JagException.report(null, ex);
@@ -367,7 +352,8 @@ public abstract class GameShell extends Applet implements Runnable {
 		this.shutdown();
 	}
 
-	@Override
+	//This code doesn't seem to be needed at all
+/*	@Override
 	public final void update(Graphics g) {
 		this.paint(g);
 	}
@@ -386,7 +372,7 @@ public abstract class GameShell extends Applet implements Runnable {
 				canvasReplaceRecommended = true;
 			}
 		}
-	}
+	}*/
 
 	// com.jagex.game.runetek6.client.GameShell3.error
 	@ObfuscatedName("dj.t(Ljava/lang/String;I)V")
@@ -422,69 +408,11 @@ public abstract class GameShell extends Applet implements Runnable {
 	@Override
 	public abstract void init();
 
-	public static void drawProgress(int progress, String message, Color color) {
-		try {
-			Graphics g = canvas.getGraphics();
-
-			if (progressFont == null) {
-				progressFont = new Font("Helvetica", Font.BOLD, 13);
-				progressFontMetrics = canvas.getFontMetrics(progressFont);
-			}
-
-			if (fullredraw) {
-				fullredraw = false;
-				g.setColor(Color.black);
-				g.fillRect(0, 0, sWid, sHei);
-			}
-
-			if (color == null) {
-				color = new Color(140, 17, 17);
-			}
-
-			try {
-				if (progressBar == null) {
-					progressBar = canvas.createImage(304, 34);
-				}
-
-				Graphics bar = progressBar.getGraphics();
-
-				bar.setColor(color);
-				bar.drawRect(0, 0, 303, 33);
-				bar.fillRect(2, 2, progress * 3, 30);
-
-				bar.setColor(Color.black);
-				bar.drawRect(1, 1, 301, 31);
-				bar.fillRect(progress * 3 + 2, 2, 300 - progress * 3, 30);
-
-				bar.setFont(progressFont);
-				bar.setColor(Color.white);
-				bar.drawString(message, (304 - progressFontMetrics.stringWidth(message)) / 2, 22);
-
-				g.drawImage(progressBar, sWid / 2 - 152, sHei / 2 - 18, null);
-			} catch (Exception ex) {
-				int x = sWid / 2 - 152;
-				int y = sHei / 2 - 18;
-
-				g.setColor(color);
-				g.drawRect(x, y, 303, 33);
-				g.fillRect(x + 2, y + 2, progress * 3, 30);
-
-				g.setColor(Color.black);
-				g.drawRect(x + 1, y + 1, 301, 31);
-				g.fillRect(progress * 3 + x + 2, y + 2, 300 - progress * 3, 30);
-
-				g.setFont(progressFont);
-				g.setColor(Color.white);
-				g.drawString(message, x + (304 - progressFontMetrics.stringWidth(message)) / 2, y + 22);
-			}
-		} catch (Exception ex) {
-			canvas.repaint();
-		}
+	public static void drawProgress(int progress, String message) {
+		context.drawProgress(progress, message);
 	}
 
 	public static void resetProgress() {
-		progressBar = null;
-		progressFont = null;
-		progressFontMetrics = null;
+		context.resetProgress();
 	}
 }

@@ -31,7 +31,6 @@ public class AudioThread implements Runnable {
 					}
 				}
 				ThreadSleep.sleepPrecise(10L);
-				SignLink.flushEvents(signLink, null);
 			}
 		} catch (Exception ex) {
 			JagException.report(null, ex);

@@ -5,12 +5,15 @@ import jagex3.client.GameShell
 import jagex3.client.input.keyboard.ClientKeyboardListener
 import jagex3.client.input.mouse.ClientMouseListener
 import jagex3.client.input.mouse.ClientMouseWheelListener
+import jagex3.graphics.Pix32
+import jagex3.graphics.PixMap
 import jagex3.jstring.Cp1252
 import jagex3.util.MonotonicTime
 import meteor.platform.Context
 import java.awt.Color
 import java.awt.Container
 import java.awt.Frame
+import java.awt.Graphics
 import java.awt.event.*
 import kotlin.system.exitProcess
 
@@ -122,6 +125,24 @@ class VanillaContext :
     override fun removeMouseWheelListener(iface: ClientMouseWheelListener) {
         mouseWheelListeners.remove(iface)
         GameShell.canvas.removeMouseWheelListener(this)
+    }
+
+    override fun createPixMap(width: Int, height: Int): PixMap {
+        return VanillaPixMap(this).apply {
+            create(width, height)
+        }
+    }
+
+    override fun createPix32(data: ByteArray): Pix32 {
+        return VanillaPix32(data)
+    }
+
+    override fun repaintCanvas() {
+        try {
+            GameShell.drawArea.draw(0, 0)
+        } catch (var25: java.lang.Exception) {
+            GameShell.canvas.repaint()
+        }
     }
 
     //FocusListener

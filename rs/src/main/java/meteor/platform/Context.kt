@@ -1,6 +1,8 @@
 package meteor.platform
 
 import jagex3.client.input.mouse.ClientMouseWheelListener
+import jagex3.graphics.Pix32
+import jagex3.graphics.PixMap
 
 interface Context {
     fun startApplication(width: Int, height: Int)
@@ -13,4 +15,7 @@ interface Context {
     fun removeMouseListeners()
     fun addMouseWheelListener(iface: ClientMouseWheelListener)
     fun removeMouseWheelListener(iface: ClientMouseWheelListener)
+    fun createPixMap(width: Int, height: Int) : PixMap
+    fun createPix32(data: ByteArray) : Pix32
+    fun repaintCanvas()
 }

@@ -2,13 +2,12 @@ package jagex3.sound;
 
 import deob.ObfuscatedName;
 
-import java.awt.*;
 
 @ObfuscatedName("w")
 public interface AudioSource {
 
 	@ObfuscatedName("w.r(Ljava/awt/Component;IZB)V")
-	void init(Component arg0, int arg1, boolean arg2) throws Exception;
+	void init(int arg1, boolean arg2) throws Exception;
 
 	@ObfuscatedName("w.l(IB)I")
 	int queued(int arg0);

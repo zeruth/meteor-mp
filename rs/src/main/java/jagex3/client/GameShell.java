@@ -4,8 +4,6 @@ import deob.ObfuscatedName;
 import deob.Settings;
 import jagex3.callstack.JagException;
 import jagex3.client.applet.SignLink;
-import jagex3.graphics.JavaPixMap;
-import jagex3.graphics.JavaSafePixMap;
 import jagex3.graphics.PixMap;
 import jagex3.jstring.StringTools;
 import jagex3.util.*;
@@ -228,18 +226,8 @@ public abstract class GameShell extends Applet implements Runnable {
 			// todo: inlined
 			int wid = sWid;
 			int hei = sHei;
-			Canvas target = canvas;
-			PixMap newDrawArea;
-			try {
-				JavaPixMap pix = new JavaPixMap();
-				pix.create(wid, hei, target);
-				newDrawArea = pix;
-			} catch (Throwable var23) {
-				JavaSafePixMap pix = new JavaSafePixMap();
-				pix.create(wid, hei, target);
-				newDrawArea = pix;
-			}
-			drawArea = newDrawArea;
+
+            drawArea = GameShell.context.createPixMap(wid, hei);
 
 			this.maininit();
 

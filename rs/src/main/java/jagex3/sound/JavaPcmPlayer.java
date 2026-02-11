@@ -8,7 +8,6 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.DataLine.Info;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.SourceDataLine;
-import java.awt.*;
 
 @ObfuscatedName("ds")
 public class JavaPcmPlayer extends PcmPlayer {
@@ -26,7 +25,7 @@ public class JavaPcmPlayer extends PcmPlayer {
 	public byte[] buffer;
 
 	@ObfuscatedName("ds.s(Ljava/awt/Component;)V")
-	public void init(Component arg0) {
+	public void init() {
 		this.format = new AudioFormat((float) PcmPlayer.frequency, 16, PcmPlayer.stereo ? 2 : 1, true, false);
 		this.buffer = new byte[0x100 << (PcmPlayer.stereo ? 2 : 1)];
 	}

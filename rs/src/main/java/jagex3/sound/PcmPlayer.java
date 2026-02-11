@@ -6,7 +6,7 @@ import jagex3.util.ArrayUtil;
 import jagex3.util.MonotonicTime;
 import jagex3.util.ThreadSleep;
 
-import java.awt.*;
+import javax.sound.sampled.LineUnavailableException;
 
 // jag::oldscape::sound::PCMPlayer
 @ObfuscatedName("y")
@@ -84,59 +84,38 @@ public class PcmPlayer {
 	}
 
 	@ObfuscatedName("cm.d(Lak;Ljava/awt/Component;III)Ly;")
-	public static PcmPlayer getPlayer(SignLink signLink, Component arg1, int arg2, int arg3) {
+	public static PcmPlayer getPlayer(SignLink signLink, int arg2, int arg3) {
 		if (frequency == 0) {
 			throw new IllegalStateException();
 		} else if (arg2 >= 0 && arg2 < 2) {
 			if (arg3 < 256) {
 				arg3 = 256;
 			}
-			try {
-				JavaPcmPlayer var4 = new JavaPcmPlayer();
-				var4.samples = new int[(stereo ? 2 : 1) * 256];
-				var4.initialTargetSampledQueued = arg3;
-				var4.init(arg1);
-				var4.capacity = (arg3 & 0xFFFFFC00) + 1024;
-				if (var4.capacity > 16384) {
-					var4.capacity = 16384;
-				}
-				var4.open(var4.capacity);
-				if (threadPriority > 0 && thread == null) {
-					thread = new AudioThread();
-					thread.signLink = signLink;
-					signLink.threadreq(thread, threadPriority);
-				}
-				if (thread != null) {
-					if (thread.players[arg2] != null) {
-						throw new IllegalArgumentException();
-					}
-					thread.players[arg2] = var4;
-				}
-				return var4;
-			} catch (Throwable var9) {
-				try {
-					JavaSafePcmPlayer var6 = new JavaSafePcmPlayer(signLink, arg2);
-					var6.samples = new int[(stereo ? 2 : 1) * 256];
-					var6.initialTargetSampledQueued = arg3;
-					var6.init(arg1);
-					var6.capacity = 16384;
-					var6.open(var6.capacity);
-					if (threadPriority > 0 && thread == null) {
-						thread = new AudioThread();
-						thread.signLink = signLink;
-						signLink.threadreq(thread, threadPriority);
-					}
-					if (thread != null) {
-						if (thread.players[arg2] != null) {
-							throw new IllegalArgumentException();
-						}
-						thread.players[arg2] = var6;
-					}
-					return var6;
-				} catch (Throwable var8) {
-					return new PcmPlayer();
-				}
+			JavaPcmPlayer var4 = new JavaPcmPlayer();
+			var4.samples = new int[(stereo ? 2 : 1) * 256];
+			var4.initialTargetSampledQueued = arg3;
+			var4.init();
+			var4.capacity = (arg3 & 0xFFFFFC00) + 1024;
+			if (var4.capacity > 16384) {
+				var4.capacity = 16384;
 			}
+            try {
+                var4.open(var4.capacity);
+            } catch (LineUnavailableException e) {
+                throw new RuntimeException(e);
+            }
+            if (threadPriority > 0 && thread == null) {
+				thread = new AudioThread();
+				thread.signLink = signLink;
+				signLink.threadreq(thread, threadPriority);
+			}
+			if (thread != null) {
+				if (thread.players[arg2] != null) {
+					throw new IllegalArgumentException();
+				}
+				thread.players[arg2] = var4;
+			}
+			return var4;
 		} else {
 			throw new IllegalArgumentException();
 		}
@@ -412,7 +391,7 @@ public class PcmPlayer {
 	}
 
 	@ObfuscatedName("y.s(Ljava/awt/Component;)V")
-	public void init(Component arg0) throws Exception {
+	public void init() throws Exception {
 	}
 
 	@ObfuscatedName("y.u(I)V")

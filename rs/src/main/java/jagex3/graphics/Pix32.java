@@ -2,8 +2,6 @@ package jagex3.graphics;
 
 import deob.ObfuscatedName;
 
-import java.awt.*;
-import java.awt.image.PixelGrabber;
 
 // jag::oldscape::graphics::Pix32
 @ObfuscatedName("fq")
@@ -41,23 +39,8 @@ public class Pix32 extends Pix2D {
 		this.xof = 0;
 	}
 
-	public Pix32(byte[] arg0, Component arg1) {
-		try {
-			Image var3 = Toolkit.getDefaultToolkit().createImage(arg0);
-			MediaTracker var4 = new MediaTracker(arg1);
-			var4.addImage(var3, 0);
-			var4.waitForAll();
-			this.wi = var3.getWidth(arg1);
-			this.hi = var3.getHeight(arg1);
-			this.owi = this.wi;
-			this.ohi = this.hi;
-			this.xof = 0;
-			this.yof = 0;
-			this.data = new int[this.wi * this.hi];
-			PixelGrabber var5 = new PixelGrabber(var3, 0, 0, this.wi, this.hi, this.data, 0, this.wi);
-			var5.grabPixels();
-		} catch (InterruptedException ignore) {
-		}
+	public Pix32(byte[] arg0) {
+
 	}
 
 	// jag::oldscape::graphics::Pix32::CopyHFlip

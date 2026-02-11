@@ -16,7 +16,6 @@ import jagex3.js5.Js5Net;
 import jagex3.jstring.StringTools;
 import jagex3.midi2.MidiManager;
 
-import java.awt.*;
 import java.net.URL;
 
 // jag::oldscape::TitleScreen
@@ -749,12 +748,7 @@ public class TitleScreen {
 			}
 		}
 
-		try {
-			Graphics g = GameShell.canvas.getGraphics();
-			GameShell.drawArea.draw(g, 0, 0);
-		} catch (Exception ex) {
-			GameShell.canvas.repaint();
-		}
+		GameShell.context.repaintCanvas();
 	}
 
 	// jag::oldscape::TitleScreen::LoginMes
@@ -987,12 +981,7 @@ public class TitleScreen {
 			}
 		}
 
-		try {
-			Graphics g = GameShell.canvas.getGraphics();
-			GameShell.drawArea.draw(g, 0, 0);
-		} catch (Exception var25) {
-			GameShell.canvas.repaint();
-		}
+		GameShell.context.repaintCanvas();
 	}
 
 	// jag::oldscape::TitleScreen::WorldSwitchLoop
@@ -1238,7 +1227,7 @@ public class TitleScreen {
 	}
 
 	// jag::oldscape::TitleScreen::Open
-	public static void open(Canvas var1, Js5Loader binary, Js5Loader sprites) {
+	public static void open(Js5Loader binary, Js5Loader sprites) {
 		if (open) {
 			return;
 		}
@@ -1246,7 +1235,7 @@ public class TitleScreen {
 		Pix2D.cls();
 
 		byte[] back = binary.getFile("title.jpg", "");
-		titleBack = new Pix32(back, var1);
+		titleBack = GameShell.context.createPix32(back);
 		titleBack2 = titleBack.copyHFlip();
 		logo = PixLoader.makePix8(sprites, "logo", "");
 		titleBox = PixLoader.makePix8(sprites, "titlebox", "");

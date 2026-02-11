@@ -1460,7 +1460,7 @@ public class Client extends GameShell {
 				Graphics g = GameShell.canvas.getGraphics();
 				for (int i = 0; i < componentDrawCount; i++) {
 					if (componentRedrawRequested2[i]) {
-						GameShell.drawArea.draw(g, componentDrawX[i], componentDrawY[i], componentDrawWidth[i], componentDrawHeight[i]);
+						GameShell.drawArea.draw(componentDrawX[i], componentDrawY[i], componentDrawWidth[i], componentDrawHeight[i]);
 						componentRedrawRequested2[i] = false;
 					}
 				}
@@ -1470,7 +1470,7 @@ public class Client extends GameShell {
 		} else if (state > 0) {
 			try {
 				Graphics g = GameShell.canvas.getGraphics();
-				GameShell.drawArea.draw(g, 0, 0);
+				GameShell.drawArea.draw(0, 0);
 				fullredraw = false;
 				for (int i = 0; i < componentDrawCount; i++) {
 					componentRedrawRequested2[i] = false;
@@ -1544,7 +1544,7 @@ public class Client extends GameShell {
 		}
 
 		if (newState == 5 || newState == 10 || newState == 20) {
-			TitleScreen.open(GameShell.canvas, binary, sprites);
+			TitleScreen.open(binary, sprites);
 		} else {
 			TitleScreen.close();
 		}
@@ -1754,11 +1754,11 @@ public class Client extends GameShell {
 
 			MidiPlayer midiPlayer = new MidiPlayer();
 			midiPlayer.setChannelDefaultPatch(9, 128);
-			Client.midiPlayer = PcmPlayer.getPlayer(GameShell.signlink, GameShell.canvas, 0, 22050);
+			Client.midiPlayer = PcmPlayer.getPlayer(GameShell.signlink, 0, 22050);
 			Client.midiPlayer.playStream(midiPlayer);
 			MidiManager.init(patches, vorbis, jagFX, midiPlayer);
 
-			synthPlayer = PcmPlayer.getPlayer(GameShell.signlink, GameShell.canvas, 1, 2048);
+			synthPlayer = PcmPlayer.getPlayer(GameShell.signlink, 1, 2048);
 			mixer = new Mixer();
 			synthPlayer.playStream(mixer);
 			decimator = new Decimator(22050, PcmPlayer.frequency);
@@ -4064,7 +4064,7 @@ public class Client extends GameShell {
 		if (arg1) {
 			try {
 				Graphics var7 = GameShell.canvas.getGraphics();
-				GameShell.drawArea.draw(var7, 0, 0);
+				GameShell.drawArea.draw(0, 0);
 			} catch (Exception var14) {
 				GameShell.canvas.repaint();
 			}

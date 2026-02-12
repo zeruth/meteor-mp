@@ -6,12 +6,12 @@ import androidx.compose.ui.window.application
 import jagex2.client.Client
 import jagex2.client.GameShell
 import common.ui.WindowImpl
-import meteor.context.platform.vanilla.VanillaPlatform
+import meteor.platform.vanilla.VanillaContext
 
 object Main {
     @JvmStatic
     fun main(args: Array<String>) = application {
-        GameShell.context = VanillaPlatform()
+        GameShell.context = VanillaContext()
         Client.vanillaMain()
         Window(onCloseRequest = ::exitApplication) {
             WindowImpl.Window {

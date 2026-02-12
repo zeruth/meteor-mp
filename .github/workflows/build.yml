@@ -5,6 +5,7 @@ on:
   push:
     branches:
       - "377"
+      - "os1"
 
 jobs:
   build:

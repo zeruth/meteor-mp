@@ -33,7 +33,7 @@ class AndroidContext(val context: android.content.Context) : Context {
                 )
             }
             else {
-/*                canvas.clipRect(
+                canvas.clipRect(
                     it.payload.x,
                     it.payload.y,
                     it.payload.x + it.payload.w!!,
@@ -45,7 +45,7 @@ class AndroidContext(val context: android.content.Context) : Context {
                     0f,
                     0f,
                     null
-                )*/
+                )
             }
         }
     }
@@ -82,7 +82,7 @@ class AndroidContext(val context: android.content.Context) : Context {
     }
 
     override fun createPcmPlayer(): JavaPcmPlayer {
-        return JavaPcmPlayer()
+        return AndroidPcmPlayer()
     }
 
     override fun onDraw() {

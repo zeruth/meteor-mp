@@ -162,7 +162,7 @@ public class PcmPlayer {
 			}
 			while (var3 < var4) {
 				this.generate(this.samples, 256);
-				this.write();
+				write(var3, var4);
 				var3 += 256;
 			}
 			if (var1 > this.nextAcceptedCheckTime) {
@@ -401,7 +401,8 @@ public class PcmPlayer {
 	}
 
 	@ObfuscatedName("y.w()V")
-	public void write() throws Exception {
+	public int write(int current, int goal) throws Exception {
+		return -1;
 	}
 
 	@ObfuscatedName("y.e()V")

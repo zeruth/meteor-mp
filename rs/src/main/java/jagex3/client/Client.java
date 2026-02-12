@@ -3124,12 +3124,14 @@ public class Client extends GameShell {
 
 	@ObfuscatedName("da.dj(I)V")
 	public static void doAudio() {
-		if (synthPlayer != null) {
+		//TODO: Make sure synth isn't affected here, midi is fine on desktop
+		//Android audio is thread blocking, and jagex literally has an Audio thread, so why the hell does this exist?
+/*		if (synthPlayer != null) {
 			synthPlayer.cycle();
 		}
 		if (midiPlayer != null) {
 			midiPlayer.cycle();
-		}
+		}*/
 	}
 
 	// jag::oldscape::Client::TriggerSeqSound

@@ -31,12 +31,12 @@ public class JavaPcmPlayer extends PcmPlayer {
 	}
 
 	@ObfuscatedName("ds.w()V")
-	public void write() {
-		int var1 = 256;
+	public int write(int current, int goal) {
+		int sizeBytes = 256;
 		if (PcmPlayer.stereo) {
-			var1 <<= 0x1;
+			sizeBytes <<= 0x1;
 		}
-		for (int var2 = 0; var2 < var1; var2++) {
+		for (int var2 = 0; var2 < sizeBytes; var2++) {
 			int var3 = this.samples[var2];
 			if ((var3 + 0x800000 & 0xFF000000) != 0) {
 				var3 = var3 >> 31 ^ 0x7FFFFF;
@@ -44,6 +44,7 @@ public class JavaPcmPlayer extends PcmPlayer {
 			this.buffer[var2 * 2] = (byte) (var3 >> 8);
 			this.buffer[var2 * 2 + 1] = (byte) (var3 >> 16);
 		}
+		return sizeBytes;
 	}
 
 	@ObfuscatedName("ds.e()V")

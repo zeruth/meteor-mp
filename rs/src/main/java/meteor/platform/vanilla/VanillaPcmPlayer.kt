@@ -38,13 +38,14 @@ class VanillaPcmPlayer : JavaPcmPlayer() {
         return line?.available() ?: -1
     }
 
-    override fun write() {
-        super.write()
+    override fun write(current: Int, goal: Int): Int {
+        val size = super.write(current, goal)
         var var1 = 256
         if (stereo) {
             var1 = var1 shl 0x1
         }
         line?.write(buffer, 0, var1 shl 1)
+        return size
     }
 
     override fun close() {

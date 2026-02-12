@@ -37,10 +37,10 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.asCoroutineDispatcher
 import kotlinx.coroutines.launch
-import meteor.context.events.AndroidPixMapDraw
-import meteor.context.events.Draw
-import meteor.context.platform.android.AndroidPlatform
-import meteor.context.platform.android.AndroidViewBox
+import meteor.events.AndroidPixMapDraw
+import meteor.events.Draw
+import meteor.platform.android.AndroidContext
+import meteor.platform.android.AndroidViewBox
 import util.GlobalEventBus
 import java.util.concurrent.Executors
 
@@ -157,7 +157,7 @@ class MainActivity : ComponentActivity() {
         }
         clientScope.launch {
             Client.context = applicationContext
-            GameShell.context = AndroidPlatform()
+            GameShell.context = AndroidContext()
             Client.vanillaMain()
         }
         setContent {

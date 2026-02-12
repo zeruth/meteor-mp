@@ -1,7 +1,7 @@
-package meteor.context.platform.vanilla
+package meteor.platform.vanilla
 
 import jagex2.graphics.PixMap
-import meteor.context.events.VanillaPixMapDraw
+import meteor.events.VanillaPixMapDraw
 import util.GlobalEventBus
 import java.awt.Image
 import java.awt.image.BufferedImage

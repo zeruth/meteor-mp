@@ -1,9 +1,8 @@
 package sign;
 
-import jagex2.client.Client;
 import jagex2.client.GameShell;
-import meteor.context.PlatformContext;
-import meteor.context.events.*;
+import meteor.events.*;
+import meteor.platform.Context;
 import util.EventBusKt;
 
 import java.io.DataInputStream;
@@ -168,7 +167,7 @@ public class signlink implements Runnable {
 				savereq = null;
 			} else if (urlreq != null) {
 				try {
-					urlstream = new DataInputStream((new URL(((PlatformContext)mainapp).getCodeBase(), urlreq)).openStream());
+					urlstream = new DataInputStream((new URL(((Context)mainapp).getCodeBase(), urlreq)).openStream());
 				} catch (Exception var10) {
 					urlstream = null;
 				}

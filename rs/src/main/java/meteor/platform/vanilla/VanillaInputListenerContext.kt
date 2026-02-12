@@ -1,4 +1,4 @@
-package meteor.context.platform.vanilla
+package meteor.platform.vanilla
 
 import jagex2.client.GameShell
 import java.awt.event.*

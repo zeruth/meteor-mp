@@ -1,11 +1,18 @@
-package meteor.context.platform.vanilla
+package meteor.platform.vanilla
 
 import jagex2.client.Client
 import jagex2.client.ViewBox
 import jagex2.graphics.Pix32
 import jagex2.graphics.PixMap
-import meteor.context.PlatformContext
-import meteor.context.events.*
+import meteor.platform.Context
+import meteor.events.DrawProgress
+import meteor.events.MidiPlayerPlay
+import meteor.events.MidiPlayerRunning
+import meteor.events.MidiPlayerSetVolume
+import meteor.events.MidiPlayerStop
+import meteor.events.WavePlay
+import meteor.platform.android.AndroidPixMap
+import meteor.platform.android.AndroidViewBox
 import sign.signlink
 import util.GlobalEventBus
 import java.awt.Color
@@ -21,9 +28,7 @@ import javax.sound.midi.MidiSystem
 import javax.sound.sampled.*
 import kotlin.reflect.KClass
 
-open class VanillaPlatform : PlatformContext() {
-    override var viewBoxImplementation: KClass<out ViewBox> = VanillaViewBox::class
-    override var pixMapImplementation: KClass<out PixMap> = VanillaPixMap::class
+open class VanillaContext : Context() {
     override var getCacheDirImpl: () -> String = {
         val cacheDir = System.getProperty("user.home") + "/meteor-377/cache/"
         println("[Cache] " + cacheDir.replace("/", "\\"))
@@ -122,19 +127,28 @@ open class VanillaPlatform : PlatformContext() {
         val wipeCache: Boolean = false
     }
 
+    override fun createPixmap(width: Int, height: Int): PixMap {
+        return VanillaPixMap(width, height)
+    }
+
+    override fun createViewBox(width: Int, height: Int): ViewBox {
+        return VanillaViewBox(width, height)
+    }
+
     fun getGraphics(): Graphics? {
         return (Client.client.frame as? VanillaViewBox)?.getGraphics()
     }
+
 
     open fun drawProgress(progress: Int, message: String?) {
         val client = this as Client
         val graphics = getGraphics() ?: return
         try {
             val bold = Font("Helvetica", Font.BOLD, 13)
-            val boldMetrics: FontMetrics = this.baseComponent.getFontMetrics(bold)
+            val boldMetrics: FontMetrics = getFontMetrics(bold)
 
             val plain = Font("Helvetica", Font.PLAIN, 13)
-            val plainMetrics: FontMetrics = this.baseComponent.getFontMetrics(plain)
+            val plainMetrics: FontMetrics = getFontMetrics(plain)
 
             if (this.redrawScreen) {
                 graphics.color = Color.black

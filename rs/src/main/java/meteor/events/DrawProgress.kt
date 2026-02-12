@@ -1,4 +1,4 @@
-package meteor.context.events
+package meteor.events
 
 class DrawProgress(
     @JvmField var progress: Int,

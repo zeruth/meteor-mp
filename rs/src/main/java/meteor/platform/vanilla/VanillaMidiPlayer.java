@@ -1,4 +1,4 @@
-package meteor.context.platform.vanilla;
+package meteor.platform.vanilla;
 
 import javax.sound.midi.*;
 import java.io.ByteArrayInputStream;

@@ -1,4 +1,4 @@
-package meteor.context.events
+package meteor.events
 
 class MidiPlayerSetVolume(
     @JvmField var velocity: Int,

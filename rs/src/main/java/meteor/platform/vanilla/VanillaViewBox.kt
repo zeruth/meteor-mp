@@ -1,10 +1,8 @@
-package meteor.context.platform.vanilla
+package meteor.platform.vanilla
 
 import jagex2.client.Client
-import jagex2.client.GameShell
 import jagex2.client.ViewBox
-import meteor.context.PlatformContext
-import meteor.context.events.VanillaPixMapDraw
+import meteor.events.VanillaPixMapDraw
 import sign.signlink
 import util.GlobalEventBus
 import java.awt.BorderLayout

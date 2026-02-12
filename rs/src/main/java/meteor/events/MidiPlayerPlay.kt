@@ -1,4 +1,4 @@
-package meteor.context.events
+package meteor.events
 
 class MidiPlayerPlay(
     @JvmField var file: java.io.File,

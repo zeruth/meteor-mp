@@ -1,4 +1,4 @@
-package meteor.context.events
+package meteor.events
 
 import sign.signlink
 import java.io.File

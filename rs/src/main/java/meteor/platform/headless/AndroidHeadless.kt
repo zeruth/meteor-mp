@@ -1,16 +1,20 @@
-package meteor.context.platform.headless
+package meteor.platform.headless
 
-import android.content.Context
 import jagex2.client.Client
 import jagex2.client.ViewBox
 import jagex2.graphics.Pix32
 import jagex2.graphics.PixMap
-import meteor.context.PlatformContext
+import meteor.platform.Context
 import kotlin.reflect.KClass
 
-open class AndroidHeadlessPlatform : PlatformContext() {
-    override var viewBoxImplementation: KClass<out ViewBox>  = HeadlessViewBox::class
-    override var pixMapImplementation: KClass<out PixMap>  = HeadlessPixMap::class
+open class AndroidHeadless : Context() {
+    override fun createPixmap(width: Int, height: Int): PixMap {
+        return HeadlessPixMap(width, height)
+    }
+
+    override fun createViewBox(width: Int, height: Int): ViewBox {
+        return HeadlessViewBox(width, height)
+    }
     override var getCacheDirImpl: () -> String = {
         Client.context?.dataDir?.resolve("meteor-377/cache/")?.let {
             if (!it.exists())

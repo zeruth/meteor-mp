@@ -3,12 +3,12 @@ package jagex2.client;
 import deob.ObfuscatedName;
 import jagex2.graphics.Pix32;
 import jagex2.graphics.PixMap;
-import meteor.context.PlatformContext;
+import meteor.platform.Context;
 import org.jetbrains.annotations.NotNull;
 
 public class GameShell implements Runnable{
 
-	public static PlatformContext context = null;
+	public static Context context = null;
 
 	//---
 
@@ -283,7 +283,7 @@ public class GameShell implements Runnable{
 	}
 
 	@ObfuscatedName("JWWAIQPI.d(I)Ljava/awt/Component;")
-	public PlatformContext getBaseComponent() {
+	public Context getBaseComponent() {
 		return context;
 	}
 

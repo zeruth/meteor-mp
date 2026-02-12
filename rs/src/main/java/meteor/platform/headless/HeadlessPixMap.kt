@@ -1,4 +1,4 @@
-package meteor.context.platform.headless
+package meteor.platform.headless
 
 import jagex2.graphics.PixMap
 

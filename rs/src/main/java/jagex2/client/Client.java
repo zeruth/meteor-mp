@@ -63,10 +63,9 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.zip.CRC32;
 
-import meteor.context.PlatformContext;
-import meteor.context.events.Draw;
-import meteor.context.platform.android.AndroidPlatform;
-import meteor.context.platform.vanilla.VanillaPlatform;
+import meteor.events.Draw;
+import meteor.platform.android.AndroidContext;
+import meteor.platform.vanilla.VanillaContext;
 import org.jetbrains.annotations.NotNull;
 import sign.signlink;
 import util.EventBusKt;
@@ -1481,7 +1480,7 @@ public class Client extends GameShell {
 				Client app = new Client();
 				app.initApplication(503, 765);
 			} else if (args.length == 0) {
-				GameShell.context = new VanillaPlatform();
+				GameShell.context = new VanillaContext();
 				vanillaMain();
 			} else {
 				System.out.println("Usage: node-id, port-offset, [lowmem/highmem], [free/members], storeid");
@@ -1532,9 +1531,9 @@ public class Client extends GameShell {
 
 	public URL getCodeBase() {
 		try {
-			if (GameShell.context instanceof VanillaPlatform)
+			if (GameShell.context instanceof VanillaContext)
 				return new URL("http://127.0.0.1:" + (portOffset + 80));
-			else if (GameShell.context instanceof AndroidPlatform)
+			else if (GameShell.context instanceof AndroidContext)
 				return new URL("http://10.0.2.2:" + (portOffset + 80));
 		} catch (Exception var1) {
 		}
@@ -1546,7 +1545,7 @@ public class Client extends GameShell {
 	}
 
 	@ObfuscatedName("client.d(I)Ljava/awt/Component;")
-	public PlatformContext getBaseComponent() {
+	public meteor.platform.Context getBaseComponent() {
 		return GameShell.context;
 	}
 

@@ -1,7 +1,6 @@
 package jagex2.graphics;
 
 import deob.ObfuscatedName;
-import meteor.context.PlatformContext;
 
 public class PixMap {
 

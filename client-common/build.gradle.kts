@@ -32,6 +32,8 @@ dependencies {
     with (libs) {
         compileOnly(compose.runtime)
         compileOnly(compose.ui)
+        implementation(composeIcons.lineAwesome)
+        implementation(material3)
     }
     compileOnly(compose.desktop.currentOs)
 }

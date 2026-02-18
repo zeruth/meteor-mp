@@ -19,6 +19,7 @@ object WindowImpl {
                 Box(Modifier.weight(1f).background(Color.Transparent)) {
                     content.invoke()
                 }
+                ToolbarImpl.Toolbar()
             }
         }
     }

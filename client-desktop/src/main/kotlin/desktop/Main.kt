@@ -37,6 +37,7 @@ object Main {
 
         GlobalEventBus.subscribe<Draw> {
             state.value = !state.value
+            panel.repaint()
             draws += System.currentTimeMillis()
 
             if (System.currentTimeMillis() - lastCheck > 1000) {

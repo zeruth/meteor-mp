@@ -4,7 +4,6 @@ import jagex3.client.input.mouse.ClientMouseWheelListener
 import jagex3.graphics.Pix32
 import jagex3.graphics.PixMap
 import jagex3.sound.JavaPcmPlayer
-import java.io.File
 import java.net.URL
 
 interface Context {
@@ -33,4 +32,8 @@ interface Context {
     fun getCacheDirectory(): String
     fun createPcmPlayer() : JavaPcmPlayer
     fun onDraw()
+
+    fun getCanvas(): Any? {
+        return null
+    }
 }

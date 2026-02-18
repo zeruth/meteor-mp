@@ -30,7 +30,4 @@ public abstract class PixMap {
 
 	@ObfuscatedName("ab.m(Ljava/awt/Graphics;IIIII)V")
 	public abstract void draw(int x, int y, int w, int h);
-
-	@ObfuscatedName("ab.r(IILjava/awt/Component;I)V")
-	public abstract void create(int w, int h);
 }

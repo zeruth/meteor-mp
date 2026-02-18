@@ -152,9 +152,7 @@ class VanillaContext :
     }
 
     override fun createPixMap(width: Int, height: Int): PixMap {
-        return VanillaPixMap(this, width, height).apply {
-            create(width, height)
-        }
+        return VanillaPixMap(this, width, height)
     }
 
     override fun createPix32(data: ByteArray): Pix32 {

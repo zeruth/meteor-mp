@@ -10,9 +10,9 @@ import java.awt.image.Raster
 import java.util.*
 
 class VanillaPixMap(val context: VanillaContext, width: Int, height: Int) : PixMap(width, height) {
-    lateinit var image: Image
+    var image: Image
 
-    override fun create(w: Int, h: Int) {
+    init {
         val var4 = DataBufferInt(this.data, this.data.size)
         val var5 = DirectColorModel(32, 0xff0000, 0xff00, 0xff)
         val var6 = Raster.createWritableRaster(var5.createCompatibleSampleModel(this.width, this.height), var4, null)

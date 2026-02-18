@@ -90,9 +90,7 @@ class AndroidContext(val context: android.content.Context) : Context {
     }
 
     override fun createPixMap(width: Int, height: Int): PixMap {
-        return AndroidPixMap(width, height).apply {
-            create(width, height)
-        }
+        return AndroidPixMap(width, height)
     }
 
     override fun createPix32(data: ByteArray) : Pix32 {

@@ -4400,29 +4400,35 @@ public class Client extends GameShell {
 					}
 				}
 			} else {
-				int var59 = var55 * 65536 / var56;
-				int var60 = 32768;
-				while (var52 != var54) {
-					if (var52 < var54) {
-						var52++;
-					} else if (var52 > var54) {
-						var52--;
-					}
-					if ((ClientBuild.mapl[minusedlevel][var51][var52] & 0x4) != 0) {
-						var50 = minusedlevel;
-					}
-					var60 += var59;
-					if (var60 >= 65536) {
-						var60 -= 65536;
-						if (var51 < var53) {
-							var51++;
-						} else if (var51 > var53) {
-							var51--;
+				//TODO: This fixes a divide-by-zero
+				try {
+					int var59 = var55 * 65536 / var56;
+					int var60 = 32768;
+					while (var52 != var54) {
+						if (var52 < var54) {
+							var52++;
+						} else if (var52 > var54) {
+							var52--;
 						}
 						if ((ClientBuild.mapl[minusedlevel][var51][var52] & 0x4) != 0) {
 							var50 = minusedlevel;
 						}
+						var60 += var59;
+						if (var60 >= 65536) {
+							var60 -= 65536;
+							if (var51 < var53) {
+								var51++;
+							} else if (var51 > var53) {
+								var51--;
+							}
+							if ((ClientBuild.mapl[minusedlevel][var51][var52] & 0x4) != 0) {
+								var50 = minusedlevel;
+							}
+						}
 					}
+				} catch (Exception e) {
+					//
+					System.out.println("roof check failure");
 				}
 			}
 		}

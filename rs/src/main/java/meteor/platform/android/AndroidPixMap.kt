@@ -9,6 +9,10 @@ import util.GlobalEventBus
 class AndroidPixMap(width: Int, height: Int) : PixMap(width, height) {
     val bitmap: Bitmap = createBitmap(width, height, Bitmap.Config.RGB_565)
 
+    init {
+        bind()
+    }
+
     fun update() {
         bitmap.setPixels(
             data,
@@ -28,9 +32,5 @@ class AndroidPixMap(width: Int, height: Int) : PixMap(width, height) {
     override fun draw(x: Int, y: Int, w: Int, h: Int) {
         update()
         GlobalEventBus.publish(AndroidPixMapDraw(bitmap, x, y, w, h))
-    }
-
-    override fun create(w: Int, h: Int) {
-        bind()
     }
 }
